@@ -70,7 +70,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     public float getSize() {
         // constant size for egg stage
         if (getLifeStage().isEgg()) {
-            return 0.2f;
+            return 0.5f;
         }
         
         int age = dragon.getGrowingAge();
