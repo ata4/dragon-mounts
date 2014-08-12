@@ -1,11 +1,10 @@
-# netbeans
-/nbproject/configs/
-/nbproject/private/
-
-# builds
+# IDE and Gradle temp dirs
+/nbproject/
+/.gradle/
+/.nb-gradle/
+/.nb-gradle-properties
+/eclipse/
 /build/
-/dist/
 
-# other
-.gradle
+# Other
 /private/
