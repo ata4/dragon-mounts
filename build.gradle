@@ -17,9 +17,9 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "r39"
-group= "info.ata4.minecraft.dragon" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "dragonmounts"
+version = "r40-mc1.7.10"
+group = "info.ata4.minecraft.dragon" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "DragonMounts"
 
 minecraft {
     version = "1.7.10-10.13.0.1180"
