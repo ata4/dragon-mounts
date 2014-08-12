@@ -23,9 +23,13 @@ public class DragonMountsConfig {
     private boolean debug = false;
     
     public DragonMountsConfig(Configuration config) {
-        eggsInChests = config.getBoolean("server", "eggsInChests", eggsInChests, "Spawns dragon eggs in generated chests when enabled");
-        dragonEntityID = config.getInt("server", "dragonEntityID", dragonEntityID, 0, Integer.MAX_VALUE, "Overrides the entity ID for dragons to fix problems with manual IDs from other mods.\nSet to -1 for automatic assignment (recommended).\nWarning: wrong values may cause crashes and loss of data!");
-        debug = config.getBoolean("client", "debug", debug, "Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.");
+        eggsInChests = config.getBoolean("eggsInChests", "server", eggsInChests, "Spawns dragon eggs in generated chests when enabled");
+        dragonEntityID = config.getInt("dragonEntityID", "server", dragonEntityID, 1, 255, "Overrides the entity ID for dragons to fix problems with manual IDs from other mods.\nSet to -1 for automatic assignment (recommended).\nWarning: wrong values may cause crashes and loss of data!");
+        debug = config.getBoolean("debug", "client", debug, "Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.");
+        
+        if (config.hasChanged()) {
+            config.save();
+        }
     }
 
     public boolean isEggsInChests() {
