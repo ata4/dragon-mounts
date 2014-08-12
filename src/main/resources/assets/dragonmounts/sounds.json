@@ -1,0 +1,24 @@
+{
+  "mob.enderdragon.breathe": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathe1",
+      "mob/enderdragon/breathe2"
+    ]
+  },
+  "mob.enderdragon.step": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/step1",
+      "mob/enderdragon/step2",
+      "mob/enderdragon/step3",
+      "mob/enderdragon/step4"
+    ]
+  },
+  "mob.enderdragon.death": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/death"
+    ]
+  }
+}

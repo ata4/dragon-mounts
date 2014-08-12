@@ -1,0 +1,25 @@
+entity.DragonMount.air.name=Дракон Эфира
+entity.DragonMount.end.name=Дракон Края
+entity.DragonMount.fire.name=Огненный дракон
+entity.DragonMount.ghost.name=Призрачный дракон
+entity.DragonMount.ice.name=Ледяной дракон
+entity.DragonMount.name=Дракон Края
+entity.DragonMount.nether.name=Дракон Нижнего мира
+entity.DragonMount.water.name=Водный дракон
+entity.DragonMount.forest.name=Лесной дракон
+
+commands.dragon.nodragons=Рядом нет драконов
+commands.dragon.canttame=Вы не можете приручать драконов
+
+dragon.lifeStage.egg=яйцо
+dragon.lifeStage.hatchling=детёныш
+dragon.lifeStage.juvenile=юность
+dragon.lifeStage.adult=зрелость
+dragon.owned=Этот дракон не следует Вашим командам.
+dragon.mountNotice=Нажимайте %s и %s, чтобы лететь вверх и вниз
+
+key.categories.dragonmount=Управление драконом
+key.dragon.flyUp=Лететь вверх
+key.dragon.flyDown=Лететь вниз
+
+attribute.name.generic.movementSpeedAir=Скорость (Воздух)

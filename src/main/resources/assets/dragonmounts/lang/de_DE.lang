@@ -1,0 +1,25 @@
+entity.DragonMount.air.name=Aether-Drache
+entity.DragonMount.end.name=Ender-Drache
+entity.DragonMount.fire.name=Feuer-Drache
+entity.DragonMount.ghost.name=Geist-Drache
+entity.DragonMount.ice.name=Eis-Drache
+entity.DragonMount.name=Ender-Drache
+entity.DragonMount.nether.name=Nether-Drache
+entity.DragonMount.water.name=Wasser-Drache
+entity.DragonMount.forest.name=Wald-Drache
+
+commands.dragon.nodragons=Es sind keine Drachen in der Nähe
+commands.dragon.canttame=Du kannst keine Drachen zähmen
+
+dragon.lifeStage.egg=Ei
+dragon.lifeStage.hatchling=Baby
+dragon.lifeStage.juvenile=Jugendlich
+dragon.lifeStage.adult=Erwachsen
+dragon.owned=Dieser Drache unterliegt nicht deinen Befehlen.
+dragon.mountNotice=Drücke %s und %s um die Flughöhe zu ändern
+
+key.categories.dragonmount=Drachen-Steuerung
+key.dragon.flyUp=Nach oben fliegen
+key.dragon.flyDown=Nach unten fliegen
+
+attribute.name.generic.movementSpeedAir=Geschwindigkeit (Luft)

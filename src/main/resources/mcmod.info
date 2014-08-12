@@ -1,0 +1,11 @@
+[
+{
+  "modid" : "DragonMounts",
+  "name" : "Dragon Mounts",
+  "description": "A mod that allows you to breed dragon eggs and foster them to ridable dragons.",
+  "version": "${version}",
+  "url" : "http://www.minecraftforum.net/topic/827863-",
+  "authorList": ["Barracuda"],
+  "logoFile" : "assets/dragonmounts/textures/gui/dm_banner_s.png"
+}
+]

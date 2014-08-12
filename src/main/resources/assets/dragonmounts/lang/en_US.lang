@@ -1,0 +1,25 @@
+entity.DragonMount.air.name=Aether Dragon
+entity.DragonMount.end.name=Ender Dragon
+entity.DragonMount.fire.name=Fire Dragon
+entity.DragonMount.ghost.name=Ghost Dragon
+entity.DragonMount.ice.name=Ice Dragon
+entity.DragonMount.name=Ender Dragon
+entity.DragonMount.nether.name=Nether Dragon
+entity.DragonMount.water.name=Water Dragon
+entity.DragonMount.forest.name=Forest Dragon
+
+commands.dragon.nodragons=There are no dragons nearby
+commands.dragon.canttame=You cannot tame dragons
+
+dragon.lifeStage.egg=egg
+dragon.lifeStage.hatchling=hatchling
+dragon.lifeStage.juvenile=juvenile
+dragon.lifeStage.adult=adult
+dragon.owned=This dragon doesn't follow your commands.
+dragon.mountNotice=Press %s and %s to fly up and down
+
+key.categories.dragonmount=Dragon Controls
+key.dragon.flyUp=Fly Up
+key.dragon.flyDown=Fly Down
+
+attribute.name.generic.movementSpeedAir=Speed (Air)
