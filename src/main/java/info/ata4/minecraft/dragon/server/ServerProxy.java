@@ -27,6 +27,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 
 /**
  *
@@ -46,7 +47,7 @@ public class ServerProxy {
     }
     
     public void onPreInit(FMLPreInitializationEvent evt) {
-        config = new DragonMountsConfig(evt.getSuggestedConfigurationFile());
+        config = new DragonMountsConfig(new Configuration(evt.getSuggestedConfigurationFile()));
     }
     
     public void onInit(FMLInitializationEvent evt) {
