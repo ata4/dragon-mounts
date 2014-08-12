@@ -9,9 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import java.util.List;
 import net.minecraft.entity.Entity;
@@ -125,7 +123,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     
     private void setTasksEnabled(EntityAITasks tasks, boolean flag) {
         // disable task by increasing the tick rate to ridiculous extends
-        ReflectionHelper.setPrivateValue(EntityAITasks.class, tasks, flag ? 3 : Integer.MAX_VALUE, PrivateFields.ENTITYAITASKS_TICKRATE);
+        tasks.tickRate = flag ? 3 : Integer.MAX_VALUE;
     }
     
     protected boolean isGroundAIEnabled() {

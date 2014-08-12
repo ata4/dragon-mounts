@@ -17,14 +17,14 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "r40-mc1.7.10"
-group = "info.ata4.minecraft.dragon" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "DragonMounts"
-
 minecraft {
     version = "1.7.10-10.13.0.1180"
     runDir = "eclipse/assets"
 }
+
+version = "r40-" + minecraft.version
+group = "info.ata4.minecraft.dragon" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "DragonMounts"
 
 dependencies {
     // you may put jars on which you depend on in ./libs
@@ -42,8 +42,7 @@ dependencies {
 
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -59,5 +58,11 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+jar {
+    manifest {
+        attributes 'FMLAT': 'dragonmounts_at.cfg'
     }
 }

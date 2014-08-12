@@ -13,6 +13,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
+import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
@@ -27,7 +28,6 @@ import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIWatchLiving;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonDebug;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonEntityHacks;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonParticleHelper;
@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentThorns;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityList;
@@ -59,7 +58,6 @@ import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
@@ -112,6 +110,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public EntityTameableDragon(World world) {
         super(world);
         
+        // set custom body helper
+        bodyHelper = new DragonBodyHelper(this);
+        
         // enables walking over blocks
         stepHeight = 1;
         
@@ -156,7 +157,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         addHelper(new DragonLifeStageHelper(this));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonParticleHelper(this));
-        addHelper(new DragonEntityHacks(this));
         
         if (DragonMounts.getConfig().isDebug()) {
             addHelper(new DragonDebug(this));

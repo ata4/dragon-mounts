@@ -10,14 +10,12 @@
 package info.ata4.minecraft.dragon.client.gui;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +27,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
@@ -351,10 +348,8 @@ public class GuiDragonDebug extends Gui {
         text.println(label + ":");
         text.setColor(WHITE);
 
-        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(EntityAITasks.class, tasks, PrivateFields.ENTITYAITASKS_EXECUTINGTASKENTRIES);
-        
         // create copy to avoid ConcurrentModificationException
-        currentTasks = new ArrayList<EntityAITaskEntry>(currentTasks);
+        List<EntityAITaskEntry> currentTasks = new ArrayList<EntityAITaskEntry>(tasks.executingTaskEntries);
         
         if (currentTasks.isEmpty()) {
             text.println("---");
@@ -380,14 +375,7 @@ public class GuiDragonDebug extends Gui {
         text.println("Watched objects");
         text.setColor(WHITE);
         
-        Map<Integer, WatchableObject> watchedObjects;
-        
-        try {
-            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class, dragon.getDataWatcher(), PrivateFields.DATAWATCHER_WATCHEDOBJECTS);
-        } catch (Exception ex) {
-            return;
-        }
-        
+        Map<Integer, WatchableObject> watchedObjects = dragon.getDataWatcher().watchedObjects;
         Iterator<Map.Entry<Integer, WatchableObject>> it = watchedObjects.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Integer, WatchableObject> pairs = it.next();

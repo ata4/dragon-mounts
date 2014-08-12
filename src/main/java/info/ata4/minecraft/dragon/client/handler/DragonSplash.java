@@ -9,11 +9,8 @@
  */
 package info.ata4.minecraft.dragon.client.handler;
 
-import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Random;
@@ -57,25 +54,14 @@ public class DragonSplash {
         if (evt.gui instanceof GuiMainMenu) {
             try {
                 GuiMainMenu menu = (GuiMainMenu) evt.gui;
-                String splash = getSplashText(menu);
-                if (splash.equals("Kind of dragon free!")) {
-                    splash = "Not really dragon free!";
-                    setSplashText(menu, splash);
+                if (menu.splashText.equals("Kind of dragon free!")) {
+                    menu.splashText = "Not really dragon free!";
                 } else if (splashLines != null && !splashLines.isEmpty() && rand.nextInt(10) == 0) {
-                    splash = splashLines.get(rand.nextInt(splashLines.size()));
-                    setSplashText(menu, splash);
+                    menu.splashText = splashLines.get(rand.nextInt(splashLines.size()));
                 }
             } catch (Throwable t) {
                 L.warn("Can't override splash", t);
             }
         }
-    }
-    
-    private String getSplashText(GuiMainMenu menu) {
-        return ReflectionHelper.getPrivateValue(GuiMainMenu.class, menu, PrivateFields.GUIMAINMENU_SPLASHTEXT);
-    }
-    
-    private void setSplashText(GuiMainMenu menu, String splash) {
-        ReflectionHelper.setPrivateValue(GuiMainMenu.class, menu, splash, PrivateFields.GUIMAINMENU_SPLASHTEXT);
     }
 }

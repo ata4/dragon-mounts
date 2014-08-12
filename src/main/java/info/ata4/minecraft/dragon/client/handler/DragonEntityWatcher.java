@@ -12,11 +12,8 @@ package info.ata4.minecraft.dragon.client.handler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
 
@@ -29,22 +26,10 @@ import net.minecraft.client.settings.GameSettings;
 public class DragonEntityWatcher {
     
     private final Minecraft mc = Minecraft.getMinecraft();
-    private final float defaultThirdPersonDistance;
+    private final float defaultThirdPersonDistance = mc.entityRenderer.thirdPersonDistance;
     private int noticeTicks;
     private boolean ridingDragon;
     private boolean ridingDragonPrev;
-    
-    public DragonEntityWatcher() {
-        defaultThirdPersonDistance = getThirdPersonDistance();
-    }
-    
-    private float getThirdPersonDistance() {
-        return ReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, PrivateFields.ENTITYRENDERER_THIRDPERSONDISTANCE);
-    }
-    
-    private void setThirdPersonDistance(float thirdPersonDistance) {
-        ReflectionHelper.setPrivateValue(EntityRenderer.class, mc.entityRenderer, thirdPersonDistance, PrivateFields.ENTITYRENDERER_THIRDPERSONDISTANCE);
-    }
 
     @SubscribeEvent
     public void onTick(ClientTickEvent evt) {
@@ -60,10 +45,10 @@ public class DragonEntityWatcher {
         
         // display a key binding notice after the vanilla notice
         if (ridingDragon && !ridingDragonPrev) {
-            setThirdPersonDistance(6);
+            mc.entityRenderer.thirdPersonDistance = 6;
             noticeTicks = 70;
         } else if (!ridingDragon && ridingDragonPrev) {
-            setThirdPersonDistance(defaultThirdPersonDistance);
+            mc.entityRenderer.thirdPersonDistance = defaultThirdPersonDistance;
             noticeTicks = 0;
         } else {
             if (noticeTicks > 0) {
