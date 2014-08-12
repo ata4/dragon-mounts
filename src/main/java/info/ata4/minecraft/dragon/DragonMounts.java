@@ -11,6 +11,8 @@ package info.ata4.minecraft.dragon;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -26,10 +28,13 @@ import info.ata4.minecraft.dragon.server.ServerProxy;
 @Mod(
     modid = DragonMounts.ID,
     name = DragonMounts.NAME,
-    version = DragonMounts.VERSION,
     useMetadata = true
 )
 public class DragonMounts {
+    
+    public static final String NAME = "Dragon Mounts";
+    public static final String ID = "DragonMounts";
+    public static final String AID = ID.toLowerCase();
     
     @SidedProxy(
         serverSide = "info.ata4.minecraft.dragon.server.ServerProxy",
@@ -37,17 +42,22 @@ public class DragonMounts {
     )
     public static ServerProxy proxy;
     
-    public static final String ID = "DragonMounts";
-    public static final String AID = ID.toLowerCase();
-    public static final String NAME = "Dragon Mounts";
-    public static final String VERSION = "r39";
+    @Instance(ID)
+    public static DragonMounts instance;
     
     public static DragonMountsConfig getConfig() {
         return proxy.getConfig();
     }
     
+    private ModMetadata metadata;
+    
+    public ModMetadata getMetadata() {
+        return metadata;
+    }
+    
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent evt) {
+        metadata = evt.getModMetadata();
         proxy.onPreInit(evt);
     }
 

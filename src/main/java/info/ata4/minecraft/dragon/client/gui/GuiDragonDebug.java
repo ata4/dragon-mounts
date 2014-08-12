@@ -164,10 +164,12 @@ public class GuiDragonDebug extends Gui {
     }
 
     private void renderTitle() {
-        text.setOrigin(16, 8);
+        String title = String.format("%s %s Debug", DragonMounts.NAME,
+                DragonMounts.instance.getMetadata().version);
         
+        text.setOrigin(16, 8);
         text.setColor(GREY);
-        text.println("DragonMounts " + DragonMounts.VERSION + " Debug");
+        text.println(title);
         text.setColor(WHITE);
     }
     
