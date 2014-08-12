@@ -21,6 +21,7 @@ import java.util.Map;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.AdvancedModelLoader;
@@ -71,7 +72,7 @@ public class DragonRenderer extends RenderLiving {
     }
     
     @Override
-    public void doRender(Entity entity, double x, double y, double z, float yaw, float partialTicks) {
+    public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float partialTicks) {
         doRender((EntityTameableDragon) entity, x, y, z, yaw, partialTicks);
     }
     
