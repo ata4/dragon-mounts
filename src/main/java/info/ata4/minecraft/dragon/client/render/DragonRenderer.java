@@ -212,8 +212,8 @@ public class DragonRenderer extends RenderLiving {
     }
     
     protected void preRenderCallback(EntityTameableDragon dragon, float partialTicks) {
-        float size = dragon.getSize() * 0.8f;
-        glScalef(size, size, size);
+        float scale = dragon.getScale() * 0.8f;
+        glScalef(scale, scale, scale);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class DragonParticleHelper extends DragonHelper {
     
     public void spawnBodyParticle(String effect) {
         double ox, oy, oz;
-        float s = dragon.getSize() * 1.2f;
+        float s = dragon.getScale() * 1.2f;
 
         if (effect.equals("explode")) {
             ox = rand.nextGaussian() * s;
@@ -52,7 +52,7 @@ public class DragonParticleHelper extends DragonHelper {
     }
     
     public void spawnBodyParticles(String effect, int baseAmount) {
-        int amount = (int) (baseAmount * dragon.getSize());
+        int amount = (int) (baseAmount * dragon.getScale());
         for (int i = 0; i < amount; i++) {
             spawnBodyParticle(effect);
         }

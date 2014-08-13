@@ -406,12 +406,12 @@ public class DragonModel extends ModelBase {
     
     public void render(EntityTameableDragon dragon, float moveTime, float moveSpeed, float ticksExisted, float lookYaw, float lookPitch, float scale) {
         DragonAnimator animator = dragon.getAnimator();
-        animator.setMovement(moveTime, moveSpeed * dragon.getSize());
+        animator.setMovement(moveTime, moveSpeed * dragon.getScale());
         animator.setLook(lookYaw, lookPitch);
         animator.setTicksExisted(ticksExisted);
         animator.animate(this);
         
-        size = dragon.getSize();
+        size = dragon.getScale();
         
         renderModel(dragon, scale);
     }

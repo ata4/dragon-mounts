@@ -21,44 +21,10 @@ public enum DragonLifeStage {
     JUVENILE(-24000),
     ADULT(0);
     
-    public static DragonLifeStage valueOf(int age) {
-        if (age >= ADULT.ageLimit) {
-            return ADULT;
-        } else if (age >= JUVENILE.ageLimit) {
-            return JUVENILE;
-        } else if (age >= HATCHLING.ageLimit) {
-            return HATCHLING;
-        } else {
-            return EGG;
-        }
-    }
-    
-    private final int ageLimit;
+    public final int ageLimit;
 
     private DragonLifeStage(int ageLimit) {
         this.ageLimit = ageLimit;
     }
 
-    /**
-     * @return the age limit in ticks
-     */
-    public int getAgeLimit() {
-        return ageLimit;
-    }
-
-    public boolean isEgg() {
-        return this == EGG;
-    }
-    
-    public boolean isHatchling() {
-        return this == HATCHLING;
-    }
-    
-    public boolean isJuvenile() {
-        return this == JUVENILE;
-    }
-    
-    public boolean isAdult() {
-        return this == ADULT;
-    }
 }

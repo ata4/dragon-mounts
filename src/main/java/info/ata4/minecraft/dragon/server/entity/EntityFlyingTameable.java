@@ -159,7 +159,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         
         // fix weird Y offset quirks
         // TODO: caused by vanilla code?
-        yOffset = ySize = 0;
+//        yOffset = ySize = 0;
         
         if (isServer()) {
             // delay flying state for 10 ticks (0.5s)

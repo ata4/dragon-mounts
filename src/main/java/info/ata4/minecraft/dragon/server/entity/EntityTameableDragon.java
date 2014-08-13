@@ -86,8 +86,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public static final double BASE_SPEED_GROUND = 0.3;
     public static final double BASE_SPEED_AIR = 1.5;
     public static final double BASE_DAMAGE = 8;
-    public static final int BASE_HEALTH = 60;
-    public static final int BASE_SIZE = 4;
+    public static final double BASE_HEALTH = 60;
+    public static final float BASE_WIDTH = 4;
+    public static final float BASE_HEIGHT = 3f;
     public static final int HOME_RADIUS = 256;
     public static final Item FAVORITE_FOOD = Items.fish;
     
@@ -111,7 +112,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 
     public EntityTameableDragon(World world) {
         super(world);
-
+        
         // override EntityBodyHelper field, which is private and has no setter
         // required to fixate body while sitting. also slows down rotation while standing.
         try {
@@ -119,6 +120,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         } catch (Exception ex) {
             L.warn("Can't override EntityBodyHelper", ex);
         }
+        
+        // set base size
+        setSize(BASE_WIDTH, BASE_HEIGHT);
         
         // enables walking over blocks
         stepHeight = 1;
@@ -384,7 +388,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected float getSoundVolume() {
-        return 2 - getSize();
+        return 2 - getScale();
     }
     
     /**
@@ -392,7 +396,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected float getSoundPitch() {
-        return super.getSoundPitch() * (2 - getSize());
+        return super.getSoundPitch() * (2 - getScale());
     }
     
     /**
@@ -549,7 +553,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     public double getMountedYOffset() {
-        return (isSitting() ? 1.7f : 2.2f) * getSize();
+        return (isSitting() ? 1.7f : 2.2f) * getScale();
     }
     
     /**
@@ -557,7 +561,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     public float getRenderSizeModifier() {
-        return getSize();
+        return getScale();
     }
     
     /**
@@ -812,7 +816,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             // dragon position is the middle of the model and the saddle is on
             // the shoulders, so move player forwards on Z axis relative to the
             // dragon's rotation to fix that
-            Vec3 pos = Vec3.createVectorHelper(0, 0, 0.8 * getSize());
+            Vec3 pos = Vec3.createVectorHelper(0, 0, 0.8 * getScale());
             pos.rotateAroundY((float) Math.toRadians(-renderYawOffset));
             px += pos.xCoord;
             py += pos.yCoord;
@@ -903,18 +907,19 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     }
     
     /**
-     * Returns the size multiplier for the current age.
+     * Public wrapper for protected final setScale(), used by DragonLifeStageHelper.
      * 
-     * @return size
+     * @param scale 
      */
-    public float getSize() {
-        return getLifeStageHelper().getSize();
+    public void setScalePublic(float scale) {
+        setScale(scale);
     }
     
-    public void updateSize(float s) {
-        L.trace("updateSize({})", s);
-        setSize(-1, 0); // required for EntityAgeable to properly update the size
-        setSize(s, s * 0.65f);
+    @Override
+    public void setScaleForAge(boolean p_98054_1_) {
+        // SetGrowingAge calls this to switch between half and full scale based
+        // on isChild(), but the scale is managed in DragonLifeStageHelper, so
+        // this is no-op here
     }
     
     @SideOnly(Side.CLIENT)
@@ -925,19 +930,28 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         return 0;
     }
     
+    /**
+     * Returns the size multiplier for the current age.
+     * 
+     * @return scale
+     */
+    public float getScale() {
+        return getLifeStageHelper().getScale();
+    }
+    
     public boolean isEgg() {
-        return getLifeStageHelper().getLifeStage().isEgg();
+        return getLifeStageHelper().isEgg();
     }
     
     public boolean isHatchling() {
-        return getLifeStageHelper().getLifeStage().isHatchling();
+        return getLifeStageHelper().isHatchling();
     }
     
     public boolean isJuvenile() {
-        return getLifeStageHelper().getLifeStage().isJuvenile();
+        return getLifeStageHelper().isJuvenile();
     }
     
     public boolean isAdult() {
-        return getLifeStageHelper().getLifeStage().isAdult();
+        return getLifeStageHelper().isAdult();
     }
 }

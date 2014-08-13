@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import static info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage.*;
 import net.minecraft.block.Block;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -28,7 +29,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     private static final Logger L = LogManager.getLogger();
     
     private DragonLifeStage lifeStagePrev;
-    private DragonSizeModifier sizeModifier = new DragonSizeModifier();
+    private DragonScaleModifier scaleModifier = new DragonScaleModifier();
     private int eggWiggleX;
     private int eggWiggleZ;
 
@@ -38,10 +39,10 @@ public class DragonLifeStageHelper extends DragonHelper {
     
     @Override
     public void applyEntityAttributes() {
-        sizeModifier.setSize(getSize());
+        scaleModifier.setScale(getScale());
 
-        dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(sizeModifier);
-        dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(sizeModifier);
+        dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(scaleModifier);
+        dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(scaleModifier);
     }
     
     /**
@@ -63,20 +64,35 @@ public class DragonLifeStageHelper extends DragonHelper {
     }
     
     /**
+     * Returns the current life stage of the dragon.
+     * 
+     * @return current life stage
+     */
+    public DragonLifeStage getLifeStage() {
+        int age = dragon.getGrowingAge();
+        if (age >= ADULT.ageLimit) {
+            return ADULT;
+        } else if (age >= JUVENILE.ageLimit) {
+            return JUVENILE;
+        } else if (age >= HATCHLING.ageLimit) {
+            return HATCHLING;
+        } else {
+            return EGG;
+        }
+    }
+    
+    /**
      * Returns the size multiplier for the current age.
      * 
      * @return size
      */
-    public float getSize() {
+    public float getScale() {
         // constant size for egg stage
-        if (getLifeStage().isEgg()) {
-            return 0.5f;
+        if (isEgg()) {
+            return 0.20f;
         }
         
-        int age = dragon.getGrowingAge();
-        int ageEgg = DragonLifeStage.EGG.getAgeLimit();
-        
-        return 1 - (age / (float) ageEgg);
+        return 1 - (dragon.getGrowingAge() / (float) DragonLifeStage.EGG.ageLimit);
     }
     
     /**
@@ -103,15 +119,6 @@ public class DragonLifeStageHelper extends DragonHelper {
     }
     
     /**
-     * Returns the current life stage of the dragon.
-     * 
-     * @return current life stage
-     */
-    public DragonLifeStage getLifeStage() {
-        return DragonLifeStage.valueOf(dragon.getGrowingAge());
-    }
-    
-    /**
      * Sets a new life stage for the dragon.
      * 
      * @param lifeStage new life stage
@@ -119,7 +126,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     public final void setLifeStage(DragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
         // onNewLifeStage will be triggered next tick
-        dragon.setGrowingAge(lifeStage.getAgeLimit());
+        dragon.setGrowingAge(lifeStage.ageLimit);
     }
     
     /**
@@ -127,27 +134,21 @@ public class DragonLifeStageHelper extends DragonHelper {
      */ 
     private void onNewLifeStage(DragonLifeStage lifeStage, DragonLifeStage prevLifeStage) {
         L.trace("onNewLifeStage({},{})", prevLifeStage, lifeStage);
-        // update collision box size
-        if (lifeStage.isEgg()) {
-            dragon.updateSize(0.98f);
-        } else {
-            dragon.updateSize(EntityTameableDragon.BASE_SIZE * getSize());
-        }
         
         if (dragon.isClient()) {
-            if (prevLifeStage != null && prevLifeStage.isEgg() && lifeStage.isHatchling()) {
+            if (prevLifeStage != null && prevLifeStage == EGG && lifeStage == HATCHLING) {
                 playEggCrackEffect();
             }
         } else {
             // eggs and hatchlings can't fly
-            dragon.setCanFly(!lifeStage.isEgg() && !lifeStage.isHatchling());
+            dragon.setCanFly(lifeStage != EGG && lifeStage != HATCHLING);
             
             // only hatchlings are small enough for doors
             // (eggs don't move on their own anyway and are ignored)
-            dragon.getNavigator().setEnterDoors(lifeStage.isHatchling());
+            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
             
             // update AI states so the egg won't move
-            if (lifeStage.isEgg()) {
+            if (lifeStage == EGG) {
                 dragon.setPathToEntity(null);
                 dragon.setAttackTarget(null);
             }
@@ -157,15 +158,15 @@ public class DragonLifeStageHelper extends DragonHelper {
             IAttributeInstance damageAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage);
 
             // remove old size modifiers
-            healthAttrib.removeModifier(sizeModifier);
-            damageAttrib.removeModifier(sizeModifier);
+            healthAttrib.removeModifier(scaleModifier);
+            damageAttrib.removeModifier(scaleModifier);
 
             // update modifier
-            sizeModifier.setSize(getSize());
+            scaleModifier.setScale(getScale());
 
             // set new size modifiers
-            healthAttrib.applyModifier(sizeModifier);
-            damageAttrib.applyModifier(sizeModifier);
+            healthAttrib.applyModifier(scaleModifier);
+            damageAttrib.applyModifier(scaleModifier);
 
             // heal dragon to updated full health
             dragon.setHealth(dragon.getMaxHealth());
@@ -174,6 +175,11 @@ public class DragonLifeStageHelper extends DragonHelper {
 
     @Override
     public void onLivingUpdate() {
+        // testing code
+//        if (dragon.isServer()) {
+//            dragon.setGrowingAge((int) ((((Math.sin(Math.toRadians(dragon.ticksExisted))) + 1) * 0.5) * EGG.ageLimit));
+//        }
+        
         // trigger event when a new life stage was reached
         DragonLifeStage lifeStage = getLifeStage();
         if (lifeStagePrev != lifeStage) {
@@ -181,12 +187,12 @@ public class DragonLifeStageHelper extends DragonHelper {
             lifeStagePrev = lifeStage;
         }
         
-        if (lifeStage.isEgg()) {
+        if (isEgg()) {
             int age = dragon.getGrowingAge();
             
             // animate egg wiggle based on the time the eggs take to hatch
-            int eggAge = DragonLifeStage.EGG.getAgeLimit();
-            int hatchAge = DragonLifeStage.HATCHLING.getAgeLimit();
+            int eggAge = DragonLifeStage.EGG.ageLimit;
+            int hatchAge = DragonLifeStage.HATCHLING.ageLimit;
             float chance = (age - eggAge) / (float) (hatchAge - eggAge);
 
             // wait until the egg is nearly hatched
@@ -218,12 +224,30 @@ public class DragonLifeStageHelper extends DragonHelper {
             double oz = (rand.nextDouble() - 0.5) * 2;
             dragon.worldObj.spawnParticle("portal", px, py, pz, ox, oy, oz);
         }
+        
+        dragon.setScalePublic(getScale());
     }
 
     @Override
     public void onDeath() {
-        if (dragon.isClient() && getLifeStage().isEgg()) {
+        if (dragon.isClient() && isEgg()) {
             playEggCrackEffect();
         }
+    }
+    
+    public boolean isEgg() {
+        return getLifeStage() == EGG;
+    }
+    
+    public boolean isHatchling() {
+        return getLifeStage() == HATCHLING;
+    }
+    
+    public boolean isJuvenile() {
+        return getLifeStage() == JUVENILE;
+    }
+    
+    public boolean isAdult() {
+        return getLifeStage() == ADULT;
     }
 }
