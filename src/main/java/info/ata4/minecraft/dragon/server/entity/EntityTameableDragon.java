@@ -169,7 +169,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonParticleHelper(this));
         
-        if (DragonMounts.getConfig().isDebug()) {
+        if (DragonMounts.instance.getConfig().isDebug()) {
             addHelper(new DragonDebug(this));
         }
         

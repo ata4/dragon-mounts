@@ -19,6 +19,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import info.ata4.minecraft.dragon.server.ServerProxy;
+import net.minecraftforge.common.config.Configuration;
 
 /**
  * Main control class for Forge.
@@ -45,11 +46,12 @@ public class DragonMounts {
     @Instance(ID)
     public static DragonMounts instance;
     
-    public static DragonMountsConfig getConfig() {
-        return proxy.getConfig();
-    }
-    
     private ModMetadata metadata;
+    private DragonMountsConfig config;
+    
+    public DragonMountsConfig getConfig() {
+        return config;
+    }
     
     public ModMetadata getMetadata() {
         return metadata;
@@ -57,8 +59,8 @@ public class DragonMounts {
     
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent evt) {
+        config = new DragonMountsConfig(new Configuration(evt.getSuggestedConfigurationFile()));
         metadata = evt.getModMetadata();
-        proxy.onPreInit(evt);
     }
 
     @EventHandler

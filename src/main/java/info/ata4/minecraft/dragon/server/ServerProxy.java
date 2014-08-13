@@ -10,12 +10,10 @@
 package info.ata4.minecraft.dragon.server;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.DragonMountsConfig;
 import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
@@ -27,7 +25,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 
 /**
  *
@@ -36,24 +33,16 @@ import net.minecraftforge.common.config.Configuration;
 public class ServerProxy {
     
     private DragonControlChannelHandler controlChannel;
-    private DragonMountsConfig config;
-    
-    public DragonMountsConfig getConfig() {
-        return config;
-    }
 
     public DragonControlChannelHandler getControlChannel() {
         return controlChannel;
     }
     
-    public void onPreInit(FMLPreInitializationEvent evt) {
-        config = new DragonMountsConfig(new Configuration(evt.getSuggestedConfigurationFile()));
-    }
     
     public void onInit(FMLInitializationEvent evt) {
         registerEntities();
 
-        if (DragonMounts.getConfig().isEggsInChests()) {
+        if (DragonMounts.instance.getConfig().isEggsInChests()) {
             registerChestItems();
         }
         
@@ -72,7 +61,7 @@ public class ServerProxy {
     }
     
     private void registerEntities() {
-        int dragonEntityID = getConfig().getDragonEntityID();
+        int dragonEntityID = DragonMounts.instance.getConfig().getDragonEntityID();
         if (dragonEntityID == -1) {
             dragonEntityID = EntityRegistry.findGlobalUniqueEntityId();
         }

@@ -39,7 +39,7 @@ public class ClientProxy extends ServerProxy {
         
         MinecraftForge.EVENT_BUS.register(new DragonSplash());
         
-        if (DragonMounts.getConfig().isDebug()) {
+        if (DragonMounts.instance.getConfig().isDebug()) {
             MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
         }
     }
