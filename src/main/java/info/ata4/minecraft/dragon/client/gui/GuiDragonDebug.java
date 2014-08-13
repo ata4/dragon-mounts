@@ -32,6 +32,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -44,6 +45,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.lwjgl.input.Keyboard;
 
@@ -191,6 +193,7 @@ public class GuiDragonDebug extends Gui {
         text.println("Side: " + (dragon.isServer() ? "server" : "client"));
         
         text.println("ID: " + dragon.getEntityId());
+        text.println("UUID: " + StringUtils.abbreviate(dragon.getUniqueID().toString(), 22));
         text.println("Name: " + dragon.getCommandSenderName());
         
         // position
@@ -232,11 +235,16 @@ public class GuiDragonDebug extends Gui {
         
         // tamed flag/owner name
         //String tamedString = dragon.getOwnerName();
-        String tamedString = dragon.func_152113_b();
-        if (tamedString.isEmpty()) {
-            tamedString = "no";
+        String tamedString;
+        if (dragon.isTamed()) {
+            EntityLivingBase player = dragon.getOwner();
+            if (player != null) {
+                tamedString = "yes (" + player.getCommandSenderName() + ")";
+            } else {
+                tamedString = "yes (" + StringUtils.abbreviate(dragon.func_152113_b(), 22) + ")";
+            }
         } else {
-            tamedString = "yes (" + tamedString + ")";
+            tamedString = "no";
         }
         text.println("Tamed: " + tamedString);
         

@@ -451,7 +451,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 return true;
             }
             
-            if (!isOwner(player)) {
+            //if (!isOwner(player)) {
+            if (!func_152114_e(player)) {
                 if (isServer()) {
                     // that's not your dragon!
                     player.addChatMessage(new ChatComponentTranslation("dragon.owned"));
@@ -465,9 +466,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 } else if (ItemUtils.hasEquipped(player, Items.bone)) {
                     if (isServer()) {
                         // toggle sitting state with the bone item
-                        boolean sitting = !isSitting();
-                        setSitting(sitting);
-                        aiSit.setSitting(sitting);
+                        aiSit.setSitting(!isSitting());
                         isJumping = false;
                         setPathToEntity(null);
                     }
@@ -505,7 +504,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             setPathToEntity(null);
             setAttackTarget(null);
             //setOwner(player.getCommandSenderName());
-            func_152115_b(player.getCommandSenderName());
+            func_152115_b(player.getUniqueID().toString());
             playTameEffect(true);
             worldObj.setEntityState(this, (byte) 7);
         } else {
@@ -773,15 +772,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public void setBreed(DragonBreed breed) {
         getBreedHelper().setBreed(breed);
     }
-    
-    public boolean isOwner(EntityPlayer player) {
-        //return player.getCommandSenderName().equalsIgnoreCase(getOwnerName());
-        return player.getCommandSenderName().equalsIgnoreCase(func_152113_b());
-    }
-    
-    public boolean isRiddenByOwner() {
-        return riddenByEntity == getOwner();
-    }
 
     public EntityPlayer getRidingPlayer() {
         if (riddenByEntity instanceof EntityPlayer) {
@@ -853,12 +843,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             return true;
         }
         
-        // breed-dependent immunities
-        if (getBreed().isImmuneToDamage(src)) {
-            return true;
-        }
-        
-        return false;
+        return getBreed().isImmuneToDamage(src);
     }
     
     /**
