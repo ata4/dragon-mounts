@@ -912,7 +912,15 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      * @param scale 
      */
     public void setScalePublic(float scale) {
+        double posXTmp = posX;
+        double posYTmp = posY;
+        double posZTmp = posZ;
+        
         setScale(scale);
+        
+        // workaround for a vanilla bug; the position is apparently not set correcty
+        // after changing the entity size, causing asynchronous server/client positioning
+        setPosition(posXTmp, posYTmp, posZTmp);
     }
     
     @Override

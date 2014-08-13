@@ -89,9 +89,10 @@ public class DragonLifeStageHelper extends DragonHelper {
     public float getScale() {
         // constant size for egg stage
         if (isEgg()) {
-            return 0.20f;
+            return 0.9f / EntityTameableDragon.BASE_WIDTH;
         }
         
+        // use relative distance from the current age to the egg age as scale
         return 1 - (dragon.getGrowingAge() / (float) DragonLifeStage.EGG.ageLimit);
     }
     
@@ -121,12 +122,12 @@ public class DragonLifeStageHelper extends DragonHelper {
     /**
      * Sets a new life stage for the dragon.
      * 
-     * @param lifeStage new life stage
+     * @param lifeStage
      */
     public final void setLifeStage(DragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
-        // onNewLifeStage will be triggered next tick
         dragon.setGrowingAge(lifeStage.ageLimit);
+        updateLifeStage();
     }
     
     /**
@@ -180,54 +181,66 @@ public class DragonLifeStageHelper extends DragonHelper {
 //            dragon.setGrowingAge((int) ((((Math.sin(Math.toRadians(dragon.ticksExisted))) + 1) * 0.5) * EGG.ageLimit));
 //        }
         
+        updateLifeStage();
+        updateEgg();
+        updateScale();
+    }
+    
+    private void updateLifeStage() {
         // trigger event when a new life stage was reached
         DragonLifeStage lifeStage = getLifeStage();
         if (lifeStagePrev != lifeStage) {
             onNewLifeStage(lifeStage, lifeStagePrev);
             lifeStagePrev = lifeStage;
         }
-        
-        if (isEgg()) {
-            int age = dragon.getGrowingAge();
-            
-            // animate egg wiggle based on the time the eggs take to hatch
-            int eggAge = DragonLifeStage.EGG.ageLimit;
-            int hatchAge = DragonLifeStage.HATCHLING.ageLimit;
-            float chance = (age - eggAge) / (float) (hatchAge - eggAge);
-
-            // wait until the egg is nearly hatched
-            if (chance > 0.66f) {
-                // reduce chance so it can run every tick
-                chance /= 60;
-
-                if (eggWiggleX > 0) {
-                    eggWiggleX--;
-                } else if (rand.nextFloat() < chance) {
-                    eggWiggleX = rand.nextBoolean() ? 10 : 20;
-                    playEggCrackEffect();
-                }
-
-                if (eggWiggleZ > 0) {
-                    eggWiggleZ--;
-                } else if (rand.nextFloat() < chance) {
-                    eggWiggleZ = rand.nextBoolean() ? 10 : 20;
-                    playEggCrackEffect();
-                }
-            }
-
-            // spawn generic particles
-            double px = dragon.posX + (rand.nextDouble() - 0.5);
-            double py = dragon.posY + (rand.nextDouble() - 0.5);
-            double pz = dragon.posZ + (rand.nextDouble() - 0.5);
-            double ox = (rand.nextDouble() - 0.5) * 2;
-            double oy = (rand.nextDouble() - 0.5) * 2;
-            double oz = (rand.nextDouble() - 0.5) * 2;
-            dragon.worldObj.spawnParticle("portal", px, py, pz, ox, oy, oz);
+    }
+    
+    private void updateEgg() {
+        if (!isEgg()) {
+            return;
         }
         
-        dragon.setScalePublic(getScale());
+        int age = dragon.getGrowingAge();
+
+        // animate egg wiggle based on the time the eggs take to hatch
+        int eggAge = DragonLifeStage.EGG.ageLimit;
+        int hatchAge = DragonLifeStage.HATCHLING.ageLimit;
+        float chance = (age - eggAge) / (float) (hatchAge - eggAge);
+
+        // wait until the egg is nearly hatched
+        if (chance > 0.66f) {
+            // reduce chance so it can run every tick
+            chance /= 60;
+
+            if (eggWiggleX > 0) {
+                eggWiggleX--;
+            } else if (rand.nextFloat() < chance) {
+                eggWiggleX = rand.nextBoolean() ? 10 : 20;
+                playEggCrackEffect();
+            }
+
+            if (eggWiggleZ > 0) {
+                eggWiggleZ--;
+            } else if (rand.nextFloat() < chance) {
+                eggWiggleZ = rand.nextBoolean() ? 10 : 20;
+                playEggCrackEffect();
+            }
+        }
+
+        // spawn generic particles
+        double px = dragon.posX + (rand.nextDouble() - 0.5);
+        double py = dragon.posY + (rand.nextDouble() - 0.5);
+        double pz = dragon.posZ + (rand.nextDouble() - 0.5);
+        double ox = (rand.nextDouble() - 0.5) * 2;
+        double oy = (rand.nextDouble() - 0.5) * 2;
+        double oz = (rand.nextDouble() - 0.5) * 2;
+        dragon.worldObj.spawnParticle("portal", px, py, pz, ox, oy, oz);
     }
 
+    private void updateScale() {
+        dragon.setScalePublic(getScale());
+    }
+    
     @Override
     public void onDeath() {
         if (dragon.isClient() && isEgg()) {
