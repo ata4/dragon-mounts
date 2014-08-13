@@ -536,14 +536,12 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     public float getEyeHeight() {
-        float eyeHeight = height;
-        
-        eyeHeight *= 2 + getHealthRelative() * 2;
-        
+        float eyeHeight = super.getEyeHeight();
+
         if (isSitting()) {
             eyeHeight *= 0.8f;
         }
-        
+
         return eyeHeight;
     }
     
