@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import info.ata4.minecraft.dragon.DragonMounts;
@@ -33,6 +34,7 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonParticleHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
+import info.ata4.minecraft.dragon.server.util.PrivateFields;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,9 +111,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 
     public EntityTameableDragon(World world) {
         super(world);
-        
-        // set custom body helper
-        bodyHelper = new DragonBodyHelper(this);
+
+        // override EntityBodyHelper field, which is private and has no setter
+        // required to fixate body while sitting. also slows down rotation while standing.
+        try {
+            ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DragonBodyHelper(this), PrivateFields.ENTITYLIVING_BODYHELPER);
+        } catch (Exception ex) {
+            L.warn("Can't override EntityBodyHelper", ex);
+        }
         
         // enables walking over blocks
         stepHeight = 1;

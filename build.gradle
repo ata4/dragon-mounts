@@ -73,8 +73,3 @@ processResources {
     }
 }
 
-jar {
-    manifest {
-        attributes 'FMLAT': 'dragonmounts_at.cfg'
-    }
-}
