@@ -40,6 +40,7 @@ public class DragonModel extends ModelBase {
     public final ResourceLocation bodyTexture;
     public final ResourceLocation glowTexture;
     public final ResourceLocation saddleTexture;
+    public final ResourceLocation eggTexture;
     
     // model parts
     public ModelPart head;
@@ -86,6 +87,7 @@ public class DragonModel extends ModelBase {
         bodyTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/body.png");
         glowTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/glow.png");
         saddleTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/saddle.png");
+        eggTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/egg.png");
 
         this.breed = breed;
 
@@ -122,6 +124,10 @@ public class DragonModel extends ModelBase {
         buildTail();
         buildWing();
         buildLegs();
+    }
+    
+    public ResourceLocation getEggTexture() {
+        return eggTexture;
     }
     
     private void buildHead() {

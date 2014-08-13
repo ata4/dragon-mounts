@@ -43,7 +43,6 @@ public class DragonRenderer extends RenderLiving {
     private Map<DragonBreed, DragonModel> breedModels = new HashMap<DragonBreed, DragonModel>();
     private DragonModel dragonModel;
     private ResourceLocation dissolveTexture;
-    private ResourceLocation eggTexture;
     private IModelCustom eggModel;
 
     public DragonRenderer() {
@@ -54,7 +53,6 @@ public class DragonRenderer extends RenderLiving {
         
         // create textures
         dissolveTexture = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
-        eggTexture = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dragon_egg.png");
         
         // load egg model
         eggModel = AdvancedModelLoader.loadModel(new ResourceLocation(DragonMounts.AID, MDL_BASE + "dragon_egg.obj"));
@@ -137,7 +135,7 @@ public class DragonRenderer extends RenderLiving {
         glRotatef(rotX, 1, 0, 0);
         glRotatef(rotZ, 0, 0, 1);
 
-        bindTexture(eggTexture);
+        bindTexture(dragonModel.getEggTexture());
         eggModel.renderAll();
         
         glPopMatrix();
