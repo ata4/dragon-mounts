@@ -13,7 +13,7 @@ import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
+import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Random;

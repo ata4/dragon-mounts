@@ -34,7 +34,7 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonParticleHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
+import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;

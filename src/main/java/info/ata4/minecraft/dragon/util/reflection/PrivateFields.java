@@ -7,7 +7,7 @@
  **    May you find forgiveness for yourself and forgive others.
  **    May you share freely, never taking more than you give.
  */
-package info.ata4.minecraft.dragon.server.util;
+package info.ata4.minecraft.dragon.util.reflection;
 
 /**
  * Static collection of private field names that are accessed via ReflectionHelper.

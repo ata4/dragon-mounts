@@ -17,7 +17,7 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
-import info.ata4.minecraft.dragon.server.util.PrivateFields;
+import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
