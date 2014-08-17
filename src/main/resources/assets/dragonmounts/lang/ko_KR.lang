@@ -1,0 +1,25 @@
+entity.DrangonMount.air.name=에테르 드래곤
+entity.DrangonMount.end.name=엔더 드래곤
+entity.DrangonMount.fire.name=파이어 드래곤
+entity.DrangonMount.ghost.name=고스트 드래곤
+entity.DrangonMount.ice.name=아이스 드래곤
+entity.DrangonMount.name=엔더 드래곤
+entity.DrangonMount.nether.name=네더 드래곤
+entity.DrangonMount.water.name=워터 드래곤
+entity.DrangonMount.forest.name=포레스트 드래곤
+
+commands.dragon.nodragons=인근에 드래곤이 더이상 없습니다
+commands.dragon.canttame=당신은 용을 길드릴 수 없습니다
+
+dragon.lifeStage.egg=알
+dragon.lifeStage.hatchling=해츨링
+dragon.lifeStage.juvenile=주버나일
+dragon.lifeStage.adult=성인
+dragon.owned=이용은 당신의 명령을 따르지않습니다.
+dragon.mountNotice=Press %s and %s to fly up and down
+
+key.categories.dragonmount=드래곤 제어
+key.dragon.flyUp=상승
+key.dragon.flyDown=하강
+
+attribute.name.generic.movementSpeedAir=속도 (바람)
