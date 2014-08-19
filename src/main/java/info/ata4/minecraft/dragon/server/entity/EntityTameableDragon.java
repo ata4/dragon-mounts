@@ -451,8 +451,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 return true;
             }
             
-            //if (!isOwner(player)) {
-            if (!func_152114_e(player)) {
+            if (!isOwner(player)) {
                 if (isServer()) {
                     // that's not your dragon!
                     player.addChatMessage(new ChatComponentTranslation("dragon.owned"));
@@ -503,8 +502,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             setTamed(true);
             setPathToEntity(null);
             setAttackTarget(null);
-            //setOwner(player.getCommandSenderName());
-            func_152115_b(player.getUniqueID().toString());
+            setOwner(player.getCommandSenderName());
             playTameEffect(true);
             worldObj.setEntityState(this, (byte) 7);
         } else {
@@ -537,11 +535,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     @Override
     public float getEyeHeight() {
         float eyeHeight = super.getEyeHeight();
-
+        
         if (isSitting()) {
             eyeHeight *= 0.8f;
         }
-
+        
         return eyeHeight;
     }
     
@@ -770,6 +768,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public void setBreed(DragonBreed breed) {
         getBreedHelper().setBreed(breed);
     }
+    
+    public boolean isOwner(EntityPlayer player) {
+        return player.getCommandSenderName().equalsIgnoreCase(getOwnerName());
+    }
+    
+    public boolean isRiddenByOwner() {
+        return riddenByEntity == getOwner();
+    }
 
     public EntityPlayer getRidingPlayer() {
         if (riddenByEntity instanceof EntityPlayer) {
@@ -843,7 +849,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         return getBreed().isImmuneToDamage(src);
     }
-    
+        
     /**
      * Returns the entity's health relative to the maximum health.
      * 

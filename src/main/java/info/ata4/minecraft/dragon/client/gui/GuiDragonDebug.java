@@ -32,7 +32,6 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -234,17 +233,11 @@ public class GuiDragonDebug extends Gui {
         text.printf("Size: %s (w:%s h:%s)\n", scale, width, height);
         
         // tamed flag/owner name
-        //String tamedString = dragon.getOwnerName();
-        String tamedString;
-        if (dragon.isTamed()) {
-            EntityLivingBase player = dragon.getOwner();
-            if (player != null) {
-                tamedString = "yes (" + player.getCommandSenderName() + ")";
-            } else {
-                tamedString = "yes (" + StringUtils.abbreviate(dragon.func_152113_b(), 22) + ")";
-            }
-        } else {
+        String tamedString = dragon.getOwnerName();
+        if (tamedString.isEmpty()) {
             tamedString = "no";
+        } else {
+            tamedString = "yes (" + tamedString + ")";
         }
         text.println("Tamed: " + tamedString);
         
