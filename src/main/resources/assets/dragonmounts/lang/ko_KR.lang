@@ -9,14 +9,14 @@ entity.DrangonMount.water.name=워터 드래곤
 entity.DrangonMount.forest.name=포레스트 드래곤
 
 commands.dragon.nodragons=인근에 드래곤이 더이상 없습니다
-commands.dragon.canttame=당신은 용을 길드릴 수 없습니다
+commands.dragon.canttame=당신은 용을 길들일 수 없습니다
 
 dragon.lifeStage.egg=알
 dragon.lifeStage.hatchling=해츨링
 dragon.lifeStage.juvenile=주버나일
 dragon.lifeStage.adult=성인
-dragon.owned=이용은 당신의 명령을 따르지않습니다.
-dragon.mountNotice=Press %s and %s to fly up and down
+dragon.owned=이 용은 당신의 명령을 따르지 않습니다.
+dragon.mountNotice=위아래로 비행할려면 %s 와 %s 를 누르십시오.
 
 key.categories.dragonmount=드래곤 제어
 key.dragon.flyUp=상승
