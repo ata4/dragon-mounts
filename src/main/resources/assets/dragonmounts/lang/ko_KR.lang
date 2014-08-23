@@ -1,3 +1,5 @@
+# author TeamMMKP(@puyo061 , editor @clayweb)
+
 entity.DrangonMount.air.name=에테르 드래곤
 entity.DrangonMount.end.name=엔더 드래곤
 entity.DrangonMount.fire.name=파이어 드래곤
@@ -18,8 +20,8 @@ dragon.lifeStage.adult=성인
 dragon.owned=이 용은 당신의 명령을 따르지 않습니다.
 dragon.mountNotice=위아래로 비행할려면 %s 와 %s 를 누르십시오.
 
-key.categories.dragonmount=드래곤 제어
+key.categories.dragonmount=명령
 key.dragon.flyUp=상승
 key.dragon.flyDown=하강
 
-attribute.name.generic.movementSpeedAir=속도 (바람)
+attribute.name.generic.movementSpeedAir=속도
