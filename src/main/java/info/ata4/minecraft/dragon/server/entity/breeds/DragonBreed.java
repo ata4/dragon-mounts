@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
+import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,10 +51,6 @@ public class DragonBreed {
 
     public String getSkin() {
         return skin;
-    }
-    
-    public String getLivingSound() {
-        return null;
     }
     
     public EnumCreatureAttribute getCreatureAttribute() {
@@ -118,6 +115,22 @@ public class DragonBreed {
     }
     
     public void onDeath(EntityTameableDragon dragon) {
+    }
+    
+    public String getLivingSound(EntityTameableDragon dragon) {
+        if (dragon.getRNG().nextInt(3) == 0) {
+            return "mob.enderdragon.growl";
+        } else {
+            return DragonMounts.AID + ":mob.enderdragon.breathe";
+        }
+    }
+    
+    public String getHurtSound(EntityTameableDragon dragon) {
+        return "mob.enderdragon.hit";
+    }
+    
+    public String getDeathSound(EntityTameableDragon dragon) {
+        return DragonMounts.AID + ":mob.enderdragon.death";
     }
     
     @Override

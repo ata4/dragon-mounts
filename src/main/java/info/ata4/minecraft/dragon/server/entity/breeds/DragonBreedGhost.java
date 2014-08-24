@@ -95,7 +95,7 @@ public class DragonBreedGhost extends DragonBreed {
     }
 
     @Override
-    public String getLivingSound() {
+    public String getLivingSound(EntityTameableDragon dragon) {
         return "mob.skeleton.say";
     }
 

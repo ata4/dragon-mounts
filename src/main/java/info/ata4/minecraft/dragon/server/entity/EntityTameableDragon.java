@@ -309,15 +309,10 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected String getLivingSound() {
-        String breedLivingSound = getBreed().getLivingSound();
         if (isEgg() || isFlying()) {
             return null;
-        } else if (breedLivingSound != null) {
-            return breedLivingSound;
-        } else if (rand.nextInt(3) == 0) {
-            return "mob.enderdragon.growl";
         } else {
-            return DragonMounts.AID + ":mob.enderdragon.breathe";
+            return getBreed().getLivingSound(this);
         }
     }
 
@@ -329,7 +324,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         if (isEgg()) {
             return "mob.zombie.wood";
         } else {
-            return "mob.enderdragon.hit";
+            return getBreed().getHurtSound(this);
         }
     }
     
@@ -341,7 +336,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         if (isEgg()) {
             return "mob.zombie.woodbreak";
         } else {
-            return DragonMounts.AID + ":mob.enderdragon.death";
+            return getBreed().getDeathSound(this);
         }
     }
     
