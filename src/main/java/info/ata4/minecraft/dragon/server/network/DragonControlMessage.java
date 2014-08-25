@@ -20,7 +20,7 @@ import java.util.BitSet;
  */
 public class DragonControlMessage implements IMessage {
     
-    private BitSet bits;
+    private final BitSet bits;
     private int previous;
     
     public DragonControlMessage() {

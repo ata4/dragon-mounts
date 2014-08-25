@@ -35,7 +35,7 @@ public class ClientProxy extends ServerProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer());
 
         FMLCommonHandler.instance().bus().register(new DragonEntityWatcher());
-        FMLCommonHandler.instance().bus().register(new DragonControl(getControlChannel()));
+        FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
         
         MinecraftForge.EVENT_BUS.register(new DragonSplash());
         

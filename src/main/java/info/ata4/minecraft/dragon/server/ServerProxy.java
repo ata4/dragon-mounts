@@ -12,12 +12,16 @@ package info.ata4.minecraft.dragon.server;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppedEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.relauncher.Side;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
-import info.ata4.minecraft.dragon.server.network.DragonControlChannelHandler;
+import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
+import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -32,12 +36,11 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public class ServerProxy {
     
-    private DragonControlChannelHandler controlChannel;
-
-    public DragonControlChannelHandler getControlChannel() {
-        return controlChannel;
-    }
+    private SimpleNetworkWrapper network;  
     
+    public SimpleNetworkWrapper getNetwork() {
+        return network;
+    }
     
     public void onInit(FMLInitializationEvent evt) {
         registerEntities();
@@ -48,7 +51,8 @@ public class ServerProxy {
         
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
 
-        controlChannel = new DragonControlChannelHandler("DragonControls");
+        network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
+        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class, 0, Side.SERVER);
     }
     
     public void onServerStarted(FMLServerStartedEvent evt) {
