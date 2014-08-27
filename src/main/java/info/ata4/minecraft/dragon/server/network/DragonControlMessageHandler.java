@@ -31,7 +31,7 @@ public class DragonControlMessageHandler implements IMessageHandler<DragonContro
 
     @Override
     public IMessage onMessage(DragonControlMessage message, MessageContext ctx) {
-        // check if a client is messing with the protocol stuff
+        // check if the server is messing with the protocol
         if (ctx.side == Side.CLIENT) {
             L.warn("Recieved unexpected control message from server!");
             return null;
