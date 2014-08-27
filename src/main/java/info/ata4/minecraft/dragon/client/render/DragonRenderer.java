@@ -40,22 +40,18 @@ public class DragonRenderer extends RenderLiving {
     
     public static boolean updateModel;
     
-    private Map<DragonBreed, DragonModel> breedModels = new HashMap<DragonBreed, DragonModel>();
+    private final Map<DragonBreed, DragonModel> breedModels = new HashMap<DragonBreed, DragonModel>();
+    private final ResourceLocation dissolveTexture = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
+    private final ResourceLocation eggTexture = new ResourceLocation(DragonMounts.AID, MDL_BASE + "dragon_egg.obj");
+    private final IModelCustom eggModel = AdvancedModelLoader.loadModel(eggTexture);
+    
     private DragonModel dragonModel;
-    private ResourceLocation dissolveTexture;
-    private IModelCustom eggModel;
 
     public DragonRenderer() {
         super(null, 2);
         
         // create a separate model for each breed
         initBreedModels();
-        
-        // create textures
-        dissolveTexture = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
-        
-        // load egg model
-        eggModel = AdvancedModelLoader.loadModel(new ResourceLocation(DragonMounts.AID, MDL_BASE + "dragon_egg.obj"));
     }
     
     private void initBreedModels() {
