@@ -29,6 +29,7 @@ import net.minecraftforge.common.config.Configuration;
 @Mod(
     modid = DragonMounts.ID,
     name = DragonMounts.NAME,
+    version = DragonMounts.VERSION,
     useMetadata = true
 )
 public class DragonMounts {
@@ -36,6 +37,7 @@ public class DragonMounts {
     public static final String NAME = "Dragon Mounts";
     public static final String ID = "DragonMounts";
     public static final String AID = ID.toLowerCase();
+    public static final String VERSION = "@VERSION@";
     
     @SidedProxy(
         serverSide = "info.ata4.minecraft.dragon.server.ServerProxy",
