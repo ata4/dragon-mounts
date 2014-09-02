@@ -40,7 +40,7 @@ archivesBaseName = "DragonMounts"
 
 // replace version placeholder in the main mod class
 minecraft {
-    replaceIn "info/ata4/minecraft/dragon/DragonMounts.java"
+    replaceIn project.group.replace(".", "/") + "/${project.archivesBaseName}.java"
     replace "@VERSION@", project.version
 }
 
