@@ -44,6 +44,33 @@ public class CommandDragon extends CommandBase {
         return String.format("/dragon <stage <%s>|breed <%s> [global]", stages, breeds);
     }
     
+    	@Override
+	public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] par2ArrayOfStr)
+	{
+		if (par2ArrayOfStr.length == 1)
+		{
+			return getListOfStringsMatchingLastWord(par2ArrayOfStr, "stage", "breed", "tame");
+		}
+		else
+		{
+			if (par2ArrayOfStr[0].equalsIgnoreCase("stage"))
+			{
+				if (par2ArrayOfStr.length == 2)
+				{
+					return getListOfStringsMatchingLastWord(par2ArrayOfStr, "egg", "hatchling", "juvenile", "adult", "item");
+				}
+			}
+			else if (par2ArrayOfStr[0].equalsIgnoreCase("breed"))
+			{
+				if (par2ArrayOfStr.length == 2)
+				{
+					return getListOfStringsMatchingLastWord(par2ArrayOfStr, "water", "ice", "air", "ghost", "nether", "fire", "end");
+				}
+			}
+		}
+		return null;
+	}
+    
     /**
      * Return the required permission level for this command.
      */
