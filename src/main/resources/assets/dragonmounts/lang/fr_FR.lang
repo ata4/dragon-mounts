@@ -1,0 +1,25 @@
+entity.DragonMount.air.name=Dragon de l'Aether
+entity.DragonMount.end.name=Dragon de l'Ender
+entity.DragonMount.fire.name=Dragon ardent
+entity.DragonMount.ghost.name=Dragon spectral
+entity.DragonMount.ice.name=Dragon des glaces
+entity.DragonMount.name=Dragon de l'Ender
+entity.DragonMount.nether.name=Dragon du Nether
+entity.DragonMount.water.name=Dragon des flots
+entity.DragonMount.forest.name=Dragon sylvestre
+
+commands.dragon.nodragons=Il n'y a pas de dragons à proximité
+commands.dragon.canttame=Vous ne pouvez pas apprivoiser de dragons
+
+dragon.lifeStage.egg=oeuf
+dragon.lifeStage.hatchling=bébé
+dragon.lifeStage.juvenile=jeune
+dragon.lifeStage.adult=adulte
+dragon.owned=Ce dragons ne suit pas vos ordres.
+dragon.mountNotice=Appuyez sur %s et %s pour voler vers le haut et vers le bas
+
+key.categories.dragonmount=Contrôles du dragon
+key.dragon.flyUp=Voler vers le haut
+key.dragon.flyDown=Voler vers le bas
+
+attribute.name.generic.movementSpeedAir=Vitesse (Air)
