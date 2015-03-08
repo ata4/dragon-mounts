@@ -9,8 +9,6 @@
  */
 package info.ata4.minecraft.dragon.client.gui;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
@@ -45,6 +43,8 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.lwjgl.input.Keyboard;
@@ -72,7 +72,7 @@ public class GuiDragonDebug extends Gui {
     private EntityTameableDragon dragonServer;
     
     public GuiDragonDebug() {
-        fr = mc.fontRenderer;
+        fr = mc.fontRendererObj;
         text = new GuiTextPrinter(fr);
     }
     
@@ -194,7 +194,7 @@ public class GuiDragonDebug extends Gui {
         
         text.println("ID: " + dragon.getEntityId());
         text.println("UUID: " + StringUtils.abbreviate(dragon.getUniqueID().toString(), 22));
-        text.println("Name: " + dragon.getCommandSenderName());
+        text.println("Name: " + dragon.getName());
         
         // position
         String px = dfShort.format(dragon.posX);
@@ -237,11 +237,12 @@ public class GuiDragonDebug extends Gui {
         //String tamedString = dragon.getOwnerName();
         String tamedString;
         if (dragon.isTamed()) {
-            EntityLivingBase player = dragon.getOwner();
+            Entity player = dragon.getOwner();
             if (player != null) {
-                tamedString = "yes (" + player.getCommandSenderName() + ")";
+                tamedString = "yes (" + player.getName()+ ")";
             } else {
-                tamedString = "yes (" + StringUtils.abbreviate(dragon.func_152113_b(), 22) + ")";
+//                tamedString = "yes (" + StringUtils.abbreviate(dragon.func_152113_b(), 22) + ")";
+                tamedString = "yes (" + StringUtils.abbreviate(dragon.getOwner().getName(), 22) + ")";
             }
         } else {
             tamedString = "no";
@@ -313,8 +314,9 @@ public class GuiDragonDebug extends Gui {
         PathNavigate nav = dragonServer.getNavigator();
         
         text.println("Search range: " + nav.getPathSearchRange());
-        text.println("Avoid water: " + nav.getAvoidsWater());
-        text.println("Break doors: " + nav.getCanBreakDoors());
+        // TODO: both methods appear to be removed in 1.8
+//        text.println("Avoid water: " + nav.getAvoidsWater());
+//        text.println("Break doors: " + nav.getCanBreakDoors());
         text.println("No path: " + nav.noPath());
 
         PathEntity path = nav.getPath();

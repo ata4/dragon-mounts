@@ -258,7 +258,9 @@ public class DragonAnimator {
         sitTimer.set(sitVal);
         
         // update jaw opening transition
-        boolean jawFlag = (entity.attackTime < 20 && entity.attackTime > 15);
+        // TODO: broken in 1.8, since attackTime doesn't exist anymore
+        //boolean jawFlag = (entity.attackTime < 20 && entity.attackTime > 15);
+        boolean jawFlag = false;
         jawTimer.add(jawFlag ? 0.2f : -0.2f);
 
         // update speed transition
@@ -276,7 +278,9 @@ public class DragonAnimator {
             yawAbs += yawDiff;
         }
 
-        yTrail.update(entity.posY - entity.yOffset);
+        // TODO: where's yOffset?
+        //yTrail.update(entity.posY - entity.yOffset);
+        yTrail.update(entity.posY);
         yawTrail.update(yawAbs);
         pitchTrail.update(getModelPitch());
     }

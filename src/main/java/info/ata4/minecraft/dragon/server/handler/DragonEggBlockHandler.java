@@ -10,15 +10,16 @@
 
 package info.ata4.minecraft.dragon.server.handler;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Non-invasive dragon egg block override handler.
@@ -39,8 +40,9 @@ public class DragonEggBlockHandler {
             return;
         }
         
+        BlockPos pos = evt.pos;
         World world = evt.entity.worldObj;
-        Block block = world.getBlock(evt.x, evt.y, evt.z);
+        Block block = world.getBlockState(evt.pos).getBlock();
         
         // ignore non-egg blocks
         if (block != Blocks.dragon_egg) {
@@ -52,12 +54,12 @@ public class DragonEggBlockHandler {
         evt.useItem = PlayerInteractEvent.Result.DENY;
         
         // clear dragon egg block
-        world.setBlock(evt.x, evt.y, evt.z, Blocks.air);
+        world.destroyBlock(pos, false);
         
         // create dragon egg entity
         EntityTameableDragon dragon = new EntityTameableDragon(world);
-        dragon.setPosition(evt.x + 0.5, evt.y + 0.5, evt.z + 0.5);
-        dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getCommandSenderName());
+        dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getName());
         dragon.getLifeStageHelper().setLifeStage(DragonLifeStage.EGG);
         world.spawnEntityInWorld(dragon);
     }

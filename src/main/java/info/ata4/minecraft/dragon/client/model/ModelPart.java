@@ -85,7 +85,7 @@ public class ModelPart extends ModelRenderer {
         displayList = GLAllocation.generateDisplayLists(1);
         glNewList(displayList, GL_COMPILE);
         for (Object obj : cubeList) {
-            ((ModelBox) obj).render(Tessellator.instance, scale);
+            ((ModelBox) obj).render(Tessellator.getInstance().getWorldRenderer(), scale);
         }
         glEndList();
         compiled = true;

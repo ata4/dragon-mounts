@@ -9,10 +9,9 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import info.ata4.minecraft.dragon.util.math.MathX;
+import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
@@ -22,6 +21,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +35,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     
     private static final int IN_AIR_THRESH = 10;
     
-    public static final IAttribute MOVE_SPEED_AIR = new RangedAttribute("generic.movementSpeedAir", 1.5, 0.0, Double.MAX_VALUE).setDescription("Movement Speed Air").setShouldWatch(true);
+    public static final IAttribute MOVE_SPEED_AIR = new RangedAttribute(null, "generic.movementSpeedAir", 1.5, 0.0, Double.MAX_VALUE).setDescription("Movement Speed Air").setShouldWatch(true);
     
     // data value IDs
     private static final int INDEX_FLYING = 18;
@@ -98,13 +98,14 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     /**
      * Called when the mob is falling. Calculates and applies fall damage.
      */
-    @Override
-    protected void fall(float par1) {
-        // ignore fall damage if the entity can fly
-        if (!isCanFly()) {
-            super.fall(par1);
-        }
-    }
+    // TODO: doesn't exist in 1.8
+//    @Override
+//    protected void fall(float par1) {
+//        // ignore fall damage if the entity can fly
+//        if (!isCanFly()) {
+//            super.fall(par1);
+//        }
+//    }
     
     /**
      * Causes this entity to lift off.
@@ -224,9 +225,9 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             rotationYaw += yawAdd * 0.1f;
 
             // calculate acceleration
-            Vec3 motionVec = Vec3.createVectorHelper(motionX, motionY, motionZ).normalize();
-            Vec3 deltaVec = Vec3.createVectorHelper(deltaX, deltaY, deltaZ).normalize();
-            Vec3 rotVec = Vec3.createVectorHelper(
+            Vec3 motionVec = new Vec3(motionX, motionY, motionZ).normalize();
+            Vec3 deltaVec = new Vec3(deltaX, deltaY, deltaZ).normalize();
+            Vec3 rotVec = new Vec3(
                     -Math.sin(Math.toRadians(rotationYaw)),
                     motionY,
                     Math.cos(Math.toRadians(rotationYaw))
@@ -262,19 +263,20 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         moveEntity(motionX, motionY, motionZ);
  
         // update AI
-        if (isAIEnabled()) {
+        // TODO: isAIEnabled is missing in 1.8
+//        if (isAIEnabled()) {
             worldObj.theProfiler.startSection("newAi");
             updateAITasks();
             worldObj.theProfiler.endSection();
-        } else {
-            worldObj.theProfiler.startSection("oldAi");
-            updateEntityActionState();
-            worldObj.theProfiler.endSection();
-            rotationYawHead = rotationYaw;
-        }
+//        } else {
+//            worldObj.theProfiler.startSection("oldAi");
+//            updateEntityActionState();
+//            worldObj.theProfiler.endSection();
+//            rotationYawHead = rotationYaw;
+//        }
 
         // apply collision
-        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this, boundingBox.expand(0.2, 0, 0));
+        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().expand(0.2, 0, 0));
         if (entities != null && !entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity.canBePushed()) {
@@ -311,9 +313,11 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      * Returns the distance to the ground while the entity is flying.
      */
     public double getAltitude() {
-        int blockX = (int) (posX - 0.5);
-        int blockZ = (int) (posZ - 0.5);
-        return posY - worldObj.getHeightValue(blockX, blockZ);
+        // TODO: find alternative for getHeightValue
+//        int blockX = (int) (posX - 0.5);
+//        int blockZ = (int) (posZ - 0.5);
+//        return posY - worldObj.getHeightValue(blockX, blockZ);
+        return 0;
     }
     
     public DragonFlightWaypoint getWaypoint() {

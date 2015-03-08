@@ -9,9 +9,6 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
@@ -70,6 +67,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -241,12 +239,13 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             }
         } else {
             // set home position near owner when tamed
-            if (isTamed()) {
-                Entity owner = getOwner();
-                if (owner != null) {
-                    setHomeArea((int) owner.posX, (int) owner.posY, (int) owner.posZ, HOME_RADIUS);
-                }
-            }
+            // TODO: setHomeArea removed in 1.8?
+//            if (isTamed()) {
+//                Entity owner = getOwner();
+//                if (owner != null) {
+//                    setHomeArea((int) owner.posX, (int) owner.posY, (int) owner.posZ, HOME_RADIUS);
+//                }
+//            }
         }
         
         super.onLivingUpdate();
@@ -291,9 +290,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     }
 
     @Override
-    public String getCommandSenderName() {
+    public String getName() {
         // return custom name if set
-        if (hasCustomNameTag()) {
+        if (hasCustomName()) {
             return getCustomNameTag();
         }
         
@@ -365,18 +364,19 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     /**
      * Plays step sound at given x, y, z for the entity
      */
-    @Override
-    protected void func_145780_a(int x, int y, int z, Block block) {
-        if (isEgg() || inWater) {
-            // no sounds for eggs or underwater action
-        } else if (isHatchling()) {
-            // play default step sound for babies
-            super.func_145780_a(x, y, z, block);
-        } else {
-            // play stomping for bigger dragons
-            worldObj.playSoundAtEntity(this, DragonMounts.AID + ":mob.enderdragon.step", 0.5f, 1);
-        }
-    }
+    // TODO: find remapped method name
+//    @Override
+//    protected void func_145780_a(int x, int y, int z, Block block) {
+//        if (isEgg() || inWater) {
+//            // no sounds for eggs or underwater action
+//        } else if (isHatchling()) {
+//            // play default step sound for babies
+//            super.func_145780_a(x, y, z, block);
+//        } else {
+//            // play stomping for bigger dragons
+//            worldObj.playSoundAtEntity(this, DragonMounts.AID + ":mob.enderdragon.step", 0.5f, 1);
+//        }
+//    }
     
     /**
      * Returns the volume for the sounds this mob makes.
@@ -439,15 +439,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             
             // heal only if the food was actually consumed
             if (food != null) {
-                heal(food.func_150905_g(playerItem));
+                heal(food.getHealAmount(playerItem));
                 float volume = getSoundVolume() * 0.7f;
                 float pitch = getSoundPitch();
                 worldObj.playSoundAtEntity(this, "random.eat", volume, pitch);
                 return true;
             }
             
-            //if (!isOwner(player)) {
-            if (!func_152114_e(player)) {
+            if (!isOwner(player)) {
                 if (isServer()) {
                     // that's not your dragon!
                     player.addChatMessage(new ChatComponentTranslation("dragon.owned"));
@@ -463,7 +462,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                         // toggle sitting state with the bone item
                         aiSit.setSitting(!isSitting());
                         isJumping = false;
-                        setPathToEntity(null);
+                        // TODO: removed in 1.8?
+                        //setPathToEntity(null);
                     }
                 } else if (getReproductionHelper().canReproduce() && ItemUtils.consumeEquipped(player, FAVORITE_FOOD)) {
                     // activate love mode with favorite food if it hasn't reproduced yet
@@ -471,7 +471,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                         getParticleHelper().spawnBodyParticles("heart");
                     }
 
-                    func_146082_f(player);
+                    setInLove(player);
                 } else if (isSaddled() && !ItemUtils.hasEquippedUsable(player)) {
                     if (isServer()) {
                         // mount dragon when saddled and not already mounted
@@ -496,10 +496,10 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public void tamedFor(EntityPlayer player, boolean successful) {
         if (successful) {
             setTamed(true);
-            setPathToEntity(null);
+            // TODO: removed in 1.8?
+            //setPathToEntity(null);
             setAttackTarget(null);
-            //setOwner(player.getCommandSenderName());
-            func_152115_b(player.getUniqueID().toString());
+            setOwnerId(player.getUniqueID().toString());
             playTameEffect(true);
             worldObj.setEntityState(this, (byte) 7);
         } else {
@@ -559,10 +559,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     /**
      * Returns true if the newer Entity AI code should be run
      */
-    @Override
-    protected boolean isAIEnabled() {
-        return true;
-    }
+    // TODO: removed in 1.8?
+//    @Override
+//    protected boolean isAIEnabled() {
+//        return true;
+//    }
 
     @Override
     protected boolean isGroundAIEnabled() {
@@ -613,10 +614,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         float attackDamage = (float) getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
         int knockback = 0;
 
-        if (victim instanceof EntityLivingBase) {
-            attackDamage += EnchantmentHelper.getEnchantmentModifierLiving(this, (EntityLivingBase) victim);
-            knockback += EnchantmentHelper.getKnockbackModifier(this, (EntityLivingBase) victim);
-        }
+        // TODO: find replacement code for 1.8
+//        if (victim instanceof EntityLivingBase) {
+//            attackDamage += EnchantmentHelper.getEnchantmentModifierLiving(this, (EntityLivingBase) victim);
+//            knockback += EnchantmentHelper.getKnockbackModifier(this, (EntityLivingBase) victim);
+//        }
 
         boolean attacked = victim.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
 
@@ -775,7 +777,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     }
     
     public void setRidingPlayer(EntityPlayer player) {
-        L.trace("setRidingPlayer({})", player.getCommandSenderName());
+        L.trace("setRidingPlayer({})", player.getName());
         player.rotationYaw = this.rotationYaw;
         player.rotationPitch = this.rotationPitch;
         player.mountEntity(this);

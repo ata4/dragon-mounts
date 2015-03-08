@@ -100,7 +100,7 @@ public class ItemUtils {
             return false;
         }
         
-        return itemStack.getItemUseAction() != EnumAction.none;
+        return itemStack.getItemUseAction() != EnumAction.NONE;
     }
     
     /**

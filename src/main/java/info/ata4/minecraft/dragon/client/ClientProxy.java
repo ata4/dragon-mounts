@@ -9,9 +9,6 @@
  */
 package info.ata4.minecraft.dragon.client;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.client.handler.DragonControl;
@@ -21,6 +18,9 @@ import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.ServerProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
 /**
  *

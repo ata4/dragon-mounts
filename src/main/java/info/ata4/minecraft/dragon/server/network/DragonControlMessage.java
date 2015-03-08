@@ -9,9 +9,9 @@
  */
 package info.ata4.minecraft.dragon.server.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;
 import java.util.BitSet;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
  * Dragon control message packet.

@@ -9,16 +9,16 @@
  */
 package info.ata4.minecraft.dragon.client.handler;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
  * Event handler that watches the currently ridden dragon entity. Used to change
@@ -73,7 +73,7 @@ public class DragonEntityWatcher {
             if (noticeTicks == 1) {
                 String keyUpName = GameSettings.getKeyDisplayString(DragonControl.KEY_FLY_UP.getKeyCode());
                 String keyDownName = GameSettings.getKeyDisplayString(DragonControl.KEY_FLY_DOWN.getKeyCode());
-                mc.ingameGUI.func_110326_a(I18n.format("dragon.mountNotice", new Object[] {keyUpName, keyDownName}), false);
+                mc.ingameGUI.setRecordPlaying(I18n.format("dragon.mountNotice", new Object[] {keyUpName, keyDownName}), false);
             }
         }
         

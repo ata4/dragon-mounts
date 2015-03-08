@@ -9,13 +9,13 @@
  */
 package info.ata4.minecraft.dragon.client.handler;
 
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import java.util.BitSet;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -42,8 +42,8 @@ public class DragonControl {
     @SubscribeEvent
     public void onTick(ClientTickEvent evt) {
         BitSet flags = dcm.getFlags();
-        flags.set(0, KEY_FLY_UP.getIsKeyPressed());
-        flags.set(1, KEY_FLY_DOWN.getIsKeyPressed());
+        flags.set(0, KEY_FLY_UP.isKeyDown());
+        flags.set(1, KEY_FLY_DOWN.isKeyDown());
         
         // send message to server if it has changed
         if (dcm.hasChanged()) {
