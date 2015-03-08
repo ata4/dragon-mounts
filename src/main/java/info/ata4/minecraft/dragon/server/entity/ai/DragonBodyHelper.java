@@ -30,7 +30,7 @@ public class DragonBodyHelper extends EntityBodyHelper {
     }
 
     @Override
-    public void func_75664_a() {
+    public void updateRenderAngles() {
         double deltaX = dragon.posX - dragon.prevPosX;
         double deltaY = dragon.posZ - dragon.prevPosZ;
         double dist = deltaX * deltaX + deltaY * deltaY;

@@ -11,7 +11,7 @@ package info.ata4.minecraft.dragon.server.entity.ai;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 
 /**
@@ -21,9 +21,9 @@ import net.minecraft.util.Vec3;
  */
 public class DragonFlightWaypoint {
     
-    private static String NBT_WAYPOINT_X = "Waypoint-X";
-    private static String NBT_WAYPOINT_Y = "Waypoint-Y";
-    private static String NBT_WAYPOINT_Z = "Waypoint-Z";
+    private static final String NBT_WAYPOINT_X = "Waypoint-X";
+    private static final String NBT_WAYPOINT_Y = "Waypoint-Y";
+    private static final String NBT_WAYPOINT_Z = "Waypoint-Z";
     
     public int posX;
     public int posY;
@@ -35,14 +35,26 @@ public class DragonFlightWaypoint {
         this.entity = entity;
     }
     
-    public void setChunkCoordinates(ChunkCoordinates cc) {
-        posX = cc.posX;
-        posY = cc.posY;
-        posZ = cc.posZ;
+    public void set(int x, int y, int z) {
+        posX = x;
+        posY = y;
+        posZ = z;
     }
     
-    public ChunkCoordinates toChunkCoordinates() {
-        return new ChunkCoordinates(posX, posY, posZ);
+    public void set(double x, double y, double z) {
+        posX = (int) x;
+        posY = (int) y;
+        posZ = (int) z;
+    }
+    
+    public void setBlockPos(BlockPos bp) {
+        posX = bp.getX();
+        posY = bp.getY();
+        posZ = bp.getZ();
+    }
+    
+    public BlockPos toBlockPos() {
+        return new BlockPos(posX, posY, posZ);
     }
 
     public void setVector(Vec3 vec) {
@@ -58,7 +70,7 @@ public class DragonFlightWaypoint {
     }
     
     public Vec3 toVector() {
-        return Vec3.createVectorHelper(posX, posY, posZ);
+        return new Vec3(posX, posY, posZ);
     }
     
     public void writeToNBT(NBTTagCompound nbt) {

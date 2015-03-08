@@ -13,7 +13,6 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIRide;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.util.Vec3;
 
 /**
@@ -32,39 +31,48 @@ public class EntityAIRideAir extends EntityAIRide {
         super.updateTask();
         
         double dist = 100;
+        double x, y, z;
         
         // control with keyboard if carrot on a stick is equipped
         if (ItemUtils.hasEquipped(rider, Items.carrot_on_a_stick)) {
             Vec3 wp = rider.getLookVec();
             
+            x = wp.xCoord;
+            y = wp.yCoord;
+            z = wp.zCoord;
+            
             // scale with distance
-            wp.xCoord *= dist;
-            wp.yCoord *= dist;
-            wp.zCoord *= dist;
+            x *= dist;
+            y *= dist;
+            z *= dist;
             
             // convert to absolute position
-            wp.xCoord += dragon.posX;
-            wp.yCoord += dragon.posY;
-            wp.zCoord += dragon.posZ;
+            x += dragon.posX;
+            y += dragon.posY;
+            z += dragon.posZ;
             
-            dragon.getWaypoint().setVector(wp);
+            dragon.getWaypoint().set(x, y, z);
             
             dragon.setMoveSpeedAirHoriz(1);
             dragon.setMoveSpeedAirVert(0);
         } else {
             Vec3 wp = dragon.getLookVec();
+            
+            x = wp.xCoord;
+            y = wp.yCoord;
+            z = wp.zCoord;
 
             // scale with distance
-            wp.xCoord *= dist;
-            wp.yCoord *= dist;
-            wp.zCoord *= dist;
+            x *= dist;
+            y *= dist;
+            z *= dist;
 
             // convert to absolute position
-            wp.xCoord += dragon.posX;
-            wp.yCoord += dragon.posY;
-            wp.zCoord += dragon.posZ;
+            x += dragon.posX;
+            y += dragon.posY;
+            z += dragon.posZ;
 
-            dragon.getWaypoint().setVector(wp);
+            dragon.getWaypoint().set(x, y, z);
             
             double speedAir = 0; 
             

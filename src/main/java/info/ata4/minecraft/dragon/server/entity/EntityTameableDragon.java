@@ -801,8 +801,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             // dragon position is the middle of the model and the saddle is on
             // the shoulders, so move player forwards on Z axis relative to the
             // dragon's rotation to fix that
-            Vec3 pos = Vec3.createVectorHelper(0, 0, 0.8 * getScale());
-            pos.rotateAroundY((float) Math.toRadians(-renderYawOffset));
+            Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
+            pos.rotateYaw((float) Math.toRadians(-renderYawOffset));
             px += pos.xCoord;
             py += pos.yCoord;
             pz += pos.zCoord;
@@ -910,13 +910,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // this is no-op here
     }
     
-    @SideOnly(Side.CLIENT)
-    @Override
-    public float getShadowSize() {
-        // must be 0 or the shadows will be rendered incorrectly
-        // (misleading method name, should be getShadowYOffset())
-        return 0;
-    }
+    // TODO: find matching method for 1.8
+//    @SideOnly(Side.CLIENT)
+//    @Override
+//    public float getShadowSize() {
+//        // must be 0 or the shadows will be rendered incorrectly
+//        // (misleading method name, should be getShadowYOffset())
+//        return 0;
+//    }
     
     /**
      * Returns the size multiplier for the current age.

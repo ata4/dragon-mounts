@@ -17,6 +17,7 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,7 +53,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         int bx = (int) Math.round(dragon.posX - 0.5);
         int by = (int) Math.round(dragon.posY);
         int bz = (int) Math.round(dragon.posZ - 0.5);
-        dragon.worldObj.playAuxSFX(2001, bx, by, bz, Block.getIdFromBlock(Blocks.dragon_egg));
+        dragon.worldObj.playAuxSFX(2001, new BlockPos(bx, by, bz), Block.getIdFromBlock(Blocks.dragon_egg));
     }
     
     public int getEggWiggleX() {
@@ -146,11 +147,13 @@ public class DragonLifeStageHelper extends DragonHelper {
             
             // only hatchlings are small enough for doors
             // (eggs don't move on their own anyway and are ignored)
-            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
+            // TODO: removed in 1.8?
+//            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
             
             // update AI states so the egg won't move
             if (lifeStage == EGG) {
-                dragon.setPathToEntity(null);
+                // TODO: removed in 1.8?
+//                dragon.setPathToEntity(null);
                 dragon.setAttackTarget(null);
             }
             

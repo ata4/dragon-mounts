@@ -52,7 +52,7 @@ public class EntityAIRideGround extends EntityAIRide {
         float dir = Math.min(speedX, 0) * -1;
         dir += speedY / (speedX * 2 + (speedX < 0 ? -2 : 2));
         if (dir != 0) {
-            look.rotateAroundY((float) Math.PI * dir);
+            look.rotateYaw((float) Math.PI * dir);
         }
 
         if (speedPlayer > 0) {

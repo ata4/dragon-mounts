@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
@@ -24,7 +25,7 @@ import net.minecraft.world.World;
 public class EntityAIFollowOwner extends EntityAIBase {
 
     private EntityTameableDragon dragon;
-    private EntityLivingBase owner;
+    private Entity owner;
     private World world;
     private double speed;
     private PathNavigate nav;
@@ -50,7 +51,7 @@ public class EntityAIFollowOwner extends EntityAIBase {
      */
     @Override
     public boolean shouldExecute() {
-        EntityLivingBase ownerCurrent = dragon.getOwner();
+        Entity ownerCurrent = dragon.getOwner();
 
         if (ownerCurrent == null) {
             return false;
@@ -90,8 +91,9 @@ public class EntityAIFollowOwner extends EntityAIBase {
     @Override
     public void startExecuting() {
         updateTicks = 0;
-        avoidWater = dragon.getNavigator().getAvoidsWater();
-        dragon.getNavigator().setAvoidsWater(false);
+        // TODO: removed in 1.8?
+//        avoidWater = dragon.getNavigator().getAvoidsWater();
+//        dragon.getNavigator().setAvoidsWater(false);
     }
 
     /**
@@ -101,7 +103,8 @@ public class EntityAIFollowOwner extends EntityAIBase {
     public void resetTask() {
         owner = null;
         nav.clearPathEntity();
-        dragon.getNavigator().setAvoidsWater(avoidWater);
+        // TODO: removed in 1.8?
+//        dragon.getNavigator().setAvoidsWater(avoidWater);
     }
 
     /**
@@ -141,20 +144,21 @@ public class EntityAIFollowOwner extends EntityAIBase {
         // teleport dragon near owner
         int minX = MathHelper.floor_double(owner.posX) - 2;
         int minY = MathHelper.floor_double(owner.posZ) - 2;
-        int minZ = MathHelper.floor_double(owner.boundingBox.minY);
+        int minZ = MathHelper.floor_double(owner.getBoundingBox().minY);
 
-        for (int bx = 0; bx <= 4; ++bx) {
-            for (int by = 0; by <= 4; ++by) {
-                if ((bx < 1 || by < 1 || bx > 3 || by > 3) &&
-                        World.doesBlockHaveSolidTopSurface(world, minX + bx, minZ - 1, minY + by) &&
-                        !world.getBlock(minX + bx, minZ, minY + by).isNormalCube() &&
-                        !world.getBlock(minX + bx, minZ + 1, minY + by).isNormalCube()) {
-                    dragon.setLocationAndAngles(minX + bx + 0.5, minZ, minY + by + 0.5,
-                            dragon.rotationYaw, dragon.rotationPitch);
-                    nav.clearPathEntity();
-                    return;
-                }
-            }
-        }
+        // TODO: replace with utility class
+//        for (int bx = 0; bx <= 4; ++bx) {
+//            for (int by = 0; by <= 4; ++by) {
+//                if ((bx < 1 || by < 1 || bx > 3 || by > 3) &&
+//                        World.doesBlockHaveSolidTopSurface(world, minX + bx, minZ - 1, minY + by) &&
+//                        !world.getBlock(minX + bx, minZ, minY + by).isNormalCube() &&
+//                        !world.getBlock(minX + bx, minZ + 1, minY + by).isNormalCube()) {
+//                    dragon.setLocationAndAngles(minX + bx + 0.5, minZ, minY + by + 0.5,
+//                            dragon.rotationYaw, dragon.rotationPitch);
+//                    nav.clearPathEntity();
+//                    return;
+//                }
+//            }
+//        }
     }
 }

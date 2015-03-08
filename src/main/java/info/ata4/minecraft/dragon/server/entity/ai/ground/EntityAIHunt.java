@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
+import com.google.common.base.Predicate;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.EntityAITargetNonTamed;
 
@@ -18,10 +19,10 @@ import net.minecraft.entity.ai.EntityAITargetNonTamed;
  */
 public class EntityAIHunt extends EntityAITargetNonTamed {
     
-    private EntityTameableDragon dragon;
+    private final EntityTameableDragon dragon;
 
-    public EntityAIHunt(EntityTameableDragon dragon, Class clazz, int par3, boolean par4) {
-        super(dragon, clazz, par3, par4);
+    public EntityAIHunt(EntityTameableDragon dragon, Class clazz, boolean p_i45876_3_, Predicate p_i45876_4_) {
+        super(dragon, clazz, p_i45876_3_, p_i45876_4_);
         this.dragon = dragon;
     }
 

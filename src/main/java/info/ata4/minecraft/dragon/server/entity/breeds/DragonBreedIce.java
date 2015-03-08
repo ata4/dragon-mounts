@@ -55,11 +55,12 @@ public class DragonBreedIce extends DragonBreed {
                 int by = MathHelper.floor_double(dragon.posY);
                 int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
 
-                if (world.getBlock(bx, by, bz) == Blocks.air
-                        && world.getBiomeGenForCoords(bx, bz).getFloatTemperature(bx, by, bz) < 0.8f
-                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
-                    world.setBlock(bx, by, bz, FOOTPRINT);
-                }
+                // TODO: use utility class
+//                if (world.getBlock(bx, by, bz) == Blocks.air
+//                        && world.getBiomeGenForCoords(bx, bz).getFloatTemperature(bx, by, bz) < 0.8f
+//                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
+//                    world.setBlock(bx, by, bz, FOOTPRINT);
+//                }
             }
         }
     }

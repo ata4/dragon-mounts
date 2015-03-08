@@ -130,7 +130,7 @@ public class DragonReproductionHelper extends DragonHelper  {
         EntityTameableDragon baby = new EntityTameableDragon(dragon.worldObj);
 
         // mix the custom names in case both parents have one
-        if (parent1.hasCustomNameTag() && parent2.hasCustomNameTag()) {
+        if (parent1.hasCustomName() && parent2.hasCustomName()) {
             String p1Name = parent1.getCustomNameTag();
             String p2Name = parent2.getCustomNameTag();
             String babyName;

@@ -41,7 +41,7 @@ public class EntityAILand extends EntityAIBase {
 
     @Override
     public void startExecuting() {
-        landTarget.yCoord = 0;
+        landTarget = new Vec3(landTarget.xCoord, landTarget.yCoord, 0);
         dragon.getWaypoint().setVector(landTarget);
         dragon.setMoveSpeedAirHoriz(1);
         dragon.setMoveSpeedAirVert(0);

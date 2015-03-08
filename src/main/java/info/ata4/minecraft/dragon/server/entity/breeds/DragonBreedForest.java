@@ -58,11 +58,12 @@ public class DragonBreedForest extends DragonBreed {
                 int by = MathHelper.floor_double(dragon.posY) - 1;
                 int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
 
-                if (world.getBlock(bx, by, bz) == Blocks.dirt
-                        && world.canBlockSeeTheSky(bx, by, bz)
-                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
-                    world.setBlock(bx, by, bz, FOOTPRINT);
-                }
+                // TODO: use utility class
+//                if (world.getBlock(bx, by, bz) == Blocks.dirt
+//                        && world.canBlockSeeTheSky(bx, by, bz)
+//                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
+//                    world.setBlock(bx, by, bz, FOOTPRINT);
+//                }
             }
         }
     }
