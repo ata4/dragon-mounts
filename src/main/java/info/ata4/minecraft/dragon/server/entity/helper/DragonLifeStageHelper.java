@@ -18,6 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumParticleTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -237,7 +238,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         double ox = (rand.nextDouble() - 0.5) * 2;
         double oy = (rand.nextDouble() - 0.5) * 2;
         double oz = (rand.nextDouble() - 0.5) * 2;
-        dragon.worldObj.spawnParticle("portal", px, py, pz, ox, oy, oz);
+        dragon.worldObj.spawnParticle(EnumParticleTypes.PORTAL, px, py, pz, ox, oy, oz);
     }
 
     private void updateScale() {

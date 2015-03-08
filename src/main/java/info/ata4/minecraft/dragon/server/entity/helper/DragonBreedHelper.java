@@ -17,7 +17,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.biome.BiomeGenBase;
 import org.apache.logging.log4j.LogManager;
@@ -141,7 +143,7 @@ public class DragonBreedHelper extends DragonHelper {
                     double px = dragon.posX + (rand.nextDouble() - 0.5);
                     double py = dragon.posY + (rand.nextDouble() - 0.5);
                     double pz = dragon.posZ + (rand.nextDouble() - 0.5);
-                    dragon.worldObj.spawnParticle("reddust", px, py + 1, pz,
+                    dragon.worldObj.spawnParticle(EnumParticleTypes.REDSTONE, px, py + 1, pz,
                             currentBreed.getColorR(), currentBreed.getColorG(), currentBreed.getColorB());
                 }
             }
@@ -158,7 +160,8 @@ public class DragonBreedHelper extends DragonHelper {
                 for (int xn = -BLOCK_RANGE; xn <= BLOCK_RANGE; xn++) {
                     for (int zn = -BLOCK_RANGE; zn <= BLOCK_RANGE; zn++) {
                         for (int yn = -BLOCK_RANGE; yn <= BLOCK_RANGE; yn++) {
-                            Block block = dragon.worldObj.getBlock(bx + xn, by + yn, bz + zn);
+                            BlockPos pos = new BlockPos(xn, yn, zn);
+                            Block block = dragon.worldObj.getBlockState(pos).getBlock();
 
                             for (DragonBreed breed : breedPoints.keySet()) {
                                 if (breed.isHabitatBlock(block)) {
@@ -169,7 +172,7 @@ public class DragonBreedHelper extends DragonHelper {
                     }
                 }
 
-                BiomeGenBase biome = dragon.worldObj.getBiomeGenForCoords(bx, bz);
+                BiomeGenBase biome = dragon.worldObj.getBiomeGenForCoords(new BlockPos(bx, 0, bz));
 
                 for (DragonBreed breed : breedPoints.keySet()) {
                     // check for biomes
