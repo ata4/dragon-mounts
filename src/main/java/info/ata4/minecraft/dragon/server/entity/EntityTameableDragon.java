@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
+import com.google.common.base.Predicate;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
@@ -30,11 +31,14 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonParticleHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
+import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -55,6 +59,7 @@ import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityPig;
+import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -152,9 +157,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this)); // mutex 1
         targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this)); // mutex 1
         targetTasks.addTask(3, new EntityAIHurtByTarget(this, false)); // mutex 1
-        targetTasks.addTask(4, new EntityAIHunt(this, EntitySheep.class, 200, false)); // mutex 1
-        targetTasks.addTask(4, new EntityAIHunt(this, EntityPig.class, 200, false)); // mutex 1
-        targetTasks.addTask(4, new EntityAIHunt(this, EntityChicken.class, 200, false)); // mutex 1
+        targetTasks.addTask(4, new EntityAIHunt(this, EntityAnimal.class, false,
+            new EntityClassPredicate(
+                EntitySheep.class,
+                EntityPig.class,
+                EntityChicken.class,
+                EntityRabbit.class
+            )
+        )); // mutex 1
     }
     
     @Override
