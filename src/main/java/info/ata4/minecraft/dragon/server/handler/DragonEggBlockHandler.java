@@ -17,9 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Non-invasive dragon egg block override handler.
@@ -30,11 +28,6 @@ public class DragonEggBlockHandler {
 
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent evt) {
-        // ignore client events
-        if (FMLCommonHandler.instance().getEffectiveSide() != Side.SERVER) {
-            return;
-        }
-        
         // only handle right clicks on blocks
         if (evt.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
             return;
@@ -54,13 +47,15 @@ public class DragonEggBlockHandler {
         evt.useItem = PlayerInteractEvent.Result.DENY;
         
         // clear dragon egg block
-        world.destroyBlock(pos, false);
+        world.setBlockToAir(pos);
         
-        // create dragon egg entity
-        EntityTameableDragon dragon = new EntityTameableDragon(world);
-        dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-        dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getName());
-        dragon.getLifeStageHelper().setLifeStage(DragonLifeStage.EGG);
-        world.spawnEntityInWorld(dragon);
+        // create dragon egg entity on server
+        if (evt.world.isRemote) {
+            EntityTameableDragon dragon = new EntityTameableDragon(world);
+            dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+            dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getName());
+            dragon.getLifeStageHelper().setLifeStage(DragonLifeStage.EGG);
+            world.spawnEntityInWorld(dragon);
+        }
     }
 }
