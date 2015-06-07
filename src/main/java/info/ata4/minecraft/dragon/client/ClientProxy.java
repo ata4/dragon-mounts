@@ -9,14 +9,14 @@
  */
 package info.ata4.minecraft.dragon.client;
 
-import info.ata4.minecraft.dragon.server.ServerProxy;
+import info.ata4.minecraft.dragon.server.CommonProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class ClientProxy extends ServerProxy {
+public class ClientProxy extends CommonProxy {
     
     @Override
     public void onInit(FMLInitializationEvent evt) {

@@ -67,10 +67,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
@@ -478,7 +475,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 } else if (getReproductionHelper().canReproduce() && ItemUtils.consumeEquipped(player, FAVORITE_FOOD)) {
                     // activate love mode with favorite food if it hasn't reproduced yet
                     if (isClient()) {
-                        getParticleHelper().spawnBodyParticles("heart");
+                        getParticleHelper().spawnBodyParticles(EnumParticleTypes.HEART);
                     }
 
                     setInLove(player);

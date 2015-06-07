@@ -19,6 +19,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+TODO fix network handler
+
 /**
  * Network handler for dragon control messages.
  * 

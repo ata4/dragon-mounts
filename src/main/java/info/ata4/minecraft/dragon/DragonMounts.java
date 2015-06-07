@@ -9,7 +9,7 @@
  */
 package info.ata4.minecraft.dragon;
 
-import info.ata4.minecraft.dragon.server.ServerProxy;
+import info.ata4.minecraft.dragon.server.CommonProxy;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -43,7 +43,7 @@ public class DragonMounts {
         serverSide = "info.ata4.minecraft.dragon.server.ServerProxy",
         clientSide = "info.ata4.minecraft.dragon.client.ClientProxy"
     )
-    public static ServerProxy proxy;
+    public static CommonProxy proxy;
     
     @Instance(ID)
     public static DragonMounts instance;

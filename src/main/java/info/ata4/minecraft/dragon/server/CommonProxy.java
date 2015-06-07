@@ -34,7 +34,7 @@ import net.minecraftforge.fml.relauncher.Side;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class ServerProxy {
+public class CommonProxy {
     
     private SimpleNetworkWrapper network;  
     
