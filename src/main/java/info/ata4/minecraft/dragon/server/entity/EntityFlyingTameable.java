@@ -276,7 +276,8 @@ public abstract class EntityFlyingTameable extends EntityTameable {
 //        }
 
         // apply collision
-        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().expand(0.2, 0, 0));
+        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
+                                                                              getEntityBoundingBox().expand(0.2, 0, 0));
         if (entities != null && !entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity.canBePushed()) {
@@ -355,7 +356,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     /**
      * Sets new relative speed multiplier for the vertical flying speed.
      * 
-     * @param airSpeedHorizonal new relative vertical speed multiplier
+     * @param airSpeedVertical new relative vertical speed multiplier
      */
     public void setMoveSpeedAirVert(double airSpeedVertical) {
         L.trace("setMoveSpeedAirVert({})", airSpeedVertical);

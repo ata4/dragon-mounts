@@ -261,7 +261,7 @@ public class DragonFlightNode {
         double stepDeltaLen = stepDelta.lengthVector();
 
         // make a proxy area
-        AxisAlignedBB proxyInnerBox = creature.getBoundingBox().expand(0,0,0);  // equivalent substitute for copy()
+        AxisAlignedBB proxyInnerBox = creature.getEntityBoundingBox().expand(0,0,0);  // equivalent substitute for copy()
         Vec3 center = new Vec3((proxyInnerBox.minX + proxyInnerBox.maxX) / 2, (proxyInnerBox.minY + proxyInnerBox.maxY) / 2, (proxyInnerBox.minZ + proxyInnerBox.maxZ) / 2);
         proxyInnerBox.offset(pointX - center.xCoord, pointY - center.yCoord, pointZ - center.zCoord);
 

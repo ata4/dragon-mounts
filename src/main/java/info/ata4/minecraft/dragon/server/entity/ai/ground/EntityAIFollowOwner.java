@@ -144,7 +144,7 @@ public class EntityAIFollowOwner extends EntityAIBase {
         // teleport dragon near owner
         int minX = MathHelper.floor_double(owner.posX) - 2;
         int minY = MathHelper.floor_double(owner.posZ) - 2;
-        int minZ = MathHelper.floor_double(owner.getBoundingBox().minY);
+        int minZ = MathHelper.floor_double(owner.getEntityBoundingBox().minY);
 
         // TODO: replace with utility class
 //        for (int bx = 0; bx <= 4; ++bx) {
