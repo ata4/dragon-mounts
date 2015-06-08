@@ -23,6 +23,7 @@ import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -37,7 +38,8 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CommonProxy {
     
     private SimpleNetworkWrapper network;  
-    
+    public final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
+
     public SimpleNetworkWrapper getNetwork() {
         return network;
     }
@@ -50,9 +52,13 @@ public class CommonProxy {
         }
         
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
-
         network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
-        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class, 0, Side.SERVER);
+        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class, DCM_DISCRIMINATOR_ID, Side.SERVER);
+    }
+
+    public void onPostInit(FMLPostInitializationEvent event)
+    {
+
     }
     
     public void onServerStarted(FMLServerStartedEvent evt) {

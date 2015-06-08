@@ -9,8 +9,13 @@
  */
 package info.ata4.minecraft.dragon.client;
 
+import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.DragonMountsConfig;
+import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.server.CommonProxy;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 
 /**
  *
@@ -21,5 +26,13 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onInit(FMLInitializationEvent evt) {
         super.onInit(evt);
+    }
+
+    @Override
+    public void onPostInit(FMLPostInitializationEvent event)
+    {
+      if (DragonMounts.instance.getConfig().isDebug()) {
+        MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
+      }
     }
 }

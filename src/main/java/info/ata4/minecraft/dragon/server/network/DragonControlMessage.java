@@ -10,9 +10,9 @@
 package info.ata4.minecraft.dragon.server.network;
 
 import io.netty.buffer.ByteBuf;
-import java.util.BitSet;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
+import java.util.BitSet;
 /**
  * Dragon control message packet.
  * 
@@ -41,7 +41,7 @@ public class DragonControlMessage implements IMessage {
         buf.writeByte(toInteger());
     }
     
-    public void fromInteger(int value) {
+    public void fromInteger(int value) { // ? BitSet already has inbuilt to do this? leave as is...
         int index = 0;
         while (value != 0) {
             if (value % 2 != 0) {
@@ -52,7 +52,7 @@ public class DragonControlMessage implements IMessage {
         }
     }
     
-    public int toInteger() {
+    public int toInteger() {    // ? BitSet already has inbuilt to do this?
         int value = 0;
         for (int i = 0; i < bits.length(); i++) {
             value += bits.get(i) ? (1 << i) : 0;
