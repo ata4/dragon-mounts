@@ -71,13 +71,19 @@ public class CommonProxy {
     }
     
     private void registerEntities() {
-        int dragonEntityID = DragonMounts.instance.getConfig().getDragonEntityID();
-        if (dragonEntityID == -1) {
-            dragonEntityID = EntityRegistry.findGlobalUniqueEntityId();
-        }
-        
-        EntityRegistry.registerGlobalEntityID(EntityTameableDragon.class, "DragonMount",
-                dragonEntityID, 0, 0xcc00ff);
+//        int dragonEntityID = DragonMounts.instance.getConfig().getDragonEntityID();
+//        if (dragonEntityID == -1) {
+//            dragonEntityID = EntityRegistry.findGlobalUniqueEntityId();
+//        }
+//
+//        EntityRegistry.registerGlobalEntityID(EntityTameableDragon.class, "DragonMount",
+//                dragonEntityID, 0, 0xcc00ff);
+
+        final int TRACKING_RANGE = 80;
+        final int UPDATE_FREQUENCY = 3;
+        final int DRAGON_ENTITY_ID = 26;
+        EntityRegistry.registerModEntity(EntityTameableDragon.class, "DragonMount", DRAGON_ENTITY_ID,
+                                         DragonMounts.instance, TRACKING_RANGE, UPDATE_FREQUENCY, true);
     }
     
     public void registerChestItems() {
