@@ -72,6 +72,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.Sys;
 
 /**
  * Here be dragons.
@@ -97,6 +98,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     private static final int INDEX_BREEDER = 21;
     private static final int INDEX_BREED = 22;
     private static final int INDEX_REPRO_COUNT = 23;
+    private static final int INDEX_TICKS_SINCE_CREATION = 24;
     
     // data NBT IDs
     private static final String NBT_SADDLED = "Saddle";
@@ -109,6 +111,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     // server-only flags
     private BitSet controlFlags;
+
 
     public EntityTameableDragon(World world) {
         super(world);
@@ -170,7 +173,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         dataWatcher.addObject(INDEX_SADDLED, (byte) 0);
         
         addHelper(new DragonBreedHelper(this, INDEX_BREED));
-        addHelper(new DragonLifeStageHelper(this));
+        addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonParticleHelper(this));
         
@@ -183,7 +186,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             animator = new DragonAnimator(this);
         }
     }
-    
+
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();

@@ -224,8 +224,8 @@ public class GuiDragonDebug extends Gui {
         // life stage
         DragonLifeStageHelper lifeStage = dragon.getLifeStageHelper();
         String lifeStageName = lifeStage.getLifeStage().name().toLowerCase();
-        int age = dragon.getGrowingAge();
-        text.printf("Life stage: %s (%d)\n", lifeStageName, age);
+      sdfsdfsdf  int ticksSinceCreation = dragon.getGrowingAge();
+        text.printf("Life stage: %s (%d)\n", lifeStageName, ticksSinceCreation);
         
         // size
         String scale = dfShort.format(lifeStage.getScale());

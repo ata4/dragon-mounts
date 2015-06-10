@@ -11,6 +11,8 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import static info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage.*;
+
+import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import net.minecraft.block.Block;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -34,9 +36,24 @@ public class DragonLifeStageHelper extends DragonHelper {
     private DragonScaleModifier scaleModifier = new DragonScaleModifier();
     private int eggWiggleX;
     private int eggWiggleZ;
+    private int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
 
-    public DragonLifeStageHelper(EntityTameableDragon dragon) {
+    // the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
+    // the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
+    // when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
+
+    private int dataWatcherIndexTicksSinceCreation;
+    private int ticksSinceCreationServer;
+    private ClientServerSynchronisedTickCount ticksSinceCreationClient;
+
+    public DragonLifeStageHelper(EntityTameableDragon dragon, int dataWatcherIndex) {
         super(dragon);
+        dataWatcherIndexTicksSinceCreation = dataWatcherIndex;
+
+        ticksSinceCreationServer = 0;
+        dataWatcher.addObject(dataWatcherIndexTicksSinceCreation, ticksSinceCreationServer);
+        ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
+        ticksSinceCreationClient.reset(ticksSinceCreationServer);
     }
     
     @Override
@@ -71,7 +88,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      * @return current life stage
      */
     public DragonLifeStage getLifeStage() {
-        int age = dragon.getGrowingAge();
+        TODO fix int age = dragon.getGrowingAge();
         if (age >= ADULT.ageLimit) {
             return ADULT;
         } else if (age >= JUVENILE.ageLimit) {
@@ -82,7 +99,15 @@ public class DragonLifeStageHelper extends DragonHelper {
             return EGG;
         }
     }
-    
+
+    private int getTicksSinceCreationClient()
+    {
+      if (!dragon.worldObj.isRemote)  {
+        return this.dataWatcher.getWatchableObjectByte(12)
+      }
+
+    }
+
     /**
      * Returns the size multiplier for the current age.
      * 
@@ -95,7 +120,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         }
         
         // use relative distance from the current age to the egg age as scale
-        return 1 - (dragon.getGrowingAge() / (float) DragonLifeStage.EGG.ageLimit);
+      TODOFIX  return 1 - (dragon.getGrowingAge() / (float) DragonLifeStage.EGG.ageLimit);
     }
     
     /**
@@ -184,7 +209,22 @@ public class DragonLifeStageHelper extends DragonHelper {
 //        if (dragon.isServer()) {
 //            dragon.setGrowingAge((int) ((((Math.sin(Math.toRadians(dragon.ticksExisted))) + 1) * 0.5) * EGG.ageLimit));
 //        }
-        
+
+        // if the dragon is not an adult, update its growth ticks
+        if (!dragon.worldObj.isRemote) {
+          if (getLifeStage() != ADULT) {
+            ++ticksSinceCreationServer;
+            if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
+              dataWatcher.updateObject(dataWatcherIndexTicksSinceCreation, ticksSinceCreationServer);
+            }
+          }
+        } else {
+            ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(dataWatcherIndexTicksSinceCreation));
+            if (getLifeStage() != ADULT) {
+                ticksSinceCreationClient.tick();
+            }
+        }
+
         updateLifeStage();
         updateEgg();
         updateScale();
@@ -204,7 +244,7 @@ public class DragonLifeStageHelper extends DragonHelper {
             return;
         }
         
-        int age = dragon.getGrowingAge();
+        TODO FIX int age = dragon.getGrowingAge();
 
         // animate egg wiggle based on the time the eggs take to hatch
         int eggAge = DragonLifeStage.EGG.ageLimit;
