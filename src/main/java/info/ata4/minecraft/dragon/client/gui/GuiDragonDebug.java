@@ -242,7 +242,7 @@ public class GuiDragonDebug extends Gui {
                 tamedString = "yes (" + player.getName()+ ")";
             } else {
 //                tamedString = "yes (" + StringUtils.abbreviate(dragon.func_152113_b(), 22) + ")";
-                tamedString = "yes (" + StringUtils.abbreviate(dragon.getOwner().getName(), 22) + ")";
+                tamedString = "yes (" + StringUtils.abbreviate(dragon.getOwnerId(), 22) + ")";
             }
         } else {
             tamedString = "no";

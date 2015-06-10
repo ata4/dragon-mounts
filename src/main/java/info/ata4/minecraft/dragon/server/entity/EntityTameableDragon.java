@@ -218,7 +218,13 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             helper.writeToNBT(nbt);
         }
     }
-    
+
+    @Override
+    public void setNoAI(boolean disableAI)
+    {
+      super.setNoAI(disableAI);
+    }
+
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */

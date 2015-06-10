@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
@@ -38,6 +39,8 @@ public class DragonLifeStageHelper extends DragonHelper {
     private int eggWiggleX;
     private int eggWiggleZ;
     private int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
+
+    private String NBT_TICKS_SINCE_CREATION = "TicksSinceCreation";
 
     // the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
     // the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
@@ -101,6 +104,21 @@ public class DragonLifeStageHelper extends DragonHelper {
       return ticksSinceCreationClient.getCurrentTickCount();
     }
 
+    @Override
+    public void writeToNBT(NBTTagCompound nbt)
+    {
+      nbt.setInteger(NBT_TICKS_SINCE_CREATION, getTicksSinceCreation());
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound nbt)
+    {
+      int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
+      ticksRead = DragonLifeStage.clipTickCountToValid(ticksRead);
+      ticksSinceCreationServer = ticksRead;
+      ticksSinceCreationClient.reset(ticksSinceCreationServer);
+    }
+
     /**
      * Returns the size multiplier for the current age.
      * 
@@ -110,7 +128,7 @@ public class DragonLifeStageHelper extends DragonHelper {
       DragonLifeStage lifeStage = getLifeStage();
       int stageStartTicks = lifeStage.getStartOfStageInTicks();
       int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
-      float fractionOfStage = timeInThisStage / lifeStage.getDurationInTicks();
+      float fractionOfStage = timeInThisStage / (float)lifeStage.getDurationInTicks();
       fractionOfStage = MathHelper.clamp_float(fractionOfStage, 0.0F, 1.0F);
 
       final float EGG_SIZE = 0.9F / EntityTameableDragon.BASE_WIDTH;
@@ -191,17 +209,19 @@ public class DragonLifeStageHelper extends DragonHelper {
             // eggs and hatchlings can't fly
             dragon.setCanFly(lifeStage != EGG && lifeStage != HATCHLING);
             
-            // only hatchlings are small enough for doors
-            // (eggs don't move on their own anyway and are ignored)
-            // TODO: removed in 1.8?
+//            // only hatchlings are small enough for doors
+//            // (eggs don't move on their own anyway and are ignored)
+//            // TODO: removed in 1.8?
 //            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
             
             // update AI states so the egg won't move
-            if (lifeStage == EGG) {
-                // TODO: removed in 1.8?
-//                dragon.setPathToEntity(null);
-                dragon.setAttackTarget(null);
-            }
+            dragon.setNoAI(lifeStage == EGG);
+
+//            if (lifeStage == EGG) {
+//                // TODO: removed in 1.8?
+////                dragon.setPathToEntity(null);
+//                dragon.setAttackTarget(null);
+//            }
             
             // update attribute modifier
             IAttributeInstance healthAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth);
