@@ -21,6 +21,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,24 +89,16 @@ public class DragonLifeStageHelper extends DragonHelper {
      * @return current life stage
      */
     public DragonLifeStage getLifeStage() {
-        TODO fix int age = dragon.getGrowingAge();
-        if (age >= ADULT.ageLimit) {
-            return ADULT;
-        } else if (age >= JUVENILE.ageLimit) {
-            return JUVENILE;
-        } else if (age >= HATCHLING.ageLimit) {
-            return HATCHLING;
-        } else {
-            return EGG;
-        }
+        int age = getTicksSinceCreation();
+      return DragonLifeStage.getLifeStageFromTickCount(age);
     }
 
-    private int getTicksSinceCreationClient()
+    public int getTicksSinceCreation()
     {
       if (!dragon.worldObj.isRemote)  {
-        return this.dataWatcher.getWatchableObjectByte(12)
+        return ticksSinceCreationServer;
       }
-
+      return ticksSinceCreationClient.getCurrentTickCount();
     }
 
     /**
@@ -114,13 +107,35 @@ public class DragonLifeStageHelper extends DragonHelper {
      * @return size
      */
     public float getScale() {
-        // constant size for egg stage
-        if (isEgg()) {
-            return 0.9f / EntityTameableDragon.BASE_WIDTH;
+      DragonLifeStage lifeStage = getLifeStage();
+      int stageStartTicks = lifeStage.getStartOfStageInTicks();
+      int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
+      float fractionOfStage = timeInThisStage / lifeStage.getDurationInTicks();
+      fractionOfStage = MathHelper.clamp_float(fractionOfStage, 0.0F, 1.0F);
+
+      final float EGG_SIZE = 0.9F / EntityTameableDragon.BASE_WIDTH;
+      final float HATCHLING_SIZE = 0.33F;
+      final float JUVENILE_SIZE = 0.66F;
+      final float ADULT_SIZE = 1.0F;
+
+      switch (getLifeStage()) {
+        case EGG: { // constant size for egg stage
+          return EGG_SIZE;
         }
-        
-        // use relative distance from the current age to the egg age as scale
-      TODOFIX  return 1 - (dragon.getGrowingAge() / (float) DragonLifeStage.EGG.ageLimit);
+        case HATCHLING: {
+          return HATCHLING_SIZE + fractionOfStage * (JUVENILE_SIZE - HATCHLING_SIZE);
+        }
+        case JUVENILE: {
+          return JUVENILE_SIZE + fractionOfStage * (ADULT_SIZE - JUVENILE_SIZE);
+        }
+        case ADULT: {
+          return ADULT_SIZE;
+        }
+        default: {
+          L.error("Illegal lifestage in getScale():" + getLifeStage());
+          return 1.0F;
+        }
+      }
     }
     
     /**
@@ -153,7 +168,12 @@ public class DragonLifeStageHelper extends DragonHelper {
      */
     public final void setLifeStage(DragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
-        dragon.setGrowingAge(lifeStage.ageLimit);
+        if (!dragon.worldObj.isRemote) {
+          ticksSinceCreationServer = lifeStage.getStartOfStageInTicks();
+          dataWatcher.updateObject(dataWatcherIndexTicksSinceCreation, ticksSinceCreationServer);
+        } else {
+          L.error("setLifeStage called on Client");
+        }
         updateLifeStage();
     }
     
@@ -243,29 +263,26 @@ public class DragonLifeStageHelper extends DragonHelper {
         if (!isEgg()) {
             return;
         }
-        
-        TODO FIX int age = dragon.getGrowingAge();
 
-        // animate egg wiggle based on the time the eggs take to hatch
-        int eggAge = DragonLifeStage.EGG.ageLimit;
-        int hatchAge = DragonLifeStage.HATCHLING.ageLimit;
-        float chance = (age - eggAge) / (float) (hatchAge - eggAge);
+      // animate egg wiggle based on the time the eggs take to hatch
+        int age = getTicksSinceCreation();
+        int hatchAge = DragonLifeStage.HATCHLING.getDurationInTicks();
+        float fractionComplete = age / (float)hatchAge;
 
         // wait until the egg is nearly hatched
-        if (chance > 0.66f) {
-            // reduce chance so it can run every tick
-            chance /= 60;
+        if (fractionComplete > 0.66f) {
+            float wiggleChance = fractionComplete / 60;
 
             if (eggWiggleX > 0) {
                 eggWiggleX--;
-            } else if (rand.nextFloat() < chance) {
+            } else if (rand.nextFloat() < wiggleChance) {
                 eggWiggleX = rand.nextBoolean() ? 10 : 20;
                 playEggCrackEffect();
             }
 
             if (eggWiggleZ > 0) {
                 eggWiggleZ--;
-            } else if (rand.nextFloat() < chance) {
+            } else if (rand.nextFloat() < wiggleChance) {
                 eggWiggleZ = rand.nextBoolean() ? 10 : 20;
                 playEggCrackEffect();
             }

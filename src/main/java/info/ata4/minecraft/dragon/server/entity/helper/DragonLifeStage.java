@@ -19,7 +19,7 @@ public enum DragonLifeStage {
     EGG(0, 24000),
     HATCHLING(24000, 24000),
     JUVENILE(48000, 24000),
-    ADULT(72000, 0);
+    ADULT(72000, -1);
     
     DragonLifeStage(int i_startOfStageInTicks, int i_stageDurationTicks) {
     this.stageDurationTicks = i_stageDurationTicks;
@@ -34,7 +34,9 @@ public enum DragonLifeStage {
       return ADULT;
     }
 
+    // -1 means infinite
     public int getDurationInTicks() {return stageDurationTicks;}
+    public int getStartOfStageInTicks() {return startOfStageInTicks;}
 
     private final int stageDurationTicks;
     private final int startOfStageInTicks;
