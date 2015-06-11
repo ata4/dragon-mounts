@@ -2,13 +2,15 @@ Bugfixes to 1.8
 - Entity registration
 - possible race in network packet
 - setGrowingAge clipped to [-1, +1] for client copy
+- turning off AI tasks so egg doesn't wander
 
 outstanding bugs
 - tick handlers
-- turning off AI makes egg not sit on ground properly.  turning it on makes it wander
 - bone for sit doesn't work.
 - age reloads from NBT on server but not client.
 - steering Left/Right of dragon in flight doesn't work properly
+
+-HOME for AI?
 
 DataWatcher usage:
 Entity

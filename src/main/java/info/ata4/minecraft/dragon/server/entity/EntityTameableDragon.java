@@ -130,41 +130,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // enables walking over blocks
         stepHeight = 1;
         
-        // mutex 1: movement
-        // mutex 2: looking
-        // mutex 4: special state
-        tasks.addTask(0, new EntityAICatchOwnerGround(this)); // mutex all
-        tasks.addTask(1, new EntityAIRideGround(this, 1)); // mutex all
-        tasks.addTask(2, new EntityAISwimming(this)); // mutex 4
-        tasks.addTask(3, aiSit); // mutex 4+1
-        tasks.addTask(4, new EntityAIDragonMate(this, 0.6)); // mutex 2+1
-        tasks.addTask(5, new EntityAITempt(this, 0.75, FAVORITE_FOOD, false)); // mutex 2+1
-        tasks.addTask(6, new EntityAIAttackOnCollide(this, 1, true)); // mutex 2+1
-        tasks.addTask(7, new EntityAIFollowParent(this, 0.8)); // mutex 2+1
-        tasks.addTask(8, new EntityAIFollowOwner(this, 1, 12, 128)); // mutex 2+1
-        tasks.addTask(8, new EntityAIPanicChild(this, 1)); // mutex 1
-        tasks.addTask(9, new EntityAIWander(this, 1)); // mutex 1
-        tasks.addTask(10, new EntityAIWatchIdle(this)); // mutex 2
-        tasks.addTask(10, new EntityAIWatchLiving(this, 16, 0.05f)); // mutex 2
-        
-        // mutex 1: waypointing
-        // mutex 2: continuous waypointing
-        airTasks.addTask(0, new EntityAIRideAir(this)); // mutex all
-        airTasks.addTask(0, new EntityAILand(this)); // mutex 0
-        airTasks.addTask(0, new EntityAICatchOwnerAir(this)); // mutex all
-
-        // mutex 1: generic targeting
-        targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(this)); // mutex 1
-        targetTasks.addTask(2, new EntityAIOwnerHurtTarget(this)); // mutex 1
-        targetTasks.addTask(3, new EntityAIHurtByTarget(this, false)); // mutex 1
-        targetTasks.addTask(4, new EntityAIHunt(this, EntityAnimal.class, false,
-            new EntityClassPredicate(
-                EntitySheep.class,
-                EntityPig.class,
-                EntityChicken.class,
-                EntityRabbit.class
-            )
-        )); // mutex 1
     }
     
     @Override
