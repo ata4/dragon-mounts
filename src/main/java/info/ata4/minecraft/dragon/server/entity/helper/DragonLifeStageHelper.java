@@ -46,7 +46,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     private DragonScaleModifier scaleModifier = new DragonScaleModifier();
     private int eggWiggleX;
     private int eggWiggleZ;
-    private int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
+    private final int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
 
     private String NBT_TICKS_SINCE_CREATION = "TicksSinceCreation";
 
@@ -54,16 +54,16 @@ public class DragonLifeStageHelper extends DragonHelper {
     // the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
     // when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
 
-    private int dataWatcherIndexTicksSinceCreation;
+    private final int DATA_WATCHER_TICKS_SINCE_CREATION;
     private int ticksSinceCreationServer;
     private ClientServerSynchronisedTickCount ticksSinceCreationClient;
 
     public DragonLifeStageHelper(EntityTameableDragon dragon, int dataWatcherIndex) {
         super(dragon);
-        dataWatcherIndexTicksSinceCreation = dataWatcherIndex;
+        DATA_WATCHER_TICKS_SINCE_CREATION = dataWatcherIndex;
 
         ticksSinceCreationServer = 0;
-        dataWatcher.addObject(dataWatcherIndexTicksSinceCreation, ticksSinceCreationServer);
+        dataWatcher.addObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
         ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
         ticksSinceCreationClient.reset(ticksSinceCreationServer);
     }
@@ -124,7 +124,7 @@ public class DragonLifeStageHelper extends DragonHelper {
       int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
       ticksRead = DragonLifeStage.clipTickCountToValid(ticksRead);
       ticksSinceCreationServer = ticksRead;
-      ticksSinceCreationClient.reset(ticksSinceCreationServer);
+      dataWatcher.updateObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
     }
 
     /**
@@ -196,7 +196,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         L.trace("setLifeStage({})", lifeStage);
         if (!dragon.worldObj.isRemote) {
           ticksSinceCreationServer = lifeStage.getStartOfStageInTicks();
-          dataWatcher.updateObject(dataWatcherIndexTicksSinceCreation, ticksSinceCreationServer);
+          dataWatcher.updateObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
         } else {
           L.error("setLifeStage called on Client");
         }
@@ -263,11 +263,12 @@ public class DragonLifeStageHelper extends DragonHelper {
           if (getLifeStage() != ADULT) {
             ++ticksSinceCreationServer;
             if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
-              dataWatcher.updateObject(dataWatcherIndexTicksSinceCreation, ticksSinceCreationServer);
+              dataWatcher.updateObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
             }
           }
         } else {
-            ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(dataWatcherIndexTicksSinceCreation));
+            ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(
+                    DATA_WATCHER_TICKS_SINCE_CREATION));
             if (getLifeStage() != ADULT) {
                 ticksSinceCreationClient.tick();
             }
