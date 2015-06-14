@@ -20,7 +20,7 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedRegistry;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.client.renderer.OpenGlHelper;
+
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -50,7 +50,9 @@ public class DragonRenderer extends RenderLiving {
 
     public DragonRenderer(RenderManager renderManager) {
         super(renderManager, null, 2);
-        
+        addLayer(new LayerRendererDragonSaddle(this));
+        addLayer(new LayerRendererDragonGlow(this));
+
         // create a separate model for each breed
         initBreedModels();
     }
@@ -65,7 +67,12 @@ public class DragonRenderer extends RenderLiving {
     private void setModel(DragonBreed breed) {
         mainModel = dragonModel = breedModels.get(breed);
     }
-    
+
+    public DragonModel getModel()
+    {
+      return dragonModel;
+    }
+
     @Override
     public void doRender(EntityLiving entity, double x, double y, double z, float yaw, float partialTicks) {
         doRender((EntityTameableDragon) entity, x, y, z, yaw, partialTicks);
@@ -94,7 +101,7 @@ public class DragonRenderer extends RenderLiving {
 
     protected void renderModel(EntityTameableDragon dragon, float moveTime, float moveSpeed,
             float ticksExisted, float lookYaw, float lookPitch, float scale) {
-        dragonModel.renderPass = -1;
+        dragonModel.renderPass = DragonModel.RenderPass.MAIN;
         
         if (dragon.getDeathTime() > 0) {
             float alpha = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();

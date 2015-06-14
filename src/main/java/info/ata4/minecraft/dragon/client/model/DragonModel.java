@@ -28,7 +28,11 @@ import static org.lwjgl.opengl.GL11.*;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonModel extends ModelBase {
-    
+
+    public enum RenderPass {
+      MAIN, SADDLE, GLOW
+    }
+
     // model constants
     public static final int NECK_SIZE = 10;
     public static final int TAIL_SIZE = 10;
@@ -72,7 +76,7 @@ public class DragonModel extends ModelBase {
     public ModelPartProxy[] tailProxy = new ModelPartProxy[VERTS_TAIL];
     public ModelPartProxy[] thighProxy = new ModelPartProxy[4];
     
-    public int renderPass = -1;
+    public RenderPass renderPass = RenderPass.MAIN;
     public float offsetX;
     public float offsetY;
     public float offsetZ;
@@ -429,16 +433,25 @@ public class DragonModel extends ModelBase {
         glPushMatrix();
         glTranslatef(offsetX, offsetY, offsetZ);
         glRotatef(-pitch, 1, 0, 0);
-        
-        if (renderPass == 0) {
+
+        switch (renderPass) {
+          case SADDLE: {
             renderBody(scale);
-        } else {
+            break;
+          }
+          case MAIN:
+          case GLOW: {
             renderHead(scale);
             renderNeck(scale);
             renderBody(scale);
             renderLegs(scale);
             renderTail(scale);
             renderWings(scale);
+            break;
+          }
+          default: {
+            System.err.println("illegal renderPass in renderModel:" + renderPass);
+          }
         }
 
         glPopMatrix();
