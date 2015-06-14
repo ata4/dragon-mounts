@@ -13,27 +13,12 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonDebug;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonParticleHelper;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
+import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityAgeable;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -42,12 +27,18 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S0BPacketAnimation;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Here be dragons.
@@ -770,7 +761,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             // the shoulders, so move player forwards on Z axis relative to the
             // dragon's rotation to fix that
             Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
-            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset));
+            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset)); // oops
             px += pos.xCoord;
             py += pos.yCoord;
             pz += pos.zCoord;
@@ -911,4 +902,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public boolean isAdult() {
         return getLifeStageHelper().isAdult();
     }
+
+    public void setDragonAvoidWater(boolean avoidWater){
+      PathNavigate pathNavigate = this.getNavigator();
+      if (pathNavigate instanceof PathNavigateGround) {
+        PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
+        pathNavigateGround.func_179690_a(avoidWater);
+      }
+    }
+
+
 }

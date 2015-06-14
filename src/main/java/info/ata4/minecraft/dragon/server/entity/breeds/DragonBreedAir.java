@@ -11,10 +11,11 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityFlyingTameable;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.UUID;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.biome.BiomeGenBase;
+
+import java.util.UUID;
 
 /**
  *

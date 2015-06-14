@@ -10,14 +10,16 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.Iterator;
-import java.util.List;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.EntityAIRestrictSun;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -80,8 +82,14 @@ public class DragonBreedGhost extends DragonBreed {
         int bx = MathHelper.floor_double(dragon.posX);
         int by = MathHelper.floor_double(dragon.posY);
         int bz = MathHelper.floor_double(dragon.posZ);
-        
-        // TODO: use utility class
+
+      BlockPos blockPos = new BlockPos(bx, by, bz);
+      if (dragon.worldObj.canBlockSeeSky(blockPos)) { // sun is shining!
+        return false;
+      }
+      if (dragon.worldObj.getLight(blockPos) > 4) { // too bright!
+        return false;
+      }
 //        if (dragon.worldObj.canBlockSeeTheSky(bx, by, bz)) {
 //            // sun is shining!
 //            return false;

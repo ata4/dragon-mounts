@@ -16,13 +16,6 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -30,12 +23,12 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.StatCollector;
@@ -48,6 +41,10 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.lwjgl.input.Keyboard;
+
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -312,11 +309,15 @@ public class GuiDragonDebug extends Gui {
         text.setColor(WHITE);
         
         PathNavigate nav = dragonServer.getNavigator();
+      PathNavigateGround pathNavigateGround = null;
+      if (nav instanceof  PathNavigateGround) {
+        pathNavigateGround = (PathNavigateGround)nav;
+      }
         
         text.println("Search range: " + nav.getPathSearchRange());
-        // TODO: both methods appear to be removed in 1.8
-//        text.println("Avoid water: " + nav.getAvoidsWater());
-//        text.println("Break doors: " + nav.getCanBreakDoors());
+//  guesses based on EntityAIDoorInteract
+        text.println("Avoid water: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.func_179689_e()));
+        text.println("Break doors: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.func_179686_g()));
         text.println("No path: " + nav.noPath());
 
         PathEntity path = nav.getPath();

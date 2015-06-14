@@ -1,11 +1,11 @@
 package info.ata4.minecraft.dragon.client.forgeobjmodelported.obj;
 
-import java.util.ArrayList;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.ArrayList;
 
 
 public class GroupObject

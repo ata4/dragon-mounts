@@ -1,6 +1,5 @@
 package info.ata4.minecraft.dragon.client.forgeobjmodelported.obj;
 
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.relauncher.Side;

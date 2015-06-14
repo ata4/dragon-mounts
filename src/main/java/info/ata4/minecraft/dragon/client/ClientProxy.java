@@ -10,14 +10,12 @@
 package info.ata4.minecraft.dragon.client;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.DragonMountsConfig;
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.client.handler.DragonControl;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderDragon;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;

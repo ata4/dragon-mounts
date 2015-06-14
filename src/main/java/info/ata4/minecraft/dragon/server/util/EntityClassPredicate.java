@@ -10,11 +10,12 @@
 package info.ata4.minecraft.dragon.server.util;
 
 import com.google.common.base.Predicate;
+import net.minecraft.entity.Entity;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import net.minecraft.entity.Entity;
 
 /**
  *

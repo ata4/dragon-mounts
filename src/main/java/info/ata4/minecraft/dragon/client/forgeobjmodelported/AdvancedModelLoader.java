@@ -1,15 +1,15 @@
 package info.ata4.minecraft.dragon.client.forgeobjmodelported;
 
-import java.util.Collection;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import info.ata4.minecraft.dragon.client.forgeobjmodelported.obj.ObjModelLoader;
 import info.ata4.minecraft.dragon.client.forgeobjmodelported.techne.TechneModelLoader;
 import net.minecraft.util.ResourceLocation;
-import com.google.common.collect.Maps;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.Collection;
+import java.util.Map;
 
 
 /**

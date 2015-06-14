@@ -10,13 +10,10 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import static info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage.*;
-
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.*;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonFollowOwner;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.block.Block;
@@ -34,6 +31,8 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage.*;
 
 /**
  *
@@ -221,7 +220,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 //            // only hatchlings are small enough for doors
 //            // (eggs don't move on their own anyway and are ignored)
 //            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
-              // guessed, based on EntityAIRestrictOpenDoor
+              // guessed, based on EntityAIRestrictOpenDoor - break the door down, don't open it
               if (dragon.getNavigator() instanceof PathNavigateGround) {
                 PathNavigateGround pathNavigateGround = (PathNavigateGround)dragon.getNavigator();
                 pathNavigateGround.func_179691_c(lifeStage == HATCHLING);

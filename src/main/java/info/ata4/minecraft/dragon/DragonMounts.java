@@ -9,9 +9,7 @@
  */
 package info.ata4.minecraft.dragon;
 
-import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.server.CommonProxy;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;

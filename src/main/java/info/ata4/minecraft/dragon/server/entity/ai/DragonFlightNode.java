@@ -9,13 +9,14 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai;
 
-import java.util.List;
-import java.util.Random;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import java.util.List;
+import java.util.Random;
 
 /**
  * An iterative A* shortest path searching using randomized paths

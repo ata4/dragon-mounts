@@ -38,13 +38,11 @@ public class DragonBreedFire extends DragonBreed {
 
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-        // TODO: removed in 1.8?
-//        dragon.getNavigator().setAvoidsWater(true);
+      dragon.setDragonAvoidWater(true);
     }
 
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-        // TODO: removed in 1.8?
-//        dragon.getNavigator().setAvoidsWater(false);
+      dragon.setDragonAvoidWater(false);
     }
 }

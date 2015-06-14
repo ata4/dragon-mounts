@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.client.model.anim;
 
 import info.ata4.minecraft.dragon.util.math.MathX;
+
 import java.util.Arrays;
 
 /**

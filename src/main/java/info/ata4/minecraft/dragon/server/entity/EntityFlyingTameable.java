@@ -12,7 +12,6 @@ package info.ata4.minecraft.dragon.server.entity;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
-import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -25,6 +24,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 /**
  *

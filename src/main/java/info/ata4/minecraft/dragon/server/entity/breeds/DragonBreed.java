@@ -11,12 +11,13 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.HashSet;
-import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.biome.BiomeGenBase;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Base class for dragon breeds.

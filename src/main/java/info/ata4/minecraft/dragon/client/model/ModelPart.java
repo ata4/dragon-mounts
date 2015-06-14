@@ -15,6 +15,7 @@ import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
