@@ -27,6 +27,21 @@ public class EntityAIPanicChild extends EntityAIPanic {
 
     @Override
     public boolean shouldExecute() {
-        return super.shouldExecute() && dragon.isHatchling();
+      boolean flag = super.shouldExecute() && dragon.isHatchling();
+//      System.out.println("EntityAIPanicChild::shouldExecute:" + flag);
+      return flag;
     }
+
+  @Override
+  public void startExecuting() {
+    super.startExecuting();
+//    System.out.println("EntityAIPanicChild::startExecuting");
+  }
+
+  @Override
+  public boolean continueExecuting() {
+    boolean flag = super.continueExecuting();
+//    System.out.println("EntityAIPanicChild::continueExecuting" + flag);
+    return flag;
+  }
 }

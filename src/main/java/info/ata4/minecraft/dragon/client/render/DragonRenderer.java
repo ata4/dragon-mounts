@@ -27,6 +27,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -104,7 +106,9 @@ public class DragonRenderer extends RenderLiving {
         dragonModel.renderPass = DragonModel.RenderPass.MAIN;
         
         if (dragon.getDeathTime() > 0) {
-            float alpha = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();
+          float alpha = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();
+          try {
+            GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
             glDepthFunc(GL_LEQUAL);
             glEnable(GL_ALPHA_TEST);
             glAlphaFunc(GL_GREATER, alpha);
@@ -112,9 +116,13 @@ public class DragonRenderer extends RenderLiving {
             dragonModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
             glAlphaFunc(GL_GREATER, 0.1f);
             glDepthFunc(GL_EQUAL);
+            super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+          } finally {
+            GL11.glPopAttrib();
+          }
+        } else {
+          super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
         }
-        
-        super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
     }
         
     protected void renderEgg(EntityTameableDragon dragon, double x, double y, double z, float pitch, float partialTicks) {

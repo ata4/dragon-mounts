@@ -328,7 +328,9 @@ public class DragonLifeStageHelper extends DragonHelper {
     }
 
     private void updateScale() {
+      boolean savedOnGround = dragon.onGround;  // otherwise, setScale stops the dragon from landing while it is growing
         dragon.setScalePublic(getScale());
+      dragon.onGround = savedOnGround;
     }
     
     @Override
@@ -356,24 +358,26 @@ public class DragonLifeStageHelper extends DragonHelper {
 
     private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage)
     {
-      if (newLifeStage == previousLifeStage) return;
-      if (newLifeStage != EGG && previousLifeStage != EGG) return;
+      if (newLifeStage != null && previousLifeStage != null) {   // handle initialisation after load from NBT
+        if (newLifeStage == previousLifeStage) return;
+        if (newLifeStage != EGG && previousLifeStage != EGG) return;
+      }
 
       EntityAITasks tasks = dragon.tasks;
       EntityAITasks airTasks = dragon.airTasks;
       EntityAITasks targetTasks = dragon.targetTasks;
 
-      for (Object entry : tasks.taskEntries) {
-        EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)entry).action;
+      while (!tasks.taskEntries.isEmpty()) {
+        EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)tasks.taskEntries.get(0)).action;
         tasks.removeTask(entityAIBase);
       }
-      for (Object entry : airTasks.taskEntries) {
-        EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)entry).action;
-        tasks.removeTask(entityAIBase);
+      while (!airTasks.taskEntries.isEmpty()) {
+        EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)airTasks.taskEntries.get(0)).action;
+        airTasks.removeTask(entityAIBase);
       }
-      for (Object entry : targetTasks.taskEntries) {
-        EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)entry).action;
-        tasks.removeTask(entityAIBase);
+      while (!targetTasks.taskEntries.isEmpty()) {
+        EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)targetTasks.taskEntries.get(0)).action;
+        targetTasks.removeTask(entityAIBase);
       }
 
       if (newLifeStage == EGG) {

@@ -67,8 +67,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,7 +113,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     // server-only flags
     private BitSet controlFlags;
-
 
     public EntityTameableDragon(World world) {
         super(world);
@@ -269,6 +270,15 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         }
         super.setDead();
     }
+
+    // hijack swingItem to be used for attacking (jaw animation on attack)
+    //  normally only used for swinging held items; attackEntityAsMob is overridden to send packet S0BPacketAnimation
+    @Override
+    public void swingItem()
+    {
+      ticksSinceLastAttack = 0;
+    }
+
 
     @Override
     public String getName() {
@@ -632,6 +642,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             float volume = getSoundVolume() * 0.7f;
             float pitch = getSoundPitch();
             worldObj.playSoundAtEntity(this, "random.eat", volume, pitch);
+
+            if (this.worldObj instanceof WorldServer) {
+              ((WorldServer)this.worldObj).getEntityTracker().sendToAllTrackingEntity(this, new S0BPacketAnimation(this, 0));
+            }
+
         }
 
         return attacked;
@@ -783,7 +798,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             // the shoulders, so move player forwards on Z axis relative to the
             // dragon's rotation to fix that
             Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
-            pos.rotateYaw((float) Math.toRadians(-renderYawOffset));
+            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset));
             px += pos.xCoord;
             py += pos.yCoord;
             pz += pos.zCoord;

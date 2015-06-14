@@ -263,7 +263,7 @@ public class TechneModel extends ModelBase implements IModelCustom {
 
   private void bindTexture()
   {
-        /* TODO: Update to 1.6
+        /*
         if (texture != null)
         {
             if (!textureNameSet)

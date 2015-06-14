@@ -25,15 +25,19 @@ public class LayerRendererDragonGlow implements LayerRenderer {
     dragonModel.renderPass = DragonModel.RenderPass.GLOW;
     dragonRenderer.bindTexture(dragonModel.glowTexture);
 
-    GL11.glEnable(GL11.GL_BLEND);
-    GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-    GL11.glDisable(GL11.GL_LIGHTING);      // use full lighting
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 65536, 0);
+    try {
+      GL11.glPushAttrib(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_LIGHTING_BIT);
 
-    dragonModel.render(entityDragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+      GL11.glEnable(GL11.GL_BLEND);
+      GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+      GL11.glDisable(GL11.GL_LIGHTING);      // use full lighting
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 65536, 0);
 
-    GL11.glEnable(GL11.GL_LIGHTING);
-    GL11.glDisable(GL11.GL_BLEND);
+      dragonModel.render(entityDragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+    } finally {
+      GL11.glPopAttrib();
+    }
+
   }
 
   public boolean shouldCombineTextures()

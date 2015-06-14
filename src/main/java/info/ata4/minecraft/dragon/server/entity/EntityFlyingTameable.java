@@ -53,8 +53,10 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private float yawAdd;
     private int yawSpeed = 30;
     private int inAirTicks;
-   
-    public EntityFlyingTameable(World world) {
+
+  protected int ticksSinceLastAttack = -1;
+
+  public EntityFlyingTameable(World world) {
         super(world);
         waypoint = new DragonFlightWaypoint(this);
         airTasks = new EntityAITasks(world != null ? world.theProfiler : null);
@@ -98,16 +100,20 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     /**
      * Called when the mob is falling. Calculates and applies fall damage.
      */
-    // TODO: doesn't exist in 1.8
-//    @Override
-//    protected void fall(float par1) {
-//        // ignore fall damage if the entity can fly
-//        if (!isCanFly()) {
-//            super.fall(par1);
-//        }
-//    }
-    
-    /**
+    @Override
+    public void fall(float distance, float damageMultiplier)
+    {
+        // ignore fall damage if the entity can fly
+      if (!isCanFly()) {
+          super.fall(distance, damageMultiplier);
+      }
+    }
+
+  public int getTicksSinceLastAttack() {
+    return ticksSinceLastAttack;
+  }
+
+  /**
      * Causes this entity to lift off.
      */
     public void liftOff() {
@@ -178,6 +184,11 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         } else {
             super.onLivingUpdate();
         }
+
+      if (ticksSinceLastAttack >= 0) {
+        ++ticksSinceLastAttack;
+        if (ticksSinceLastAttack > 1000) ticksSinceLastAttack = -1;  //  reset at arbitrary large value
+      }
     }
     
     private void onUpdateFlyingClient() {
@@ -263,7 +274,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         moveEntity(motionX, motionY, motionZ);
  
         // update AI
-        // TODO: isAIEnabled is missing in 1.8
+
 //        if (isAIEnabled()) {
             worldObj.theProfiler.startSection("newAi");
             updateAITasks();
