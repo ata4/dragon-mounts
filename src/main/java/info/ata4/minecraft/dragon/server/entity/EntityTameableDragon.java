@@ -9,21 +9,9 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
-import com.google.common.base.Predicate;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAICatchOwnerGround;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIFollowOwner;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIHunt;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIPanicChild;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIRideGround;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIWatchIdle;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIWatchLiving;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonDebug;
@@ -31,14 +19,12 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonParticleHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
-import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -48,19 +34,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
-import net.minecraft.entity.ai.EntityAIFollowParent;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -74,7 +48,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.Sys;
 
 /**
  * Here be dragons.
@@ -221,13 +194,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             }
         } else {
             // set home position near owner when tamed
-            // TODO: setHomeArea removed in 1.8?
-//            if (isTamed()) {
-//                Entity owner = getOwner();
-//                if (owner != null) {
-//                    setHomeArea((int) owner.posX, (int) owner.posY, (int) owner.posZ, HOME_RADIUS);
-//                }
-//            }
+            //  setHomeArea renamed to EntityCreature.func_175449_a()
+            if (isTamed()) {
+                Entity owner = getOwner();
+                if (owner != null) {
+                  BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
+                  func_175449_a(ownerPosition, HOME_RADIUS);
+                }
+            }
         }
         
         super.onLivingUpdate();
@@ -355,19 +329,18 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     /**
      * Plays step sound at given x, y, z for the entity
      */
-    // TODO: find remapped method name
-//    @Override
-//    protected void func_145780_a(int x, int y, int z, Block block) {
-//        if (isEgg() || inWater) {
-//            // no sounds for eggs or underwater action
-//        } else if (isHatchling()) {
-//            // play default step sound for babies
-//            super.func_145780_a(x, y, z, block);
-//        } else {
-//            // play stomping for bigger dragons
-//            worldObj.playSoundAtEntity(this, DragonMounts.AID + ":mob.enderdragon.step", 0.5f, 1);
-//        }
-//    }
+    @Override
+    protected void playStepSound(BlockPos entityPos, Block block) {
+        if (isEgg() || inWater) {
+            // no sounds for eggs or underwater action
+        } else if (isHatchling()) {
+            // play default step sound for babies
+            super.playStepSound(entityPos, block);
+        } else {
+            // play stomping for bigger dragons
+            worldObj.playSoundAtEntity(this, DragonMounts.AID + ":mob.enderdragon.step", 0.5f, 1);
+        }
+    }
     
     /**
      * Returns the volume for the sounds this mob makes.
@@ -453,8 +426,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                         // toggle sitting state with the bone item
                         aiSit.setSitting(!isSitting());
                         isJumping = false;
-                        // TODO: removed in 1.8?
-                        //setPathToEntity(null);
+                        navigator.clearPathEntity();  // replacement for setPathToEntity(null);
                     }
                 } else if (getReproductionHelper().canReproduce() && ItemUtils.consumeEquipped(player, FAVORITE_FOOD)) {
                     // activate love mode with favorite food if it hasn't reproduced yet
@@ -487,8 +459,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public void tamedFor(EntityPlayer player, boolean successful) {
         if (successful) {
             setTamed(true);
-            // TODO: removed in 1.8?
-            //setPathToEntity(null);
+            navigator.clearPathEntity();  // replacement for setPathToEntity(null);
             setAttackTarget(null);
             setOwnerId(player.getUniqueID().toString());
             playTameEffect(true);
@@ -550,7 +521,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     /**
      * Returns true if the newer Entity AI code should be run
      */
-    // TODO: removed in 1.8?
+    // no longer required
 //    @Override
 //    protected boolean isAIEnabled() {
 //        return true;
@@ -602,14 +573,15 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public boolean attackEntityAsMob(Entity victim) {
-        float attackDamage = (float) getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-        int knockback = 0;
+      // code copied from EntityMob::attackEntityAsMob
 
-        // TODO: find replacement code for 1.8
-//        if (victim instanceof EntityLivingBase) {
-//            attackDamage += EnchantmentHelper.getEnchantmentModifierLiving(this, (EntityLivingBase) victim);
-//            knockback += EnchantmentHelper.getKnockbackModifier(this, (EntityLivingBase) victim);
-//        }
+      float attackDamage = (float) getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+      int knockback = 0;
+
+      if (victim instanceof EntityLivingBase) {  // not actually required for a dragon?  leave in anyway
+        attackDamage += EnchantmentHelper.func_152377_a(this.getHeldItem(), ((EntityLivingBase)victim).getCreatureAttribute());
+        knockback += EnchantmentHelper.getKnockbackModifier(this);
+      }
 
         boolean attacked = victim.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
 
@@ -905,8 +877,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // on isChild(), but the scale is managed in DragonLifeStageHelper, so
         // this is no-op here
     }
-    
-    // TODO: find matching method for 1.8
+
+//    Comparison of 1.7.10 and 1.8 Render::renderShadow shows that this isn't needed any more
 //    @SideOnly(Side.CLIENT)
 //    @Override
 //    public float getShadowSize() {

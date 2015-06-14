@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -185,7 +186,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             super.onLivingUpdate();
         }
 
-      if (ticksSinceLastAttack >= 0) {
+      if (ticksSinceLastAttack >= 0) {  // used for jaw animation
         ++ticksSinceLastAttack;
         if (ticksSinceLastAttack > 1000) ticksSinceLastAttack = -1;  //  reset at arbitrary large value
       }
@@ -325,11 +326,12 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      * Returns the distance to the ground while the entity is flying.
      */
     public double getAltitude() {
-        // TODO: find alternative for getHeightValue
+      BlockPos entityPos = new BlockPos(posX, posY, posZ);
+      BlockPos groundPos = worldObj.getHorizon(entityPos);
 //        int blockX = (int) (posX - 0.5);
 //        int blockZ = (int) (posZ - 0.5);
 //        return posY - worldObj.getHeightValue(blockX, blockZ);
-        return 0;
+      return posY - groundPos.getY();
     }
     
     public DragonFlightWaypoint getWaypoint() {

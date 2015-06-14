@@ -153,63 +153,6 @@ public class DragonRenderer extends RenderLiving {
         glPopMatrix();
     }
 
-    // TODO: restore rendering layers
-
-//    /**
-//     * Queries whether should render the specified pass or not.
-//     */
-//    @Override
-//    public int shouldRenderPass(EntityLivingBase entity, int pass, float scale) {
-//        return shouldRenderPass((EntityTameableDragon) entity, pass, scale);
-//    }
-//
-//    public int shouldRenderPass(EntityTameableDragon dragon, int pass, float scale) {
-//        // update dragon model every second if enabled
-//        if (pass == 0 && updateModel && dragon.ticksExisted % 20 == 0) {
-//            initBreedModels();
-//        }
-//
-//        dragonModel.renderPass = pass;
-//
-//        switch (pass) {
-//            // pass 1 - saddle
-//            case 0:
-//                if (dragon.isSaddled()) {
-//                    bindTexture(dragonModel.saddleTexture);
-//                    return 1;
-//                }
-//                break;
-//
-//            // pass 2 - glow overlay
-//            case 1:
-//                bindTexture(dragonModel.glowTexture);
-//
-//                // enable blending
-//                glEnable(GL_BLEND);
-//                glBlendFunc(GL_ONE, GL_ONE);
-//
-//                // use full lighting
-//                glDisable(GL_LIGHTING);
-//
-//                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 65536, 0);
-//
-//                return 1;
-//
-//            // pass 3 - reset glow overlay
-//            case 2:
-//                glEnable(GL_LIGHTING);
-//                glDisable(GL_BLEND);
-//                break;
-//        }
-//
-//        return -1;
-//    }
-//@Override
-//protected void passSpecialRender(EntityLivingBase entity, double x, double y, double z) {
-//    // render the name label in doRender as a workaround for the incorrect
-//    // lighting when using model multipass rendering
-//}
-
     @Override
     protected void rotateCorpse(EntityLivingBase par1EntityLiving, float par2, float par3, float par4) {
         rotateCorpse((EntityTameableDragon) par1EntityLiving, par2, par3, par4);

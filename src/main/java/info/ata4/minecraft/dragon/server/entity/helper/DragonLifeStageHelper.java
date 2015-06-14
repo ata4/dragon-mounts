@@ -16,7 +16,7 @@ import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.*;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIFollowOwner;
+import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonFollowOwner;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.block.Block;
@@ -28,6 +28,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
@@ -219,18 +220,17 @@ public class DragonLifeStageHelper extends DragonHelper {
             
 //            // only hatchlings are small enough for doors
 //            // (eggs don't move on their own anyway and are ignored)
-//            // TODO: removed in 1.8?
 //            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
-            
+              // guessed, based on EntityAIRestrictOpenDoor
+              if (dragon.getNavigator() instanceof PathNavigateGround) {
+                PathNavigateGround pathNavigateGround = (PathNavigateGround)dragon.getNavigator();
+                pathNavigateGround.func_179691_c(lifeStage == HATCHLING);
+              }
+
             // update AI states so the egg won't move
 //            dragon.setNoAI(lifeStage == EGG);  stops egg from sitting on the ground properly :(
           changeAITasks(lifeStage, prevLifeStage);
-//            if (lifeStage == EGG) {
-//                // TODO: removed in 1.8?
-////                dragon.setPathToEntity(null);
-//                dragon.setAttackTarget(null);
-//            }
-            
+
             // update attribute modifier
             IAttributeInstance healthAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth);
             IAttributeInstance damageAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage);
@@ -395,7 +395,7 @@ public class DragonLifeStageHelper extends DragonHelper {
       tasks.addTask(5, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
       tasks.addTask(6, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
       tasks.addTask(7, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
-      tasks.addTask(8, new EntityAIFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
+      tasks.addTask(8, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
       tasks.addTask(8, new EntityAIPanicChild(dragon, 1)); // mutex 1
       tasks.addTask(9, new EntityAIWander(dragon, 1)); // mutex 1
       tasks.addTask(10, new EntityAIWatchIdle(dragon)); // mutex 2
