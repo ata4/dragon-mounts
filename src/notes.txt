@@ -39,3 +39,9 @@ DragonMounts
 22 = INDEX_BREED string = "ghost"
 23 = INDEX_REPRO_COUNT integer = 0
 24 = INDEX_TICKS_SINCE_CREATION short
+
+breath weapons
+fire
+lightning
+fireballs
+ice/snow
