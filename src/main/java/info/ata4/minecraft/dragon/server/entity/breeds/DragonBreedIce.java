@@ -11,9 +11,10 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -43,26 +44,25 @@ public class DragonBreedIce extends DragonBreed {
 
     @Override
     public void onUpdate(EntityTameableDragon dragon) {
-        // place some snow footprints where the dragon walks
-        if (dragon.isAdult() && !dragon.isFlying()) {
-            World world = dragon.worldObj;
-            for (int i = 0; i < 4; i++) {
-                if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
-                    continue;
-                }
-                
-                int bx = MathHelper.floor_double(dragon.posX + (i % 2 * 2 - 1) * 0.25);
-                int by = MathHelper.floor_double(dragon.posY);
-                int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
+      // place some snow footprints where the dragon walks
+      if (dragon.isAdult() && !dragon.isFlying()) {
+        World world = dragon.worldObj;
+        for (int i = 0; i < 4; i++) {
+          if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
+            continue;
+          }
 
-                // TODO: use utility class
-//                if (world.getBlock(bx, by, bz) == Blocks.air
-//                        && world.getBiomeGenForCoords(bx, bz).getFloatTemperature(bx, by, bz) < 0.8f
-//                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
-//                    world.setBlock(bx, by, bz, FOOTPRINT);
-//                }
-            }
+          double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
+          double by = dragon.posY + 0.5;
+          double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
+          BlockPos blockPos = new BlockPos(bx, by, bz);
+// from EntitySnowman.onLivingUpdate, with slight tweaks
+          if (world.getBlockState(new BlockPos(bx, by, bz)).getBlock().getMaterial() == Material.air
+                  && world.getBiomeGenForCoords(new BlockPos(bx, 0, bz)).getFloatTemperature(blockPos) <= 0.8F
+                  && FOOTPRINT.canPlaceBlockAt(world, blockPos)) {
+            world.setBlockState(blockPos, FOOTPRINT.getDefaultState());
+          }
         }
+      }
     }
-
 }

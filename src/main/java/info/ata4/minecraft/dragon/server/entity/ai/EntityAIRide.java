@@ -10,9 +10,10 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.BitSet;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
+
+import java.util.BitSet;
 
 /**
  * Abstract "AI" for player-controlled movements.

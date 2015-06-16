@@ -9,17 +9,14 @@
  */
 package info.ata4.minecraft.dragon;
 
-import info.ata4.minecraft.dragon.server.ServerProxy;
+import info.ata4.minecraft.dragon.server.CommonProxy;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.event.*;
 
 /**
  * Main control class for Forge.
@@ -43,7 +40,7 @@ public class DragonMounts {
         serverSide = "info.ata4.minecraft.dragon.server.ServerProxy",
         clientSide = "info.ata4.minecraft.dragon.client.ClientProxy"
     )
-    public static ServerProxy proxy;
+    public static CommonProxy proxy;
     
     @Instance(ID)
     public static DragonMounts instance;
@@ -68,6 +65,12 @@ public class DragonMounts {
     @EventHandler
     public void onInit(FMLInitializationEvent evt) {
         proxy.onInit(evt);
+    }
+
+    @EventHandler
+    public void onPostInit(FMLPostInitializationEvent event)
+    {
+        proxy.onPostInit(event);
     }
     
     @EventHandler

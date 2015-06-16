@@ -11,9 +11,6 @@ package info.ata4.minecraft.dragon.client.handler;
 
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.util.ResourceLocation;
@@ -23,6 +20,10 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Replaces the splash text with a random custom one sometimes.

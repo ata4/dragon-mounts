@@ -258,9 +258,9 @@ public class DragonAnimator {
         sitTimer.set(sitVal);
         
         // update jaw opening transition
-        // TODO: broken in 1.8, since attackTime doesn't exist anymore
-        //boolean jawFlag = (entity.attackTime < 20 && entity.attackTime > 15);
-        boolean jawFlag = false;
+        int ticksSinceLastAttack = entity.getTicksSinceLastAttack();
+        final int JAW_OPENING_TIME_FOR_ATTACK = 5;
+        boolean jawFlag = (ticksSinceLastAttack >= 0 && ticksSinceLastAttack < JAW_OPENING_TIME_FOR_ATTACK);
         jawTimer.add(jawFlag ? 0.2f : -0.2f);
 
         // update speed transition

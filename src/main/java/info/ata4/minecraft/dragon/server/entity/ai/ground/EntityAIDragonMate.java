@@ -11,10 +11,11 @@ package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
-import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 /**
  * Derivative EntityAIMate class to deal with some special values that can't be
@@ -89,7 +90,7 @@ public class EntityAIDragonMate extends EntityAIBase {
     private EntityTameableDragon getNearbyMate() {
         double range = 12;
         List<Entity> nearbyEntities = theWorld.getEntitiesWithinAABB(EntityTameableDragon.class,
-                dragon.getBoundingBox().expand(range, range, range));
+                dragon.getEntityBoundingBox().expand(range, range, range));
         
         for (Entity entity : nearbyEntities) {
             EntityTameableDragon nearbyDragon = (EntityTameableDragon) entity;

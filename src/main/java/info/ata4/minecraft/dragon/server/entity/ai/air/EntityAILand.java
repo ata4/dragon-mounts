@@ -30,20 +30,24 @@ public class EntityAILand extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        if (!dragon.isFlying() || dragon.getRidingPlayer() != null) {
-            return false;
-        }
-        
-        landTarget = RandomPositionGenerator.findRandomTarget(dragon, 16, 256);
-        
-        return landTarget != null;
+      if (dragon.isFlying() && dragon.isTamed() && dragon.getRidingPlayer() == null) {
+        return true;
+      }
+      return false;
     }
 
     @Override
+    public boolean continueExecuting() {
+      return dragon.isFlying();
+    }
+
+
+  @Override
     public void startExecuting() {
-        landTarget = new Vec3(landTarget.xCoord, landTarget.yCoord, 0);
-        dragon.getWaypoint().setVector(landTarget);
-        dragon.setMoveSpeedAirHoriz(1);
-        dragon.setMoveSpeedAirVert(0);
+      landTarget = RandomPositionGenerator.findRandomTarget(dragon, 16, 256);
+      landTarget = new Vec3(landTarget.xCoord, 0, landTarget.zCoord);
+      dragon.getWaypoint().setVector(landTarget);
+      dragon.setMoveSpeedAirHoriz(1);
+      dragon.setMoveSpeedAirVert(0);
     }
 }

@@ -48,9 +48,9 @@ public class DragonEggBlockHandler {
         
         // clear dragon egg block
         world.setBlockToAir(pos);
-        
+
         // create dragon egg entity on server
-        if (evt.world.isRemote) {
+        if (!evt.world.isRemote) { // this was inverted, i.e. evt.world.isRemote, but it should surely be this way
             EntityTameableDragon dragon = new EntityTameableDragon(world);
             dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getName());

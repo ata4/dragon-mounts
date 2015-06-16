@@ -11,9 +11,10 @@ package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -22,7 +23,7 @@ import net.minecraft.world.World;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIFollowOwner extends EntityAIBase {
+public class EntityAIDragonFollowOwner extends EntityAIBase {
 
     private EntityTameableDragon dragon;
     private Entity owner;
@@ -34,7 +35,7 @@ public class EntityAIFollowOwner extends EntityAIBase {
     private float minDist;
     private boolean avoidWater;
 
-    public EntityAIFollowOwner(EntityTameableDragon dragon, double speed, float minDist, float maxDist) {
+    public EntityAIDragonFollowOwner(EntityTameableDragon dragon, double speed, float minDist, float maxDist) {
         this.dragon = dragon;
         this.speed = speed;
         this.minDist = minDist;
@@ -90,10 +91,18 @@ public class EntityAIFollowOwner extends EntityAIBase {
      */
     @Override
     public void startExecuting() {
-        updateTicks = 0;
-        // TODO: removed in 1.8?
-//        avoidWater = dragon.getNavigator().getAvoidsWater();
-//        dragon.getNavigator().setAvoidsWater(false);
+      updateTicks = 0;
+
+      //        avoidWater = dragon.getNavigator().getAvoidsWater();
+      //        dragon.getNavigator().setAvoidsWater(false);
+      // guess, based on vanilla EntityAIFollowOwner
+      PathNavigate pathNavigate = dragon.getNavigator();
+      if (pathNavigate instanceof PathNavigateGround) {
+        PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
+        this.avoidWater = pathNavigateGround.func_179689_e();
+        pathNavigateGround.func_179690_a(false);
+      }
+
     }
 
     /**
@@ -101,10 +110,13 @@ public class EntityAIFollowOwner extends EntityAIBase {
      */
     @Override
     public void resetTask() {
-        owner = null;
-        nav.clearPathEntity();
-        // TODO: removed in 1.8?
-//        dragon.getNavigator().setAvoidsWater(avoidWater);
+      owner = null;
+      nav.clearPathEntity();
+      PathNavigate pathNavigate = dragon.getNavigator();
+      if (pathNavigate instanceof PathNavigateGround) {
+        PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
+         pathNavigateGround.func_179690_a(avoidWater);  // best guess, based on vanilla EntityAIFollowOwner
+      }
     }
 
     /**
@@ -143,22 +155,29 @@ public class EntityAIFollowOwner extends EntityAIBase {
         
         // teleport dragon near owner
         int minX = MathHelper.floor_double(owner.posX) - 2;
-        int minY = MathHelper.floor_double(owner.posZ) - 2;
-        int minZ = MathHelper.floor_double(owner.getBoundingBox().minY);
+        int minZ = MathHelper.floor_double(owner.posZ) - 2;
+        int minY = MathHelper.floor_double(owner.getEntityBoundingBox().minY);
 
-        // TODO: replace with utility class
-//        for (int bx = 0; bx <= 4; ++bx) {
-//            for (int by = 0; by <= 4; ++by) {
-//                if ((bx < 1 || by < 1 || bx > 3 || by > 3) &&
-//                        World.doesBlockHaveSolidTopSurface(world, minX + bx, minZ - 1, minY + by) &&
-//                        !world.getBlock(minX + bx, minZ, minY + by).isNormalCube() &&
-//                        !world.getBlock(minX + bx, minZ + 1, minY + by).isNormalCube()) {
-//                    dragon.setLocationAndAngles(minX + bx + 0.5, minZ, minY + by + 0.5,
-//                            dragon.rotationYaw, dragon.rotationPitch);
-//                    nav.clearPathEntity();
-//                    return;
-//                }
-//            }
-//        }
+          // copied from vanilla EntityAIFollowOwner
+          // search for a position 2 blocks away from owner which is on a solid surface and has space above.
+          //  doesn't account for the dragon's size, but never mind
+        for (int bx = 0; bx <= 4; ++bx) {
+          for (int bz = 0; bz <= 4; ++bz) {
+            if (bx < 1 || bz < 1 || bx > 3 || bz > 3) {
+              if (World.doesBlockHaveSolidTopSurface(world, new BlockPos(minX + bx, minY - 1, minZ + bz))) {
+                BlockPos testPos = new BlockPos(minX + bx, minY, minZ + bz);
+                if (world.getBlockState(testPos).getBlock().isPassable(world, testPos)) {
+                  testPos = new BlockPos(minX + bx, minY + 1, minZ + bz);
+                  if (world.getBlockState(testPos).getBlock().isPassable(world, testPos)) {
+                    dragon.setLocationAndAngles(minX + bx + 0.5, minY, minZ + bz + 0.5,
+                                                dragon.rotationYaw, dragon.rotationPitch);
+                    nav.clearPathEntity();
+                    return;
+                  }
+                }
+              }
+            }
+          }
+        }
     }
 }

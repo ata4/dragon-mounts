@@ -1,0 +1,41 @@
+outstanding bugs
+- tick handlers
+- bone for sit doesn't work.
+
+-HOME for AI?
+
+DataWatcher usage:
+Entity
+0 = STATUS byte = 0
+   Known flags: 0) is burning; 1) is sneaking; 2) is riding something; 3) is sprinting; 4) is eating
+1 = AIR short = 300 amount of air / breath
+2 = CUSTOM NAME TAG string = ""
+3 = ALWAYS RENDER NAME TAG byte = 0
+4 = SILENT byte = 0, 1 = silent
+
+EntityLivingBase
+6 = HEALTH float = 60.0
+7 = int = 0  Affected by a potion, contains the colour of the effect
+8 = byte = 0  EnumParticleTypes.SPELL_MOB_AMBIENT vs EnumParticleTypes.SPELL_MOB  - beacon effects vs other effects?
+9 = byte = 0  Number of arrows stuck in entity
+
+EntityAgeable
+12 = JUVENILE/ADULT flag byte = -1
+
+EntityLiving
+15 = AI enable/disable byte = 0
+
+EntityTameable
+16 = TAMED_FLAGS byte = 0;
+     4 = tamed?
+     1 = sitting?
+17 = OWNER_ID string = ""
+
+DragonMounts
+18 = INDEX_FLYING byte = 0
+19 = INDEX_CAN_FLY byte = 0
+20 = INDEX_SADDLED byte = 0
+21 = INDEX_BREEDER string = "Player63"
+22 = INDEX_BREED string = "ghost"
+23 = INDEX_REPRO_COUNT integer = 0
+24 = INDEX_TICKS_SINCE_CREATION short

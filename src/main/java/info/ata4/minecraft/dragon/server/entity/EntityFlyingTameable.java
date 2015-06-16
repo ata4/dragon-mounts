@@ -12,18 +12,20 @@ package info.ata4.minecraft.dragon.server.entity;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
-import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 /**
  *
@@ -53,8 +55,10 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private float yawAdd;
     private int yawSpeed = 30;
     private int inAirTicks;
-   
-    public EntityFlyingTameable(World world) {
+
+  protected int ticksSinceLastAttack = -1;
+
+  public EntityFlyingTameable(World world) {
         super(world);
         waypoint = new DragonFlightWaypoint(this);
         airTasks = new EntityAITasks(world != null ? world.theProfiler : null);
@@ -98,16 +102,20 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     /**
      * Called when the mob is falling. Calculates and applies fall damage.
      */
-    // TODO: doesn't exist in 1.8
-//    @Override
-//    protected void fall(float par1) {
-//        // ignore fall damage if the entity can fly
-//        if (!isCanFly()) {
-//            super.fall(par1);
-//        }
-//    }
-    
-    /**
+    @Override
+    public void fall(float distance, float damageMultiplier)
+    {
+        // ignore fall damage if the entity can fly
+      if (!isCanFly()) {
+          super.fall(distance, damageMultiplier);
+      }
+    }
+
+  public int getTicksSinceLastAttack() {
+    return ticksSinceLastAttack;
+  }
+
+  /**
      * Causes this entity to lift off.
      */
     public void liftOff() {
@@ -178,6 +186,11 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         } else {
             super.onLivingUpdate();
         }
+
+      if (ticksSinceLastAttack >= 0) {  // used for jaw animation
+        ++ticksSinceLastAttack;
+        if (ticksSinceLastAttack > 1000) ticksSinceLastAttack = -1;  //  reset at arbitrary large value
+      }
     }
     
     private void onUpdateFlyingClient() {
@@ -263,7 +276,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         moveEntity(motionX, motionY, motionZ);
  
         // update AI
-        // TODO: isAIEnabled is missing in 1.8
+
 //        if (isAIEnabled()) {
             worldObj.theProfiler.startSection("newAi");
             updateAITasks();
@@ -276,7 +289,8 @@ public abstract class EntityFlyingTameable extends EntityTameable {
 //        }
 
         // apply collision
-        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this, getBoundingBox().expand(0.2, 0, 0));
+        List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
+                                                                              getEntityBoundingBox().expand(0.2, 0, 0));
         if (entities != null && !entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity.canBePushed()) {
@@ -313,11 +327,12 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      * Returns the distance to the ground while the entity is flying.
      */
     public double getAltitude() {
-        // TODO: find alternative for getHeightValue
+      BlockPos entityPos = new BlockPos(posX, posY, posZ);
+      BlockPos groundPos = worldObj.getHorizon(entityPos);
 //        int blockX = (int) (posX - 0.5);
 //        int blockZ = (int) (posZ - 0.5);
 //        return posY - worldObj.getHeightValue(blockX, blockZ);
-        return 0;
+      return posY - groundPos.getY();
     }
     
     public DragonFlightWaypoint getWaypoint() {
@@ -355,7 +370,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     /**
      * Sets new relative speed multiplier for the vertical flying speed.
      * 
-     * @param airSpeedHorizonal new relative vertical speed multiplier
+     * @param airSpeedVertical new relative vertical speed multiplier
      */
     public void setMoveSpeedAirVert(double airSpeedVertical) {
         L.trace("setMoveSpeedAirVert({})", airSpeedVertical);

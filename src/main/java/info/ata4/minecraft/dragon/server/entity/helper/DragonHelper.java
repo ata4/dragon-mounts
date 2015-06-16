@@ -10,9 +10,10 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.Random;
 import net.minecraft.entity.DataWatcher;
 import net.minecraft.nbt.NBTTagCompound;
+
+import java.util.Random;
 
 /**
  *

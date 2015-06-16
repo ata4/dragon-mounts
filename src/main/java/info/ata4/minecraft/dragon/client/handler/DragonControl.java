@@ -10,13 +10,14 @@
 package info.ata4.minecraft.dragon.client.handler;
 
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
-import java.util.BitSet;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import org.lwjgl.input.Keyboard;
+
+import java.util.BitSet;
 
 /**
  * Client side event handler for dragon control messages.
