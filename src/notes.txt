@@ -45,3 +45,34 @@ fire
 lightning
 fireballs
 ice/snow
+
+thoughts-
+could use an entityemitter with breath aiming info
+or alternatively just packets (server sends regular updates on breath beam position to clients)
+or - always use dragon head pos, pitch, & yaw (or aim point) for beam origin rendering?
+
+spawn EntityFX as per vanilla?  or just use custom rendering based on breath beam?
+
+packet might be
+timestamp (byte)
+entityID
+origin [x,y,z] in packed format, 2 bytes per axis (say - lsb is the fractional position, msb is the world position, snap to
+   entity position)
+yaw and pitch, both as short
+Datawatcher instead?
+
+smooth out any jerks in aiming position?
+
+Want it to look best from the client who is controlling the dragon
+-Will be best to tie the origin to the dragon's head always, also the aim.  Collision checks on client for rendering
+--> send to the server where the player thinks the beam is starting & aiming
+--> server performs sanity check but otherwise trusts the client information.  Does collision checks etc itself
+--> server sends to other clients in step with entity info.  client renders with beam bound to head, uses aiming direction from
+    server.
+
+
+
+
+
+
+
