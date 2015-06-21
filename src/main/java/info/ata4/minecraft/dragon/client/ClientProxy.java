@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.client;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.client.handler.DragonControl;
+import info.ata4.minecraft.dragon.client.handler.TextureStitcherBreathFX;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
@@ -22,13 +23,21 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class ClientProxy extends CommonProxy {
-    
+
+    @Override
+    public void onPreInit(FMLPreInitializationEvent evt)
+    {
+      super.onPreInit(evt);
+      MinecraftForge.EVENT_BUS.register(new TextureStitcherBreathFX());
+    }
+
     @Override
     public void onInit(FMLInitializationEvent evt) {
         super.onInit(evt);

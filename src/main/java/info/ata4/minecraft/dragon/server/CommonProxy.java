@@ -22,10 +22,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -43,8 +40,13 @@ public class CommonProxy {
     public SimpleNetworkWrapper getNetwork() {
         return network;
     }
-    
-    public void onInit(FMLInitializationEvent evt) {
+
+  public void onPreInit(FMLPreInitializationEvent evt)
+  {
+  }
+
+
+  public void onInit(FMLInitializationEvent evt) {
         registerEntities();
 
         if (DragonMounts.instance.getConfig().isEggsInChests()) {

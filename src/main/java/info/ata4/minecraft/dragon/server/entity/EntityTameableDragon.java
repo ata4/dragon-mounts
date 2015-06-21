@@ -11,6 +11,7 @@ package info.ata4.minecraft.dragon.server.entity;
 
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
+import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
@@ -196,6 +197,13 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         }
         
         super.onLivingUpdate();
+
+      // todo for testing only!!!
+      if (worldObj.isRemote) {
+        BreathWeaponEmitter emitter = new BreathWeaponEmitter();
+        emitter.updateFromDragon(this);
+        emitter.spawnBreathParticles(worldObj);
+      }
     }
     
     /**
