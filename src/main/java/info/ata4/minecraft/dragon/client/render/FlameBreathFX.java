@@ -1,7 +1,10 @@
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.util.math.RotatingQuad;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -10,6 +13,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+
+import java.util.Random;
 
 /**
  * Created by EveryoneElse on 21/06/2015.
@@ -28,6 +33,9 @@ public class FlameBreathFX extends EntityFX {
   public int igniteDuration = 5;
   public float igniteChance = 0.12f;
 
+  private final float MAX_ALPHA = 0.99F;
+  private final double INITIAL_SPEED = 0.6; // blocks per tick
+
   public FlameBreathFX(World world, double x, double y, double z, double directionX, double directionY, double directionZ,
                        float partialTicksElapsed) {
     this(world, x, y, z, directionX, directionY, directionZ, 4, 40, partialTicksElapsed);
@@ -39,7 +47,6 @@ public class FlameBreathFX extends EntityFX {
 
     Vec3 direction = new Vec3(directionX, directionY, directionZ).normalize();
 
-    final double INITIAL_SPEED = 0.4; // blocks per tick
     final double SPEED_VARIATION_FACTOR = 0.1;
     motionX = direction.xCoord * INITIAL_SPEED * (1 + SPEED_VARIATION_FACTOR * rand.nextGaussian());
     motionY = direction.yCoord * INITIAL_SPEED * (1 + SPEED_VARIATION_FACTOR * rand.nextGaussian());
@@ -58,7 +65,7 @@ public class FlameBreathFX extends EntityFX {
     particleGravity = Blocks.fire.blockParticleGravity;  /// arbitrary block!
     particleMaxSize = size + (float)rand.nextGaussian() * (size / 2f);
     particleMaxAge = age + (int) (rand.nextFloat() * (age / 2f));
-    this.particleAlpha = 0.99F;  // a value less than 1 turns on alpha blending
+    this.particleAlpha = MAX_ALPHA;  // a value less than 1 turns on alpha blending
   }
 
 //    public FlameFX(World world, double x, double y, double z, double a, double b, double c, FlameEmitter ft) {
@@ -91,18 +98,63 @@ public class FlameBreathFX extends EntityFX {
   }
 
   @Override
+  public void func_180434_a(WorldRenderer worldRenderer, Entity entity, float partialTick,
+                            float yawX, float pitchXZ, float yawZ, float pitchYsinYaw, float pitchYcosYaw)
+  {
+    double minU = this.particleIcon.getMinU();
+    double maxU = this.particleIcon.getMaxU();
+    double minV = this.particleIcon.getMinV();
+    double maxV = this.particleIcon.getMaxV();
+    RotatingQuad tex = new RotatingQuad(minU, minV, maxU, maxV);
+    Random random = new Random();
+    if (random.nextBoolean()) {
+      tex.mirrorLR();
+    }
+    tex.rotate90(random.nextInt(4));
+
+    double scale = 0.1F * this.particleScale;
+    double x = (float)(this.prevPosX + (this.posX - this.prevPosX) * (double)partialTick - interpPosX);
+    double y = (float)(this.prevPosY + (this.posY - this.prevPosY) * (double)partialTick - interpPosY);
+    double z = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * (double)partialTick - interpPosZ);
+    worldRenderer.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
+    worldRenderer.addVertexWithUV(x - yawX * scale - pitchYsinYaw * scale, y - pitchXZ * scale,
+                                  z - yawZ * scale - pitchYcosYaw * scale,  tex.getU(0),  tex.getV(0));
+    worldRenderer.addVertexWithUV(x - yawX * scale + pitchYsinYaw * scale, y + pitchXZ * scale,
+                                  z - yawZ * scale + pitchYcosYaw * scale,  tex.getU(1),  tex.getV(1));
+    worldRenderer.addVertexWithUV(x + yawX * scale + pitchYsinYaw * scale,  y + pitchXZ * scale,
+                                  z + yawZ * scale + pitchYcosYaw * scale,  tex.getU(2),  tex.getV(2));
+    worldRenderer.addVertexWithUV(x + yawX * scale - pitchYsinYaw * scale,  y - pitchXZ * scale,
+                                  z + yawZ * scale - pitchYcosYaw * scale,  tex.getU(3),  tex.getV(3));
+  }
+
+  @Override
   public void onUpdate() {
     prevPosX = posX;
     prevPosY = posY;
     prevPosZ = posZ;
 
-    float lifetimeRate = (float) particleAge / (float) particleMaxAge;
-    particleScale = 1 + MathHelper.sin(lifetimeRate * (float) Math.PI) * particleMaxSize;
+    float lifetimeFraction = (float) particleAge / (float) particleMaxAge;
+    lifetimeFraction = MathHelper.clamp_float(lifetimeFraction, 0.0F, 1.0F);
+
+    final float YOUNG_AGE = 0.25F;
+    final float OLD_AGE = 0.75F;
+
+    if (lifetimeFraction < YOUNG_AGE) {
+      particleScale = 1 + MathHelper.sin(lifetimeFraction / YOUNG_AGE * (float) Math.PI / 2.0F) * particleMaxSize;
+      particleAlpha = MAX_ALPHA;
+    } else if (lifetimeFraction < OLD_AGE) {
+      particleScale = 1 + particleMaxSize;
+      particleAlpha = MAX_ALPHA;
+    } else {
+      particleScale = 1 + particleMaxSize;
+      particleAlpha = MAX_ALPHA * (1 - lifetimeFraction);
+    }
+
     setSize(0.5f * particleScale, 0.5f * particleScale);
 //        yOffset = height / 2f;  todo still necessary?
 
     // spawn a smoke trail after some time
-    if (smokeChance != 0 && rand.nextFloat() < lifetimeRate && rand.nextFloat() <= smokeChance) {
+    if (smokeChance != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= smokeChance) {
       worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
     }
 
@@ -141,6 +193,12 @@ public class FlameBreathFX extends EntityFX {
     // collision ages particles faster
     if (isCollided) {
       particleAge += 5;
+    }
+
+    // slow particles age very fast
+    final double SPEED_THRESHOLD = INITIAL_SPEED * 0.25;
+    if (motionX * motionX + motionY * motionY + motionZ * motionZ < SPEED_THRESHOLD * SPEED_THRESHOLD) {
+      particleAge += 20;
     }
 
 //        // ignite environment
