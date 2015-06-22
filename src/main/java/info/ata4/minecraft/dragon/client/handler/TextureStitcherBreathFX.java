@@ -11,7 +11,7 @@ public class TextureStitcherBreathFX
 {
   @SubscribeEvent
   public void stitcherEventPre(TextureStitchEvent.Pre event) {
-    ResourceLocation flameRL = new ResourceLocation("dragonmounts:entities/fireball4");
+    ResourceLocation flameRL = new ResourceLocation("dragonmounts:entities/breath_fire");
     event.map.registerSprite(flameRL);
   }
 }

@@ -15,7 +15,7 @@ import net.minecraft.world.World;
  * Created by EveryoneElse on 21/06/2015.
  */
 public class FlameBreathFX extends EntityFX {
-  private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/fireball4");
+  private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
   private Entity owner;
 
   protected float particleMaxSize;
