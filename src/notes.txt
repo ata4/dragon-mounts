@@ -70,9 +70,18 @@ Want it to look best from the client who is controlling the dragon
 --> server sends to other clients in step with entity info.  client renders with beam bound to head, uses aiming direction from
     server.
 
+On client side: spawn EntityFX
+On server side: dragonentity keeps track of the breath location over time- eg each tick adds another sphere coordinate
+  to a list, updates position of all, tracks them until they die.  Create a list of all touched blocks, for each one which
+  is a block, burn it.  Sustained contact for a long time does smelting (eg sand to glass).  Other breaths do other
+  effects, eg freezing to break blocks, skeletal dragon kills living things (turns to dead bush?) etc.
+
+------------------
+need head position
+Each model part has:
+  rotationPointX, Y, Z and rotateAngleX Y Z
+  offsetX, Y, Z
 
 
 
-
-
-
+head: rotPtX = 0, rotPtY = -2.389, rotPtZ = -34.9967
