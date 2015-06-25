@@ -21,6 +21,9 @@ import info.ata4.minecraft.dragon.util.math.Spline;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonAnimator {
+    
+    // constants
+    private static final int JAW_OPENING_TIME_FOR_ATTACK = 5;
 
     // entity parameters
     private final EntityTameableDragon entity;
@@ -259,7 +262,7 @@ public class DragonAnimator {
         
         // update jaw opening transition
         int ticksSinceLastAttack = entity.getTicksSinceLastAttack();
-        final int JAW_OPENING_TIME_FOR_ATTACK = 5;
+        
         boolean jawFlag = (ticksSinceLastAttack >= 0 && ticksSinceLastAttack < JAW_OPENING_TIME_FOR_ATTACK);
         jawTimer.add(jawFlag ? 0.2f : -0.2f);
 
