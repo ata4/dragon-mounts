@@ -80,8 +80,23 @@ On server side: dragonentity keeps track of the breath location over time- eg ea
 need head position
 Each model part has:
   rotationPointX, Y, Z and rotateAngleX Y Z
-  offsetX, Y, Z
+  offsetX, Y, Z  - always zero?
 
+It appears that rotation is done without translate, from body 0,0,0
 
 
 head: rotPtX = 0, rotPtY = -2.389, rotPtZ = -34.9967
+
+Checking EntityFX path and effect of size change on path
+1) without changing scale - flies straight
+2) changing particleScale but not calling setSize - flies straight
+3) changing particleScale and calling setSize while not flying - render position moves
+4) changing particleScale and calling setSize while not flying, and moveEntity by half of width - no problem.
+
+Changing particle size -> doesn't move left edge, so centre moves at half of width increase
+--> must decrease by half the width increase?
+
+5) changing width and height fields no effect when not moving
+6) changing width and height fields, and setEntityBoundingBox, -> entity moves a long way.?
+
+Weird stuff.  Just set a suitable initial size and leave it.  vary particleScale only.

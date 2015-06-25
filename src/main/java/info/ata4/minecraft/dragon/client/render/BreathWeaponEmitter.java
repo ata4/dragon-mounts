@@ -22,19 +22,30 @@ public class BreathWeaponEmitter {
     direction = dragon.getLook(1.0F);
   }
 
+  private static boolean spawnedOne = false;
+  static private int spawnSkip = 0;
   public void spawnBreathParticles(World world)
   {
+//    if (spawnedOne) return;
+//    TestEntityFX testEntityFX = new TestEntityFX(world, origin.xCoord, origin.yCoord + 5, origin.zCoord,
+//            0, 0, 0, 1.0F);
+//    Minecraft.getMinecraft().effectRenderer.addEffect(testEntityFX);
+//    spawnedOne = true;
+//    return;
+
     if (previousDirection == null) previousDirection = direction;
     if (previousOrigin == null) previousOrigin = origin;
     final int PARTICLES_PER_TICK = 4;
     for (int i = 0; i < PARTICLES_PER_TICK; ++i) {
-      float fraction = 1.0F / PARTICLES_PER_TICK;
-      float distanceFraction = 1 - fraction;
-      Vec3 interpDirection = interpolateVec(previousDirection, direction, fraction);
-      Vec3 interpOrigin = interpolateVec(previousOrigin, origin, fraction);
-      FlameBreathFX flameBreathFX = new FlameBreathFX(world, interpOrigin.xCoord, interpOrigin.yCoord, interpOrigin.zCoord,
-                                                      interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
-                                                      distanceFraction);
+      if (++spawnSkip < 399) continue;        //todo
+      spawnSkip = 0;
+      float partialTickHeadStart = i / (float)PARTICLES_PER_TICK;
+      Vec3 interpDirection = interpolateVec(previousDirection, direction, partialTickHeadStart);
+      Vec3 interpOrigin = interpolateVec(previousOrigin, origin, partialTickHeadStart);
+      FlameBreathFX flameBreathFX = FlameBreathFX.createFlameBreathFX(world,
+              interpOrigin.xCoord, interpOrigin.yCoord + 10, interpOrigin.zCoord, //todo
+              interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
+              partialTickHeadStart);
       Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);
     }
   }

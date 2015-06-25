@@ -72,7 +72,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 
     // server/client delegates
     private Map<Class, DragonHelper> helpers;
-    
+
+    DragonHeadPositionHelper dragonHeadPositionHelper;
+
     // client-only delegates
     private DragonAnimator animator;
     
@@ -95,7 +97,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         // enables walking over blocks
         stepHeight = 1;
-        
+        dragonHeadPositionHelper = new DragonHeadPositionHelper(this);
     }
     
     @Override
@@ -178,7 +180,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         for (DragonHelper helper : helpers.values()) {
             helper.onLivingUpdate();
         }
-        
+
         if (isClient()) {
             if (!isEgg()) {
                 animator.setOnGround(!isFlying());
@@ -197,6 +199,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         }
         
         super.onLivingUpdate();
+
+        dragonHeadPositionHelper.getThroatPosition();
 
       // todo for testing only!!!
       if (worldObj.isRemote) {
