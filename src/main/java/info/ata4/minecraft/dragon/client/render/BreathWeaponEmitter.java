@@ -37,13 +37,13 @@ public class BreathWeaponEmitter {
     if (previousOrigin == null) previousOrigin = origin;
     final int PARTICLES_PER_TICK = 4;
     for (int i = 0; i < PARTICLES_PER_TICK; ++i) {
-      if (++spawnSkip < 399) continue;        //todo
+//      if (++spawnSkip < 399) continue;
       spawnSkip = 0;
       float partialTickHeadStart = i / (float)PARTICLES_PER_TICK;
       Vec3 interpDirection = interpolateVec(previousDirection, direction, partialTickHeadStart);
       Vec3 interpOrigin = interpolateVec(previousOrigin, origin, partialTickHeadStart);
       FlameBreathFX flameBreathFX = FlameBreathFX.createFlameBreathFX(world,
-              interpOrigin.xCoord, interpOrigin.yCoord + 10, interpOrigin.zCoord, //todo
+              interpOrigin.xCoord, interpOrigin.yCoord + 10 , interpOrigin.zCoord, // todo
               interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
               partialTickHeadStart);
       Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);

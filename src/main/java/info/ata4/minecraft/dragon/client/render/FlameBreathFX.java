@@ -1,5 +1,6 @@
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.RotatingQuad;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -34,6 +35,10 @@ public class FlameBreathFX extends EntityFX {
   private static final double INITIAL_SPEED = 0.6; // blocks per tick
   private static final float AABB_RELATIVE_TO_SIZE = 0.5F;  // how big is the AABB relative to the fireball size.
 
+  private static final double SPEED_VARIATION_FACTOR = 0.1;  // plus or minus this amount (3 std deviations)
+  private static final double AGE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
+  private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
+
   public static FlameBreathFX createFlameBreathFX(World world, double x, double y, double z,
                                                   double directionX, double directionY, double directionZ,
                                                   float partialTicksHeadStart)
@@ -41,10 +46,9 @@ public class FlameBreathFX extends EntityFX {
     Vec3 direction = new Vec3(directionX, directionY, directionZ).normalize();
 
     Random rand = new Random();
-    final double SPEED_VARIATION_FACTOR = 0.0;  //0.1; todo
-    double actualMotionX = direction.xCoord * INITIAL_SPEED * (1 + SPEED_VARIATION_FACTOR * rand.nextGaussian());
-    double actualMotionY = direction.yCoord * INITIAL_SPEED * (1 + SPEED_VARIATION_FACTOR * rand.nextGaussian());
-    double actualMotionZ = direction.zCoord * INITIAL_SPEED * (1 + SPEED_VARIATION_FACTOR * rand.nextGaussian());
+    double actualMotionX = direction.xCoord + INITIAL_SPEED * MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_FACTOR);
+    double actualMotionY = direction.yCoord + INITIAL_SPEED * MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_FACTOR);
+    double actualMotionZ = direction.zCoord + INITIAL_SPEED * MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_FACTOR);
 
     x += actualMotionX * partialTicksHeadStart;
     y += actualMotionY * partialTicksHeadStart;
@@ -52,8 +56,10 @@ public class FlameBreathFX extends EntityFX {
     return new FlameBreathFX(world, x, y, z, actualMotionX, actualMotionY, actualMotionZ);
   }
 
+  private static final float DEFAULT_BALL_SIZE = 1.0F;
+  private static final int DEFAULT_AGE_IN_TICKS = 40;
   private FlameBreathFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-    this(world, x, y, z, velocityX, velocityY, velocityZ, 0.6F, 40);
+    this(world, x, y, z, velocityX, velocityY, velocityZ, DEFAULT_BALL_SIZE, DEFAULT_AGE_IN_TICKS);
   }
 
   private FlameBreathFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ,
@@ -61,19 +67,19 @@ public class FlameBreathFX extends EntityFX {
     super(world, x, y, z, velocityX, velocityY, velocityZ);
 
     particleGravity = Blocks.fire.blockParticleGravity;  /// arbitrary block!  maybe not even required.
-    particleMaxSize = size; // + (float)rand.nextGaussian() * (size / 2f); todo
-    particleMaxAge = age;// + (int) (rand.nextFloat() * (age / 2f));  todo
+    particleMaxSize = size * (float)MathX.getTruncatedGaussian(rand, 1, SIZE_VARIATION_FACTOR);
+    particleMaxAge = (int)(age * MathX.getTruncatedGaussian(rand, 1, AGE_VARIATION_FACTOR));
     this.particleAlpha = MAX_ALPHA;  // a value less than 1 turns on alpha blending
     currentParticleSize = getParticleSize(0.0F);
 
-    System.out.format("Constructor pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
+//    System.out.format("Constructor pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
+//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
 
     float initialCollisionSize = AABB_RELATIVE_TO_SIZE * currentParticleSize;
     changeSize(initialCollisionSize, initialCollisionSize);  // using setSize causes trouble.
 
-    System.out.format("Constructor2 pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
+//    System.out.format("Constructor2 pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
+//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
 
     //undo random velocity variation of vanilla constructor
     motionX = velocityX;
@@ -117,6 +123,16 @@ public class FlameBreathFX extends EntityFX {
     return 1;
   }
 
+  // this function is used by EffectRenderer.addEffect() to determine whether depthmask writing should be on or not.
+  // by default, vanilla turns off depthmask writing for entityFX with alphavalue less than 1.0
+  // FlameBreathFX uses alphablending but we want depthmask writing on, otherwise translucent objects (such as water)
+  //   render over the top of our breath.
+  @Override
+  public float func_174838_j()
+  {
+    return 1.0F;
+  }
+
   @Override
   public int getBrightnessForRender(float partialTick)
   {
@@ -125,7 +141,7 @@ public class FlameBreathFX extends EntityFX {
 
   private float getParticleSize(float fractionOfFullSize)
   {
-    final float INITIAL_SIZE = 0.1F;
+    final float INITIAL_SIZE = 0.2F;
     return INITIAL_SIZE + (particleMaxSize - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
   }
 
@@ -149,11 +165,9 @@ public class FlameBreathFX extends EntityFX {
     double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY;
     double z = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTick - interpPosZ;
 
-    System.out.format("FlameBreathFX pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f partialTick= %.2f\n",
-                      posX, posY, posZ, prevPosX, prevPosY, prevPosZ, partialTick);
-    System.out.format("FlameBreathFX [x,y,z]= %.3f, %.3f, %.3f\n", x, y, z);
-
-     //todo
+//    System.out.format("FlameBreathFX pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f partialTick= %.2f\n",
+//                      posX, posY, posZ, prevPosX, prevPosY, prevPosZ, partialTick);
+//    System.out.format("FlameBreathFX [x,y,z]= %.3f, %.3f, %.3f\n", x, y, z);
 
     worldRenderer.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
     worldRenderer.addVertexWithUV(x - yawX * scale - pitchYsinYaw * scale, y - pitchXZ * scale,
@@ -186,9 +200,9 @@ public class FlameBreathFX extends EntityFX {
       particleAlpha = MAX_ALPHA * (1 - lifetimeFraction);
     }
 
-    changeSize(currentParticleSize, currentParticleSize);  // note - will change posX, posY, posZ to keep centre constant when resizing
+    changeSize(currentParticleSize * AABB_RELATIVE_TO_SIZE, currentParticleSize * AABB_RELATIVE_TO_SIZE);  // note - will change posX, posY, posZ to keep centre constant when resizing
 
-    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 16.0F; // factor to convert from particleSize to particleScale
+    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 5.0F; // factor to convert from particleSize to particleScale
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 
     // spawn a smoke trail after some time
@@ -210,16 +224,16 @@ public class FlameBreathFX extends EntityFX {
 
 //        motionY += 0.02;   what's this for?  why rise?
 
-    System.out.format("onUpdatePre pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
+//    System.out.format("onUpdatePre pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
+//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
 
     prevPosX = posX;
     prevPosY = posY;
     prevPosZ = posZ;
     moveEntity(motionX, motionY, motionZ);
 
-    System.out.format("onUpdatePost pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
+//    System.out.format("onUpdatePost pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
+//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
 
 
 //        if (posY == prevPosY) {
@@ -243,12 +257,12 @@ public class FlameBreathFX extends EntityFX {
       particleAge += 5;
     }
 
-    //todo
-//    // slow particles age very fast
-//    final double SPEED_THRESHOLD = INITIAL_SPEED * 0.25;
-//    if (motionX * motionX + motionY * motionY + motionZ * motionZ < SPEED_THRESHOLD * SPEED_THRESHOLD) {
-//      particleAge += 20;
-//    }
+
+    // slow particles age very fast
+    final double SPEED_THRESHOLD = INITIAL_SPEED * 0.25;
+    if (motionX * motionX + motionY * motionY + motionZ * motionZ < SPEED_THRESHOLD * SPEED_THRESHOLD) {
+      particleAge += 20;
+    }
 
 //        // ignite environment
 //        if ((igniteEntities || igniteBlocks) && rand.nextFloat() <= igniteChance) {
@@ -370,6 +384,7 @@ public class FlameBreathFX extends EntityFX {
 //        }
 //    }
 
+  // change size of entity AABB used for collisions
   // when the entity size is changed, it changes the bounding box but doesn't recentre it, so the xpos and zpos move
   //  (the entity update resetPositionToBB copies it back)
   // To fix this, we resize the AABB around the existing centre

@@ -100,3 +100,5 @@ Changing particle size -> doesn't move left edge, so centre moves at half of wid
 6) changing width and height fields, and setEntityBoundingBox, -> entity moves a long way.?
 
 Weird stuff.  Just set a suitable initial size and leave it.  vary particleScale only.
+
+Fixed.  Changing ABBB doesn't recentre properly, did it manually.

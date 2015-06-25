@@ -11,6 +11,8 @@ package info.ata4.minecraft.dragon.util.math;
 
 import net.minecraft.util.MathHelper;
 
+import java.util.Random;
+
 /**
  * Math helper class.
  * 
@@ -35,6 +37,20 @@ public class MathX {
         } else {
             return (float) Math.sin(a);
         }
+    }
+
+    /** return a random value from a truncated gaussian distribution with
+     *    mean and standard deviation = threeSigma/3
+     *  distribution is truncated to +/- threeSigma.
+     * @param mean the mean of the distribution
+     * @param threeSigma three times the standard deviation of the distribution
+     * @return
+     */
+    public static double getTruncatedGaussian(Random rand, double mean, double threeSigma)
+    {
+      double rawValue = rand.nextGaussian();
+      rawValue = MathHelper.clamp_double(rawValue, -3.0, +3.0);
+      return mean + rawValue * threeSigma / 3.0;
     }
 
     // float cosine function, may use LUT
