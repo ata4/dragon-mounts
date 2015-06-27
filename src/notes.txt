@@ -84,9 +84,21 @@ Each model part has:
 
 It appears that rotation is done without translate, from body 0,0,0
 
+            model.neck.rotateAngleY = MathX.toRadians(lookYaw) * vertMulti * speed;  vertMulti = 1 for head
+
+        model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed);
+        model.head.rotateAngleY = model.neck.rotateAngleY;
+        model.head.rotateAngleZ = model.neck.rotateAngleZ * 0.2f;
+
 
 head: rotPtX = 0, rotPtY = -2.389, rotPtZ = -34.9967
 
+strategy for locating the head:
+store HeadLocation in the EntityTameableDragon.  On client side, update HeadLocation from the head model part.
+On server side, when a control packet for breath is sent from the client, include a vector for the head offset from
+the dragon position - which is modified by the yaw on the server.  Also send a target point vector
+
+-------------
 Checking EntityFX path and effect of size change on path
 1) without changing scale - flies straight
 2) changing particleScale but not calling setSize - flies straight

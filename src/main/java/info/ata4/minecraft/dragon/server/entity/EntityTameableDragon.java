@@ -73,7 +73,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     // server/client delegates
     private Map<Class, DragonHelper> helpers;
 
-    DragonHeadPositionHelper dragonHeadPositionHelper;
+    public DragonHeadPositionHelper dragonHeadPositionHelper;
+
+    public DragonHeadPositionHelper getDragonHeadPositionHelper() { return dragonHeadPositionHelper;}
 
     // client-only delegates
     private DragonAnimator animator;

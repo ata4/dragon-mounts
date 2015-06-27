@@ -15,6 +15,7 @@ import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.helper.DragonHeadPositionHelper;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.entity.Entity;
@@ -415,16 +416,26 @@ public class DragonModel extends ModelBase {
         render((EntityTameableDragon) entity, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
     }
     
-    public void render(EntityTameableDragon dragon, float moveTime, float moveSpeed, float ticksExisted, float lookYaw, float lookPitch, float scale) {
-        DragonAnimator animator = dragon.getAnimator();
-        animator.setMovement(moveTime, moveSpeed * dragon.getScale());
-        animator.setLook(lookYaw, lookPitch);
-        animator.setTicksExisted(ticksExisted);
-        animator.animate(this);
-        
-        size = dragon.getScale();
-        
-        renderModel(dragon, scale);
+    public void render(EntityTameableDragon dragon, float moveTime, float moveSpeed, float ticksExisted, float lookYaw, float lookPitch, float scale)
+    {
+      DragonAnimator animator = dragon.getAnimator();
+      animator.setMovement(moveTime, moveSpeed * dragon.getScale());
+      animator.setLook(lookYaw, lookPitch);
+      animator.setTicksExisted(ticksExisted);
+      animator.animate(this);
+
+      DragonHeadPositionHelper.HeadLocation headLocation = new DragonHeadPositionHelper.HeadLocation();
+      headLocation.rotationPointX = head.rotationPointX;
+      headLocation.rotationPointY = head.rotationPointY;
+      headLocation.rotationPointZ = head.rotationPointZ;
+      headLocation.rotateAngleX = head.rotateAngleX;
+      headLocation.rotateAngleY = head.rotateAngleY;
+      headLocation.rotateAngleZ = head.rotateAngleZ;
+      dragon.dragonHeadPositionHelper.setHeadLocation(headLocation);
+
+      size = dragon.getScale();
+
+      renderModel(dragon, scale);
     }
 
     /**
