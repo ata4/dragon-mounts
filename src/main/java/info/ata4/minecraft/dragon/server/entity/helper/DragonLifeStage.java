@@ -17,32 +17,46 @@ import net.minecraft.util.MathHelper;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public enum DragonLifeStage {
+    
     EGG(0, 24000),
     HATCHLING(24000, 24000),
     JUVENILE(48000, 24000),
     ADULT(72000, -1);
     
-    DragonLifeStage(int i_startOfStageInTicks, int i_stageDurationTicks) {
-    this.stageDurationTicks = i_stageDurationTicks;
-    this.startOfStageInTicks = i_startOfStageInTicks;
+    DragonLifeStage(int startOfStageInTicks, int stageDurationTicks) {
+        this.stageDurationTicks = stageDurationTicks;
+        this.startOfStageInTicks = startOfStageInTicks;
     }
 
-    public static DragonLifeStage getLifeStageFromTickCount(int ticksSinceCreation)
-    {
-      if (ticksSinceCreation < HATCHLING.startOfStageInTicks) return EGG;
-      if (ticksSinceCreation < JUVENILE.startOfStageInTicks) return HATCHLING;
-      if (ticksSinceCreation < ADULT.startOfStageInTicks) return JUVENILE;
-      return ADULT;
+    public static DragonLifeStage getLifeStageFromTickCount(int ticksSinceCreation) {
+        if (ticksSinceCreation < HATCHLING.startOfStageInTicks) {
+            return EGG;
+        }
+        if (ticksSinceCreation < JUVENILE.startOfStageInTicks) {
+            return HATCHLING;
+        }
+        if (ticksSinceCreation < ADULT.startOfStageInTicks) {
+            return JUVENILE;
+        }
+        return ADULT;
     }
 
-    public static int clipTickCountToValid(int ticksSinceCreation)
-    {
-      return MathHelper.clamp_int(ticksSinceCreation, EGG.getStartOfStageInTicks(), ADULT.getStartOfStageInTicks());
+    public static int clipTickCountToValid(int ticksSinceCreation) {
+        return MathHelper.clamp_int(
+                ticksSinceCreation,
+                EGG.getStartOfStageInTicks(),
+                ADULT.getStartOfStageInTicks()
+        );
     }
 
     // -1 means infinite
-    public int getDurationInTicks() {return stageDurationTicks;}
-    public int getStartOfStageInTicks() {return startOfStageInTicks;}
+    public int getDurationInTicks() {
+        return stageDurationTicks;
+    }
+
+    public int getStartOfStageInTicks() {
+        return startOfStageInTicks;
+    }
 
     private final int stageDurationTicks;
     private final int startOfStageInTicks;
