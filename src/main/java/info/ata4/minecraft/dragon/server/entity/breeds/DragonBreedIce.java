@@ -44,25 +44,25 @@ public class DragonBreedIce extends DragonBreed {
 
     @Override
     public void onUpdate(EntityTameableDragon dragon) {
-      // place some snow footprints where the dragon walks
-      if (dragon.isAdult() && !dragon.isFlying()) {
-        World world = dragon.worldObj;
-        for (int i = 0; i < 4; i++) {
-          if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
-            continue;
-          }
-
-          double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
+        // place some snow footprints where the dragon walks
+        if (dragon.isAdult() && !dragon.isFlying()) {
+            World world = dragon.worldObj;
+            for (int i = 0; i < 4; i++) {
+                if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
+                    continue;
+                }
+                
+                double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
           double by = dragon.posY + 0.5;
-          double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
-          BlockPos blockPos = new BlockPos(bx, by, bz);
-// from EntitySnowman.onLivingUpdate, with slight tweaks
-          if (world.getBlockState(new BlockPos(bx, by, bz)).getBlock().getMaterial() == Material.air
-                  && world.getBiomeGenForCoords(new BlockPos(bx, 0, bz)).getFloatTemperature(blockPos) <= 0.8F
-                  && FOOTPRINT.canPlaceBlockAt(world, blockPos)) {
-            world.setBlockState(blockPos, FOOTPRINT.getDefaultState());
-          }
+                double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
+                BlockPos blockPos = new BlockPos(bx, by, bz);
+                // from EntitySnowman.onLivingUpdate, with slight tweaks
+                if (world.getBlockState(blockPos).getBlock().getMaterial() == Material.air
+                        && world.getBiomeGenForCoords(blockPos).getFloatTemperature(blockPos) <= 0.8F
+                        && FOOTPRINT.canPlaceBlockAt(world, blockPos)) {
+                    world.setBlockState(blockPos, FOOTPRINT.getDefaultState());
+                }
+            }
         }
-      }
     }
 }
