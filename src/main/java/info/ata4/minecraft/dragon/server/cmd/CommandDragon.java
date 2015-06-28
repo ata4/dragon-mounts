@@ -23,51 +23,63 @@ import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class CommandDragon extends CommandBase {
+    
+    private static final String CMD_STAGE = "stage";
+    private static final String CMD_BREED = "breed";
+    private static final String CMD_TAME = "tame";
 
-  @Override
-  public String getName() {
-      return "dragon";
-  }
+    private final List<String> commandNames = Arrays.asList(new String[] {CMD_STAGE, CMD_BREED, CMD_TAME});
+    private final List<String> breedNames;
+    private final List<String> lifeStageNames;
+    
+    public CommandDragon() {
+        List<DragonBreed> breeds = DragonBreedRegistry.getInstance().getBreeds();
+        breedNames = new ArrayList<String>(breeds.size());
+        for (DragonBreed breed : breeds) {
+            breedNames.add(breed.getName());
+        }
+        
+        DragonLifeStage[] lifeStages = DragonLifeStage.values();
+        lifeStageNames = new ArrayList<String>(lifeStages.length);
+        for (DragonLifeStage lifeStage : lifeStages) {
+            lifeStageNames.add(lifeStage.name());
+        }
+    }
 
-  @Override
-  public String getCommandUsage(ICommandSender sender) {
-      String stages = StringUtils.join(DragonLifeStage.values(), '|').toLowerCase();
-      String breeds = StringUtils.join(DragonBreedRegistry.getInstance().getBreeds(), '|');
-      return String.format("/dragon <stage <%s>|breed <%s> [global]", stages, breeds);
-  }
-
-  @Override
-  public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos)
-	{
-		if (args.length == 1)
-		{
-			return getListOfStringsMatchingLastWord(args, "stage", "breed", "tame");
-		}
-		else
-		{
-			if (args[0].equalsIgnoreCase("stage"))
-			{
-				if (args.length == 2)
-				{
-					return getListOfStringsMatchingLastWord(args, "egg", "hatchling", "juvenile", "adult", "item");
-				}
-			}
-			else if (args[0].equalsIgnoreCase("breed"))
-			{
-				if (args.length == 2)
-				{
-					return getListOfStringsMatchingLastWord(args, "water", "ice", "air", "ghost", "nether", "fire", "end");
-				}
-			}
-		}
-		return null;
-	}
+    @Override
+    public String getName() {
+        return "dragon";
+    }
+    
+    @Override
+    public String getCommandUsage(ICommandSender sender) {
+        String stages = StringUtils.join(DragonLifeStage.values(), '|').toLowerCase();
+        String breeds = StringUtils.join(DragonBreedRegistry.getInstance().getBreeds(), '|');
+        return String.format("/dragon <stage <%s>|breed <%s> [global]", stages, breeds);
+    }
+    
+    @Override
+    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+        if (args.length == 1) {
+            return func_175762_a(args, commandNames);
+        } else if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("stage")) {
+                return func_175762_a(args, lifeStageNames);
+            } else if (args[0].equalsIgnoreCase("breed")) {
+                return func_175762_a(args, breedNames);
+            }
+        }
+        
+        return null;
+    }
     
     /**
      * Return the required permission level for this command.
@@ -87,7 +99,7 @@ public class CommandDragon extends CommandBase {
         boolean global = params[params.length - 1].equalsIgnoreCase("global");
 
         String command = params[0];
-        if (command.equals("stage")) {
+        if (command.equals(CMD_STAGE)) {
             if (params.length < 2) {
                 throw new WrongUsageException(getCommandUsage(sender));
             }
@@ -105,7 +117,7 @@ public class CommandDragon extends CommandBase {
 
             EntityModifier modifier = new LifeStageModifier(lifeStage);
             applyModifier(sender, modifier, global);
-        } else if (command.equals("breed")) {
+        } else if (command.equals(CMD_BREED)) {
             if (params.length < 2) {
                 throw new WrongUsageException(getCommandUsage(sender));
             }
@@ -118,7 +130,7 @@ public class CommandDragon extends CommandBase {
             }
             
             applyModifier(sender, new BreedModifier(breed), global);
-        } else if (command.equals("tame")) {
+        } else if (command.equals(CMD_TAME)) {
             if (sender instanceof EntityPlayerMP) {
                 EntityPlayerMP player = (EntityPlayerMP) sender;
                 applyModifier(sender, new TameModifier(player), global);
