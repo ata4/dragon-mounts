@@ -15,6 +15,7 @@ import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
+import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.block.Block;
@@ -179,30 +180,29 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public void onLivingUpdate() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onLivingUpdate();
-        }
-
-        if (isClient()) {
-            if (!isEgg()) {
-                animator.setOnGround(!isFlying());
-                animator.update();
+        if (!DebugFreezeAnimator.isFrozen()) {
+            for (DragonHelper helper : helpers.values()) {
+                helper.onLivingUpdate();
             }
-        } else {
-            // set home position near owner when tamed
-            //  setHomeArea renamed to EntityCreature.func_175449_a()
-            if (isTamed()) {
-                Entity owner = getOwner();
-                if (owner != null) {
-                  BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
-                  func_175449_a(ownerPosition, HOME_RADIUS);
+
+            if (isClient()) {
+                if (!isEgg()) {
+                    animator.setOnGround(!isFlying());
+                    animator.update();
+                }
+            } else {
+                // set home position near owner when tamed
+                //  setHomeArea renamed to EntityCreature.func_175449_a()
+                if (isTamed()) {
+                    Entity owner = getOwner();
+                    if (owner != null) {
+                        BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
+                        func_175449_a(ownerPosition, HOME_RADIUS);
+                    }
                 }
             }
+          super.onLivingUpdate();
         }
-        
-        super.onLivingUpdate();
-
-        dragonHeadPositionHelper.getThroatPosition();
 
       // todo for testing only!!!
       if (worldObj.isRemote) {

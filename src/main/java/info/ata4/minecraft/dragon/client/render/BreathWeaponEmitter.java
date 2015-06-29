@@ -18,7 +18,9 @@ public class BreathWeaponEmitter {
 
   public void updateFromDragon(EntityTameableDragon dragon)
   {
-    origin = dragon.getPositionEyes(1.0F);
+    origin = dragon.dragonHeadPositionHelper.getThroatPosition();
+//
+//    origin = dragon.getPositionEyes(1.0F);
     direction = dragon.getLook(1.0F);
   }
 
@@ -43,7 +45,7 @@ public class BreathWeaponEmitter {
       Vec3 interpDirection = interpolateVec(previousDirection, direction, partialTickHeadStart);
       Vec3 interpOrigin = interpolateVec(previousOrigin, origin, partialTickHeadStart);
       FlameBreathFX flameBreathFX = FlameBreathFX.createFlameBreathFX(world,
-              interpOrigin.xCoord, interpOrigin.yCoord + 10 , interpOrigin.zCoord, // todo
+              interpOrigin.xCoord, interpOrigin.yCoord, interpOrigin.zCoord,
               interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
               partialTickHeadStart);
       Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);

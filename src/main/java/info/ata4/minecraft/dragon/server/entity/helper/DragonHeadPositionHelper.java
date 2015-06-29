@@ -3,6 +3,7 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.math.MathX;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 /**
@@ -24,11 +25,62 @@ public class DragonHeadPositionHelper
     float getYawHead = dragon.getRotationYawHead();
     float pitch = dragon.rotationPitch;
 
-//    System.out.println("getThroatPosition():" + (dragon.worldObj.isRemote ? "client" : "server")
-//            + " eyeHeight:" + eyeHeight + " posVec:" + posVec + " yaw:" + yaw + " yawHead:" + yawHead + " getYawHead:" + getYawHead
-//           + " pitch:" + pitch);
+    float renderYawOffset = dragon.renderYawOffset;
 
-    return new Vec3(0, 0, 0);
+    System.out.println("getThroatPosition():" + (dragon.worldObj.isRemote ? "client" : "server")
+            + " eyeHeight:" + eyeHeight + " posVec:" + posVec + " yaw:" + yaw + " yawHead:" + yawHead + " getYawHead:" + getYawHead
+           + " pitch:" + pitch + " renderYawOffset:" + renderYawOffset);
+    System.out.println("headLocation:" + headLocation);
+
+    Vec3 throatPos = dragon.getPositionEyes(1.0F);
+    final float DEBUG_Y_SCALE = -0.05F;
+    final float DEBUG_X_SCALE = -0.05F;
+    Vec3 headOffset =  new Vec3(headLocation.rotationPointX * DEBUG_X_SCALE, headLocation.rotationPointY * DEBUG_Y_SCALE, headLocation.rotationPointZ);
+    headOffset = headOffset.rotateYaw((float)(Math.toRadians(-renderYawOffset) + Math.PI));
+//    headOffset = rotateX(headOffset, headLocation.rotateAngleX);
+//    headOffset = rotateY(headOffset, headLocation.rotateAngleY);
+//    headOffset = rotateZ(headOffset, headLocation.rotateAngleZ);
+
+    throatPos = throatPos.add(headOffset);
+
+
+    System.out.println("throatPos:" + throatPos);
+    return throatPos;
+  }
+
+  /**
+   * rotate a vector around the X axis
+   * @param angle in radians
+   * @return
+   */
+  public Vec3 rotateX(Vec3 source, float angle)
+  {
+    float cosAngle = MathHelper.cos(angle);
+    float sinAngle = MathHelper.sin(angle);
+    double d0 = source.xCoord;
+    double d1 = source.yCoord * (double)cosAngle + source.zCoord * (double)sinAngle;
+    double d2 = source.zCoord * (double)cosAngle - source.yCoord * (double)sinAngle;
+    return new Vec3(d0, d1, d2);
+  }
+
+  public Vec3 rotateY(Vec3 source, float angle)
+  {
+    float cosAngle = MathHelper.cos(angle);
+    float sinAngle = MathHelper.sin(angle);
+    double d0 = source.xCoord * (double)cosAngle + source.zCoord * (double)sinAngle;
+    double d1 = source.yCoord;
+    double d2 = source.zCoord * (double)cosAngle - source.xCoord * (double)sinAngle;
+    return new Vec3(d0, d1, d2);
+  }
+
+  public Vec3 rotateZ(Vec3 source, float angle)
+  {
+    float cosAngle = MathHelper.cos(angle);
+    float sinAngle = MathHelper.sin(angle);
+    double d0 = source.xCoord * (double)cosAngle + source.yCoord * (double)sinAngle;
+    double d1 = source.yCoord * (double)cosAngle - source.xCoord * (double)sinAngle;
+    double d2 = source.zCoord;
+    return new Vec3(d0, d1, d2);
   }
 
   public void setHeadLocation(HeadLocation headLocation) {
@@ -43,6 +95,13 @@ public class DragonHeadPositionHelper
     public float rotateAngleX;
     public float rotateAngleY;
     public float rotateAngleZ;
+
+    @Override
+    public String toString()
+    {
+      return "rotationPoint [" + rotationPointX + ", " + rotationPointY + ", " + rotationPointZ + "], "
+              + "rotateAngleX [" + rotateAngleX + ", " + rotateAngleY + ", " + rotateAngleZ + "]";
+    }
   }
 
   private HeadLocation headLocation = new HeadLocation();

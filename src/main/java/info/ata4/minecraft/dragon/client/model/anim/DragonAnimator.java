@@ -12,8 +12,10 @@ package info.ata4.minecraft.dragon.client.model.anim;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.model.ModelPart;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
+import net.minecraft.client.Minecraft;
 
 /**
  * Animation control class to put useless reptiles in motion.
@@ -199,6 +201,8 @@ public class DragonAnimator {
      * Updates the animation state. Called on every tick.
      */
     public void update() {
+        if (DebugFreezeAnimator.isFrozen()) return;
+
         // init trails
         if (initTrails) {
             yTrail.fill((float) entity.posY);
@@ -356,9 +360,31 @@ public class DragonAnimator {
         model.head.rotationPointX = model.neck.rotationPointX;
         model.head.rotationPointY = model.neck.rotationPointY;
         model.head.rotationPointZ = model.neck.rotationPointZ;
-        
+
+        // todo delete
+        long nanoSec = System.nanoTime();
+        nanoSec /= 1000000000L;
+        nanoSec %= 10;
+
+        model.head.rotateAngleX = 0;
+        model.head.rotateAngleY = 0;
+        model.head.rotateAngleZ = 0;
+
+        model.head.rotationPointX = 50;
+        model.head.rotationPointY = -50;
+        model.head.rotationPointZ = 0;
+        // todo end delete
+
+
         model.jaw.rotateAngleX = jaw * 0.75f;
         model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
+
+        //todo delete
+
+        model.jaw.rotateAngleX = 1.0F * 0.75f;
+        //todo end delete
+
+
     }
     
     protected void animWings(DragonModel model) {
