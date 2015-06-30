@@ -171,8 +171,7 @@ public class CommandDragon extends CommandBase {
             float minPlayerDist = Float.MAX_VALUE;
 
             // get closest dragon
-            for (int i = 0; i < entities.size(); i++) {
-                Entity entity = entities.get(i);
+            for (Entity entity : entities) {
                 float playerDist = entity.getDistanceToEntity(player);
                 if (entity.getDistanceToEntity(player) < minPlayerDist) {
                     closestEntity = entity;
@@ -191,9 +190,7 @@ public class CommandDragon extends CommandBase {
             for (WorldServer worldServer : server.worldServers) {
                 List<Entity> entities = worldServer.loadedEntityList;
 
-                for (int i = 0; i < entities.size(); i++) {
-                    Entity entity = entities.get(i);
-
+                for (Entity entity : entities) {
                     if (!(entity instanceof EntityTameableDragon)) {
                         continue;
                     }
