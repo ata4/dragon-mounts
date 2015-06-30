@@ -33,9 +33,17 @@ public class DragonHeadPositionHelper
     System.out.println("headLocation:" + headLocation);
 
     Vec3 throatPos = dragon.getPositionEyes(1.0F);
-    final float DEBUG_Y_SCALE = -0.05F;
-    final float DEBUG_X_SCALE = -0.05F;
-    Vec3 headOffset =  new Vec3(headLocation.rotationPointX * DEBUG_X_SCALE, headLocation.rotationPointY * DEBUG_Y_SCALE, headLocation.rotationPointZ);
+    float scale = dragon.getScale();
+    final float DEBUG_Y_SCALE = -0.05F * scale;
+    final float DEBUG_X_SCALE = -0.05F * scale;
+    final float DEBUG_Z_SCALE = +0.05F * scale;
+
+    final float THROAT_X_OFFSET = 0;
+    final float THROAT_Y_OFFSET = +5;
+    final float THROAT_Z_OFFSET = -35;
+    Vec3 headOffset =  new Vec3((headLocation.rotationPointX + THROAT_X_OFFSET) * DEBUG_X_SCALE,
+                                (headLocation.rotationPointY + THROAT_Y_OFFSET) * DEBUG_Y_SCALE,
+                                (headLocation.rotationPointZ + THROAT_Z_OFFSET) * DEBUG_Z_SCALE);
     headOffset = headOffset.rotateYaw((float)(Math.toRadians(-renderYawOffset) + Math.PI));
 //    headOffset = rotateX(headOffset, headLocation.rotateAngleX);
 //    headOffset = rotateY(headOffset, headLocation.rotateAngleY);

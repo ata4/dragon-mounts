@@ -366,13 +366,13 @@ public class DragonAnimator {
         nanoSec /= 1000000000L;
         nanoSec %= 10;
 
-        model.head.rotateAngleX = 0;
+        model.head.rotateAngleX = -(float)(Math.PI/8.0);
         model.head.rotateAngleY = 0;
         model.head.rotateAngleZ = 0;
 
-        model.head.rotationPointX = 50;
-        model.head.rotationPointY = -50;
-        model.head.rotationPointZ = 0;
+//        model.head.rotationPointX = 0;
+//        model.head.rotationPointY = -50;
+//        model.head.rotationPointZ = -50;
         // todo end delete
 
 
@@ -383,8 +383,6 @@ public class DragonAnimator {
 
         model.jaw.rotateAngleX = 1.0F * 0.75f;
         //todo end delete
-
-
     }
     
     protected void animWings(DragonModel model) {

@@ -18,9 +18,7 @@ public class BreathWeaponEmitter {
 
   public void updateFromDragon(EntityTameableDragon dragon)
   {
-    origin = dragon.dragonHeadPositionHelper.getThroatPosition();
-//
-//    origin = dragon.getPositionEyes(1.0F);
+    origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
     direction = dragon.getLook(1.0F);
   }
 
