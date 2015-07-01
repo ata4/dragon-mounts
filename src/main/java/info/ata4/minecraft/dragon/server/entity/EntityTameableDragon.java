@@ -94,7 +94,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         // enables walking over blocks
         stepHeight = 1;
-        
     }
     
     @Override
@@ -189,8 +188,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             if (isTamed()) {
                 Entity owner = getOwner();
                 if (owner != null) {
-                  BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
-                  func_175449_a(ownerPosition, HOME_RADIUS);
+                    BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
+                    func_175449_a(ownerPosition, HOME_RADIUS);
                 }
             }
         }
@@ -239,11 +238,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     // hijack swingItem to be used for attacking (jaw animation on attack)
     //  normally only used for swinging held items; attackEntityAsMob is overridden to send packet S0BPacketAnimation
     @Override
-    public void swingItem()
-    {
-      ticksSinceLastAttack = 0;
+    public void swingItem() {
+        ticksSinceLastAttack = 0;
     }
-
 
     @Override
     public String getName() {
@@ -257,7 +254,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         String breedName = getBreed().getName().toLowerCase();
         return StatCollector.translateToLocal("entity." + entName + "." + breedName + ".name");
     }
-    
     
     /**
      * Returns the sound this mob makes while it's alive.
@@ -903,13 +899,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         return getLifeStageHelper().isAdult();
     }
 
-    public void setDragonAvoidWater(boolean avoidWater){
-      PathNavigate pathNavigate = this.getNavigator();
-      if (pathNavigate instanceof PathNavigateGround) {
-        PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
-        pathNavigateGround.func_179690_a(avoidWater);
-      }
+    public void setDragonAvoidWater(boolean avoidWater) {
+        PathNavigate pathNavigate = this.getNavigator();
+        if (pathNavigate instanceof PathNavigateGround) {
+            PathNavigateGround pathNavigateGround = (PathNavigateGround) pathNavigate;
+            pathNavigateGround.func_179690_a(avoidWater);
+        }
     }
-
-
 }
