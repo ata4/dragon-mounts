@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
+import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
@@ -163,7 +164,28 @@ public class DragonLifeStageHelper extends DragonHelper {
         }
       }
     }
-    
+
+    public FlameBreathFX.Power getBreathPower() {
+      switch (getLifeStage()) {
+        case EGG: {
+          return FlameBreathFX.Power.SMALL;  // dummy
+        }
+        case HATCHLING: {
+          return FlameBreathFX.Power.SMALL;
+        }
+        case JUVENILE: {
+          return FlameBreathFX.Power.MEDIUM;
+        }
+        case ADULT: {
+          return FlameBreathFX.Power.LARGE;
+        }
+        default: {
+          L.error("Illegal lifestage in getScale():" + getLifeStage());
+          return FlameBreathFX.Power.SMALL;
+        }
+      }
+    }
+
     /**
      * Transforms the dragon to an egg (item form)
      */

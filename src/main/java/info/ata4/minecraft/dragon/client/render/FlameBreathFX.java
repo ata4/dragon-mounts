@@ -20,6 +20,8 @@ public class FlameBreathFX extends EntityFX {
   private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
   private Entity owner;
 
+  public enum Power {SMALL, MEDIUM, LARGE};
+
   protected float currentParticleSize;
   protected float particleMaxSize;
 
@@ -35,25 +37,60 @@ public class FlameBreathFX extends EntityFX {
   private static final double INITIAL_SPEED = 0.6; // blocks per tick
   private static final float AABB_RELATIVE_TO_SIZE = 0.5F;  // how big is the AABB relative to the fireball size.
 
-  private static final double SPEED_VARIATION_FACTOR = 0.1;  // plus or minus this amount (3 std deviations)
+  private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)
   private static final double AGE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
   private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
 
   public static FlameBreathFX createFlameBreathFX(World world, double x, double y, double z,
                                                   double directionX, double directionY, double directionZ,
+                                                  Power power,
                                                   float partialTicksHeadStart)
   {
     Vec3 direction = new Vec3(directionX, directionY, directionZ).normalize();
 
+    float speedFactor = 1.0F;
+    float ageFactor = 1.0F;
+    float sizeFactor = 1.0F;
+
+    switch (power) {
+      case SMALL: {
+        speedFactor = 0.25F;
+        ageFactor = 0.25F;
+        sizeFactor = 0.25F;
+        break;
+      }
+      case MEDIUM: {
+        speedFactor = 0.5F;
+        ageFactor = 0.5F;
+        sizeFactor = 0.5F;
+        break;
+      }
+      case LARGE: {
+        speedFactor = 1.0F;
+        ageFactor = 1.0F;
+        sizeFactor = 1.0F;
+        break;
+      }
+
+      default: {
+        System.err.println("Invalid power in createFlameBreathFX:" + power);
+      }
+    }
+todo get the breath speed right
+          also the breath start position for head isnt right for hatchling
     Random rand = new Random();
-    double actualMotionX = direction.xCoord + INITIAL_SPEED * MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_FACTOR);
-    double actualMotionY = direction.yCoord + INITIAL_SPEED * MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_FACTOR);
-    double actualMotionZ = direction.zCoord + INITIAL_SPEED * MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_FACTOR);
+    double actualMotionX = direction.xCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
+    double actualMotionY = direction.yCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
+    double actualMotionZ = direction.zCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
+    actualMotionX *= speedFactor * INITIAL_SPEED;
+    actualMotionY *= speedFactor * INITIAL_SPEED;
+    actualMotionZ *= speedFactor * INITIAL_SPEED;
 
     x += actualMotionX * partialTicksHeadStart;
     y += actualMotionY * partialTicksHeadStart;
     z += actualMotionZ * partialTicksHeadStart;
-    return new FlameBreathFX(world, x, y, z, actualMotionX, actualMotionY, actualMotionZ);
+    return new FlameBreathFX(world, x, y, z, actualMotionX, actualMotionY, actualMotionZ,
+                             DEFAULT_BALL_SIZE * sizeFactor, (int)(DEFAULT_AGE_IN_TICKS * ageFactor));
   }
 
   private static final float DEFAULT_BALL_SIZE = 1.0F;

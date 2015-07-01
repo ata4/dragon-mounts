@@ -39,8 +39,8 @@ public class DragonHeadPositionHelper
     final float DEBUG_Z_SCALE = +0.05F * scale;
 
     final float THROAT_X_OFFSET = 0;
-    final float THROAT_Y_OFFSET = +5;
-    final float THROAT_Z_OFFSET = -35;
+    final float THROAT_Y_OFFSET = +5;   // todo these need to be adjusted according to head yaw and pitch
+    final float THROAT_Z_OFFSET = -35;  // todo these need to be adjusted according to head yaw and pitch
     Vec3 headOffset =  new Vec3((headLocation.rotationPointX + THROAT_X_OFFSET) * DEBUG_X_SCALE,
                                 (headLocation.rotationPointY + THROAT_Y_OFFSET) * DEBUG_Y_SCALE,
                                 (headLocation.rotationPointZ + THROAT_Z_OFFSET) * DEBUG_Z_SCALE);

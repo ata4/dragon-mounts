@@ -24,7 +24,7 @@ public class BreathWeaponEmitter {
 
   private static boolean spawnedOne = false;
   static private int spawnSkip = 0;
-  public void spawnBreathParticles(World world)
+  public void spawnBreathParticles(World world, FlameBreathFX.Power power)
   {
 //    if (spawnedOne) return;
 //    TestEntityFX testEntityFX = new TestEntityFX(world, origin.xCoord, origin.yCoord + 5, origin.zCoord,
@@ -45,6 +45,7 @@ public class BreathWeaponEmitter {
       FlameBreathFX flameBreathFX = FlameBreathFX.createFlameBreathFX(world,
               interpOrigin.xCoord, interpOrigin.yCoord, interpOrigin.zCoord,
               interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
+              power,
               partialTickHeadStart);
       Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);
     }

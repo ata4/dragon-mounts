@@ -366,9 +366,9 @@ public class DragonAnimator {
         nanoSec /= 1000000000L;
         nanoSec %= 10;
 
-        model.head.rotateAngleX = -(float)(Math.PI/8.0);
-        model.head.rotateAngleY = 0;
-        model.head.rotateAngleZ = 0;
+//        model.head.rotateAngleX = -(float)(Math.PI/8.0);
+//        model.head.rotateAngleY = 0;
+//        model.head.rotateAngleZ = 0;
 
 //        model.head.rotationPointX = 0;
 //        model.head.rotationPointY = -50;

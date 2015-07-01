@@ -5,6 +5,7 @@ outstanding bugs
 -HOME for AI?
 
 DataWatcher usage:
+see http://wiki.vg/Entities#Entity_Metadata_Format
 Entity
 0 = STATUS byte = 0
    Known flags: 0) is burning; 1) is sneaking; 2) is riding something; 3) is sprinting; 4) is eating
@@ -114,3 +115,20 @@ Changing particle size -> doesn't move left edge, so centre moves at half of wid
 Weird stuff.  Just set a suitable initial size and leave it.  vary particleScale only.
 
 Fixed.  Changing ABBB doesn't recentre properly, did it manually.
+
+---------------------
+Strategy for breath weapon:
+When mounted, hold LMB down and use mouse to aim
+- sends network message repeatedly with aiming point and throat position relative to body
+- server receives message, sends messages to other clients including target location
+- server burns blocks as per:
+On client side: spawn EntityFX from head towards target point; rotate head to point.
+On server side: dragonentity keeps track of the breath location over time- eg each tick adds another sphere coordinate
+  to a list, updates position of all, tracks them until they die.  Create a list of all touched blocks, for each one which
+  is a block, burn it.  Sustained contact for a long time does smelting (eg sand to glass).  Other breaths do other
+  effects, eg freezing to break blocks, skeletal dragon kills living things (turns to dead bush?) etc.
+
+Dragon animation has head tilt back and jaw open, takes perhaps half second
+
+
+
