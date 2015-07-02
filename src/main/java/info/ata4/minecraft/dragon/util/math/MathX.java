@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.util.math;
 
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 import java.util.Random;
 
@@ -213,4 +214,13 @@ public class MathX {
     public static float updateRotation(float r1, float r2, float step) {
         return r1 + clamp(normDeg(r2 - r1), -step, step);
     }
+
+    public static Vec3 multiply(Vec3 source, double multiplier)
+    {
+      return new Vec3(source.xCoord * multiplier, source.yCoord * multiplier, source.zCoord * multiplier);
+    }
+
+
+
+
 }

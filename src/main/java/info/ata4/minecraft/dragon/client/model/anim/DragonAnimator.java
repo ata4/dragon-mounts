@@ -17,6 +17,8 @@ import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
 import net.minecraft.client.Minecraft;
 
+import java.util.Random;
+
 /**
  * Animation control class to put useless reptiles in motion.
  * 
@@ -352,19 +354,29 @@ public class DragonAnimator {
             model.neck.rotationPointY += MathX.sin(model.neck.rotateAngleX) * neckSize;
             model.neck.rotationPointZ -= MathX.cos(model.neck.rotateAngleY) * MathX.cos(model.neck.rotateAngleX) * neckSize;
         }
-        
-        model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed);
-        model.head.rotateAngleY = model.neck.rotateAngleY;
-        model.head.rotateAngleZ = model.neck.rotateAngleZ * 0.2f;
-        
-        model.head.rotationPointX = model.neck.rotationPointX;
-        model.head.rotationPointY = model.neck.rotationPointY;
-        model.head.rotationPointZ = model.neck.rotationPointZ;
 
         // todo delete
         long nanoSec = System.nanoTime();
         nanoSec /= 1000000000L;
-        nanoSec %= 10;
+//        nanoSec %= 9;
+        long nanoSec1 = nanoSec % 9;
+        long nanoSec2 = (nanoSec / 9) % 9;
+        model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed);
+
+//        model.head.rotateAngleX = (float)(nanoSec1 * Math.PI / 8.0F - Math.PI / 2.0F);  //todo delete
+        model.head.rotateAngleY = model.neck.rotateAngleY;
+
+//        model.head.rotateAngleY = (float)(nanoSec2 * Math.PI / 8.0F - Math.PI / 2.0F);  //todo delete
+
+        model.head.rotateAngleZ = model.neck.rotateAngleZ * 0.2f;
+
+//        model.head.rotateAngleX = 0;//todo delete
+//        model.head.rotateAngleY = 0;//todo delete
+
+        model.head.rotationPointX = model.neck.rotationPointX;
+        model.head.rotationPointY = model.neck.rotationPointY;
+        model.head.rotationPointZ = model.neck.rotationPointZ;
+
 
 //        model.head.rotateAngleX = -(float)(Math.PI/8.0);
 //        model.head.rotateAngleY = 0;
@@ -383,6 +395,10 @@ public class DragonAnimator {
 
         model.jaw.rotateAngleX = 1.0F * 0.75f;
         //todo end delete
+
+//        Random random = new Random();
+//        model.head.isHidden = random.nextBoolean(); //todo delete
+
     }
     
     protected void animWings(DragonModel model) {

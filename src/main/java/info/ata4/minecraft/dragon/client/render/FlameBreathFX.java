@@ -34,7 +34,7 @@ public class FlameBreathFX extends EntityFX {
   public float igniteChance = 0.12f;
 
   private static final float MAX_ALPHA = 0.99F;
-  private static final double INITIAL_SPEED = 0.6; // blocks per tick
+  private static final double INITIAL_SPEED = 1.2; // blocks per tick
   private static final float AABB_RELATIVE_TO_SIZE = 0.5F;  // how big is the AABB relative to the fireball size.
 
   private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)
@@ -76,8 +76,7 @@ public class FlameBreathFX extends EntityFX {
         System.err.println("Invalid power in createFlameBreathFX:" + power);
       }
     }
-todo get the breath speed right
-          also the breath start position for head isnt right for hatchling
+
     Random rand = new Random();
     double actualMotionX = direction.xCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
     double actualMotionY = direction.yCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
@@ -86,6 +85,7 @@ todo get the breath speed right
     actualMotionY *= speedFactor * INITIAL_SPEED;
     actualMotionZ *= speedFactor * INITIAL_SPEED;
 
+//    actualMotionX = 0; actualMotionY = 0; actualMotionZ = 0; sizeFactor = 0.4F; //todo delete
     x += actualMotionX * partialTicksHeadStart;
     y += actualMotionY * partialTicksHeadStart;
     z += actualMotionZ * partialTicksHeadStart;
@@ -93,7 +93,7 @@ todo get the breath speed right
                              DEFAULT_BALL_SIZE * sizeFactor, (int)(DEFAULT_AGE_IN_TICKS * ageFactor));
   }
 
-  private static final float DEFAULT_BALL_SIZE = 1.0F;
+  private static final float DEFAULT_BALL_SIZE = 2.0F;
   private static final int DEFAULT_AGE_IN_TICKS = 40;
   private FlameBreathFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
     this(world, x, y, z, velocityX, velocityY, velocityZ, DEFAULT_BALL_SIZE, DEFAULT_AGE_IN_TICKS);
@@ -178,7 +178,7 @@ todo get the breath speed right
 
   private float getParticleSize(float fractionOfFullSize)
   {
-    final float INITIAL_SIZE = 0.2F;
+    final float INITIAL_SIZE = 0.2F * particleMaxSize;
     return INITIAL_SIZE + (particleMaxSize - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
   }
 

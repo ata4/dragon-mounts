@@ -6,6 +6,8 @@ import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
+import java.util.Random;
+
 /**
 * Created by TGG on 24/06/2015.
 */
@@ -32,25 +34,49 @@ public class DragonHeadPositionHelper
            + " pitch:" + pitch + " renderYawOffset:" + renderYawOffset);
     System.out.println("headLocation:" + headLocation);
 
-    Vec3 throatPos = dragon.getPositionEyes(1.0F);
+    Vec3 bodyOrigin = dragon.getPositionVector();
+    bodyOrigin = bodyOrigin.addVector(0, dragon.getEyeHeight(), 0);
     float scale = dragon.getScale();
-    final float DEBUG_Y_SCALE = -0.05F * scale;
-    final float DEBUG_X_SCALE = -0.05F * scale;
-    final float DEBUG_Z_SCALE = +0.05F * scale;
+    final float BODY_X_SCALE = -0.05F * scale;
+    final float BODY_Y_SCALE = -0.05F * scale;
+    final float BODY_Z_SCALE = 0.05F * scale;
+
+    final float headScale = scale * (1.4f / (scale + 0.4f));   // from DragonModel.renderHead()
+    final float HEAD_X_SCALE = 0.05F * headScale;
+    final float HEAD_Y_SCALE = 0.05F * headScale;
+    final float HEAD_Z_SCALE = 0.05F * headScale;
+
+    // the head offset plus the headLocation.rotationPoint is the origin of the head, i.e. the point about which the
+    //   head rotates, relative to the origin of the body (getPositionEyes)
+    final float HEAD_X_OFFSET = 0;
+    final float HEAD_Y_OFFSET = 2;
+    final float HEAD_Z_OFFSET = -23;
 
     final float THROAT_X_OFFSET = 0;
-    final float THROAT_Y_OFFSET = +5;   // todo these need to be adjusted according to head yaw and pitch
-    final float THROAT_Z_OFFSET = -35;  // todo these need to be adjusted according to head yaw and pitch
-    Vec3 headOffset =  new Vec3((headLocation.rotationPointX + THROAT_X_OFFSET) * DEBUG_X_SCALE,
-                                (headLocation.rotationPointY + THROAT_Y_OFFSET) * DEBUG_Y_SCALE,
-                                (headLocation.rotationPointZ + THROAT_Z_OFFSET) * DEBUG_Z_SCALE);
-    headOffset = headOffset.rotateYaw((float)(Math.toRadians(-renderYawOffset) + Math.PI));
-//    headOffset = rotateX(headOffset, headLocation.rotateAngleX);
-//    headOffset = rotateY(headOffset, headLocation.rotateAngleY);
-//    headOffset = rotateZ(headOffset, headLocation.rotateAngleZ);
+    final float THROAT_Y_OFFSET = -8;
+    final float THROAT_Z_OFFSET = -17;
 
-    throatPos = throatPos.add(headOffset);
+    Vec3 headOffset =  new Vec3((headLocation.rotationPointX + HEAD_X_OFFSET) * BODY_X_SCALE,
+                                (headLocation.rotationPointY + HEAD_Y_OFFSET) * BODY_Y_SCALE,
+                                (headLocation.rotationPointZ + HEAD_Z_OFFSET) * BODY_Z_SCALE);
 
+    // offset of the throat position relative to the head origin- rotate and pitch to match head
+
+    Vec3 throatOffset = new Vec3(THROAT_X_OFFSET * HEAD_X_SCALE,
+            THROAT_Y_OFFSET * HEAD_Y_SCALE,
+            THROAT_Z_OFFSET * HEAD_Z_SCALE);
+
+    throatOffset = throatOffset.rotatePitch(headLocation.rotateAngleX);
+    throatOffset = throatOffset.rotateYaw(-headLocation.rotateAngleY);
+
+//    Random random = new Random();
+//    if (random.nextBoolean()) {
+    Vec3 headPlusThroatOffset = headOffset.add(throatOffset);
+
+    //rotate body
+    headPlusThroatOffset = headPlusThroatOffset.rotateYaw((float) (Math.toRadians(-renderYawOffset) + Math.PI));
+
+    Vec3 throatPos = bodyOrigin.add(headPlusThroatOffset);
 
     System.out.println("throatPos:" + throatPos);
     return throatPos;
