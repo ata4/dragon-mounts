@@ -1,12 +1,12 @@
-entity.DragonMount.air.name=Drago dell'Etere
-entity.DragonMount.end.name=Drago dell'End
-entity.DragonMount.fire.name=Drago del Fuoco
-entity.DragonMount.ghost.name=Drago Fantasma
-entity.DragonMount.ice.name=Drago del Ghiaccio
-entity.DragonMount.name=Drago dell'End
-entity.DragonMount.nether.name=Drago del Nether
-entity.DragonMount.water.name=Drago Acquatico
-entity.DragonMount.forest.name=Drago della Foresta
+entity.DragonMounts.DragonMount.air.name=Drago dell'Etere
+entity.DragonMounts.DragonMount.end.name=Drago dell'End
+entity.DragonMounts.DragonMount.fire.name=Drago del Fuoco
+entity.DragonMounts.DragonMount.ghost.name=Drago Fantasma
+entity.DragonMounts.DragonMount.ice.name=Drago del Ghiaccio
+entity.DragonMounts.DragonMount.name=Drago dell'End
+entity.DragonMounts.DragonMount.nether.name=Drago del Nether
+entity.DragonMounts.DragonMount.water.name=Drago Acquatico
+entity.DragonMounts.DragonMount.forest.name=Drago della Foresta
 
 commands.dragon.nodragons=Nessun drago nelle vicinanze
 commands.dragon.canttame=Non puoi addomesticare i draghi!
