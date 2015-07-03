@@ -8,6 +8,8 @@ entity.DragonMounts.DragonMount.nether.name=Nether Dragon
 entity.DragonMounts.DragonMount.water.name=Water Dragon
 entity.DragonMounts.DragonMount.forest.name=Forest Dragon
 
+item.dragonorb.name=Dragon Orb
+
 commands.dragon.nodragons=There are no dragons nearby
 commands.dragon.canttame=You cannot tame dragons
 
@@ -23,3 +25,4 @@ key.dragon.flyUp=Fly Up
 key.dragon.flyDown=Fly Down
 
 attribute.name.generic.movementSpeedAir=Speed (Air)
+

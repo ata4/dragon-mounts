@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**
@@ -41,8 +42,12 @@ public class CommonProxy {
         return network;
     }
 
+  public ItemDragonOrb itemDragonOrb;
+
   public void onPreInit(FMLPreInitializationEvent evt)
   {
+    itemDragonOrb = (ItemDragonOrb)(new ItemDragonOrb().setUnlocalizedName("dragonorb"));
+    GameRegistry.registerItem(itemDragonOrb, "dragonorb");
   }
 
 

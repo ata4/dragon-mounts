@@ -130,5 +130,16 @@ On server side: dragonentity keeps track of the breath location over time- eg ea
 
 Dragon animation has head tilt back and jaw open, takes perhaps half second
 
+Dragon aiming is by holding a dragon orb and pointing.
 
+1) local animation is by dragon AI or by player with orb.
+   living update checks for change in orb status.
+   Sends message to server with breath on/off (control message)
+   Includes aiming point (relative to player position and head rotation) and dragon head offset (position and rotation)
+   Only update (say) 4x per second
+2) server receives msg, forwards to other clients, also sets datawatcher
+3) client checks datawatcher
+
+
+Dragon fire animation is by bit 4 of datawatcher 0 to turn breath on/off
 

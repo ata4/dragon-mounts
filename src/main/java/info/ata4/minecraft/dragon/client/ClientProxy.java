@@ -18,6 +18,7 @@ import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -41,6 +42,9 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onInit(FMLInitializationEvent evt) {
         super.onInit(evt);
+      ModelResourceLocation itemModelResourceLocation = new ModelResourceLocation("dragonmounts:dragonorb", "inventory");
+      final int DEFAULT_ITEM_SUBTYPE = 0;
+      Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(itemDragonOrb, DEFAULT_ITEM_SUBTYPE, itemModelResourceLocation);
     }
 
     @Override
