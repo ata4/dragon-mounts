@@ -39,11 +39,10 @@ public class DragonControlMessage implements IMessage {
     
     public void fromInteger(int value) { // ? BitSet already has inbuilt to do this? leave as is...
         bits.clear();
-        for (int i = 0; value != 0; i++) {
+        for (int i = 0; i < bits.size(); i++) {
             if ((value & (1 << i)) != 0) {
                 bits.set(i);
             }
-            value >>>= 1;
         }
     }
     
