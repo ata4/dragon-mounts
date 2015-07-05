@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.client;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.client.handler.DragonControl;
+import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
 import info.ata4.minecraft.dragon.client.handler.TextureStitcherBreathFX;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
@@ -58,5 +59,7 @@ public class ClientProxy extends CommonProxy {
       RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
 
         FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
+      FMLCommonHandler.instance().bus().register(new DragonOrbControl());
+
     }
 }

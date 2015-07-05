@@ -29,10 +29,10 @@ public class DragonHeadPositionHelper
 
     float renderYawOffset = dragon.renderYawOffset;
 
-    System.out.println("getThroatPosition():" + (dragon.worldObj.isRemote ? "client" : "server")
-            + " eyeHeight:" + eyeHeight + " posVec:" + posVec + " yaw:" + yaw + " yawHead:" + yawHead + " getYawHead:" + getYawHead
-           + " pitch:" + pitch + " renderYawOffset:" + renderYawOffset);
-    System.out.println("headLocation:" + headLocation);
+//    System.out.println("getThroatPosition():" + (dragon.worldObj.isRemote ? "client" : "server")
+//            + " eyeHeight:" + eyeHeight + " posVec:" + posVec + " yaw:" + yaw + " yawHead:" + yawHead + " getYawHead:" + getYawHead
+//           + " pitch:" + pitch + " renderYawOffset:" + renderYawOffset);
+//    System.out.println("headLocation:" + headLocation);
 
     Vec3 bodyOrigin = dragon.getPositionVector();
     bodyOrigin = bodyOrigin.addVector(0, dragon.getEyeHeight(), 0);

@@ -2,6 +2,7 @@ package info.ata4.minecraft.dragon.server;
 
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -22,6 +23,24 @@ public class ItemDragonOrb extends Item {
 
   static boolean errorPrinted = false;
 
+  /**
+   * returns the action that specifies what animation to play when the items is being used
+   */
+  @Override
+  public EnumAction getItemUseAction(ItemStack stack)
+  {
+    return EnumAction.BLOCK;
+  }
+
+  /**
+   * How long to hold the block action for
+   */
+  @Override
+  public int getMaxItemUseDuration(ItemStack stack)
+  {
+    return 72000;
+  }
+
   // cycling glow effect for the orb jewel by varying the layer brightness
   @Override
   public int getColorFromItemStack(ItemStack stack, int layerNumber)
@@ -32,7 +51,7 @@ public class ItemDragonOrb extends Item {
       }
       case 1: {   // orb jewel
         final long GLOW_CYCLE_PERIOD_SECONDS = 4;
-        final float MIN_GLOW_BRIGHTNESS = 0.25F;
+        final float MIN_GLOW_BRIGHTNESS = 0.5F;
         final float MAX_GLOW_BRIGHTNESS = 1.0F;
         final long NANO_SEC_PER_SEC = 1000L * 1000L * 1000L;
 
