@@ -78,7 +78,7 @@ public class DragonHeadPositionHelper
 
     Vec3 throatPos = bodyOrigin.add(headPlusThroatOffset);
 
-    System.out.println("throatPos:" + throatPos);
+//    System.out.println("throatPos:" + throatPos);
     return throatPos;
   }
 

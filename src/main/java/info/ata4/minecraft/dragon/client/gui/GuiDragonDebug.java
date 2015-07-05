@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.client.gui;
 
 import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
@@ -31,6 +32,7 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.GuiIngameForge;
@@ -91,15 +93,17 @@ public class GuiDragonDebug extends Gui {
             try {
                 if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
                     renderNavigation();
+                    renderDragonOrbTargets();
                     renderAttributes();
                     renderBreedPoints();
+                } else if (Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
                 } else {
                     renderEntityInfo();
                     renderAITasks();
                     renderWatchedObjects();
                 }
 
-                renderProbe();
+              renderProbe();
             } catch (Exception ex) {
                 renderException(ex);
             }
@@ -280,7 +284,38 @@ public class GuiDragonDebug extends Gui {
         
         text.println();
     }
-    
+
+    private void renderDragonOrbTargets()
+    {
+      text.setColor(YELLOW);
+      text.println("Dragon Orb Target:");
+      text.setColor(WHITE);
+      MovingObjectPosition target = DragonOrbControl.getInstance().getTarget();
+      if (target == null) {
+        text.printf("not targeting\n");
+      } else {
+        switch (target.typeOfHit) {
+          case ENTITY: {
+            text.printf("Entity:%s\n", target.entityHit.toString());
+            text.printf("    at %s\n", target.hitVec.toString());
+            break;
+          }
+          case BLOCK: {
+            text.printf("Block: at %s\n", target.getBlockPos().toString());
+            break;
+          }
+          case MISS: {
+            text.printf("Direction: %s\n", target.hitVec.toString());
+            break;
+          }
+          default: {
+            text.printf("Unknown typeOfHit: %s\n", target.typeOfHit);
+            break;
+          }
+        }
+      }
+    }
+
     private void renderBreedPoints() {
         if (dragonServer == null) {
             return;

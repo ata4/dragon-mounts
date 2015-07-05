@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity;
 
 import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
 import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
@@ -78,6 +79,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public DragonHeadPositionHelper dragonHeadPositionHelper;
 
     public DragonHeadPositionHelper getDragonHeadPositionHelper() { return dragonHeadPositionHelper;}
+
+    private MovingObjectPosition desiredRangedTarget = null; // used by targeting AI to determine the next target
 
     // client-only delegates
     private DragonAnimator animator;
@@ -178,7 +181,17 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // incorrectly in older versions
         setAttributes();
     }
-    
+
+    /**
+   * sets the desired target for the breath weapon.  Will be used by the targeting AI to determine where to point
+     *   the breath weapon
+   * @param desiredRangedTarget
+   */
+    public void setDesiredRangedTarget(MovingObjectPosition desiredRangedTarget)
+    {
+ todo complete here
+    }
+
     @Override
     public void onLivingUpdate() {
         if (!DebugFreezeAnimator.isFrozen()) {
@@ -186,11 +199,16 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 helper.onLivingUpdate();
             }
 
+            Entity entityPlayerSP = DragonMounts.proxy.getClientEntityPlayerSP();
+            if (entityPlayerSP != null && entityPlayerSP == getOwner()) {
+               setDesiredRangedTarget(DragonOrbControl.getInstance().getTarget());
+            }
             if (isClient()) {
                 if (!isEgg()) {
                     animator.setOnGround(!isFlying());
                     animator.update();
                 }
+
             } else {
                 // set home position near owner when tamed
                 //  setHomeArea renamed to EntityCreature.func_175449_a()

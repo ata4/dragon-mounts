@@ -2,10 +2,12 @@ package info.ata4.minecraft.dragon.server;
 
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 
 import java.awt.*;
 
@@ -33,6 +35,16 @@ public class ItemDragonOrb extends Item {
   }
 
   /**
+   * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
+   */
+  @Override
+  public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn)
+  {
+    playerIn.setItemInUse(itemStackIn, this.getMaxItemUseDuration(itemStackIn));
+    return itemStackIn;
+  }
+
+  /**
    * How long to hold the block action for
    */
   @Override
@@ -51,7 +63,7 @@ public class ItemDragonOrb extends Item {
       }
       case 1: {   // orb jewel
         final long GLOW_CYCLE_PERIOD_SECONDS = 4;
-        final float MIN_GLOW_BRIGHTNESS = 0.5F;
+        final float MIN_GLOW_BRIGHTNESS = 0.4F;
         final float MAX_GLOW_BRIGHTNESS = 1.0F;
         final long NANO_SEC_PER_SEC = 1000L * 1000L * 1000L;
 

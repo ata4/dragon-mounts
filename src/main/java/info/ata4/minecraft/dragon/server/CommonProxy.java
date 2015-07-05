@@ -15,7 +15,9 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.ServerCommandManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -113,4 +115,14 @@ public class CommonProxy {
         // chance == iron ingot (10/76, ca. 13%, in 2-5 slots -> 39% at least 1 egg, 0.46 eggs per chest, 1.8 eggs per temple):
         // desert temples are so rare, it should be rewarded
     }
+
+  /**
+   * returns the EntityPlayerSP if this is the client, otherwise returns null.
+   * @return
+   */
+  public Entity getClientEntityPlayerSP()
+  {
+    return null;
+  }
+
 }

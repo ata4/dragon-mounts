@@ -118,7 +118,7 @@ Fixed.  Changing ABBB doesn't recentre properly, did it manually.
 
 ---------------------
 Strategy for breath weapon:
-When mounted, hold LMB down and use mouse to aim
+When mounted, hold RMB down and use mouse to aim
 - sends network message repeatedly with aiming point and throat position relative to body
 - server receives message, sends messages to other clients including target location
 - server burns blocks as per:
@@ -130,7 +130,7 @@ On server side: dragonentity keeps track of the breath location over time- eg ea
 
 Dragon animation has head tilt back and jaw open, takes perhaps half second
 
-Dragon aiming is by holding a dragon orb and pointing.
+Dragon aiming is by holding a dragon orb and pointing and holding down RMB (blocking like a sword).
 
 1) local animation is by dragon AI or by player with orb.
    living update checks for change in orb status.
@@ -142,4 +142,31 @@ Dragon aiming is by holding a dragon orb and pointing.
 
 
 Dragon fire animation is by bit 4 of datawatcher 0 to turn breath on/off
+
+Head pitch and yaw will match the breath weapon target.  Delay?
+
+Moving to within range of target and turning to face it and looking at it is done by the AI.
+
+For breathing: head animation and turning is done by the Entity.
+
+
+-------------
+Targeting:
+EntityAITargeting - keeps track of which entity or block is being targeted, controls dragon movement to an appropriate point
+  and when it is within position, calls Entity.
+  Don't move too close.
+
+On originator client, EntityAITargeting info is copied from DragonOrbControl by the entity update tick - stored in Entity
+On server, DragonOrbTarget (from network message sent from DragonOrbControl) - stored in Entity
+On other clients, DragonOrbTarget (from network messages) - stored in Entity
+
+Entity: startBreathing, stopBreathing, setTarget
+  --> defers to the BreathWeaponStateMachine which has
+    IDLE, STARTING, SUSTAIN, STOPPING to control animation
+    client side EntityFX
+    server side burning etc
+If target is updated during SUSTAIN: if angle is small, keep burning.  if angle is large, interrupt.
+
+EntityAITargeting controls head yaw & pitch
+
 

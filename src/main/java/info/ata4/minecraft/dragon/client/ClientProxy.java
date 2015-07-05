@@ -20,6 +20,7 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.entity.Entity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -59,7 +60,17 @@ public class ClientProxy extends CommonProxy {
       RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
 
         FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
-      FMLCommonHandler.instance().bus().register(new DragonOrbControl());
+      FMLCommonHandler.instance().bus().register(DragonOrbControl.getInstance());
 
+    }
+
+  /**
+   * returns the EntityPlayerSP if this is the client, otherwise returns null.
+   * @return
+   */
+    @Override
+    public Entity getClientEntityPlayerSP()
+    {
+      return Minecraft.getMinecraft().thePlayer;
     }
 }
