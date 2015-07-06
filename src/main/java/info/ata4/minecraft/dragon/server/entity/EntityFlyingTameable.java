@@ -47,7 +47,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private static final String NBT_FLYING = "Flying";
     private static final String NBT_CAN_FLY = "CanFly";
        
-    public EntityAITasks airTasks;
+    public final EntityAITasks airTasks;
     
     private DragonFlightWaypoint waypoint;
     private double airSpeedHorizonal = 1.5;
@@ -277,17 +277,9 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         moveEntity(motionX, motionY, motionZ);
  
         // update AI
-
-//        if (isAIEnabled()) {
-            worldObj.theProfiler.startSection("newAi");
-            updateAITasks();
-            worldObj.theProfiler.endSection();
-//        } else {
-//            worldObj.theProfiler.startSection("oldAi");
-//            updateEntityActionState();
-//            worldObj.theProfiler.endSection();
-//            rotationYawHead = rotationYaw;
-//        }
+        worldObj.theProfiler.startSection("newAi");
+        updateAITasks();
+        worldObj.theProfiler.endSection();
 
         // apply collision
         List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
@@ -331,9 +323,6 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     public double getAltitude() {
       BlockPos entityPos = new BlockPos(posX, posY, posZ);
       BlockPos groundPos = worldObj.getHorizon(entityPos);
-//        int blockX = (int) (posX - 0.5);
-//        int blockZ = (int) (posZ - 0.5);
-//        return posY - worldObj.getHeightValue(blockX, blockZ);
       return posY - groundPos.getY();
     }
     
