@@ -130,9 +130,9 @@ public class DragonLifeStageHelper extends DragonHelper {
      */
     public float getScale() {
         DragonLifeStage lifeStage = getLifeStage();
-        int stageStartTicks = lifeStage.getStartOfStageInTicks();
+        int stageStartTicks = lifeStage.startTicks;
         int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
-        float fractionOfStage = timeInThisStage / (float) lifeStage.getDurationInTicks();
+        float fractionOfStage = timeInThisStage / (float) lifeStage.durationTicks;
         fractionOfStage = MathHelper.clamp_float(fractionOfStage, 0.0F, 1.0F);
 
         final float EGG_SIZE = 0.9F / EntityTameableDragon.BASE_WIDTH;
@@ -191,7 +191,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     public final void setLifeStage(DragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
         if (!dragon.worldObj.isRemote) {
-          ticksSinceCreationServer = lifeStage.getStartOfStageInTicks();
+          ticksSinceCreationServer = lifeStage.startTicks;
           dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
         } else {
           L.error("setLifeStage called on Client");
@@ -290,7 +290,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 
         // animate egg wiggle based on the time the eggs take to hatch
         int age = getTicksSinceCreation();
-        int hatchAge = DragonLifeStage.HATCHLING.getDurationInTicks();
+        int hatchAge = DragonLifeStage.HATCHLING.durationTicks;
         float fractionComplete = age / (float)hatchAge;
 
         // wait until the egg is nearly hatched

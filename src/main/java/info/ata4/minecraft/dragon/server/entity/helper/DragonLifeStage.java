@@ -23,19 +23,19 @@ public enum DragonLifeStage {
     JUVENILE(48000, 24000),
     ADULT(72000, -1);
     
-    DragonLifeStage(int startOfStageInTicks, int stageDurationTicks) {
-        this.stageDurationTicks = stageDurationTicks;
-        this.startOfStageInTicks = startOfStageInTicks;
+    DragonLifeStage(int startTicks, int durationTicks) {
+        this.startTicks = startTicks;
+        this.durationTicks = durationTicks;
     }
 
     public static DragonLifeStage getLifeStageFromTickCount(int ticksSinceCreation) {
-        if (ticksSinceCreation < HATCHLING.startOfStageInTicks) {
+        if (ticksSinceCreation < HATCHLING.startTicks) {
             return EGG;
         }
-        if (ticksSinceCreation < JUVENILE.startOfStageInTicks) {
+        if (ticksSinceCreation < JUVENILE.startTicks) {
             return HATCHLING;
         }
-        if (ticksSinceCreation < ADULT.startOfStageInTicks) {
+        if (ticksSinceCreation < ADULT.startTicks) {
             return JUVENILE;
         }
         return ADULT;
@@ -44,20 +44,11 @@ public enum DragonLifeStage {
     public static int clipTickCountToValid(int ticksSinceCreation) {
         return MathHelper.clamp_int(
                 ticksSinceCreation,
-                EGG.getStartOfStageInTicks(),
-                ADULT.getStartOfStageInTicks()
+                EGG.startTicks,
+                ADULT.durationTicks
         );
     }
 
-    // -1 means infinite
-    public int getDurationInTicks() {
-        return stageDurationTicks;
-    }
-
-    public int getStartOfStageInTicks() {
-        return startOfStageInTicks;
-    }
-
-    private final int stageDurationTicks;
-    private final int startOfStageInTicks;
+    public final int startTicks;
+    public final int durationTicks;
 }
