@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.server.network;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import io.netty.channel.ChannelHandler.Sharable;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -26,16 +27,18 @@ import org.apache.logging.log4j.Logger;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 @Sharable
-public class DragonTargetMessageHandlerServer implements IMessageHandler<DragonControlMessage, IMessage> {
+public class DragonTargetMessageHandlerServer implements IMessageHandler<DragonTargetMessage, IMessage> {
 
     private static final Logger L = LogManager.getLogger();
 
     @Override
-    public IMessage onMessage(final DragonControlMessage message, MessageContext ctx) {
+    public IMessage onMessage(DragonTargetMessage message, MessageContext ctx) {
         if (ctx.side != Side.SERVER) {
-            L.warn("DragonControlMessage received on wrong side:" + ctx.side);
+            L.warn("DragonTargetMessage received on wrong side:" + ctx.side);
             return null;
         }
+
+
 
         // we know for sure that this handler is only used on the server side, so it is ok to assume
         //  that the ctx handler is a serverhandler, and that WorldServer exists.
@@ -47,26 +50,25 @@ public class DragonTargetMessageHandlerServer implements IMessageHandler<DragonC
             return null;
         }
 
+        if (message.isTargeting()) {
+            World world = sendingPlayer.worldObj;
+            DragonOrbTargets.getInstance().setPlayerTarget(sendingPlayer, message.getTarget(world));
+        } else {
+            DragonOrbTargets.getInstance().clearPlayerTarget(sendingPlayer);
+        }
+
         // This code creates a new task which will be executed by the server during the next tick,
         //  for example see MinecraftServer.updateTimeLightAndEntities(), just under section
         //      this.theProfiler.startSection("jobs");
         //  In this case, the task is to call messageHandlerOnServer.processMessage(message, sendingPlayer)
         final WorldServer playerWorldServer = sendingPlayer.getServerForPlayer();
-        playerWorldServer.addScheduledTask(new Runnable() {
-            public void run() {
-                processMessage(message, sendingPlayer);
-            }
-        });
+//        playerWorldServer.addScheduledTask(new Runnable() {
+//            public void run() {
+//                processMessage(message, sendingPlayer);
+//            }
+//        });
 
         return null;
     }
 
-    // This message is called from the Server thread.
-    void processMessage(DragonControlMessage message, EntityPlayerMP sendingPlayer)
-    {
-        if (sendingPlayer.ridingEntity instanceof EntityTameableDragon) {
-            EntityTameableDragon dragon = (EntityTameableDragon)sendingPlayer.ridingEntity;
-            dragon.setControlFlags(message.getFlags());
-        }
-    }
 }

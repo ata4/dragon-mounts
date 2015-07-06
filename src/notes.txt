@@ -158,7 +158,7 @@ EntityAITargeting - keeps track of which entity or block is being targeted, cont
 
 On originator client, EntityAITargeting info is copied from DragonOrbControl by the entity update tick - stored in Entity
 On server, DragonOrbTarget (from network message sent from DragonOrbControl) - stored in Entity
-On other clients, DragonOrbTarget (from network messages) - stored in Entity
+On other clients, DragonOrbTarget (from datawatcher) - stored in Entity
 
 Entity: startBreathing, stopBreathing, setTarget
   --> defers to the BreathWeaponStateMachine which has

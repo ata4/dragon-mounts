@@ -21,7 +21,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import java.util.BitSet;
 
 /**
- * Message to tell dragon what to target with their ranged breath weapon.  Bidirectional.
+ * Message to tell dragon what to target with their ranged breath weapon.
+ *   Sent from client to server only (server to client is by datawatcher)
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
@@ -107,11 +108,8 @@ public class DragonTargetMessage implements IMessage {
           }
           case ENTITY: {
             rawEntityID = buf.readInt();
-            double x = buf.readDouble();
-            double y = buf.readDouble();
-            double z = buf.readDouble();
             Entity dummy = null;
-            target = new MovingObjectPosition(dummy, new Vec3(x, y, z));    // entity will be filled in later
+            target = new MovingObjectPosition(dummy, new Vec3(0, 0, 0));    // entity will be filled in later when retrieving target
             break;
           }
           default: {
@@ -153,9 +151,6 @@ public class DragonTargetMessage implements IMessage {
       }
       case ENTITY: {
         buf.writeInt(target.entityHit.getEntityId());
-        buf.writeDouble(target.hitVec.xCoord);
-        buf.writeDouble(target.hitVec.yCoord);
-        buf.writeDouble(target.hitVec.zCoord);
         break;
       }
       default: {

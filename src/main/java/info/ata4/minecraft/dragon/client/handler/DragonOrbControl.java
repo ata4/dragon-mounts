@@ -13,6 +13,7 @@ package info.ata4.minecraft.dragon.client.handler;
         import info.ata4.minecraft.dragon.server.CommonProxy;
         import info.ata4.minecraft.dragon.server.ItemDragonOrb;
         import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
+        import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
         import info.ata4.minecraft.dragon.server.util.ItemUtils;
         import net.minecraft.client.Minecraft;
         import net.minecraft.client.entity.EntityPlayerSP;
@@ -53,6 +54,7 @@ public class DragonOrbControl {
 
   /**
    * Every tick, check if the player is holding the Dragon Orb, and if so, whether the player is targeting someone with it
+   * Send the target to the server at periodic intervals (if the target has changed significantly, or at least every x ticks)
    * @param evt
    */
   @SubscribeEvent
@@ -80,16 +82,52 @@ public class DragonOrbControl {
       }
     }
 
+    boolean needToSendMessage = false;
     if (!triggerHeld) {
-      if (oldTriggerHeld) {
-
+      needToSendMessage = oldTriggerHeld;
+    } else {
+      if (!oldTriggerHeld) {
+        needToSendMessage = true;
+      } else if (oldMOP.typeOfHit != movingObjectPosition.typeOfHit) {
+        needToSendMessage = true;
+      } else {
+        switch (movingObjectPosition.typeOfHit) {
+          case BLOCK: {
+            break;
+          }
+          case ENTITY: {
+            needToSendMessage = (movingObjectPosition.entityHit != oldMOP.entityHit);
+            break;
+          }
+          case MISS: {
+            double cosAngle = (oldMOP.hitVec.dotProduct(movingObjectPosition.hitVec));
+            final double THRESHOLD_CHANGE_IN_ANGLE = 1.0; // in degrees
+            needToSendMessage = cosAngle < Math.cos(Math.toRadians(THRESHOLD_CHANGE_IN_ANGLE));
+            break;
+          }
+          default: {
+            if (printedError) break;
+            printedError = true;
+            System.err.println("Unknown typeOfHit:" + movingObjectPosition.typeOfHit);
+            break;
+          }
+        }
       }
     }
-    if (ticksSinceLastMessage >
-            triggerHeld != oldTriggerHeld
-        || (triggerHeld && )    )
 
+    ++ticksSinceLastMessage;
+    if (ticksSinceLastMessage >= MAX_TIME_NO_MESSAGE) {
+      needToSendMessage = true;
+    }
+
+    if (needToSendMessage) {
+      ticksSinceLastMessage = 0;
+      DragonTargetMessage message = DragonTargetMessage.createTargetMessage(movingObjectPosition);
+      network.sendToServer(message);
+    }
   }
+
+  private static boolean printedError = false;
 
   private final int MAX_TIME_NO_MESSAGE = 20;  // send a message at least this many ticks or less
   private int ticksSinceLastMessage = 0;
