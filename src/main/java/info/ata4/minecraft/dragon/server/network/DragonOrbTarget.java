@@ -149,30 +149,32 @@ public class DragonOrbTarget
     return Base64.encodeToString(byteBuf.array(), true);
   }
 
+
+
   /**
    * Check if these two DragonOrbTargets are significantly different from each other
    * @param other
    * @return
    */
-  public boolean isSignificantlyDifferent(DragonOrbTarget other)
+  public boolean approximatelyMatches(DragonOrbTarget other)
   {
-    if (other.typeOfTarget != this.typeOfTarget) return true;
+    if (other.typeOfTarget != this.typeOfTarget) return false;
 
     switch (typeOfTarget) {
       case ENTITY: {
-        return (this.entityID != other.entityID);
+        return (this.entityID == other.entityID);
       }
 
       case LOCATION: {
         double squareDistance = this.coordinates.squareDistanceTo(other.coordinates);
         final double THRESHOLD_DISTANCE = 0.5;
-        return squareDistance >= THRESHOLD_DISTANCE * THRESHOLD_DISTANCE;
+        return squareDistance < THRESHOLD_DISTANCE * THRESHOLD_DISTANCE;
       }
 
       case DIRECTION: {
         final double THRESHOLD_CHANGE_IN_ANGLE = 1.0; // in degrees
         double cosAngle = this.coordinates.dotProduct(other.coordinates);  // coordinates are both always normalised
-        return cosAngle < Math.cos(Math.toRadians(THRESHOLD_CHANGE_IN_ANGLE));
+        return cosAngle > Math.cos(Math.toRadians(THRESHOLD_CHANGE_IN_ANGLE));
       }
       default: {
         if (printedError) return false;
@@ -181,7 +183,34 @@ public class DragonOrbTarget
         return false;
       }
     }
+  }
 
+  /**
+   * Check if these two DragonOrbTargets exactly match each other
+   * @param other
+   * @return
+   */
+  public boolean exactlyMatches(DragonOrbTarget other)
+  {
+    if (other.typeOfTarget != this.typeOfTarget) return false;
+    switch (typeOfTarget) {
+      case ENTITY: {
+        return (this.entityID == other.entityID);
+      }
+
+      case DIRECTION:
+      case LOCATION: {
+        return (this.coordinates.xCoord == other.coordinates.xCoord
+                && this.coordinates.yCoord == other.coordinates.yCoord
+                && this.coordinates.zCoord == other.coordinates.zCoord);
+      }
+      default: {
+        if (printedError) return false;
+        printedError = true;
+        System.err.println("invalid typeOfTarget:" + typeOfTarget);
+        return false;
+      }
+    }
   }
 
   @Override
