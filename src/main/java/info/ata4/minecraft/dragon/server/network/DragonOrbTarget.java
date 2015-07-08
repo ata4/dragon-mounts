@@ -4,6 +4,8 @@ import info.ata4.minecraft.dragon.util.Base64;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
@@ -99,6 +101,35 @@ public class DragonOrbTarget
   }
 
   /**
+   * Create a target from a MovingObjectPosition
+   * @param movingObjectPosition can be null
+   * @return null if not possible
+   */
+  public static DragonOrbTarget fromMovingObjectPosition(MovingObjectPosition movingObjectPosition, EntityPlayer entityPlayer)
+  {
+    if (movingObjectPosition == null) {
+      return targetDirection(entityPlayer.getLook(1.0F));
+    }
+    switch (movingObjectPosition.typeOfHit) {
+      case BLOCK: {
+        return targetLocation(movingObjectPosition.hitVec);
+      }
+      case ENTITY: {
+        return targetEntity(movingObjectPosition.entityHit);
+      }
+      case MISS: {
+        return targetDirection(entityPlayer.getLook(1.0F));
+      }
+      default: {
+        if (printedError) return null;
+        printedError = true;
+        System.err.println("Unknown typeOfHit:" + movingObjectPosition.typeOfHit);
+        return null;
+      }
+    }
+  }
+
+  /**
    * write the DragonOrbTarget to a ByteBuf
    * @param buf
    */
@@ -158,6 +189,7 @@ public class DragonOrbTarget
    */
   public boolean approximatelyMatches(DragonOrbTarget other)
   {
+    if (other == null) return false;
     if (other.typeOfTarget != this.typeOfTarget) return false;
 
     switch (typeOfTarget) {
@@ -216,8 +248,12 @@ public class DragonOrbTarget
   @Override
   public String toString()
   {
-    return "DragonOrbTarget(" + typeOfTarget + ")"
-            + (typeOfTarget == TypeOfTarget.ENTITY ? "id=" + entityID : "coordinates=" + coordinates);
+    String retval = "DragonOrbTarget(" + typeOfTarget + ") ";
+    if (typeOfTarget  == TypeOfTarget.ENTITY) {
+      return retval + ":" + entityID;
+    }
+    return retval + String.format(":[%.2f, %.2f, %.2f]",
+            coordinates.xCoord, coordinates.yCoord, coordinates.zCoord);
   }
 
   private static boolean printedError = false;

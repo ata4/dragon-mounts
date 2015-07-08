@@ -6,7 +6,7 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 /**
- * Created by EveryoneElse on 21/06/2015.
+ * Created by TGG on 21/06/2015.
  */
 public class BreathWeaponEmitter {
 
@@ -15,16 +15,25 @@ public class BreathWeaponEmitter {
 
   private Vec3 previousOrigin;
   private Vec3 previousDirection;
+  private int previousTickCount;
 
-  public void updateFromDragon(EntityTameableDragon dragon)
+  public void setBeamEndpoints(Vec3 newOrigin, Vec3 newDestination)
   {
-    origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
-    direction = dragon.getLook(1.0F);
+    origin = newOrigin;
+    direction = newDestination.subtract(newOrigin).normalize();
   }
 
   private static boolean spawnedOne = false;
   static private int spawnSkip = 0;
-  public void spawnBreathParticles(World world, FlameBreathFX.Power power)
+
+  /**
+   * Spawn breath particles for this tick.  If the beam endpoints have moved, interpolate between them, unless
+   *   the beam stopped for a while (tickCount skipped one or more tick)
+   * @param world
+   * @param power the strength of the beam
+   * @param tickCount
+   */
+  public void spawnBreathParticles(World world, FlameBreathFX.Power power, int tickCount)
   {
 //    if (spawnedOne) return;
 //    TestEntityFX testEntityFX = new TestEntityFX(world, origin.xCoord, origin.yCoord + 5, origin.zCoord,
@@ -33,8 +42,13 @@ public class BreathWeaponEmitter {
 //    spawnedOne = true;
 //    return;
 
-    if (previousDirection == null) previousDirection = direction;
-    if (previousOrigin == null) previousOrigin = origin;
+    if (tickCount - previousTickCount > 1) {
+      previousDirection = direction;
+      previousOrigin = origin;
+    } else {
+      if (previousDirection == null) previousDirection = direction;
+      if (previousOrigin == null) previousOrigin = origin;
+    }
     final int PARTICLES_PER_TICK = 4;
     for (int i = 0; i < PARTICLES_PER_TICK; ++i) {
 //      if (++spawnSkip < 399) continue;
@@ -49,6 +63,8 @@ public class BreathWeaponEmitter {
               partialTickHeadStart);
       Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);
     }
+    previousDirection = direction;
+    previousOrigin = origin;
   }
 
   /**

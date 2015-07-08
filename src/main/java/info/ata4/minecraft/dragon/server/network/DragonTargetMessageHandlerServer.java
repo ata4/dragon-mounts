@@ -38,8 +38,6 @@ public class DragonTargetMessageHandlerServer implements IMessageHandler<DragonT
             return null;
         }
 
-
-
         // we know for sure that this handler is only used on the server side, so it is ok to assume
         //  that the ctx handler is a serverhandler, and that WorldServer exists.
         // Packets received on the client side must be handled differently!  See MessageHandlerOnClient
@@ -51,22 +49,10 @@ public class DragonTargetMessageHandlerServer implements IMessageHandler<DragonT
         }
 
         if (message.isTargeting()) {
-            World world = sendingPlayer.worldObj;
-            DragonOrbTargets.getInstance().setPlayerTarget(sendingPlayer, message.getTarget(world));
+            DragonOrbTargets.getInstance().setPlayerTarget(sendingPlayer, message.getTarget());
         } else {
             DragonOrbTargets.getInstance().clearPlayerTarget(sendingPlayer);
         }
-
-        // This code creates a new task which will be executed by the server during the next tick,
-        //  for example see MinecraftServer.updateTimeLightAndEntities(), just under section
-        //      this.theProfiler.startSection("jobs");
-        //  In this case, the task is to call messageHandlerOnServer.processMessage(message, sendingPlayer)
-        final WorldServer playerWorldServer = sendingPlayer.getServerForPlayer();
-//        playerWorldServer.addScheduledTask(new Runnable() {
-//            public void run() {
-//                processMessage(message, sendingPlayer);
-//            }
-//        });
 
         return null;
     }

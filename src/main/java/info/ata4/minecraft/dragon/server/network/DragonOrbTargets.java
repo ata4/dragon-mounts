@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public class DragonOrbTargets
 {
-  public void setPlayerTarget(EntityPlayerMP player, MovingObjectPosition target)
+  public void setPlayerTarget(EntityPlayerMP player, DragonOrbTarget target)
   {
     currentPlayerTargets.put(player.getUniqueID(), target);
   }
@@ -34,24 +34,24 @@ public class DragonOrbTargets
    * @param player
    * @return the current target for the given player, or null if no target
    */
-  public MovingObjectPosition getPlayerTarget(EntityPlayerMP player)
+  public DragonOrbTarget getPlayerTarget(EntityPlayerMP player)
   {
     return currentPlayerTargets.get(player.getUniqueID());
   }
 
-  public static DragonOrbTargets getInstance() {
-    if (instance == null) {
-      instance = new DragonOrbTargets();
-    }
-    return instance;
+  public static synchronized DragonOrbTargets getInstance() {
+      if (instance == null) {
+        instance = new DragonOrbTargets();
+      }
+      return instance;
   }
 
   private DragonOrbTargets() {
-    currentPlayerTargets = new Hashtable<UUID, MovingObjectPosition>();
+    currentPlayerTargets = new Hashtable<UUID, DragonOrbTarget>();
   }
 
   // synchronised access by server or network threads
-  private Hashtable<UUID, MovingObjectPosition> currentPlayerTargets;
+  private Hashtable<UUID, DragonOrbTarget> currentPlayerTargets;
 
   private static DragonOrbTargets instance;
 

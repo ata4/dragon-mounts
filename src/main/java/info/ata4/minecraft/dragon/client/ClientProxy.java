@@ -60,6 +60,7 @@ public class ClientProxy extends CommonProxy {
       RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
 
         FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
+      DragonOrbControl.createSingleton(getNetwork());
       FMLCommonHandler.instance().bus().register(DragonOrbControl.getInstance());
 
     }

@@ -17,6 +17,8 @@ import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
+import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
+import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
@@ -69,6 +71,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     private static final int INDEX_BREED = 22;
     private static final int INDEX_REPRO_COUNT = 23;
     private static final int INDEX_TICKS_SINCE_CREATION = 24;
+    private static final int INDEX_BREATH_WEAPON = 25;
     
     // data NBT IDs
     private static final String NBT_SADDLED = "Saddle";
@@ -79,8 +82,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public DragonHeadPositionHelper dragonHeadPositionHelper;
 
     public DragonHeadPositionHelper getDragonHeadPositionHelper() { return dragonHeadPositionHelper;}
-
-    private MovingObjectPosition desiredRangedTarget = null; // used by targeting AI to determine the next target
 
     // client-only delegates
     private DragonAnimator animator;
@@ -111,11 +112,12 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     protected void entityInit() {
         super.entityInit();
         dataWatcher.addObject(INDEX_SADDLED, (byte) 0);
-        
+
         addHelper(new DragonBreedHelper(this, INDEX_BREED));
         addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonParticleHelper(this));
+      addHelper(new DragonBreathHelper(this, INDEX_BREATH_WEAPON));
         
         if (DragonMounts.instance.getConfig().isDebug()) {
             addHelper(new DragonDebug(this));
@@ -182,15 +184,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         setAttributes();
     }
 
-    /**
-   * sets the desired target for the breath weapon.  Will be used by the targeting AI to determine where to point
-     *   the breath weapon
-   * @param desiredRangedTarget
-   */
-    public void setDesiredRangedTarget(MovingObjectPosition desiredRangedTarget)
-    {
-todo complete here
-    }
 
     @Override
     public void onLivingUpdate() {
@@ -199,16 +192,11 @@ todo complete here
                 helper.onLivingUpdate();
             }
 
-            Entity entityPlayerSP = DragonMounts.proxy.getClientEntityPlayerSP();
-            if (entityPlayerSP != null && entityPlayerSP == getOwner()) {
-               setDesiredRangedTarget(DragonOrbControl.getInstance().getTarget());
-            }
             if (isClient()) {
-                if (!isEgg()) {
-                    animator.setOnGround(!isFlying());
-                    animator.update();
-                }
-
+              if (!isEgg()) {
+                  animator.setOnGround(!isFlying());
+                  animator.update();
+              }
             } else {
                 // set home position near owner when tamed
                 //  setHomeArea renamed to EntityCreature.func_175449_a()
@@ -222,14 +210,6 @@ todo complete here
             }
           super.onLivingUpdate();
         }
-
-      // todo for testing only!!!
-      if (worldObj.isRemote) {
-        BreathWeaponEmitter emitter = new BreathWeaponEmitter();
-        emitter.updateFromDragon(this);
-        FlameBreathFX.Power power = this.getLifeStageHelper().getBreathPower();
-        emitter.spawnBreathParticles(worldObj, power);
-      }
     }
     
     /**
@@ -719,8 +699,13 @@ todo complete here
     private DragonParticleHelper getParticleHelper() {
         return getHelper(DragonParticleHelper.class);
     }
-    
-    public boolean getBooleanData(int index) {
+
+    private DragonBreathHelper getBreathHelper() {
+    return getHelper(DragonBreathHelper.class);
+  }
+
+
+  public boolean getBooleanData(int index) {
         return (dataWatcher.getWatchableObjectByte(index) & 1) != 0;
     }
     

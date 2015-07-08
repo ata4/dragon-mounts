@@ -24,7 +24,7 @@ import java.util.BitSet;
  * Message to tell dragon what to target with their ranged breath weapon.
  *   Sent from client to server only (server to client is by datawatcher)
  * 
- * @author Nico Bergemann <barracuda415 at yahoo.de>
+ * @author TGG
  */
 public class DragonTargetMessage implements IMessage {
 
@@ -45,7 +45,7 @@ public class DragonTargetMessage implements IMessage {
    * @param i_target the target
    * @return the message for sending
    */
-    public static DragonTargetMessage createTargetMessage(MovingObjectPosition i_target)
+    public static DragonTargetMessage createTargetMessage(DragonOrbTarget i_target)
     {
       DragonTargetMessage retval = new DragonTargetMessage();
       retval.targeting = true;
@@ -64,15 +64,11 @@ public class DragonTargetMessage implements IMessage {
     return packetIsValid;
   }
 
-
   public boolean isTargeting() {
     return targeting;
   }
 
-  public MovingObjectPosition getTarget(World world) {
-    if (target.typeOfHit == MovingObjectPosition.MovingObjectType.ENTITY) {
-      target.entityHit = world.getEntityByID(rawEntityID);
-    }
+  public DragonOrbTarget getTarget() {
     return target;
   }
 
@@ -82,47 +78,16 @@ public class DragonTargetMessage implements IMessage {
     try {
       targeting = buf.readBoolean();
       if (targeting) {
-        int typeOfHitInt = buf.readInt();
-        if (typeOfHitInt < 0 || typeOfHitInt >= MovingObjectPosition.MovingObjectType.values().length) {
-          return;
-        }
-        MovingObjectPosition.MovingObjectType typeOfHit = MovingObjectPosition.MovingObjectType.values()[typeOfHitInt];
-        switch (typeOfHit) {
-          case MISS: {
-            double x = buf.readDouble();
-            double y = buf.readDouble();
-            double z = buf.readDouble();
-            target = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS,
-                                              new Vec3(x, y, z),
-                                              EnumFacing.NORTH, new BlockPos(0, 0, 0));    // arbitrary
-            break;
-          }
-          case BLOCK: {
-            int x = buf.readInt();
-            int y = buf.readInt();
-            int z = buf.readInt();
-            target = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.BLOCK,
-                                              new Vec3(x + 0.5, y + 0.5, z + 0.5),          // arbitrary
-                                              EnumFacing.NORTH, new BlockPos(x, y, z));    // arbitrary facing
-            break;
-          }
-          case ENTITY: {
-            rawEntityID = buf.readInt();
-            Entity dummy = null;
-            target = new MovingObjectPosition(dummy, new Vec3(0, 0, 0));    // entity will be filled in later when retrieving target
-            break;
-          }
-          default: {
-            if (printedError) {
-              break;
-            }
-            printedError = true;
-            System.err.println("Unknown type of hit:" + target.typeOfHit);
-            break;
-          }
-        }
+        target = DragonOrbTarget.fromBytes(buf);
       }
     } catch (IndexOutOfBoundsException ioe) {
+      if (printedError) return;
+      printedError = true;
+      System.err.println("Exception while reading DragonTargetMessage: " + ioe);
+      return;
+    } catch (IllegalArgumentException ioe) {
+      if (printedError) return;
+      printedError = true;
       System.err.println("Exception while reading DragonTargetMessage: " + ioe);
       return;
     }
@@ -134,38 +99,11 @@ public class DragonTargetMessage implements IMessage {
   public void toBytes(ByteBuf buf) {
     buf.writeBoolean(targeting);
     if (!targeting) return;
-    buf.writeInt(target.typeOfHit.ordinal());
-    switch (target.typeOfHit) {
-      case MISS: {
-        buf.writeDouble(target.hitVec.xCoord);
-        buf.writeDouble(target.hitVec.yCoord);
-        buf.writeDouble(target.hitVec.zCoord);
-        break;
-      }
-      case BLOCK: {
-        BlockPos targetedBlock = target.getBlockPos();
-        buf.writeInt(targetedBlock.getX());
-        buf.writeInt(targetedBlock.getY());
-        buf.writeInt(targetedBlock.getZ());
-        break;
-      }
-      case ENTITY: {
-        buf.writeInt(target.entityHit.getEntityId());
-        break;
-      }
-      default: {
-        if (printedError) break;
-        printedError = true;
-        System.err.println("Unknown type of hit:" + target.typeOfHit);
-        break;
-      }
-    }
+    target.toBytes(buf);
   }
 
-
-  private MovingObjectPosition target;
+  private DragonOrbTarget target;
   private boolean targeting;
   private static boolean printedError = false;
   private boolean packetIsValid = false;
-  private int rawEntityID;
 }

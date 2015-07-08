@@ -39,7 +39,7 @@ public class CommandDragon extends CommandBase {
   public String getCommandUsage(ICommandSender sender) {
       String stages = StringUtils.join(DragonLifeStage.values(), '|').toLowerCase();
       String breeds = StringUtils.join(DragonBreedRegistry.getInstance().getBreeds(), '|');
-      return String.format("/dragon <stage <%s>|breed <%s> [global]", stages, breeds);
+      return String.format("/dragon <stage <%s>|breed <%s|tame|untame> [global]", stages, breeds);
   }
 
   @Override
@@ -47,7 +47,7 @@ public class CommandDragon extends CommandBase {
 	{
 		if (args.length == 1)
 		{
-			return getListOfStringsMatchingLastWord(args, "stage", "breed", "tame");
+			return getListOfStringsMatchingLastWord(args, "stage", "breed", "tame", "untame");
 		}
 		else
 		{
@@ -119,13 +119,15 @@ public class CommandDragon extends CommandBase {
             
             applyModifier(sender, new BreedModifier(breed), global);
         } else if (command.equals("tame")) {
-            if (sender instanceof EntityPlayerMP) {
-                EntityPlayerMP player = (EntityPlayerMP) sender;
-                applyModifier(sender, new TameModifier(player), global);
-            } else {
-                // console can't tame dragons
-                throw new CommandException("commands.dragon.canttame");
-            }
+          if (sender instanceof EntityPlayerMP) {
+            EntityPlayerMP player = (EntityPlayerMP) sender;
+            applyModifier(sender, new TameModifier(player), global);
+          } else {
+            // console can't tame dragons
+            throw new CommandException("commands.dragon.canttame");
+          }
+        } else if (command.equals("untame")) {
+          applyModifier(sender, new TameModifier(null), global);
         } else {
             throw new WrongUsageException(getCommandUsage(sender));
         }
@@ -224,7 +226,11 @@ public class CommandDragon extends CommandBase {
 
         @Override
         public void modify(EntityTameableDragon dragon) {
+          if (player != null) {
             dragon.tamedFor(player, true);
+          } else {
+            dragon.tamedFor(player, false);
+          }
         }
     }
 }

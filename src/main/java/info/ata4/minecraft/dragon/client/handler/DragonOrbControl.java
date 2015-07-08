@@ -10,29 +10,19 @@
 package info.ata4.minecraft.dragon.client.handler;
 
         import info.ata4.minecraft.dragon.DragonMounts;
-        import info.ata4.minecraft.dragon.server.CommonProxy;
-        import info.ata4.minecraft.dragon.server.ItemDragonOrb;
-        import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
+        import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
         import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
         import info.ata4.minecraft.dragon.server.util.ItemUtils;
+        import info.ata4.minecraft.dragon.server.util.RayTraceServer;
         import net.minecraft.client.Minecraft;
         import net.minecraft.client.entity.EntityPlayerSP;
-        import net.minecraft.client.settings.KeyBinding;
         import net.minecraft.entity.Entity;
-        import net.minecraft.entity.EntityLivingBase;
-        import net.minecraft.entity.item.EntityItemFrame;
-        import net.minecraft.entity.player.EntityPlayer;
-        import net.minecraft.item.ItemStack;
         import net.minecraft.util.*;
         import net.minecraft.world.World;
-        import net.minecraftforge.fml.client.registry.ClientRegistry;
         import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-        import net.minecraftforge.fml.common.gameevent.TickEvent;
         import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
         import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-        import org.lwjgl.input.Keyboard;
 
-        import java.util.BitSet;
         import java.util.List;
 
 /**
@@ -63,7 +53,6 @@ public class DragonOrbControl {
     EntityPlayerSP entityPlayerSP = Minecraft.getMinecraft().thePlayer;
     if (entityPlayerSP == null) return;
 
-    MovingObjectPosition oldMOP = movingObjectPosition;
     boolean oldTriggerHeld = triggerHeld;
 
     if (!ItemUtils.hasEquipped(entityPlayerSP, DragonMounts.proxy.itemDragonOrb)) {
@@ -72,13 +61,8 @@ public class DragonOrbControl {
       triggerHeld = entityPlayerSP.isUsingItem();
       if (triggerHeld) {
         final float MAX_ORB_RANGE = 20.0F;
-        MovingObjectPosition mop = getMouseOver(entityPlayerSP.getEntityWorld(), entityPlayerSP, MAX_ORB_RANGE);
-        if (mop == null) {
-          mop = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS,
-                                         entityPlayerSP.getLook(1.0F),
-                                         EnumFacing.NORTH, new BlockPos(0, 0, 0));    // arbitrary
-        }
-        movingObjectPosition = mop;
+        MovingObjectPosition mop = RayTraceServer.getMouseOver(entityPlayerSP.getEntityWorld(), entityPlayerSP, MAX_ORB_RANGE);
+        dragonOrbTarget = DragonOrbTarget.fromMovingObjectPosition(mop, entityPlayerSP);
       }
     }
 
@@ -88,30 +72,8 @@ public class DragonOrbControl {
     } else {
       if (!oldTriggerHeld) {
         needToSendMessage = true;
-      } else if (oldMOP.typeOfHit != movingObjectPosition.typeOfHit) {
-        needToSendMessage = true;
       } else {
-        switch (movingObjectPosition.typeOfHit) {
-          case BLOCK: {
-            break;
-          }
-          case ENTITY: {
-            needToSendMessage = (movingObjectPosition.entityHit != oldMOP.entityHit);
-            break;
-          }
-          case MISS: {
-            double cosAngle = (oldMOP.hitVec.dotProduct(movingObjectPosition.hitVec));
-            final double THRESHOLD_CHANGE_IN_ANGLE = 1.0; // in degrees
-            needToSendMessage = cosAngle < Math.cos(Math.toRadians(THRESHOLD_CHANGE_IN_ANGLE));
-            break;
-          }
-          default: {
-            if (printedError) break;
-            printedError = true;
-            System.err.println("Unknown typeOfHit:" + movingObjectPosition.typeOfHit);
-            break;
-          }
-        }
+        needToSendMessage = !dragonOrbTarget.approximatelyMatches(lastTargetSent);
       }
     }
 
@@ -122,106 +84,40 @@ public class DragonOrbControl {
 
     if (needToSendMessage) {
       ticksSinceLastMessage = 0;
-      DragonTargetMessage message = DragonTargetMessage.createTargetMessage(movingObjectPosition);
+      lastTargetSent = dragonOrbTarget;
+      DragonTargetMessage message = null;
+      if (triggerHeld) {
+        message = DragonTargetMessage.createTargetMessage(dragonOrbTarget);
+      } else {
+        message = DragonTargetMessage.createUntargetMessage();
+      }
       network.sendToServer(message);
     }
   }
-
-  private static boolean printedError = false;
 
   private final int MAX_TIME_NO_MESSAGE = 20;  // send a message at least this many ticks or less
   private int ticksSinceLastMessage = 0;
   /**
    * Get the block or entity being targeted by the dragon orb
-   * @return MovingObjectPosition with types:
-   *   BLOCK - the block at blockPos
-   *   ENTITY - the entity at hitVec
-   *   MISS - no target, hitVec contains the player's look direction.
-   *   null = no target.
+   * @return DragonOrbTarget, or null for no target
    */
-  public MovingObjectPosition getTarget()
+  public DragonOrbTarget getTarget()
   {
     if (triggerHeld) {
-      return movingObjectPosition;
+      return dragonOrbTarget;
     } else {
       return null;
     }
   }
 
-  /**
-   * Find what the player is looking at (block or entity), up to a maximum range
-   * based on code from EntityRenderer.getMouseOver
-   * @return the block or entity that the player is looking at / targeting with their cursor.  null if no collision
-   */
-  private MovingObjectPosition getMouseOver(World world, EntityPlayerSP entityPlayerSP, float maxDistance) {
-    final float PARTIAL_TICK = 1.0F;
-    Vec3 positionEyes = entityPlayerSP.getPositionEyes(PARTIAL_TICK);
-    Vec3 lookDirection = entityPlayerSP.getLook(PARTIAL_TICK);
-    Vec3 endOfLook = positionEyes.addVector(lookDirection.xCoord * maxDistance,
-                                            lookDirection.yCoord * maxDistance,
-                                            lookDirection.zCoord * maxDistance);
-    final boolean STOP_ON_LIQUID = true;
-    final boolean IGNORE_BOUNDING_BOX = false;
-    final boolean RETURN_NULL_IF_NO_COLLIDE = true;
-    MovingObjectPosition targetedBlock = world.rayTraceBlocks(positionEyes, endOfLook,
-                                                              STOP_ON_LIQUID, IGNORE_BOUNDING_BOX,
-                                                              !RETURN_NULL_IF_NO_COLLIDE);
-
-    double collisionDistanceSQ = maxDistance * maxDistance;
-    if (targetedBlock != null) {
-      collisionDistanceSQ = targetedBlock.hitVec.squareDistanceTo(positionEyes);
-      endOfLook = targetedBlock.hitVec;
-    }
-
-    final float EXPAND_SEARCH_BOX_BY = 1.0F;
-    AxisAlignedBB searchBox = entityPlayerSP.getEntityBoundingBox();
-    Vec3 endOfLookDelta = endOfLook.subtract(positionEyes);
-    searchBox = searchBox.addCoord(endOfLookDelta.xCoord, endOfLookDelta.yCoord, endOfLookDelta.zCoord);
-    searchBox = searchBox.expand(EXPAND_SEARCH_BOX_BY, EXPAND_SEARCH_BOX_BY, EXPAND_SEARCH_BOX_BY);
-    List<Entity> nearbyEntities = (List<Entity>) world.getEntitiesWithinAABBExcludingEntity(
-            entityPlayerSP, searchBox);
-    Entity closestEntityHit = null;
-    double closestEntityDistanceSQ = Double.MAX_VALUE;
-    for (Entity entity : nearbyEntities) {
-      if (!entity.canBeCollidedWith() || entity == entityPlayerSP.ridingEntity) {
-        continue;
-      }
-
-      float collisionBorderSize = entity.getCollisionBorderSize();
-      AxisAlignedBB axisalignedbb = entity.getEntityBoundingBox()
-                                          .expand(collisionBorderSize, collisionBorderSize, collisionBorderSize);
-      MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(positionEyes, endOfLook);
-
-      if (axisalignedbb.isVecInside(endOfLook)) {
-        double distanceSQ = (movingobjectposition == null) ? positionEyes.squareDistanceTo(endOfLook)
-                                                           : positionEyes.squareDistanceTo(movingobjectposition.hitVec);
-        if (distanceSQ <= closestEntityDistanceSQ) {
-          closestEntityDistanceSQ = distanceSQ;
-          closestEntityHit = entity;
-        }
-      } else if (movingobjectposition != null) {
-        double distanceSQ = positionEyes.squareDistanceTo(movingobjectposition.hitVec);
-        if (distanceSQ <= closestEntityDistanceSQ) {
-          closestEntityDistanceSQ = distanceSQ;
-          closestEntityHit = entity;
-        }
-      }
-    }
-
-    if (closestEntityDistanceSQ <= collisionDistanceSQ) {
-      assert (closestEntityHit != null);
-      return new MovingObjectPosition(closestEntityHit, closestEntityHit.getPositionVector());
-    }
-    return targetedBlock;
-  }
-
-
   private boolean triggerHeld = false;
-  private MovingObjectPosition movingObjectPosition;
+  private DragonOrbTarget dragonOrbTarget;
+  private DragonOrbTarget lastTargetSent;
 
   private static DragonOrbControl instance = null;
 
   private DragonOrbControl(SimpleNetworkWrapper i_network) {
     network = i_network;
+    lastTargetSent = null;
   }
 }

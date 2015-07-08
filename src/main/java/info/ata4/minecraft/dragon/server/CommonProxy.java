@@ -15,6 +15,8 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
+import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
+import info.ata4.minecraft.dragon.server.network.DragonTargetMessageHandlerServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.Entity;
@@ -39,6 +41,7 @@ public class CommonProxy {
     
     private SimpleNetworkWrapper network;  
     public final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
+    public final byte DOT_DISCRIMINATOR_ID = 73;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
 
     public SimpleNetworkWrapper getNetwork() {
         return network;
@@ -62,7 +65,10 @@ public class CommonProxy {
         
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
         network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
-        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class, DCM_DISCRIMINATOR_ID, Side.SERVER);
+        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class,
+                DCM_DISCRIMINATOR_ID, Side.SERVER);
+        network.registerMessage(DragonTargetMessageHandlerServer.class, DragonTargetMessage.class,
+                DOT_DISCRIMINATOR_ID, Side.SERVER);
     }
 
     public void onPostInit(FMLPostInitializationEvent event)

@@ -16,6 +16,7 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
+import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -290,29 +291,11 @@ public class GuiDragonDebug extends Gui {
       text.setColor(YELLOW);
       text.println("Dragon Orb Target:");
       text.setColor(WHITE);
-      MovingObjectPosition target = DragonOrbControl.getInstance().getTarget();
+      DragonOrbTarget target = DragonOrbControl.getInstance().getTarget();
       if (target == null) {
         text.printf("not targeting\n");
       } else {
-        switch (target.typeOfHit) {
-          case ENTITY: {
-            text.printf("Entity:%s\n", target.entityHit.toString());
-            text.printf("    at %s\n", target.hitVec.toString());
-            break;
-          }
-          case BLOCK: {
-            text.printf("Block: at %s\n", target.getBlockPos().toString());
-            break;
-          }
-          case MISS: {
-            text.printf("Direction: %s\n", target.hitVec.toString());
-            break;
-          }
-          default: {
-            text.printf("Unknown typeOfHit: %s\n", target.typeOfHit);
-            break;
-          }
-        }
+        text.printf(target.toString());
       }
     }
 
