@@ -79,7 +79,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     // server/client delegates
     private Map<Class, DragonHelper> helpers;
 
-    public DragonHeadPositionHelper dragonHeadPositionHelper;
+    private DragonHeadPositionHelper dragonHeadPositionHelper;
 
     public DragonHeadPositionHelper getDragonHeadPositionHelper() { return dragonHeadPositionHelper;}
 
@@ -700,7 +700,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         return getHelper(DragonParticleHelper.class);
     }
 
-    private DragonBreathHelper getBreathHelper() {
+    public DragonBreathHelper getBreathHelper() {
     return getHelper(DragonBreathHelper.class);
   }
 

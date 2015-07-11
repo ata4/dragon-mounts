@@ -12,12 +12,10 @@ package info.ata4.minecraft.dragon.client.model.anim;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.model.ModelPart;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.helper.DragonBreathHelper;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
-import net.minecraft.client.Minecraft;
-
-import java.util.Random;
 
 /**
  * Animation control class to put useless reptiles in motion.
@@ -45,7 +43,8 @@ public class DragonAnimator {
     private float flutter;
     private float walk;
     private float sit;
-    private float jaw;
+    private float bite;
+    private float breath;
     private float speed;
     
     // timing interp vars
@@ -54,7 +53,8 @@ public class DragonAnimator {
     private TickFloat flutterTimer = new TickFloat().setLimit(0, 1);
     private TickFloat walkTimer = new TickFloat().setLimit(0, 1);
     private TickFloat sitTimer = new TickFloat().setLimit(0, 1);
-    private TickFloat jawTimer = new TickFloat().setLimit(0, 1);
+    private TickFloat biteTimer = new TickFloat().setLimit(0, 1);
+    private TickFloat breathTimer = new TickFloat().setLimit(0, 1);
     private TickFloat speedTimer = new TickFloat(1).setLimit(0, 1);
     
     // trails
@@ -67,7 +67,7 @@ public class DragonAnimator {
     private boolean onGround;
     private boolean openJaw;
     private boolean wingsDown;
-    
+
     // animation parameters
     private float[] wingArm = new float[3];
     private float[] wingForearm = new float[3];
@@ -149,7 +149,7 @@ public class DragonAnimator {
         this.lookYaw = MathX.clamp(lookYaw, -120, 120);
         this.lookPitch = MathX.clamp(lookPitch, -90, 90);
     }
-    
+
     /**
      * Applies the animations on the model. Called every frame before the model
      * is rendered.
@@ -162,7 +162,8 @@ public class DragonAnimator {
         flutter = flutterTimer.get(partialTicks);
         walk = walkTimer.get(partialTicks);
         sit = sitTimer.get(partialTicks);
-        jaw = jawTimer.get(partialTicks);
+        bite = biteTimer.get(partialTicks);
+        breath = breathTimer.get(partialTicks);
         speed = speedTimer.get(partialTicks);
         
         animBase = anim * MathX.PI_F * 2;
@@ -220,7 +221,7 @@ public class DragonAnimator {
             flutterTimer.sync();
             walkTimer.sync();
             sitTimer.sync();
-            jawTimer.sync();
+            biteTimer.sync();
             return;
         }
         
@@ -262,12 +263,38 @@ public class DragonAnimator {
         sitVal += entity.isSitting() ? 0.1f : -0.1f;
         sitVal *= 0.95f;
         sitTimer.set(sitVal);
-        
-        // update jaw opening transition
-        int ticksSinceLastAttack = entity.getTicksSinceLastAttack();
-        final int JAW_OPENING_TIME_FOR_ATTACK = 5;
-        boolean jawFlag = (ticksSinceLastAttack >= 0 && ticksSinceLastAttack < JAW_OPENING_TIME_FOR_ATTACK);
-        jawTimer.add(jawFlag ? 0.2f : -0.2f);
+
+      // update bite opening transition and breath transitions
+
+      DragonBreathHelper.BreathState breathState = entity.getBreathHelper().getCurrentBreathState();
+      switch (breathState) {
+          case IDLE: {  // breath is idle, handle bite attack
+            int ticksSinceLastAttack = entity.getTicksSinceLastAttack();
+            final int JAW_OPENING_TIME_FOR_ATTACK = 5;
+            boolean jawFlag = (ticksSinceLastAttack >= 0 && ticksSinceLastAttack < JAW_OPENING_TIME_FOR_ATTACK);
+            biteTimer.add(jawFlag ? 0.2f : -0.2f);
+            breathTimer.set(0.0F);
+            break;
+          }
+          case STARTING: {
+            biteTimer.set(0.0F);
+            breathTimer.set(entity.getBreathHelper().getBreathStateFractionComplete());
+            break;
+          }
+          case STOPPING: {
+            float breathStateFractionComplete = entity.getBreathHelper().getBreathStateFractionComplete();
+            breathTimer.set(1.0F - breathStateFractionComplete);
+            break;
+          }
+          case SUSTAIN: {
+            breathTimer.set(1.0F);
+            break;
+          }
+          default: {
+            System.err.println("unexpected breathstate:" + breathState);
+            return;
+          }
+        }
 
         // update speed transition
         boolean nearGround = entity.getAltitude() < entity.height * 2;
@@ -361,7 +388,8 @@ public class DragonAnimator {
 //        nanoSec %= 9;
         long nanoSec1 = nanoSec % 9;
         long nanoSec2 = (nanoSec / 9) % 9;
-        model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed);
+        final float HEAD_TILT_DURING_BREATH = -0.1F;
+        model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed) + breath * HEAD_TILT_DURING_BREATH;
 
 //        model.head.rotateAngleX = (float)(nanoSec1 * Math.PI / 8.0F - Math.PI / 2.0F);  //todo delete
         model.head.rotateAngleY = model.neck.rotateAngleY;
@@ -388,13 +416,12 @@ public class DragonAnimator {
         // todo end delete
 
 
-        model.jaw.rotateAngleX = jaw * 0.75f;
+        final float BITE_ANGLE = 0.75F;
+        final float BREATH_ANGLE = 0.75F;
+        model.jaw.rotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
         model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
 
-        //todo delete
-
-        model.jaw.rotateAngleX = 1.0F * 0.75f;
-        //todo end delete
+//        model.bite.rotateAngleX = 1.0F * 0.75f;
 
 //        Random random = new Random();
 //        model.head.isHidden = random.nextBoolean(); //todo delete

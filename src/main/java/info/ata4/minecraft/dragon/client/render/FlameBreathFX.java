@@ -292,10 +292,12 @@ public class FlameBreathFX extends EntityFX {
     // collision ages particles faster
     if (isCollided) {
       particleAge += 5;
+      if (onGround) {
+        motionY -= 0.01F; // ensure that we hit the ground next time too
+      }
     }
 
-
-    // slow particles age very fast
+    // slow particles age very fast (they look silly when sitting still)
     final double SPEED_THRESHOLD = INITIAL_SPEED * 0.25;
     if (motionX * motionX + motionY * motionY + motionZ * motionZ < SPEED_THRESHOLD * SPEED_THRESHOLD) {
       particleAge += 20;

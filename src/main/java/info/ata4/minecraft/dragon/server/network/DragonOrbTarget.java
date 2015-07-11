@@ -159,10 +159,11 @@ public class DragonOrbTarget
   /**
    * create a DragonOrbTarget from a string-encoded version
    * @param dragonOrbTargetString
-   * @return the
+   * @return the target; or null if no target
    */
   public static DragonOrbTarget fromEncodedString(String dragonOrbTargetString) throws IndexOutOfBoundsException, IllegalArgumentException
   {
+    if (dragonOrbTargetString.isEmpty()) return null;
     byte [] bytes = Base64.decode(dragonOrbTargetString);
     ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
     return fromBytes(byteBuf);

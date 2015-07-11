@@ -431,7 +431,7 @@ public class DragonModel extends ModelBase {
       headLocation.rotateAngleX = head.rotateAngleX;
       headLocation.rotateAngleY = head.rotateAngleY;
       headLocation.rotateAngleZ = head.rotateAngleZ;
-      dragon.dragonHeadPositionHelper.setHeadLocation(headLocation);
+      dragon.getDragonHeadPositionHelper().setHeadLocation(headLocation);
 
       size = dragon.getScale();
 
