@@ -172,36 +172,27 @@ public class DragonOrbTarget
     }
   }
 
-  public void setNavigationPath(World world, PathNavigate pathNavigate, float yawSpeed, float pitchSpeed)
+  /**
+   * Set the path navigation to head towards the given target (no effect for DIRECTION target type)
+   * @param world
+   * @param pathNavigate
+   * @param moveSpeed
+   */
+  public void setNavigationPath(World world, PathNavigate pathNavigate, double moveSpeed)
   {
-
-    tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
-
-    pathNavigate.tryMoveToEntityLiving(
-    pathNavigate.tryMoveToXYZ()
-                                      )
     switch (typeOfTarget) {
       case LOCATION: {
-        pathNavigate.setLookPosition(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord,
-                                         yawSpeed, pitchSpeed);
+        pathNavigate.tryMoveToXYZ(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord, moveSpeed);
         break;
       }
       case ENTITY: {
         Entity targetEntity = world.getEntityByID(entityID);
         if (targetEntity != null) {
-          pathNavigate.setLookPositionWithEntity(targetEntity, yawSpeed, pitchSpeed);
+          pathNavigate.tryMoveToEntityLiving(targetEntity, moveSpeed);
         }
         break;
       }
-      case DIRECTION: {  // simulate a look direction by choosing a very-far-away point
-        double entityX = pathNavigate.func_180423_e();
-        double entityY = pathNavigate.func_180422_f();
-        double entityZ = pathNavigate.func_180421_g();
-        final double FAR_DISTANCE = 1000;
-        pathNavigate.setLookPosition(entityX + FAR_DISTANCE * coordinates.xCoord,
-                                         entityY + FAR_DISTANCE * coordinates.yCoord,
-                                         entityZ + FAR_DISTANCE * coordinates.zCoord,
-                                         yawSpeed, pitchSpeed);
+      case DIRECTION: {  // no need to move
         break;
       }
       default: {
@@ -213,6 +204,70 @@ public class DragonOrbTarget
     }
   }
 
+  /**
+   * calculate the distance from the given point to the target
+   * @param world
+   * @return distance squared to the target, or -ve number if not relevant (eg target type DIRECTION)
+   */
+  public double distanceSQtoTarget(World world, Vec3 startPoint)
+  {
+    switch (typeOfTarget) {
+      case LOCATION: {
+        return startPoint.squareDistanceTo(coordinates);
+      }
+      case ENTITY: {
+        Entity targetEntity = world.getEntityByID(entityID);
+        if (targetEntity != null) {
+          return startPoint.squareDistanceTo(targetEntity.getPositionVector());
+        } else {
+          return -1;
+        }
+      }
+      case DIRECTION: {  // no need to move
+        return -1;
+      }
+      default: {
+        if (printedError) return -1;
+        printedError = true;
+        System.err.println("Unknown typeOfTarget:" + typeOfTarget);
+        return -1;
+      }
+    }
+  }
+
+  /** get the point being targeted in [x,y,z]
+   * @param world
+   * @param origin the origin of the breath weapon (dragon's throat)
+   * @return an [x,y,z] to fire the beam at; or null if none
+   */
+  public Vec3 getTargetedPoint(World world, Vec3 origin) {
+    Vec3 destination = null;
+    switch (typeOfTarget) {
+      case LOCATION: {
+        destination = getTargetedLocation();
+        break;
+      }
+      case DIRECTION: {
+        destination = origin.add(getTargetedDirection());
+        break;
+      }
+      case ENTITY: {
+        Entity entity = getTargetEntity(world);
+        if (entity == null) {
+          destination = null;
+        } else {
+          destination = entity.getPositionVector().addVector(0, entity.getEyeHeight() / 2.0, 0);
+        }
+        break;
+      }
+      default: {
+        System.err.println("Unexpected target type:" + typeOfTarget);
+        destination = null;
+        break;
+      }
+    }
+    return destination;
+  }
 
   /**
    * write the DragonOrbTarget to a ByteBuf

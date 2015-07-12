@@ -34,42 +34,21 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   private double entityMoveSpeed;
   private int canSeeTargetTickCount;
 
-  private int rangedAttackTime;
-  private int attackDelayAtMinRange;
-  private int attackDelayAtMaxRange;
-
-  private float maxAttackDistance;
-  private float maxAttackDistanceSQ;
-  private float minAttackDistance;
   private float minAttackDistanceSQ;
-  private float optimalAttackDistance;
   private float optimalAttackDistanceSQ;
+  private float maxAttackDistanceSQ;
 
   private int targetDeselectedCountDown = 0;  // Countdown after player deselects target
   private DragonOrbTarget currentTarget = null;
 
-  public EntityAIRangedBreathAttack(EntityTameableDragon i_dragon, double i_entityMoveSpeed, int attackDelay,
-                                    float i_minAttackDistance, float i_optimalAttackDistance, float i_maxAttackDistance)
-  {
-    this(i_dragon, i_entityMoveSpeed, attackDelay, attackDelay,
-         i_minAttackDistance, i_optimalAttackDistance, i_maxAttackDistance);
-  }
-
   public EntityAIRangedBreathAttack(EntityTameableDragon i_dragon, double i_entityMoveSpeed,
-                                    int i_attackDelayAtMinRange, int i_attackDelayAtMaxRange,
                                     float i_minAttackDistance, float i_optimalAttackDistance, float i_maxAttackDistance)
   {
     this.dragon = i_dragon;
-    this.rangedAttackTime = -1;
     this.entityMoveSpeed = i_entityMoveSpeed;
-    this.attackDelayAtMinRange = i_attackDelayAtMinRange;
-    this.attackDelayAtMaxRange = i_attackDelayAtMaxRange;
-    this.maxAttackDistance = i_maxAttackDistance;
-    this.minAttackDistanceSQ = i_maxAttackDistance * i_maxAttackDistance;
-    this.minAttackDistance = i_minAttackDistance;
     this.minAttackDistanceSQ = i_minAttackDistance * i_minAttackDistance;
-    this.optimalAttackDistance = i_optimalAttackDistance;
     this.optimalAttackDistanceSQ = i_optimalAttackDistance * i_optimalAttackDistance;
+    this.maxAttackDistanceSQ = i_maxAttackDistance * i_maxAttackDistance;
     this.setMutexBits(3);
   }
 
@@ -79,7 +58,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   public boolean shouldExecute()
   {
     DragonOrbTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
-    return (playerSelectedTarget == null && currentTarget == null);
+    return playerSelectedTarget != null || currentTarget != null;
   }
 
   /**
@@ -97,7 +76,8 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   {
     this.attackTarget = null;
     this.canSeeTargetTickCount = 0;
-    this.rangedAttackTime = -1;
+    currentTarget = null;
+    dragon.getBreathHelper().setBreathingTarget(null);
   }
 
   /**
@@ -136,33 +116,28 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     }
 
     // navigate to appropriate range
-    double distanceToTargetSQ = this.dragon.getDistanceSq(this.attackTarget.posX, this.attackTarget.getEntityBoundingBox().minY, this.attackTarget.posZ);
-    if (distanceToTargetSQ <= (double)this.minAttackDistanceSQ) {
+    final int SEE_TARGET_TICK_THRESHOLD = 40;
+    double distanceToTargetSQ = currentTarget.distanceSQtoTarget(dragon.worldObj, dragon.getPositionVector());
+    if (distanceToTargetSQ < 0) {
+      // do nothing since distance not meaningful
+    } else if (distanceToTargetSQ <= minAttackDistanceSQ) {
       //todo this will bite instead of breathe, or alternatively back up?
     } else {
-      if (distanceToTargetSQ <= (double)this.optimalAttackDistanceSQ && this.canSeeTargetTickCount >= 20) {
+      if ((distanceToTargetSQ <= maxAttackDistanceSQ && this.canSeeTargetTickCount >= SEE_TARGET_TICK_THRESHOLD)
+          || distanceToTargetSQ <= optimalAttackDistanceSQ) {
         dragon.getNavigator().clearPathEntity();  // stop moving
       } else {
-        dragon.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+        currentTarget.setNavigationPath(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed);
       }
     }
 
-    // attack if range is correct
-    float fractionRange;
-
-    if (--this.rangedAttackTime == 0) {
-      if (distanceToTargetSQ > this.maxAttackDistanceSQ || !canSeeTarget) {
-        return;
-      }
-
-      fractionRange = MathHelper.sqrt_double(distanceToTargetSQ) / this.maxAttackDistance;
-      float fractionRangeClamp = MathHelper.clamp_float(fractionRange, 0.1F, 1.0F);
-      this.dragon.attackEntityWithRangedAttack(this.attackTarget, fractionRangeClamp);
-      this.rangedAttackTime = MathHelper.floor_float(fractionRange * (float)(this.attackDelayAtMaxRange - this.attackDelayAtMinRange) + (float)this.attackDelayAtMinRange);
-    } else if (this.rangedAttackTime < 0) {
-      fractionRange = MathHelper.sqrt_double(distanceToTargetSQ) / this.maxAttackDistance;
-      this.rangedAttackTime = MathHelper.floor_float(fractionRange * (float)(this.attackDelayAtMaxRange - this.attackDelayAtMinRange) + (float)this.attackDelayAtMinRange);
+    if (distanceToTargetSQ <= maxAttackDistanceSQ && canSeeTarget) {
+      dragon.getBreathHelper().setBreathingTarget(currentTarget);
+    } else {
+      dragon.getBreathHelper().setBreathingTarget(null);
     }
+
+
   }
 //    private EntityTameableDragon dragon;
 //    private Entity watchedEntity;

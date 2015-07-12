@@ -941,7 +941,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
    * @return max pitch speed in degrees per tick
    */
   public float getHeadPitchSpeed() {
-    return getVerticalFaceSpeed();
+    return 40;
   }
 
   @Override

@@ -92,7 +92,7 @@ public class DragonBreathHelper extends DragonHelper
     }
   }
 
-  // set the target to breathe at
+  // set the target to breathe at.  null = no target
   public void setBreathingTarget(DragonOrbTarget target)
   {
     targetBeingBreathedAt = target;
@@ -187,36 +187,12 @@ public class DragonBreathHelper extends DragonHelper
     ++tickCounter;
     DragonOrbTarget nextTarget = getTarget();
     setPlayerSelectedTarget(nextTarget);
-    setBreathingTarget(nextTarget); // todo remove! debug only!
     updateBreathState();
 
+    System.out.println("isClient:" + dragon.isClient() + ", targetBeingBreathedAt:" + targetBeingBreathedAt);
     if (dragon.isClient() && targetBeingBreathedAt != null) {
       Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
-      Vec3 destination;
-      switch (targetBeingBreathedAt.getTypeOfTarget()) {
-        case LOCATION: {
-          destination = targetBeingBreathedAt.getTargetedLocation();
-          break;
-        }
-        case DIRECTION: {
-          destination = origin.add(targetBeingBreathedAt.getTargetedDirection());
-          break;
-        }
-        case ENTITY: {
-          Entity entity = targetBeingBreathedAt.getTargetEntity(dragon.worldObj);
-          if (entity == null) {
-            destination = null;
-          } else {
-            destination = entity.getPositionVector().addVector(0, entity.getEyeHeight() / 2.0, 0);
-          }
-          break;
-        }
-        default: {
-          System.err.println("Unexpected target type:" + targetBeingBreathedAt.getTypeOfTarget());
-          destination = null;
-          break;
-        }
-      }
+      Vec3 destination = targetBeingBreathedAt.getTargetedPoint(dragon.worldObj, origin);
       if (destination != null && currentBreathState == BreathState.SUSTAIN) {
         breathWeaponEmitter.setBeamEndpoints(origin, destination);
         FlameBreathFX.Power power = dragon.getLifeStageHelper().getBreathPower();
