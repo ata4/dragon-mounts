@@ -22,6 +22,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.passive.*;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -377,7 +378,11 @@ public class DragonLifeStageHelper extends DragonHelper {
         return getLifeStage() == ADULT;
     }
 
-    private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage)
+//    private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
+//    private EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.2D, false);
+
+
+  private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage)
     {
       if (newLifeStage != null && previousLifeStage != null) {   // handle initialisation after load from NBT
         if (newLifeStage == previousLifeStage) return;

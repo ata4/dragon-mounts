@@ -16,15 +16,26 @@ import net.minecraft.util.Vec3;
 /**
  * Created by TGG on 8/07/2015.
  * Responsible for
- * - synchronising the intended target between client (local), server, and client (remote) - using network message
+ * - retrieving the player's selected target (based on player's input from Dragon Orb item)
+ * - synchronising the player-selected target between client (local), server, and client (remote) - using network message
  *    and datawatcher
  * - rendering the breath weapon on the client
  * - performing the effects of the weapon on the server (eg burning blocks, causing damage)
- * The selection of targets, navigation of dragon to the appropriate range, turning the dragon to face the target, is
- *   done by targeting AI.
+ * The selection of an actual target (typically - based on the player desired target), navigation of dragon to the appropriate range,
+ *   turning the dragon to face the target, is done by targeting AI.
  * DragonBreathHelper is also responsible for
  *  - adding delays for jaw open / breathing start
  *  - interrupting the beam when the dragon is facing the wrong way / the angle of the beam mismatches the head angle
+ *  Usage:
+ *  1) Create instance, providing the parent dragon entity and a datawatcher index to use for breathing
+ *  2) call onLivingUpdate(), onDeath(), onDeathUpdate(), readFromNBT() and writeFromNBT() from the corresponding
+ *     parent entity methods
+ *  3a) The AI task responsible for targeting should call getPlayerSelectedTarget() to find out what the player wants
+ *     the dragon to target.
+ *  3b) Once the target is in range and the dragon is facing the correct direction, the AI should use setBreathingTarget()
+ *      to commence breathing at the target
+ *  4) getCurrentBreathState() and getBreathStateFractionComplete() should be called by animation routines for
+ *     the dragon during breath weapon (eg jaw opening)
  */
 public class DragonBreathHelper extends DragonHelper
 {
@@ -40,9 +51,9 @@ public class DragonBreathHelper extends DragonHelper
 
   private final int DATA_WATCHER_BREATH_TARGET;
 
-  private DragonOrbTarget desiredRangedTarget = null; // the desired target of the breath weapon; null = no target
+  private DragonOrbTarget playerSelectedTarget = null; // the desired target of the breath weapon; null = no target
                                                       //  used by AI to set the actual targetBeingBreathedAt
-  private DragonOrbTarget lastTargetSent = null;
+  private DragonOrbTarget lastPlayerTargetSent = null;
   private DragonOrbTarget targetBeingBreathedAt = null;  // the target currently being breathed at.
 
   private BreathState currentBreathState = BreathState.IDLE;
@@ -51,9 +62,9 @@ public class DragonBreathHelper extends DragonHelper
   private BreathWeaponEmitter breathWeaponEmitter = null;
   private int tickCounter = 0;
 
-  public DragonOrbTarget getDesiredTarget()
+  public DragonOrbTarget getPlayerSelectedTarget()
   {
-    return desiredRangedTarget;
+    return playerSelectedTarget;
   }
 
   public BreathState getCurrentBreathState() {return currentBreathState;}
@@ -81,7 +92,7 @@ public class DragonBreathHelper extends DragonHelper
     }
   }
 
-  //
+  // set the target to breathe at
   public void setBreathingTarget(DragonOrbTarget target)
   {
     targetBeingBreathedAt = target;
@@ -135,39 +146,39 @@ public class DragonBreathHelper extends DragonHelper
   }
 
   /**
-   * sets the desired target for the breath weapon.  Will be used by the targeting AI to determine where to point
+   * sets the breath weapon target selected by the player.  Will be used by the targeting AI to determine where to point
    *   the breath weapon
-   * @param newDesiredRangedTarget where the dragon should breathe at. null = no target
+   * @param newPlayerSelectedTarget the target that the player wants the dragon to breathe at. null = no target
    */
-  private void setDesiredRangedTarget(DragonOrbTarget newDesiredRangedTarget)
+  private void setPlayerSelectedTarget(DragonOrbTarget newPlayerSelectedTarget)
   {
-    if (newDesiredRangedTarget == null) {
-      clearDesiredRangedTarget();
+    if (newPlayerSelectedTarget == null) {
+      clearPlayerSelectedTarget();
       return;
     }
     if (dragon.isClient()) {
-      desiredRangedTarget = newDesiredRangedTarget;
+      playerSelectedTarget = newPlayerSelectedTarget;
       return;
     }
-    desiredRangedTarget = newDesiredRangedTarget;
+    playerSelectedTarget = newPlayerSelectedTarget;
     boolean updateDataWatcher = false;
-    if (lastTargetSent == null) {
+    if (lastPlayerTargetSent == null) {
       updateDataWatcher = true;
     } else {
-      updateDataWatcher = !newDesiredRangedTarget.approximatelyMatches(lastTargetSent);
+      updateDataWatcher = !newPlayerSelectedTarget.approximatelyMatches(lastPlayerTargetSent);
     }
     if (updateDataWatcher) {
-      dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, desiredRangedTarget.toEncodedString());
+      dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, playerSelectedTarget.toEncodedString());
     }
   }
 
   /**
    * clears the target for the breath weapon, i.e. no desired target
    */
-  private void clearDesiredRangedTarget()
+  private void clearPlayerSelectedTarget()
   {
-    desiredRangedTarget = null;
-    if (dragon.isClient() || lastTargetSent == null) return;
+    playerSelectedTarget = null;
+    if (dragon.isClient() || lastPlayerTargetSent == null) return;
     dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, "");
   }
 
@@ -175,7 +186,7 @@ public class DragonBreathHelper extends DragonHelper
   public void onLivingUpdate() {
     ++tickCounter;
     DragonOrbTarget nextTarget = getTarget();
-    setDesiredRangedTarget(nextTarget);
+    setPlayerSelectedTarget(nextTarget);
     setBreathingTarget(nextTarget); // todo remove! debug only!
     updateBreathState();
 

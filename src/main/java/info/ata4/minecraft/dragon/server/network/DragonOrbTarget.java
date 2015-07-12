@@ -4,7 +4,9 @@ import info.ata4.minecraft.dragon.util.Base64;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.EntityLookHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -52,7 +54,6 @@ public class DragonOrbTarget
   public Entity getTargetEntity(World world) {
     return world.getEntityByID(entityID);
   }
-
 
   public Vec3 getTargetedLocation()
   {
@@ -128,6 +129,90 @@ public class DragonOrbTarget
       }
     }
   }
+
+  /**
+   * Sets where the entity is looking, based on the target
+   * @param world
+   * @param entityLookHelper
+   * @param yawSpeed speed of head yaw change
+   * @param pitchSpeed speed of head pitch change
+   */
+  public void setEntityLook(World world, EntityLookHelper entityLookHelper, float yawSpeed, float pitchSpeed)
+  {
+    switch (typeOfTarget) {
+      case LOCATION: {
+        entityLookHelper.setLookPosition(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord,
+                                         yawSpeed, pitchSpeed);
+        break;
+      }
+      case ENTITY: {
+        Entity targetEntity = world.getEntityByID(entityID);
+        if (targetEntity != null) {
+          entityLookHelper.setLookPositionWithEntity(targetEntity, yawSpeed, pitchSpeed);
+        }
+        break;
+      }
+      case DIRECTION: {  // simulate a look direction by choosing a very-far-away point
+        double entityX = entityLookHelper.func_180423_e();
+        double entityY = entityLookHelper.func_180422_f();
+        double entityZ = entityLookHelper.func_180421_g();
+        final double FAR_DISTANCE = 1000;
+        entityLookHelper.setLookPosition(entityX + FAR_DISTANCE * coordinates.xCoord,
+                                         entityY + FAR_DISTANCE * coordinates.yCoord,
+                                         entityZ + FAR_DISTANCE * coordinates.zCoord,
+                                         yawSpeed, pitchSpeed);
+        break;
+      }
+      default: {
+        if (printedError) return;
+        printedError = true;
+        System.err.println("Unknown typeOfTarget:" + typeOfTarget);
+        break;
+      }
+    }
+  }
+
+  public void setNavigationPath(World world, PathNavigate pathNavigate, float yawSpeed, float pitchSpeed)
+  {
+
+    tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+
+    pathNavigate.tryMoveToEntityLiving(
+    pathNavigate.tryMoveToXYZ()
+                                      )
+    switch (typeOfTarget) {
+      case LOCATION: {
+        pathNavigate.setLookPosition(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord,
+                                         yawSpeed, pitchSpeed);
+        break;
+      }
+      case ENTITY: {
+        Entity targetEntity = world.getEntityByID(entityID);
+        if (targetEntity != null) {
+          pathNavigate.setLookPositionWithEntity(targetEntity, yawSpeed, pitchSpeed);
+        }
+        break;
+      }
+      case DIRECTION: {  // simulate a look direction by choosing a very-far-away point
+        double entityX = pathNavigate.func_180423_e();
+        double entityY = pathNavigate.func_180422_f();
+        double entityZ = pathNavigate.func_180421_g();
+        final double FAR_DISTANCE = 1000;
+        pathNavigate.setLookPosition(entityX + FAR_DISTANCE * coordinates.xCoord,
+                                         entityY + FAR_DISTANCE * coordinates.yCoord,
+                                         entityZ + FAR_DISTANCE * coordinates.zCoord,
+                                         yawSpeed, pitchSpeed);
+        break;
+      }
+      default: {
+        if (printedError) return;
+        printedError = true;
+        System.err.println("Unknown typeOfTarget:" + typeOfTarget);
+        break;
+      }
+    }
+  }
+
 
   /**
    * write the DragonOrbTarget to a ByteBuf

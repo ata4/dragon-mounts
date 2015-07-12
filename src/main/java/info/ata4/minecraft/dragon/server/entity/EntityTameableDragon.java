@@ -930,5 +930,24 @@ public class EntityTameableDragon extends EntityFlyingTameable {
       }
     }
 
+  /** when the dragon rotates its head left-right (yaw), how fast does it move?
+   * @return max yaw speed in degrees per tick
+   */
+  public float getHeadYawSpeed() {
+    return 10.0F;
+  }
+
+  /** when the dragon rotates its head up-down (pitch), how fast does it move?
+   * @return max pitch speed in degrees per tick
+   */
+  public float getHeadPitchSpeed() {
+    return getVerticalFaceSpeed();
+  }
+
+  @Override
+  public int getVerticalFaceSpeed()
+  {
+    return (int)getHeadPitchSpeed();
+  }
 
 }

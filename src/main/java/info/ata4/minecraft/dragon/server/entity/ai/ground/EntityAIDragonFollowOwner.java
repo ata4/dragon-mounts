@@ -130,7 +130,7 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
         }
         
         // face towards owner
-        dragon.getLookHelper().setLookPositionWithEntity(owner, 10, (float) dragon.getVerticalFaceSpeed());
+        dragon.getLookHelper().setLookPositionWithEntity(owner, dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
 
         // update every 10 ticks only from here
         if (--updateTicks > 0) {
