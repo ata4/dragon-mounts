@@ -1,11 +1,7 @@
 package info.ata4.minecraft.dragon.server.network;
 
-import com.google.common.collect.Lists;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.MovingObjectPosition;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.UUID;
 
@@ -16,7 +12,7 @@ import java.util.UUID;
  */
 public class DragonOrbTargets
 {
-  public void setPlayerTarget(EntityPlayerMP player, DragonOrbTarget target)
+  public void setPlayerTarget(EntityPlayerMP player, BreathWeaponTarget target)
   {
     currentPlayerTargets.put(player.getUniqueID(), target);
   }
@@ -34,7 +30,7 @@ public class DragonOrbTargets
    * @param player
    * @return the current target for the given player, or null if no target
    */
-  public DragonOrbTarget getPlayerTarget(EntityPlayerMP player)
+  public BreathWeaponTarget getPlayerTarget(EntityPlayerMP player)
   {
     return currentPlayerTargets.get(player.getUniqueID());
   }
@@ -47,11 +43,11 @@ public class DragonOrbTargets
   }
 
   private DragonOrbTargets() {
-    currentPlayerTargets = new Hashtable<UUID, DragonOrbTarget>();
+    currentPlayerTargets = new Hashtable<UUID, BreathWeaponTarget>();
   }
 
   // synchronised access by server or network threads
-  private Hashtable<UUID, DragonOrbTarget> currentPlayerTargets;
+  private Hashtable<UUID, BreathWeaponTarget> currentPlayerTargets;
 
   private static DragonOrbTargets instance;
 

@@ -10,15 +10,7 @@
 package info.ata4.minecraft.dragon.server.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-
-import java.util.BitSet;
 
 /**
  * Message to tell dragon what to target with their ranged breath weapon.
@@ -45,7 +37,7 @@ public class DragonTargetMessage implements IMessage {
    * @param i_target the target
    * @return the message for sending
    */
-    public static DragonTargetMessage createTargetMessage(DragonOrbTarget i_target)
+    public static DragonTargetMessage createTargetMessage(BreathWeaponTarget i_target)
     {
       DragonTargetMessage retval = new DragonTargetMessage();
       retval.targeting = true;
@@ -68,7 +60,7 @@ public class DragonTargetMessage implements IMessage {
     return targeting;
   }
 
-  public DragonOrbTarget getTarget() {
+  public BreathWeaponTarget getTarget() {
     return target;
   }
 
@@ -78,7 +70,7 @@ public class DragonTargetMessage implements IMessage {
     try {
       targeting = buf.readBoolean();
       if (targeting) {
-        target = DragonOrbTarget.fromBytes(buf);
+        target = BreathWeaponTarget.fromBytes(buf);
       }
     } catch (IndexOutOfBoundsException ioe) {
       if (printedError) return;
@@ -102,7 +94,7 @@ public class DragonTargetMessage implements IMessage {
     target.toBytes(buf);
   }
 
-  private DragonOrbTarget target;
+  private BreathWeaponTarget target;
   private boolean targeting;
   private static boolean printedError = false;
   private boolean packetIsValid = false;

@@ -1,24 +1,23 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
-import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
 import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
 import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Created by TGG on 8/07/2015.
  * Responsible for
  * - retrieving the player's selected target (based on player's input from Dragon Orb item)
- * - synchronising the player-selected target between client (local), server, and client (remote) - using network message
- *    and datawatcher
+ * - synchronising the player-selected target between server AI and client copy - using datawatcher
  * - rendering the breath weapon on the client
  * - performing the effects of the weapon on the server (eg burning blocks, causing damage)
  * The selection of an actual target (typically - based on the player desired target), navigation of dragon to the appropriate range,
@@ -39,6 +38,8 @@ import net.minecraft.util.Vec3;
  */
 public class DragonBreathHelper extends DragonHelper
 {
+  private static final Logger L = LogManager.getLogger();
+
   public DragonBreathHelper(EntityTameableDragon dragon, int dataWatcherIndexBreathTarget)
   {
     super(dragon);
@@ -51,21 +52,14 @@ public class DragonBreathHelper extends DragonHelper
 
   private final int DATA_WATCHER_BREATH_TARGET;
 
-  private DragonOrbTarget playerSelectedTarget = null; // the desired target of the breath weapon; null = no target
-                                                      //  used by AI to set the actual targetBeingBreathedAt
-  private DragonOrbTarget lastPlayerTargetSent = null;
-  private DragonOrbTarget targetBeingBreathedAt = null;  // the target currently being breathed at.
+  private BreathWeaponTarget targetBeingBreathedAt = null;  // server: the target currently being breathed at
+  private BreathWeaponTarget lastBreathTargetSent = null;   // server: the last target sent to the client thru DataWatcher
 
   private BreathState currentBreathState = BreathState.IDLE;
   private int transitionStartTick;
 
   private BreathWeaponEmitter breathWeaponEmitter = null;
   private int tickCounter = 0;
-
-  public DragonOrbTarget getPlayerSelectedTarget()
-  {
-    return playerSelectedTarget;
-  }
 
   public BreathState getCurrentBreathState() {return currentBreathState;}
 
@@ -92,11 +86,33 @@ public class DragonBreathHelper extends DragonHelper
     }
   }
 
-  // set the target to breathe at.  null = no target
-  public void setBreathingTarget(DragonOrbTarget target)
+  /** set the target currently being breathed at.
+   * server only.
+   * @param target the new target the dragon is breathing at, null = no target
+    */
+  public void setBreathingTarget(BreathWeaponTarget target)
   {
-    targetBeingBreathedAt = target;
-    updateBreathState();
+    if (dragon.isServer()) {
+      targetBeingBreathedAt = target;
+      boolean updateDataWatcher = false;
+      if (lastBreathTargetSent == null) {
+        updateDataWatcher = true;
+      } else {
+        updateDataWatcher = !lastBreathTargetSent.approximatelyMatches(target);
+      }
+      if (updateDataWatcher) {
+        lastBreathTargetSent = target;
+        if (target == null) {
+          dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, "");
+        } else {
+          dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, target.toEncodedString());
+        }
+      }
+    } else {
+      L.warn("setBreathingTarget is only valid on server");
+    }
+
+    updateBreathState(target);
   }
 
   public enum  BreathState {
@@ -106,7 +122,7 @@ public class DragonBreathHelper extends DragonHelper
   private final int BREATH_START_DURATION = 5; // ticks
   private final int BREATH_STOP_DURATION = 5; // ticks
 
-  private void updateBreathState()
+  private void updateBreathState(BreathWeaponTarget targetBeingBreathedAt)
   {
     switch (currentBreathState) {
       case IDLE: {
@@ -145,54 +161,89 @@ public class DragonBreathHelper extends DragonHelper
     }
   }
 
-  /**
-   * sets the breath weapon target selected by the player.  Will be used by the targeting AI to determine where to point
-   *   the breath weapon
-   * @param newPlayerSelectedTarget the target that the player wants the dragon to breathe at. null = no target
-   */
-  private void setPlayerSelectedTarget(DragonOrbTarget newPlayerSelectedTarget)
-  {
-    if (newPlayerSelectedTarget == null) {
-      clearPlayerSelectedTarget();
-      return;
-    }
-    if (dragon.isClient()) {
-      playerSelectedTarget = newPlayerSelectedTarget;
-      return;
-    }
-    playerSelectedTarget = newPlayerSelectedTarget;
-    boolean updateDataWatcher = false;
-    if (lastPlayerTargetSent == null) {
-      updateDataWatcher = true;
-    } else {
-      updateDataWatcher = !newPlayerSelectedTarget.approximatelyMatches(lastPlayerTargetSent);
-    }
-    if (updateDataWatcher) {
-      dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, playerSelectedTarget.toEncodedString());
-    }
-  }
+//  /**
+//   * sets the breath weapon target selected by the player.  Will be used by the targeting AI to determine where to point
+//   *   the breath weapon
+//   * @param newPlayerSelectedTarget the target that the player wants the dragon to breathe at. null = no target
+//   */
+//  private void setPlayerSelectedTarget(BreathWeaponTarget newPlayerSelectedTarget)
+//  {
+//    if (newPlayerSelectedTarget == null) {
+//      clearPlayerSelectedTarget();
+//      return;
+//    }
+//    if (dragon.isClient()) {
+//
+//      playerSelectedTarget = newPlayerSelectedTarget;
+//      return;
+//    }
+//    playerSelectedTarget = newPlayerSelectedTarget;
+//    boolean updateDataWatcher = false;
+//    if (lastBreathTargetSent == null) {
+//      updateDataWatcher = true;
+//    } else {
+//      updateDataWatcher = !newPlayerSelectedTarget.approximatelyMatches(lastBreathTargetSent);
+//    }
+//    if (updateDataWatcher) {
+//      dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, playerSelectedTarget.toEncodedString());
+//    }
+//  }
+
+//  /**
+//   * clears the target for the breath weapon, i.e. no desired target
+//   */
+//  private void clearPlayerSelectedTarget()
+//  {
+//    playerSelectedTarget = null;
+//    if (dragon.isClient() || lastBreathTargetSent == null) return;
+//    dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, "");
+//  }
 
   /**
-   * clears the target for the breath weapon, i.e. no desired target
+   * For tamed dragons, returns the target that their controlling player has selected using the DragonOrb.
+   * Valid on server side only
+   * @return the player's selected target, or null if no player target or dragon isn't tamed.
    */
-  private void clearPlayerSelectedTarget()
+  public BreathWeaponTarget getPlayerSelectedTarget()
   {
-    playerSelectedTarget = null;
-    if (dragon.isClient() || lastPlayerTargetSent == null) return;
-    dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, "");
+    if (dragon.isClient()) {
+      L.warn("getPlayerSelectedTarget is valid on the server side only");
+      return null;
+    }
+
+    Entity owner = dragon.getOwner();
+    if (owner == null || !(owner instanceof EntityPlayerMP)) {
+      return null;
+    }
+    EntityPlayerMP entityPlayerMP = (EntityPlayerMP)owner;
+    BreathWeaponTarget breathWeaponTarget = DragonOrbTargets.getInstance().getPlayerTarget(entityPlayerMP);
+    return breathWeaponTarget;
   }
+
 
   @Override
   public void onLivingUpdate() {
     ++tickCounter;
-    DragonOrbTarget nextTarget = getTarget();
-    setPlayerSelectedTarget(nextTarget);
-    updateBreathState();
+    if (dragon.isClient()) {
+      onLivingUpdateClient();
+    } else {
+      onLivingUpdateServer();
+    }
+  }
 
-    System.out.println("isClient:" + dragon.isClient() + ", targetBeingBreathedAt:" + targetBeingBreathedAt);
-    if (dragon.isClient() && targetBeingBreathedAt != null) {
+  private void onLivingUpdateServer()
+  {
+    BreathWeaponTarget target = getTarget();
+  }
+
+  private void onLivingUpdateClient()
+  {
+    BreathWeaponTarget breathWeaponTarget = getTarget();
+    updateBreathState(breathWeaponTarget);
+
+    if (breathWeaponTarget != null) {
       Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
-      Vec3 destination = targetBeingBreathedAt.getTargetedPoint(dragon.worldObj, origin);
+      Vec3 destination = breathWeaponTarget.getTargetedPoint(dragon.worldObj, origin);
       if (destination != null && currentBreathState == BreathState.SUSTAIN) {
         breathWeaponEmitter.setBeamEndpoints(origin, destination);
         FlameBreathFX.Power power = dragon.getLifeStageHelper().getBreathPower();
@@ -202,32 +253,20 @@ public class DragonBreathHelper extends DragonHelper
   }
 
   /**
-   * Get the target for this dragon:
-   * 1) On the client, for a tamed dragon belonging to the local player - from the local item via DragonOrbControl
-   * 2) On the client, for another player's dragon (i.e. not the local player) - from the datawatcher
-   * 3) On the server- from the DragonOrbTargets registry
+   * Get the target currently being breathed at, for this dragon:
+   * 1) On the client, from the datawatcher
+   * 2) On the server- previously set by AI
    * @return the target, or null for none
    */
-  private DragonOrbTarget getTarget()
+  private BreathWeaponTarget getTarget()
   {
-    // update target
     if (dragon.isClient()) {
-      Entity entityPlayer = DragonMounts.proxy.getClientEntityPlayerSP();   // on client, grab target info from local
-      if (entityPlayer != null && entityPlayer == dragon.getOwner()) {
-        return DragonOrbControl.getInstance().getTarget();
-      }
       String target = dataWatcher.getWatchableObjectString(DATA_WATCHER_BREATH_TARGET);
-      DragonOrbTarget dragonOrbTarget = DragonOrbTarget.fromEncodedString(target);
-      return dragonOrbTarget;
+      BreathWeaponTarget breathWeaponTarget = BreathWeaponTarget.fromEncodedString(target);
+      return breathWeaponTarget;
+    } else {
+      return targetBeingBreathedAt;
     }
-
-    Entity owner = dragon.getOwner();
-    if (owner == null || !(owner instanceof EntityPlayerMP)) {
-      return null;
-    }
-    EntityPlayerMP entityPlayerMP = (EntityPlayerMP)owner;
-    DragonOrbTarget dragonOrbTarget = DragonOrbTargets.getInstance().getPlayerTarget(entityPlayerMP);
-    return dragonOrbTarget;
   }
 
   @Override

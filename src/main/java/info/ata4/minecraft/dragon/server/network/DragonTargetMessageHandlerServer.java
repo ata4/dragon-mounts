@@ -44,7 +44,12 @@ public class DragonTargetMessageHandlerServer implements IMessageHandler<DragonT
 
         final EntityPlayerMP sendingPlayer = ctx.getServerHandler().playerEntity;
         if (sendingPlayer == null) {
-            L.warn("EntityPlayerMP was null when DragonControlMessage was received");
+            L.warn("EntityPlayerMP was null when DragonTargetMessage was received");
+            return null;
+        }
+
+        if (!message.isPacketIsValid()) {
+            L.warn("Invalid DragonTargetMessage received");
             return null;
         }
 

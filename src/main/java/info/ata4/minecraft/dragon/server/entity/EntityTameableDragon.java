@@ -10,15 +10,10 @@
 package info.ata4.minecraft.dragon.server.entity;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
-import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
-import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
-import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
-import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;

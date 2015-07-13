@@ -10,20 +10,16 @@
 package info.ata4.minecraft.dragon.client.handler;
 
         import info.ata4.minecraft.dragon.DragonMounts;
-        import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
+        import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
         import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
         import info.ata4.minecraft.dragon.server.util.ItemUtils;
         import info.ata4.minecraft.dragon.server.util.RayTraceServer;
         import net.minecraft.client.Minecraft;
         import net.minecraft.client.entity.EntityPlayerSP;
-        import net.minecraft.entity.Entity;
         import net.minecraft.util.*;
-        import net.minecraft.world.World;
         import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
         import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
         import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-
-        import java.util.List;
 
 /**
  * If the player is holding the dragon orb, records whether the player is holding down the
@@ -62,7 +58,7 @@ public class DragonOrbControl {
       if (triggerHeld) {
         final float MAX_ORB_RANGE = 20.0F;
         MovingObjectPosition mop = RayTraceServer.getMouseOver(entityPlayerSP.getEntityWorld(), entityPlayerSP, MAX_ORB_RANGE);
-        dragonOrbTarget = DragonOrbTarget.fromMovingObjectPosition(mop, entityPlayerSP);
+        breathWeaponTarget = BreathWeaponTarget.fromMovingObjectPosition(mop, entityPlayerSP);
       }
     }
 
@@ -73,7 +69,7 @@ public class DragonOrbControl {
       if (!oldTriggerHeld) {
         needToSendMessage = true;
       } else {
-        needToSendMessage = !dragonOrbTarget.approximatelyMatches(lastTargetSent);
+        needToSendMessage = !breathWeaponTarget.approximatelyMatches(lastTargetSent);
       }
     }
 
@@ -84,10 +80,10 @@ public class DragonOrbControl {
 
     if (needToSendMessage) {
       ticksSinceLastMessage = 0;
-      lastTargetSent = dragonOrbTarget;
+      lastTargetSent = breathWeaponTarget;
       DragonTargetMessage message = null;
       if (triggerHeld) {
-        message = DragonTargetMessage.createTargetMessage(dragonOrbTarget);
+        message = DragonTargetMessage.createTargetMessage(breathWeaponTarget);
       } else {
         message = DragonTargetMessage.createUntargetMessage();
       }
@@ -99,20 +95,20 @@ public class DragonOrbControl {
   private int ticksSinceLastMessage = 0;
   /**
    * Get the block or entity being targeted by the dragon orb
-   * @return DragonOrbTarget, or null for no target
+   * @return BreathWeaponTarget, or null for no target
    */
-  public DragonOrbTarget getTarget()
+  public BreathWeaponTarget getTarget()
   {
     if (triggerHeld) {
-      return dragonOrbTarget;
+      return breathWeaponTarget;
     } else {
       return null;
     }
   }
 
   private boolean triggerHeld = false;
-  private DragonOrbTarget dragonOrbTarget;
-  private DragonOrbTarget lastTargetSent;
+  private BreathWeaponTarget breathWeaponTarget;
+  private BreathWeaponTarget lastTargetSent;
 
   private static DragonOrbControl instance = null;
 

@@ -15,12 +15,10 @@
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.util.MathHelper;
 
 
 public class EntityAIRangedBreathAttack extends EntityAIBase {
@@ -39,7 +37,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   private float maxAttackDistanceSQ;
 
   private int targetDeselectedCountDown = 0;  // Countdown after player deselects target
-  private DragonOrbTarget currentTarget = null;
+  private BreathWeaponTarget currentTarget = null;
 
   public EntityAIRangedBreathAttack(EntityTameableDragon i_dragon, double i_entityMoveSpeed,
                                     float i_minAttackDistance, float i_optimalAttackDistance, float i_maxAttackDistance)
@@ -57,7 +55,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
    */
   public boolean shouldExecute()
   {
-    DragonOrbTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
+    BreathWeaponTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
     return playerSelectedTarget != null || currentTarget != null;
   }
 
@@ -85,9 +83,11 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
    */
   public void updateTask()
   {
+    boolean breathingNow = false;
     // check which target the player has selected; if deselected, wait a short while before losing interest
     final int TARGET_DESELECTION_TIME = 60; // 60 ticks until dragon loses interest in target
-    DragonOrbTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
+    BreathWeaponTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
+    breathingNow = (playerSelectedTarget != null);
     if (playerSelectedTarget != null) {
       currentTarget = playerSelectedTarget;
       targetDeselectedCountDown = TARGET_DESELECTION_TIME;
@@ -99,11 +99,14 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       }
     }
 
-    if (currentTarget == null) return;
+    if (currentTarget == null) {
+      dragon.getBreathHelper().setBreathingTarget(null);
+      return;
+    }
 
     // check if target visible
     boolean canSeeTarget = true;
-    if (currentTarget.getTypeOfTarget() == DragonOrbTarget.TypeOfTarget.ENTITY) {
+    if (currentTarget.getTypeOfTarget() == BreathWeaponTarget.TypeOfTarget.ENTITY) {
       Entity targetEntity = currentTarget.getTargetEntity(dragon.worldObj);
       canSeeTarget = (targetEntity == null) ? false : dragon.getEntitySenses().canSee(targetEntity);
     }
@@ -131,7 +134,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       }
     }
 
-    if (distanceToTargetSQ <= maxAttackDistanceSQ && canSeeTarget) {
+    if (breathingNow && canSeeTarget && distanceToTargetSQ <= maxAttackDistanceSQ ) {
       dragon.getBreathHelper().setBreathingTarget(currentTarget);
     } else {
       dragon.getBreathHelper().setBreathingTarget(null);

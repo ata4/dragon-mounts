@@ -16,7 +16,7 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
-import info.ata4.minecraft.dragon.server.network.DragonOrbTarget;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -33,7 +33,6 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.GuiIngameForge;
@@ -291,7 +290,7 @@ public class GuiDragonDebug extends Gui {
       text.setColor(YELLOW);
       text.println("Dragon Orb Target:");
       text.setColor(WHITE);
-      DragonOrbTarget target = DragonOrbControl.getInstance().getTarget();
+      BreathWeaponTarget target = DragonOrbControl.getInstance().getTarget();
       if (target == null) {
         text.printf("not targeting\n");
       } else {
