@@ -24,11 +24,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 public class EntityAIRangedBreathAttack extends EntityAIBase {
   /** The entity the AI instance has been applied to */
   private final EntityTameableDragon dragon;
-  private EntityLivingBase attackTarget;
-  /**
-   * A decrementing tick that spawns a ranged attack once this value reaches 0. It is then set back to the
-   * attackDelayAtMaxRange.
-   */
   private double entityMoveSpeed;
   private int canSeeTargetTickCount;
 
@@ -38,6 +33,8 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
 
   private int targetDeselectedCountDown = 0;  // Countdown after player deselects target
   private BreathWeaponTarget currentTarget = null;
+
+  private int ticksBelowMinimumRange = 0;
 
   public EntityAIRangedBreathAttack(EntityTameableDragon i_dragon, double i_entityMoveSpeed,
                                     float i_minAttackDistance, float i_optimalAttackDistance, float i_maxAttackDistance)
@@ -72,8 +69,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
    */
   public void resetTask()
   {
-    this.attackTarget = null;
-    this.canSeeTargetTickCount = 0;
+    canSeeTargetTickCount = 0;
     currentTarget = null;
     dragon.getBreathHelper().setBreathingTarget(null);
   }
@@ -83,11 +79,10 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
    */
   public void updateTask()
   {
-    boolean breathingNow = false;
     // check which target the player has selected; if deselected, wait a short while before losing interest
     final int TARGET_DESELECTION_TIME = 60; // 60 ticks until dragon loses interest in target
     BreathWeaponTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
-    breathingNow = (playerSelectedTarget != null);
+    boolean breathingNow = (playerSelectedTarget != null);
     if (playerSelectedTarget != null) {
       currentTarget = playerSelectedTarget;
       targetDeselectedCountDown = TARGET_DESELECTION_TIME;
@@ -122,25 +117,38 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     final int SEE_TARGET_TICK_THRESHOLD = 40;
     double distanceToTargetSQ = currentTarget.distanceSQtoTarget(dragon.worldObj, dragon.getPositionVector());
     if (distanceToTargetSQ < 0) {
-      // do nothing since distance not meaningful
+      // don't move since distance not meaningful
     } else if (distanceToTargetSQ <= minAttackDistanceSQ) {
-      //todo this will bite instead of breathe, or alternatively back up?
+      // back up to at least minimum range.  If can't back up (stays too close for more than a few seconds), bite.
+      currentTarget.setNavigationPathAvoid(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed);  //todo only regen path when changed
     } else {
       if ((distanceToTargetSQ <= maxAttackDistanceSQ && this.canSeeTargetTickCount >= SEE_TARGET_TICK_THRESHOLD)
           || distanceToTargetSQ <= optimalAttackDistanceSQ) {
         dragon.getNavigator().clearPathEntity();  // stop moving
       } else {
-        currentTarget.setNavigationPath(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed);
+        currentTarget.setNavigationPath(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed); //todo only regen path when changed
       }
     }
 
-    if (breathingNow && canSeeTarget && distanceToTargetSQ <= maxAttackDistanceSQ ) {
+    final int BITE_MODE_TICKS = 80;
+    if (distanceToTargetSQ < minAttackDistanceSQ) {
+      ++ticksBelowMinimumRange;
+    } else {
+      ticksBelowMinimumRange = 0;
+    }
+
+    boolean biteMode = (ticksBelowMinimumRange >= BITE_MODE_TICKS);
+    boolean targetRangeOK = distanceToTargetSQ < 0
+            || (distanceToTargetSQ >= minAttackDistanceSQ && distanceToTargetSQ <= maxAttackDistanceSQ);
+    if (breathingNow && canSeeTarget && targetRangeOK) {
       dragon.getBreathHelper().setBreathingTarget(currentTarget);
     } else {
       dragon.getBreathHelper().setBreathingTarget(null);
     }
 
-
+    if (biteMode) { // todo swap to melee attack
+      System.out.println("Bite attack");
+    }
   }
 //    private EntityTameableDragon dragon;
 //    private Entity watchedEntity;

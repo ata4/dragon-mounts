@@ -386,7 +386,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     {
       if (newLifeStage != null && previousLifeStage != null) {   // handle initialisation after load from NBT
         if (newLifeStage == previousLifeStage) return;
-        if (newLifeStage != EGG && previousLifeStage != EGG) return;
+//        if (newLifeStage != EGG && previousLifeStage != EGG) return;
       }
 
       EntityAITasks tasks = dragon.tasks;

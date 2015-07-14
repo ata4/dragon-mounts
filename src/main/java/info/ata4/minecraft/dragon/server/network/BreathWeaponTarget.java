@@ -207,6 +207,39 @@ public class BreathWeaponTarget
   }
 
   /**
+   * Set the path navigation to head away from the given target (no effect for DIRECTION target type)
+   * @param world
+   * @param pathNavigate
+   * @param moveSpeed
+   */
+  public void setNavigationPathAvoid(World world, PathNavigate pathNavigate, double moveSpeed)
+  {
+    todo set up avoid
+    switch (typeOfTarget) {
+      case LOCATION: {
+        pathNavigate.tryMoveToXYZ(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord, moveSpeed);
+        break;
+      }
+      case ENTITY: {
+        Entity targetEntity = world.getEntityByID(entityID);
+        if (targetEntity != null) {
+          pathNavigate.tryMoveToEntityLiving(targetEntity, moveSpeed);
+        }
+        break;
+      }
+      case DIRECTION: {  // no need to move
+        break;
+      }
+      default: {
+        if (printedError) return;
+        printedError = true;
+        System.err.println("Unknown typeOfTarget:" + typeOfTarget);
+        break;
+      }
+    }
+  }
+
+  /**
    * calculate the distance from the given point to the target
    * @param world
    * @return distance squared to the target, or -ve number if not relevant (eg target type DIRECTION)

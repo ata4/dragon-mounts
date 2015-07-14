@@ -13,6 +13,7 @@ import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -38,7 +39,9 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private static final int IN_AIR_THRESH = 10;
     
     public static final IAttribute MOVE_SPEED_AIR = new RangedAttribute(null, "generic.movementSpeedAir", 1.5, 0.0, Double.MAX_VALUE).setDescription("Movement Speed Air").setShouldWatch(true);
-    
+
+    private static final float MAX_DRAGON_FOLLOW_RANGE = 40.0F;  // pathfinding max distance
+
     // data value IDs
     private static final int INDEX_FLYING = 18;
     private static final int INDEX_CAN_FLY = 19;
@@ -75,6 +78,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         getAttributeMap().registerAttribute(MOVE_SPEED_AIR);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(MAX_DRAGON_FOLLOW_RANGE);
     }
     
     /**
