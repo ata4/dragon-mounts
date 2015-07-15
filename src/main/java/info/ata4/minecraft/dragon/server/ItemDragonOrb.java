@@ -31,7 +31,7 @@ public class ItemDragonOrb extends Item {
   @Override
   public EnumAction getItemUseAction(ItemStack stack)
   {
-    return EnumAction.BLOCK;
+    return EnumAction.NONE;
   }
 
   /**

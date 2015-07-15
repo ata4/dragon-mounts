@@ -16,9 +16,13 @@ package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
+import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 
 public class EntityAIRangedBreathAttack extends EntityAIBase {
@@ -74,6 +78,8 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     dragon.getBreathHelper().setBreathingTarget(null);
   }
 
+  private BreathWeaponTarget lastTickTarget = null;
+
   /**
    * Updates the task
    */
@@ -94,6 +100,9 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       }
     }
 
+    boolean targetChanged = !BreathWeaponTarget.approximatelyMatches(currentTarget, lastTickTarget);
+    lastTickTarget = currentTarget;
+
     if (currentTarget == null) {
       dragon.getBreathHelper().setBreathingTarget(null);
       return;
@@ -113,20 +122,30 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       this.canSeeTargetTickCount = 0;
     }
 
-    // navigate to appropriate range
+    // navigate to appropriate range: only change navigation path if the target has changed or there is no navigation path
+    //  currently in progress
     final int SEE_TARGET_TICK_THRESHOLD = 40;
     double distanceToTargetSQ = currentTarget.distanceSQtoTarget(dragon.worldObj, dragon.getPositionVector());
     if (distanceToTargetSQ < 0) {
       // don't move since distance not meaningful
     } else if (distanceToTargetSQ <= minAttackDistanceSQ) {
       // back up to at least minimum range.  If can't back up (stays too close for more than a few seconds), bite.
-      currentTarget.setNavigationPathAvoid(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed);  //todo only regen path when changed
+      PathNavigate pathNavigate = dragon.getNavigator();
+      if (targetChanged || pathNavigate.getPath() == null) {
+        currentTarget.setNavigationPathAvoid(dragon.worldObj, pathNavigate,
+                dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0),
+                entityMoveSpeed,
+                MathHelper.sqrt_double(minAttackDistanceSQ) + 1.0);
+      }
     } else {
       if ((distanceToTargetSQ <= maxAttackDistanceSQ && this.canSeeTargetTickCount >= SEE_TARGET_TICK_THRESHOLD)
           || distanceToTargetSQ <= optimalAttackDistanceSQ) {
         dragon.getNavigator().clearPathEntity();  // stop moving
       } else {
-        currentTarget.setNavigationPath(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed); //todo only regen path when changed
+        PathNavigate pathNavigate = dragon.getNavigator();
+        if (targetChanged || pathNavigate.getPath() == null) {
+          currentTarget.setNavigationPath(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed);
+        }
       }
     }
 
@@ -140,7 +159,9 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     boolean biteMode = (ticksBelowMinimumRange >= BITE_MODE_TICKS);
     boolean targetRangeOK = distanceToTargetSQ < 0
             || (distanceToTargetSQ >= minAttackDistanceSQ && distanceToTargetSQ <= maxAttackDistanceSQ);
-    if (breathingNow && canSeeTarget && targetRangeOK) {
+
+    boolean headAngleOK = headAnglesWithinTolerance();
+    if (breathingNow && canSeeTarget && targetRangeOK && headAngleOK) {
       dragon.getBreathHelper().setBreathingTarget(currentTarget);
     } else {
       dragon.getBreathHelper().setBreathingTarget(null);
@@ -150,6 +171,30 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       System.out.println("Bite attack");
     }
   }
+
+  /**
+   * Check the head yaw and pitch to verify it matches the beam weapon within acceptable limits
+   * @return
+   */
+  private boolean headAnglesWithinTolerance()
+  {
+    Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+    Vec3 targetedPoint = currentTarget.getTargetedPoint(dragon.worldObj, origin);
+    double deltaX = targetedPoint.xCoord - origin.xCoord;
+    double deltaY = targetedPoint.yCoord - origin.yCoord;
+    double deltaZ = targetedPoint.zCoord - origin.zCoord;
+    double xzProjectionLength = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
+    double yaw = (Math.atan2(deltaZ, deltaX) * 180.0D / Math.PI) - 90.0F;
+    double pitch = (-(Math.atan2(deltaY, xzProjectionLength) * 180.0D / Math.PI));
+    double yawDeviation = MathX.normDeg(yaw - dragon.rotationYawHead);
+    double pitchDeviation = MathX.normDeg(pitch - dragon.rotationPitch);
+    final double YAW_ANGLE_TOLERANCE = 20;
+    final double PITCH_ANGLE_TOLERANCE = 20;
+
+    return (Math.abs(yawDeviation) <= YAW_ANGLE_TOLERANCE
+            && Math.abs(pitchDeviation) <= PITCH_ANGLE_TOLERANCE);
+  }
+
 //    private EntityTameableDragon dragon;
 //    private Entity watchedEntity;
 //    private float maxDist;

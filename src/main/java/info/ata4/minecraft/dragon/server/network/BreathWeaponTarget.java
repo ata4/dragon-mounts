@@ -7,11 +7,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityLookHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * Created by TGG on 6/07/2015.
@@ -144,7 +148,7 @@ public class BreathWeaponTarget
     switch (typeOfTarget) {
       case LOCATION: {
         entityLookHelper.setLookPosition(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord,
-                                         yawSpeed, pitchSpeed);
+                yawSpeed, pitchSpeed);
         break;
       }
       case ENTITY: {
@@ -212,31 +216,68 @@ public class BreathWeaponTarget
    * @param pathNavigate
    * @param moveSpeed
    */
-  public void setNavigationPathAvoid(World world, PathNavigate pathNavigate, double moveSpeed)
+  public void setNavigationPathAvoid(World world, PathNavigate pathNavigate, Vec3 currentPosition, double moveSpeed, double desiredDistance)
   {
-    todo set up avoid
+    Vec3 target;
+
     switch (typeOfTarget) {
       case LOCATION: {
-        pathNavigate.tryMoveToXYZ(coordinates.xCoord, coordinates.yCoord, coordinates.zCoord, moveSpeed);
+        target = coordinates;
         break;
       }
       case ENTITY: {
         Entity targetEntity = world.getEntityByID(entityID);
-        if (targetEntity != null) {
-          pathNavigate.tryMoveToEntityLiving(targetEntity, moveSpeed);
-        }
+        if (targetEntity == null) return;
+        target = targetEntity.getPositionVector().addVector(0, targetEntity.getEyeHeight(), 0);
         break;
       }
       case DIRECTION: {  // no need to move
-        break;
+        return;
       }
       default: {
         if (printedError) return;
         printedError = true;
         System.err.println("Unknown typeOfTarget:" + typeOfTarget);
-        break;
+        return;
       }
     }
+
+    // choose a block at random at the desired radius from the target.  Initially try directly opposite, later on try
+    //   from the entire radius around the target.
+
+    Random random = new Random();
+
+    final int RANDOM_TRIES = 10;
+    int numberOfTries = 1;
+    double deltaX = currentPosition.xCoord - target.xCoord;
+    double deltaZ = currentPosition.zCoord - target.zCoord;
+    double fleeAngle = Math.atan2(deltaZ, deltaX);
+    do {
+      double halfAngleOfSearch = Math.PI * (double)numberOfTries / (double)RANDOM_TRIES;
+      double angle = fleeAngle + (random.nextFloat() * 2.0 - 1.0) * halfAngleOfSearch;
+      double xDest = target.xCoord + Math.cos(angle) * desiredDistance;
+      double zDest = target.zCoord + Math.sin(angle) * desiredDistance;
+
+      int blockX = MathHelper.floor_double(xDest);
+      int blockY = MathHelper.floor_double(target.yCoord);
+      int blockZ = MathHelper.floor_double(zDest);
+
+      int initBlockY = blockY;
+      if (world.isAirBlock(new BlockPos(blockX, blockY, blockZ))) {
+        while (blockY > 0 && world.isAirBlock(new BlockPos(blockX, blockY-1, blockZ))) {
+          --blockY;
+        }
+      } else {
+        final int MAX_BLOCK_Y = 255;
+        while (blockY <= MAX_BLOCK_Y && !world.isAirBlock(new BlockPos(blockX, blockY+1, blockZ))) {
+          ++blockY;
+        }
+        ++blockY;
+      }
+      int changeInY = blockY - initBlockY;
+      boolean success = pathNavigate.tryMoveToXYZ(xDest, target.yCoord + changeInY, zDest, moveSpeed);
+      if (success) return;
+    } while (++numberOfTries <= RANDOM_TRIES);
   }
 
   /**
@@ -359,8 +400,22 @@ public class BreathWeaponTarget
 
   /**
    * Check if these two BreathWeaponTargets are significantly different from each other
+   * @param first
+   * @param second
+   * @return true if similar, false if not.
+   */
+  public static boolean approximatelyMatches(BreathWeaponTarget first, BreathWeaponTarget second)
+  {
+    if (first == null) {
+      return (second == null);
+    }
+    return first.approximatelyMatches(second);
+  }
+
+  /**
+   * Check if these two BreathWeaponTargets are significantly different from each other
    * @param other
-   * @return
+   * @return true if similar, false if not.
    */
   public boolean approximatelyMatches(BreathWeaponTarget other)
   {
@@ -419,6 +474,21 @@ public class BreathWeaponTarget
       }
     }
   }
+
+//  public double getYawAngle(Vec3 dragonPosition)
+//  {
+//    double d0 = this.posX - this.entity.posX;
+//    double d1 = this.posY - (this.entity.posY + (double)this.entity.getEyeHeight());
+//    double d2 = this.posZ - this.entity.posZ;
+//    double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d2 * d2);
+//    float f = (float)(Math.atan2(d2, d0) * 180.0D / Math.PI) - 90.0F;
+//    float f1 = (float)(-(Math.atan2(d1, d3) * 180.0D / Math.PI));
+//    this.entity.rotationPitch = this.updateRotation(this.entity.rotationPitch, f1, this.deltaLookPitch);
+//    this.entity.rotationYawHead = this.updateRotation(this.entity.rotationYawHead, f, this.deltaLookYaw);
+//
+//  }
+//
+
 
   @Override
   public String toString()
