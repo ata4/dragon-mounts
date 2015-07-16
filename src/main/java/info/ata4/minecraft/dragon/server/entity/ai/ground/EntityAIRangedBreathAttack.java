@@ -14,11 +14,12 @@
 
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
+import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.DragonMountsConfig;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
@@ -86,14 +87,18 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   public void updateTask()
   {
     // check which target the player has selected; if deselected, wait a short while before losing interest
+    // if autolock is on, only change target when the player releases the button
     final int TARGET_DESELECTION_TIME = 60; // 60 ticks until dragon loses interest in target
     BreathWeaponTarget playerSelectedTarget = this.dragon.getBreathHelper().getPlayerSelectedTarget();
     boolean breathingNow = (playerSelectedTarget != null);
+    boolean orbTargetAutoLock = DragonMounts.instance.getConfig().isOrbTargetAutoLock();
     if (playerSelectedTarget != null) {
-      currentTarget = playerSelectedTarget;
-      targetDeselectedCountDown = TARGET_DESELECTION_TIME;
+      if (!orbTargetAutoLock || currentTarget == null) {
+        currentTarget = playerSelectedTarget;
+        targetDeselectedCountDown = TARGET_DESELECTION_TIME;
+      }
     } else {
-      if (targetDeselectedCountDown <= 0) {
+      if (targetDeselectedCountDown <= 0 || orbTargetAutoLock) {
         currentTarget = null;
       } else {
         --targetDeselectedCountDown;
@@ -116,7 +121,8 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     }
     if (canSeeTarget) {
       ++this.canSeeTargetTickCount;
-      currentTarget.setEntityLook(dragon.worldObj, dragon.getLookHelper(),
+      Vec3 dragonEyePos = dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0);
+      currentTarget.setEntityLook(dragon.worldObj, dragon.getLookHelper(), dragonEyePos,
                                   dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
     } else {
       this.canSeeTargetTickCount = 0;
@@ -131,11 +137,11 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     } else if (distanceToTargetSQ <= minAttackDistanceSQ) {
       // back up to at least minimum range.  If can't back up (stays too close for more than a few seconds), bite.
       PathNavigate pathNavigate = dragon.getNavigator();
-      if (targetChanged || pathNavigate.getPath() == null) {
+      if (targetChanged || pathNavigate.noPath()) {
         currentTarget.setNavigationPathAvoid(dragon.worldObj, pathNavigate,
                 dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0),
                 entityMoveSpeed,
-                MathHelper.sqrt_double(minAttackDistanceSQ) + 1.0);
+                MathHelper.sqrt_double(optimalAttackDistanceSQ) + 1.0);
       }
     } else {
       if ((distanceToTargetSQ <= maxAttackDistanceSQ && this.canSeeTargetTickCount >= SEE_TARGET_TICK_THRESHOLD)
@@ -143,14 +149,14 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
         dragon.getNavigator().clearPathEntity();  // stop moving
       } else {
         PathNavigate pathNavigate = dragon.getNavigator();
-        if (targetChanged || pathNavigate.getPath() == null) {
+        if (targetChanged || pathNavigate.noPath()) {
           currentTarget.setNavigationPath(dragon.worldObj, dragon.getNavigator(), entityMoveSpeed);
         }
       }
     }
 
     final int BITE_MODE_TICKS = 80;
-    if (distanceToTargetSQ < minAttackDistanceSQ) {
+    if (distanceToTargetSQ < minAttackDistanceSQ && distanceToTargetSQ >= 0) {
       ++ticksBelowMinimumRange;
     } else {
       ticksBelowMinimumRange = 0;
@@ -160,7 +166,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     boolean targetRangeOK = distanceToTargetSQ < 0
             || (distanceToTargetSQ >= minAttackDistanceSQ && distanceToTargetSQ <= maxAttackDistanceSQ);
 
-    boolean headAngleOK = headAnglesWithinTolerance();
+    boolean headAngleOK = areHeadAnglesWithinTolerance();
     if (breathingNow && canSeeTarget && targetRangeOK && headAngleOK) {
       dragon.getBreathHelper().setBreathingTarget(currentTarget);
     } else {
@@ -176,7 +182,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
    * Check the head yaw and pitch to verify it matches the beam weapon within acceptable limits
    * @return
    */
-  private boolean headAnglesWithinTolerance()
+  private boolean areHeadAnglesWithinTolerance()
   {
     Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
     Vec3 targetedPoint = currentTarget.getTargetedPoint(dragon.worldObj, origin);

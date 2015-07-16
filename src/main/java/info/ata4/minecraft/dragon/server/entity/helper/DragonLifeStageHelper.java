@@ -445,17 +445,17 @@ public class DragonLifeStageHelper extends DragonHelper {
       switch (getLifeStage()) {
         case EGG: break;
         case HATCHLING: {
-          minAttackRange = 1.0F;
+          minAttackRange = 2.0F;
           maxAttackRange = 4.0F;
           break;
         }
         case JUVENILE: {
-          minAttackRange = 2.0F;
+          minAttackRange = 3.0F;
           maxAttackRange = 8.0F;
           break;
         }
         case ADULT: {
-          minAttackRange = 4.0F;
+          minAttackRange = 5.0F;
           maxAttackRange = 25.0F;
           break;
         }

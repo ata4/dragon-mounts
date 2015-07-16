@@ -21,12 +21,14 @@ public class DragonMountsConfig {
     private boolean eggsInChests = false;
     private int dragonEntityID = -1;
     private boolean debug = false;
+    private boolean orbTargetAutoLock = true;
     
     public DragonMountsConfig(Configuration config) {
         eggsInChests = config.getBoolean("eggsInChests", "server", eggsInChests, "Spawns dragon eggs in generated chests when enabled");
         dragonEntityID = config.getInt("dragonEntityID", "server", dragonEntityID, -1, 255, "Overrides the entity ID for dragons to fix problems with manual IDs from other mods.\nSet to -1 for automatic assignment (recommended).\nWarning: wrong values may cause crashes and loss of data!");
         debug = config.getBoolean("debug", "client", debug, "Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.");
-        
+        orbTargetAutoLock = config.getBoolean("orbTargetAutoLock", "server", debug, "Clicking the dragon orb locks on to the target until released");
+
         if (config.hasChanged()) {
             config.save();
         }
@@ -43,4 +45,6 @@ public class DragonMountsConfig {
     public boolean isDebug() {
         return debug;
     }
+
+    public boolean isOrbTargetAutoLock() {return orbTargetAutoLock;}
 }

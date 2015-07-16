@@ -143,7 +143,8 @@ public class BreathWeaponTarget
    * @param yawSpeed speed of head yaw change
    * @param pitchSpeed speed of head pitch change
    */
-  public void setEntityLook(World world, EntityLookHelper entityLookHelper, float yawSpeed, float pitchSpeed)
+  public void setEntityLook(World world, EntityLookHelper entityLookHelper,
+                            Vec3 origin, float yawSpeed, float pitchSpeed)
   {
     switch (typeOfTarget) {
       case LOCATION: {
@@ -159,13 +160,10 @@ public class BreathWeaponTarget
         break;
       }
       case DIRECTION: {  // simulate a look direction by choosing a very-far-away point
-        double entityX = entityLookHelper.func_180423_e();
-        double entityY = entityLookHelper.func_180422_f();
-        double entityZ = entityLookHelper.func_180421_g();
         final double FAR_DISTANCE = 1000;
-        entityLookHelper.setLookPosition(entityX + FAR_DISTANCE * coordinates.xCoord,
-                                         entityY + FAR_DISTANCE * coordinates.yCoord,
-                                         entityZ + FAR_DISTANCE * coordinates.zCoord,
+        entityLookHelper.setLookPosition(origin.xCoord + FAR_DISTANCE * coordinates.xCoord,
+                origin.yCoord + FAR_DISTANCE * coordinates.yCoord,
+                origin.zCoord + FAR_DISTANCE * coordinates.zCoord,
                                          yawSpeed, pitchSpeed);
         break;
       }
