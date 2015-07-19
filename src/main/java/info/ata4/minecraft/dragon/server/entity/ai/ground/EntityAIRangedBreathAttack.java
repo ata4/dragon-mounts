@@ -192,7 +192,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     double xzProjectionLength = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
     double yaw = (Math.atan2(deltaZ, deltaX) * 180.0D / Math.PI) - 90.0F;
     double pitch = (-(Math.atan2(deltaY, xzProjectionLength) * 180.0D / Math.PI));
-    double yawDeviation = MathX.normDeg(yaw - dragon.rotationYawHead);
+    double yawDeviation = MathX.normDeg(yaw - dragon.getRotationYawHead());
     double pitchDeviation = MathX.normDeg(pitch - dragon.rotationPitch);
     final double YAW_ANGLE_TOLERANCE = 20;
     final double PITCH_ANGLE_TOLERANCE = 20;

@@ -17,6 +17,7 @@ import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
 import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
 import info.ata4.minecraft.dragon.server.network.DragonTargetMessageHandlerServer;
+import info.ata4.minecraft.dragon.server.util.EntitySpawnSuppressor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.Entity;
@@ -53,6 +54,7 @@ public class CommonProxy {
   {
     itemDragonOrb = (ItemDragonOrb)(new ItemDragonOrb().setUnlocalizedName("dragonorb"));
     GameRegistry.registerItem(itemDragonOrb, "dragonorb");
+    MinecraftForge.EVENT_BUS.register(new EntitySpawnSuppressor());
   }
 
 

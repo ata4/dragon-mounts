@@ -20,12 +20,12 @@ public class DragonHeadPositionHelper
 
   public Vec3 getThroatPosition()
   {
-    float eyeHeight = dragon.getEyeHeight();
-    Vec3 posVec = dragon.getPositionVector();
-    float yaw = dragon.rotationYaw;
-    float yawHead = dragon.rotationYawHead;
-    float getYawHead = dragon.getRotationYawHead();
-    float pitch = dragon.rotationPitch;
+//    float eyeHeight = dragon.getEyeHeight();
+//    Vec3 posVec = dragon.getPositionVector();
+//    float yaw = dragon.rotationYaw;
+//    float yawHead = dragon.getRotationYawHead();
+//    float getYawHead = dragon.getRotationYawHead();
+//    float pitch = dragon.rotationPitch;
 
     float renderYawOffset = dragon.renderYawOffset;
 

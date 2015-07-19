@@ -93,7 +93,8 @@ public class EntityAIRideAir extends EntityAIRide {
 
             // control rotation with strafing
             if (rider.moveStrafing != 0) {
-                dragon.rotationYawHead -= rider.moveStrafing * 6;  // used to be rotationYaw, this seems to work better
+              float newYawHead = dragon.getRotationYawHead() - rider.moveStrafing * 6;  // used to be rotationYaw, this seems to work better
+                dragon.setRotationYawHead(newYawHead);
             }
 
             double verticalSpeed = 0;

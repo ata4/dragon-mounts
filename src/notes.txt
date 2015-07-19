@@ -169,4 +169,15 @@ If target is updated during SUSTAIN: if angle is small, keep burning.  if angle 
 
 EntityAITargeting controls head yaw & pitch
 
+---------------
+rotationYawHead = angle of the head in global angle CRS
+renderYawOffset = angle of the body in global angle CRS
+rotationYaw = body angle but not sure what the diff with renderYawOffset is.
+EntityBodyHelper:
+when entity is moving, snap renderYawOffset to rotationYaw and constrain head to within +/-75 of renderYawOffset
+when entity is not moving, slowly realign body (renderYawOffset) to head rotationYawHead
 
+EntityLookHelper:
+rotates yaw and pitch to target position when looking
+rotates yaw back to renderYawOffset when not looking.
+constrain to +/-75 of renderYawOffset

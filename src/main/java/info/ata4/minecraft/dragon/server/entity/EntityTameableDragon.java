@@ -16,6 +16,7 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
+import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -179,13 +180,42 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         setAttributes();
     }
 
+  @Override
+  public void onUpdate()
+  {
+    System.out.format("%s- onUpdate rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",
+                      isClient() ? "C" : "S",
+                      getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
+                      renderYawOffset, MathX.normDeg(renderYawOffset),
+                      rotationYaw, MathX.normDeg(rotationYaw));
+    super.onUpdate();
+  }
 
-    @Override
+  @Override
+  public void setRotationYawHead(float rotation)
+  {
+    super.setRotationYawHead(rotation);
+//    System.out.println("setRotationYawHead:" + rotation + "(" + MathX.normDeg(getRotationYawHead()) + ")");
+    System.out.format(
+            "%s- setRYH   rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",
+            isClient() ? "C" : "S",
+            getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
+            renderYawOffset, MathX.normDeg(renderYawOffset),
+            rotationYaw, MathX.normDeg(rotationYaw));
+    lastRotationYawHeadFromServer = rotation;
+  }
+
+  private float lastRotationYawHeadFromServer = 0;
+  public float getLastRotationYawHeadFromServer() {return lastRotationYawHeadFromServer;}
+
+  @Override
     public void onLivingUpdate() {
+//      System.out.println("yawHead:Init" + MathX.normDeg(getRotationYawHead()) + ", " + MathX.normDeg(prevRotationYawHead));
         if (!DebugFreezeAnimator.isFrozen()) {
             for (DragonHelper helper : helpers.values()) {
                 helper.onLivingUpdate();
             }
+//          System.out.println("yawHead:Mid" + MathX.normDeg(getRotationYawHead()) + ", " + MathX.normDeg(prevRotationYawHead));
 
             if (isClient()) {
               if (!isEgg()) {
@@ -204,6 +234,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 }
             }
           super.onLivingUpdate();
+//          System.out.println("yawHead:End" + MathX.normDeg(getRotationYawHead()) + ", " + MathX.normDeg(prevRotationYawHead));
         }
     }
     
@@ -224,7 +255,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // freeze at place
         motionX = motionY = motionZ = 0;
         rotationYaw = prevRotationYaw;
-        rotationYawHead = prevRotationYawHead;
+        setRotationYawHead(prevRotationYawHead);
         
         if (isEgg()) {
             setDead();
