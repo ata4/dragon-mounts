@@ -20,6 +20,7 @@ public class PrivateFields {
     public static final String[] ENTITYAITASKS_EXECUTINGTASKENTRIES = new String[] {"executingTaskEntries", "field_75780_b"};
     public static final String[] ENTITYAITASKS_TICKRATE = new String[] {"tickRate", "field_75779_e"};
     public static final String[] ENTITYLIVING_BODYHELPER = new String[] {"bodyHelper", "field_70762_j"};
+    public static final String[] ENTITYLIVING_LOOKHELPER = new String[] {"lookHelper", "field_70749_g"};
     public static final String[] ENTITYRENDERER_THIRDPERSONDISTANCE = new String[] {"thirdPersonDistance", "field_78490_B"};
     public static final String[] GUIMAINMENU_SPLASHTEXT = new String[] {"splashText", "field_73975_c"};
 

@@ -9,7 +9,9 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai;
 
+import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.util.DataLogger;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.EntityBodyHelper;
 
@@ -81,13 +83,20 @@ public class DragonBodyHelper extends EntityBodyHelper {
       // when the dragon stops moving, turn the body and the head back to the last server head position.  The
       //   vanilla rotationYawHead gets out of step between client and server.
       float trueYawHead = dragon.getRotationYawHead();
-      if (dragon.isClient()) {
-        trueYawHead = dragon.getLastRotationYawHeadFromServer();
-        final float HEAD_RESTORE_SPEED = 10;
-        dragon.rotationYawHead = MathX.updateRotation(dragon.getRotationYawHead(), trueYawHead, HEAD_RESTORE_SPEED);
-        System.out.format("C- restore towards %4.0f(%4.0f)\n", trueYawHead, MathX.normDeg(trueYawHead));
-      }
+//      if (dragon.isClient()) {
+//        trueYawHead = dragon.getLastRotationYawHeadFromServer();
+//        final float HEAD_RESTORE_SPEED = 10;
+//        dragon.rotationYawHead = MathX.updateRotation(dragon.getRotationYawHead(), trueYawHead, HEAD_RESTORE_SPEED);
+//        System.out.format("C- restore towards %4.0f(%4.0f)\n", trueYawHead, MathX.normDeg(trueYawHead));
+//      }
       dragon.renderYawOffset = MathX.updateRotation(trueYawHead, dragon.renderYawOffset, yawSpeed);
+
+      String sidePreText = dragon.isClient() ? "Client" : "Server";
+      String output = Float.toString(dragon.getRotationYawHead()) + "," +
+              Float.toString(dragon.renderYawOffset) + "," +
+              Float.toString(dragon.rotationYaw);
+      DataLogger.logData(sidePreText + "-updateRenderAngles", output);
+
 
       System.out.format(
               "%s- notmove  rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",

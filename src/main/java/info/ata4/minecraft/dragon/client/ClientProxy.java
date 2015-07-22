@@ -28,6 +28,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
+import java.io.File;
+
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
@@ -74,4 +76,10 @@ public class ClientProxy extends CommonProxy {
     {
       return Minecraft.getMinecraft().thePlayer;
     }
+
+  @Override
+  public File getDataDirectory() {
+    return Minecraft.getMinecraft().mcDataDir;
+  }
+
 }

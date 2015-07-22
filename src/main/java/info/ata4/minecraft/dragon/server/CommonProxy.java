@@ -33,6 +33,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.server.FMLServerHandler;
+
+import java.io.File;
+import java.nio.file.Path;
 
 /**
  *
@@ -131,6 +135,10 @@ public class CommonProxy {
   public Entity getClientEntityPlayerSP()
   {
     return null;
+  }
+
+  public File getDataDirectory() {
+    return FMLServerHandler.instance().getSavesDirectory();
   }
 
 }
