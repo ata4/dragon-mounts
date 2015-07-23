@@ -22,6 +22,8 @@ public class DataLogger
 
       final long ROUNDING_FACTOR = 1000L * 1000L; // to nearest ms
       long timeNow = System.nanoTime() / ROUNDING_FACTOR;
+      if (timeZero == 0) timeZero = timeNow;
+      timeNow -= timeZero;
       printStream.println(timeNow + ", " + valueToLog);
 
     } catch (FileNotFoundException fnfe) {  // fail silently
@@ -42,5 +44,6 @@ public class DataLogger
 
 
   private static HashMap<String, PrintStream> dataLogs = new HashMap<String, PrintStream>();
+  private static long timeZero = 0;
 
 }

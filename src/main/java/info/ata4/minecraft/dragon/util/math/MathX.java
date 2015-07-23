@@ -210,9 +210,15 @@ public class MathX {
         double mu2 = (1 - Math.cos(x * PI_D)) / 2.0;
         return a * (1 - mu2) + b * mu2;
     }
-    
-    public static float updateRotation(float r1, float r2, float step) {
-        return r1 + clamp(normDeg(r2 - r1), -step, step);
+
+    /** clamp the target angle to within a given range of the centre angle
+     * @param targetAngle the desired angle (degrees)
+     * @param centreAngle the centre angle to clamp to (degrees)
+     * @param maximumDifference the maximum allowable difference between the target and the centre (degrees)
+     * @return the target angle, clamped to within +/-maximuDifference of the centreAngle.
+     */
+    public static float constrainAngle(float targetAngle, float centreAngle, float maximumDifference) {
+        return centreAngle + clamp(normDeg(targetAngle - centreAngle), -maximumDifference, maximumDifference);
     }
 
     public static Vec3 multiply(Vec3 source, double multiplier)
