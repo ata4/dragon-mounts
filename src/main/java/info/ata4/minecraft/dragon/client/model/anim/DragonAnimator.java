@@ -311,7 +311,6 @@ public class DragonAnimator {
             yawAbs += yawDiff;
         }
 
-        // TODO: where's yOffset?
         //yTrail.update(entity.posY - entity.yOffset);
         yTrail.update(entity.posY);
         yawTrail.update(yawAbs);
@@ -382,50 +381,19 @@ public class DragonAnimator {
             model.neck.rotationPointZ -= MathX.cos(model.neck.rotateAngleY) * MathX.cos(model.neck.rotateAngleX) * neckSize;
         }
 
-        // todo delete
-        long nanoSec = System.nanoTime();
-        nanoSec /= 1000000000L;
-//        nanoSec %= 9;
-        long nanoSec1 = nanoSec % 9;
-        long nanoSec2 = (nanoSec / 9) % 9;
         final float HEAD_TILT_DURING_BREATH = -0.1F;
         model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed) + breath * HEAD_TILT_DURING_BREATH;
-
-//        model.head.rotateAngleX = (float)(nanoSec1 * Math.PI / 8.0F - Math.PI / 2.0F);  //todo delete
         model.head.rotateAngleY = model.neck.rotateAngleY;
-
-//        model.head.rotateAngleY = (float)(nanoSec2 * Math.PI / 8.0F - Math.PI / 2.0F);  //todo delete
-
         model.head.rotateAngleZ = model.neck.rotateAngleZ * 0.2f;
-
-//        model.head.rotateAngleX = 0;//todo delete
-//        model.head.rotateAngleY = 0;//todo delete
 
         model.head.rotationPointX = model.neck.rotationPointX;
         model.head.rotationPointY = model.neck.rotationPointY;
         model.head.rotationPointZ = model.neck.rotationPointZ;
 
-
-//        model.head.rotateAngleX = -(float)(Math.PI/8.0);
-//        model.head.rotateAngleY = 0;
-//        model.head.rotateAngleZ = 0;
-
-//        model.head.rotationPointX = 0;
-//        model.head.rotationPointY = -50;
-//        model.head.rotationPointZ = -50;
-        // todo end delete
-
-
         final float BITE_ANGLE = 0.75F;
         final float BREATH_ANGLE = 0.75F;
         model.jaw.rotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
         model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
-
-//        model.bite.rotateAngleX = 1.0F * 0.75f;
-
-//        Random random = new Random();
-//        model.head.isHidden = random.nextBoolean(); //todo delete
-
     }
     
     protected void animWings(DragonModel model) {

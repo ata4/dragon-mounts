@@ -78,9 +78,9 @@ public class DragonLookHelper extends EntityLookHelper
     @Override
     public void onUpdateLook()
     {
-      String lookRotationYawHead = "";
-      String nonLookRotationYawHead = "";
-      String clampRotationYawHead = "";
+//      String lookRotationYawHead = "";
+//      String nonLookRotationYawHead = "";
+//      String clampRotationYawHead = "";
 
       this.entity.rotationPitch = 0.0F;
 
@@ -95,12 +95,12 @@ public class DragonLookHelper extends EntityLookHelper
         float f1 = (float)(-(Math.atan2(d1, d3) * 180.0D / Math.PI));
         this.entity.rotationPitch = this.updateRotation(this.entity.rotationPitch, f1, this.deltaLookPitch);
         this.entity.rotationYawHead = this.updateRotation(this.entity.rotationYawHead, f, this.deltaLookYaw);
-        lookRotationYawHead = Float.toString(this.entity.rotationYawHead);
+//        lookRotationYawHead = Float.toString(this.entity.rotationYawHead);
       }
       else
       {
         this.entity.rotationYawHead = this.updateRotation(this.entity.rotationYawHead, this.entity.renderYawOffset, 10.0F);
-        nonLookRotationYawHead = Float.toString(this.entity.rotationYawHead);
+//        nonLookRotationYawHead = Float.toString(this.entity.rotationYawHead);
       }
 
       float f2 = MathHelper.wrapAngleTo180_float(this.entity.rotationYawHead - this.entity.renderYawOffset);
@@ -110,22 +110,22 @@ public class DragonLookHelper extends EntityLookHelper
         if (f2 < -75.0F)
         {
           this.entity.rotationYawHead = this.entity.renderYawOffset - 75.0F;
-          clampRotationYawHead = "Y";
+//          clampRotationYawHead = "Y";
         }
 
         if (f2 > 75.0F)
         {
           this.entity.rotationYawHead = this.entity.renderYawOffset + 75.0F;
-          clampRotationYawHead = "Y";
+//          clampRotationYawHead = "Y";
         }
       }
-      String logName = ((EntityTameableDragon)entity).isClient() ? "Client-onUpdateLook" : "Server-onUpdateLook";
-      String output = lookRotationYawHead+ "," +
-              nonLookRotationYawHead + "," +
-              Float.toString(f2) + "," +
-              clampRotationYawHead + "," +
-              Float.toString(((EntityTameableDragon) entity).rotationYawHead);
-      DataLogger.logData(logName, output);
+//      String logName = ((EntityTameableDragon)entity).isClient() ? "Client-onUpdateLook" : "Server-onUpdateLook";
+//      String output = lookRotationYawHead+ "," +
+//              nonLookRotationYawHead + "," +
+//              Float.toString(f2) + "," +
+//              clampRotationYawHead + "," +
+//              Float.toString(((EntityTameableDragon) entity).rotationYawHead);
+//      DataLogger.logData(logName, output);
     }
 
   private float updateRotation(float p_75652_1_, float p_75652_2_, float p_75652_3_)

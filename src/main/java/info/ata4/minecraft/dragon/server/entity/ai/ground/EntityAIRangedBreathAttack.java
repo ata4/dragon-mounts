@@ -135,7 +135,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     if (distanceToTargetSQ < 0) {
       // don't move since distance not meaningful
     } else if (distanceToTargetSQ <= minAttackDistanceSQ) {
-      // back up to at least minimum range.  If can't back up (stays too close for more than a few seconds), bite.
+      // back up to at least minimum range.
       PathNavigate pathNavigate = dragon.getNavigator();
       if (targetChanged || pathNavigate.noPath()) {
         currentTarget.setNavigationPathAvoid(dragon.worldObj, pathNavigate,
@@ -155,6 +155,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       }
     }
 
+    // If the target is too close but the dragon can't back up (stays too close for more than a few seconds), bite.
     final int BITE_MODE_TICKS = 80;
     if (distanceToTargetSQ < minAttackDistanceSQ && distanceToTargetSQ >= 0) {
       ++ticksBelowMinimumRange;

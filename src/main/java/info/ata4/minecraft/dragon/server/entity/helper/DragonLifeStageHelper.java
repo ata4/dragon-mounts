@@ -275,10 +275,6 @@ public class DragonLifeStageHelper extends DragonHelper {
 
     @Override
     public void onLivingUpdate() {
-        // testing code
-//        if (dragon.isServer()) {
-//            dragon.setGrowingAge((int) ((((Math.sin(Math.toRadians(dragon.ticksExisted))) + 1) * 0.5) * EGG.ageLimit));
-//        }
 
         // if the dragon is not an adult, update its growth ticks
         if (!dragon.worldObj.isRemote) {
@@ -378,9 +374,6 @@ public class DragonLifeStageHelper extends DragonHelper {
         return getLifeStage() == ADULT;
     }
 
-//    private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
-//    private EntityAIAttackOnCollide aiAttackOnCollide = new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.2D, false);
-
 
   private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage)
     {
@@ -416,17 +409,16 @@ public class DragonLifeStageHelper extends DragonHelper {
       tasks.addTask(0, new EntityAICatchOwnerGround(dragon)); // mutex all
       tasks.addTask(1, new EntityAIRideGround(dragon, 1)); // mutex all
       tasks.addTask(2, new EntityAISwimming(dragon)); // mutex 4
-//todo reinstate AI tasks
-//      tasks.addTask(3, dragon.getAISit()); // mutex 4+1
-//      tasks.addTask(4, new EntityAIDragonMate(dragon, 0.6)); // mutex 2+1
-//      tasks.addTask(5, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
-//      tasks.addTask(6, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
-//      tasks.addTask(7, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
-//      tasks.addTask(8, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
-//      tasks.addTask(8, new EntityAIPanicChild(dragon, 1)); // mutex 1
-//      tasks.addTask(9, new EntityAIWander(dragon, 1)); // mutex 1
-//      tasks.addTask(10, new EntityAIWatchIdle(dragon)); // mutex 2
-//      tasks.addTask(10, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
+      tasks.addTask(3, dragon.getAISit()); // mutex 4+1
+      tasks.addTask(4, new EntityAIDragonMate(dragon, 0.6)); // mutex 2+1
+      tasks.addTask(5, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
+      tasks.addTask(6, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
+      tasks.addTask(7, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
+      tasks.addTask(8, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
+      tasks.addTask(8, new EntityAIPanicChild(dragon, 1)); // mutex 1
+      tasks.addTask(9, new EntityAIWander(dragon, 1)); // mutex 1
+      tasks.addTask(10, new EntityAIWatchIdle(dragon)); // mutex 2
+      tasks.addTask(10, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
 
       // mutex 1: waypointing
       // mutex 2: continuous waypointing

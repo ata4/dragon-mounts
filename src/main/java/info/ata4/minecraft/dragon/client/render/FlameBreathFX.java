@@ -14,11 +14,10 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 /**
- * Created by EveryoneElse on 21/06/2015.
+ * Created by TGG on 21/06/2015.
  */
 public class FlameBreathFX extends EntityFX {
   private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
-  private Entity owner;
 
   public enum Power {SMALL, MEDIUM, LARGE};
 
@@ -27,11 +26,6 @@ public class FlameBreathFX extends EntityFX {
 
   public float smokeChance = 0.1f;
   public float largeSmokeChance = 0.3f;
-  public boolean igniteBlocks = true;
-  public boolean igniteEntities = true;
-  public int igniteDamage = 2;
-  public int igniteDuration = 5;
-  public float igniteChance = 0.12f;
 
   private static final float MAX_ALPHA = 0.99F;
   private static final double INITIAL_SPEED = 1.2; // blocks per tick
@@ -85,7 +79,6 @@ public class FlameBreathFX extends EntityFX {
     actualMotionY *= speedFactor * INITIAL_SPEED;
     actualMotionZ *= speedFactor * INITIAL_SPEED;
 
-//    actualMotionX = 0; actualMotionY = 0; actualMotionZ = 0; sizeFactor = 0.4F; //todo delete
     x += actualMotionX * partialTicksHeadStart;
     y += actualMotionY * partialTicksHeadStart;
     z += actualMotionZ * partialTicksHeadStart;
@@ -109,47 +102,19 @@ public class FlameBreathFX extends EntityFX {
     this.particleAlpha = MAX_ALPHA;  // a value less than 1 turns on alpha blending
     currentParticleSize = getParticleSize(0.0F);
 
-//    System.out.format("Constructor pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
-
     float initialCollisionSize = AABB_RELATIVE_TO_SIZE * currentParticleSize;
     changeSize(initialCollisionSize, initialCollisionSize);  // using setSize causes trouble.
-
-//    System.out.format("Constructor2 pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
 
     //undo random velocity variation of vanilla constructor
     motionX = velocityX;
     motionY = velocityY;
     motionZ = velocityZ;
 
-//    setPosition(x + motionX * partialTicksElapsed, y + motionY * partialTicksElapsed, z + motionZ * partialTicksElapsed);
-//    prevPosX = posX - motionX;
-//    prevPosY = posY - motionY;
-//    prevPosZ = posZ - motionZ;
-
-//    System.out.format("Constructor2 pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
-
 
     // set the texture to the flame texture, which we have previously added using TextureStitchEvent
     TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fireballRL.toString());
     func_180435_a(sprite);
   }
-
-//    public FlameFX(World world, double x, double y, double z, double a, double b, double c, FlameEmitter ft) {
-//        this(world, x, y, z, a, b, c, ft.flameSize, ft.flameLifetime);
-//
-//        owner = ft.getOwner();
-//
-//        smokeChance = ft.smokeChance;
-//        largeSmokeChance = ft.largeSmokeChance;
-//        igniteBlocks = ft.igniteBlocks;
-//        igniteEntities = ft.igniteEntities;
-//        igniteDamage = ft.igniteDamage;
-//        igniteDuration = ft.igniteDuration;
-//        igniteChance = ft.igniteChance;
-//    }
 
   /**
    * Returns 1, which means "use a texture from the blocks + items texture sheet"
@@ -201,10 +166,6 @@ public class FlameBreathFX extends EntityFX {
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
     double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY;
     double z = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTick - interpPosZ;
-
-//    System.out.format("FlameBreathFX pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f partialTick= %.2f\n",
-//                      posX, posY, posZ, prevPosX, prevPosY, prevPosZ, partialTick);
-//    System.out.format("FlameBreathFX [x,y,z]= %.3f, %.3f, %.3f\n", x, y, z);
 
     worldRenderer.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
     worldRenderer.addVertexWithUV(x - yawX * scale - pitchYsinYaw * scale, y - pitchXZ * scale,
@@ -259,35 +220,10 @@ public class FlameBreathFX extends EntityFX {
       return;
     }
 
-//        motionY += 0.02;   what's this for?  why rise?
-
-//    System.out.format("onUpdatePre pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
-
     prevPosX = posX;
     prevPosY = posY;
     prevPosZ = posZ;
     moveEntity(motionX, motionY, motionZ);
-
-//    System.out.format("onUpdatePost pos[x,y,z]= %.3f, %.3f, %.3f prevPos[x,y,z]= %.3f, %.3f, %.3f\n",
-//            posX, posY, posZ, prevPosX, prevPosY, prevPosZ);
-
-
-//        if (posY == prevPosY) {
-//            motionX *= 1.1;
-//            motionZ *= 1.1;
-//        }
-
-//    final double SPEED_LOSS_PERCENT_PER_SECOND = 20;
-//    final double SPEED_MULT_PER_TICK = 1.0 - SPEED_LOSS_PERCENT_PER_SECOND / 100.0 / 20.0;
-//    motionX *= SPEED_MULT_PER_TICK;
-//    motionY *= SPEED_MULT_PER_TICK;
-//    motionZ *= SPEED_MULT_PER_TICK;
-//
-//    if (onGround) {
-//      motionX *= 0.7;
-//      motionZ *= 0.7;
-//    }
 
     // collision ages particles faster
     if (isCollided) {
@@ -303,125 +239,7 @@ public class FlameBreathFX extends EntityFX {
       particleAge += 20;
     }
 
-//        // ignite environment
-//        if ((igniteEntities || igniteBlocks) && rand.nextFloat() <= igniteChance) {
-//            igniteEnvironment();
-//        }
   }
-
-//    @Override
-//    public boolean handleWaterMovement() {
-//        return worldObj.handleMaterialAcceleration(boundingBox, Material.water, this);
-//    }
-//
-//    @Override
-//    public void renderParticle(Tessellator tessellator, float f, float f1, float f2, float f3, float f4, float f5) {
-//        tessellator.setBrightness(240);
-//        super.renderParticle(tessellator, f, f1, f2, f3, f4, f5);
-//    }
-//
-//    protected void igniteEnvironment() {
-//        Vec3D v1 = Vec3D.createVector(posX, posY, posZ);
-//        Vec3D v2 = Vec3D.createVector(posX + motionX, posY + motionY, posZ + motionZ);
-//
-//        MovingObjectPosition target = worldObj.rayTraceBlocks(v1, v2);
-//
-//        v1 = Vec3D.createVector(posX, posY, posZ);
-//        v2 = Vec3D.createVector(posX + motionX, posY + motionY, posZ + motionZ);
-//
-//        if (target != null) {
-//            v2 = Vec3D.createVector(target.hitVec.xCoord, target.hitVec.yCoord, target.hitVec.zCoord);
-//        }
-//
-//        Entity touchedEntity = null;
-//        List list = worldObj.getEntitiesWithinAABBExcludingEntity(this,
-//                boundingBox.addCoord(motionX, motionY, motionZ).expand(1, 1, 1));
-//        double minDist = 0;
-//
-//        for (int j = 0; j < list.size(); j++) {
-//            Entity ent = (Entity) list.get(j);
-//
-//            if (!ent.canBeCollidedWith()) {
-//                continue;
-//            }
-//
-//            float aabbOfs = 0.3f;
-//            AxisAlignedBB aabb = ent.boundingBox.expand(aabbOfs, aabbOfs, aabbOfs);
-//            MovingObjectPosition entTarget = aabb.calculateIntercept(v1, v2);
-//
-//            if (entTarget == null) {
-//                continue;
-//            }
-//
-//            double dist = v1.distanceTo(entTarget.hitVec);
-//
-//            if (dist < minDist || minDist == 0) {
-//                touchedEntity = ent;
-//                minDist = dist;
-//            }
-//        }
-//
-//        if (touchedEntity != null && touchedEntity != owner) {
-//            target = new MovingObjectPosition(touchedEntity);
-//        }
-//
-//        if (target != null) {
-//            igniteTarget(target);
-//        }
-//    }
-//
-//    protected void igniteTarget(MovingObjectPosition target) {
-//        if (igniteEntities && target.typeOfHit == EnumMovingObjectType.ENTITY && !target.entityHit.isImmuneToFire()) {
-//            if (owner != null) {
-//                if (target.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, owner), igniteDamage)) {
-//                    target.entityHit.setFire(igniteDuration);
-//                }
-//            } else {
-//                if (target.entityHit.attackEntityFrom(DamageSource.onFire, igniteDamage)) {
-//                    target.entityHit.setFire(igniteDuration);
-//                }
-//            }
-//        }
-//
-//        if (igniteBlocks && target.typeOfHit == EnumMovingObjectType.TILE) {
-//            int bx = target.blockX;
-//            int by = target.blockY;
-//            int bz = target.blockZ;
-//
-//            switch (target.sideHit) {
-//                case 0:
-//                    by--;
-//                    break;
-//
-//                case 1:
-//                    by++;
-//                    break;
-//
-//                case 2:
-//                    bz--;
-//                    break;
-//
-//                case 3:
-//                    bz++;
-//                    break;
-//
-//                case 4:
-//                    bx--;
-//                    break;
-//
-//                case 5:
-//                    bx++;
-//                    break;
-//            }
-//
-//            if (worldObj.isAirBlock(bx, by, bz)) {
-//                worldObj.setBlockWithNotify(bx, by, bz, Block.fire.blockID);
-//                if (Block.fire.canBlockCatchFire(worldObj, target.blockX, target.blockY, target.blockZ)) {
-//                    worldObj.spawnParticle("lava", bx, by, bz, 0, 0, 0);
-//                }
-//            }
-//        }
-//    }
 
   // change size of entity AABB used for collisions
   // when the entity size is changed, it changes the bounding box but doesn't recentre it, so the xpos and zpos move

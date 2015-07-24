@@ -213,8 +213,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 //            getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
 //            renderYawOffset, MathX.normDeg(renderYawOffset),
 //            rotationYaw, MathX.normDeg(rotationYaw));
-    String sidePreText = isClient() ? "Client" : "Server";
-    DataLogger.logData(sidePreText + "-SetRotationYawHead", Float.toString(rotation));
+//    String sidePreText = isClient() ? "Client" : "Server";
+//    DataLogger.logData(sidePreText + "-SetRotationYawHead", Float.toString(rotation));
 
     lastRotationYawHeadFromServer = rotation;
   }
@@ -224,18 +224,16 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 
   @Override
     public void onLivingUpdate() {
-      String logName = isClient() ? "Client-onLivingUpdate" : "Server-onLivingUpdate";
-      String output = Float.toString(getRotationYawHead()) + "," +
-            Float.toString(renderYawOffset) + "," +
-            Float.toString(rotationYaw);
-        DataLogger.logData(logName, output);
+//      String logName = isClient() ? "Client-onLivingUpdate" : "Server-onLivingUpdate";
+//      String output = Float.toString(getRotationYawHead()) + "," +
+//            Float.toString(renderYawOffset) + "," +
+//            Float.toString(rotationYaw);
+//        DataLogger.logData(logName, output);
 
-//      System.out.println("yawHead:Init" + MathX.normDeg(getRotationYawHead()) + ", " + MathX.normDeg(prevRotationYawHead));
         if (!DebugFreezeAnimator.isFrozen()) {
             for (DragonHelper helper : helpers.values()) {
                 helper.onLivingUpdate();
             }
-//          System.out.println("yawHead:Mid" + MathX.normDeg(getRotationYawHead()) + ", " + MathX.normDeg(prevRotationYawHead));
 
             if (isClient()) {
               if (!isEgg()) {
@@ -254,7 +252,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 }
             }
           super.onLivingUpdate();
-//          System.out.println("yawHead:End" + MathX.normDeg(getRotationYawHead()) + ", " + MathX.normDeg(prevRotationYawHead));
         }
     }
     

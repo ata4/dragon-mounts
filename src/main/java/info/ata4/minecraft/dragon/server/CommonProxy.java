@@ -17,8 +17,6 @@ import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
 import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
 import info.ata4.minecraft.dragon.server.network.DragonTargetMessageHandlerServer;
-import info.ata4.minecraft.dragon.server.util.EntitySpawnSuppressor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
@@ -58,7 +56,7 @@ public class CommonProxy {
   {
     itemDragonOrb = (ItemDragonOrb)(new ItemDragonOrb().setUnlocalizedName("dragonorb"));
     GameRegistry.registerItem(itemDragonOrb, "dragonorb");
-    MinecraftForge.EVENT_BUS.register(new EntitySpawnSuppressor());
+//    MinecraftForge.EVENT_BUS.register(new EntitySpawnSuppressor());
   }
 
 
@@ -91,15 +89,8 @@ public class CommonProxy {
     public void onServerStopped(FMLServerStoppedEvent evt) {
     }
     
-    private void registerEntities() {
-//        int dragonEntityID = DragonMounts.instance.getConfig().getDragonEntityID();
-//        if (dragonEntityID == -1) {
-//            dragonEntityID = EntityRegistry.findGlobalUniqueEntityId();
-//        }
-//
-//        EntityRegistry.registerGlobalEntityID(EntityTameableDragon.class, "DragonMount",
-//                dragonEntityID, 0, 0xcc00ff);
-
+    private void registerEntities()
+    {
         final int TRACKING_RANGE = 80;
         final int UPDATE_FREQUENCY = 3;
         final int DRAGON_ENTITY_ID = 26;

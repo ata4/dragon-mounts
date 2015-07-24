@@ -120,7 +120,6 @@ public class EntityAIDragonMate extends EntityAIBase {
             
             theWorld.spawnEntityInWorld(dragonBaby);
 
-            // TODO: particles for the clients?
         }
     }
 }
