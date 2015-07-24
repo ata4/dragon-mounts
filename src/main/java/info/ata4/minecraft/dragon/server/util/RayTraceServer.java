@@ -2,6 +2,7 @@ package info.ata4.minecraft.dragon.server.util;
 
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -17,6 +18,7 @@ public class RayTraceServer
   /**
    * Find what the player is looking at (block or entity), up to a maximum range
    * based on code from EntityRenderer.getMouseOver
+   * Will not target entities which are tamed by the player
    * @return the block or entity that the player is looking at / targeting with their cursor.  null if no collision
    */
   public static MovingObjectPosition getMouseOver(World world, EntityPlayerSP entityPlayerSP, float maxDistance) {
@@ -51,6 +53,12 @@ public class RayTraceServer
     for (Entity entity : nearbyEntities) {
       if (!entity.canBeCollidedWith() || entity == entityPlayerSP.ridingEntity) {
         continue;
+      }
+      if (entity instanceof EntityTameable) {
+        EntityTameable tamedEntity = (EntityTameable)entity;
+        if (tamedEntity.isOwner(entityPlayerSP)) {
+          continue;
+        }
       }
 
       float collisionBorderSize = entity.getCollisionBorderSize();

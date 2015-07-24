@@ -194,11 +194,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
   @Override
   public void onUpdate()
   {
-    System.out.format("%s- onUpdate rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",
-            isClient() ? "C" : "S",
-            getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
-            renderYawOffset, MathX.normDeg(renderYawOffset),
-            rotationYaw, MathX.normDeg(rotationYaw));
+//    System.out.format("%s- onUpdate rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",
+//            isClient() ? "C" : "S",
+//            getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
+//            renderYawOffset, MathX.normDeg(renderYawOffset),
+//            rotationYaw, MathX.normDeg(rotationYaw));
     super.onUpdate();
   }
 

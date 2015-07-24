@@ -7,8 +7,8 @@
 //import net.minecraft.util.MathHelper;
 //
 ///**
-// * Created by Richard on 23/07/2015.
-// */
+//* Created by Richard on 23/07/2015.
+//*/
 //public class junk
 //{
 //  public void doRender(EntityLivingBase entity, double x, double y, double z, float rotationYaw, float partialTicks)

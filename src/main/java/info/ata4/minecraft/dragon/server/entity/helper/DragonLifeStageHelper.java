@@ -409,31 +409,19 @@ public class DragonLifeStageHelper extends DragonHelper {
       tasks.addTask(0, new EntityAICatchOwnerGround(dragon)); // mutex all
       tasks.addTask(1, new EntityAIRideGround(dragon, 1)); // mutex all
       tasks.addTask(2, new EntityAISwimming(dragon)); // mutex 4
-      tasks.addTask(3, dragon.getAISit()); // mutex 4+1
-      tasks.addTask(4, new EntityAIDragonMate(dragon, 0.6)); // mutex 2+1
-      tasks.addTask(5, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
-      tasks.addTask(6, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
-      tasks.addTask(7, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
-      tasks.addTask(8, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
-      tasks.addTask(8, new EntityAIPanicChild(dragon, 1)); // mutex 1
-      tasks.addTask(9, new EntityAIWander(dragon, 1)); // mutex 1
-      tasks.addTask(10, new EntityAIWatchIdle(dragon)); // mutex 2
-      tasks.addTask(10, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
-
-      // mutex 1: waypointing
-      // mutex 2: continuous waypointing
-      airTasks.addTask(0, new EntityAIRideAir(dragon)); // mutex all
-      airTasks.addTask(0, new EntityAILand(dragon)); // mutex 0
-      airTasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
-
-      // mutex 1: generic targeting
-      targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(dragon)); // mutex 1
-      targetTasks.addTask(2, new EntityAIOwnerHurtTarget(dragon)); // mutex 1
-      targetTasks.addTask(3, new EntityAIHurtByTarget(dragon, false)); // mutex 1
+      tasks.addTask(4, dragon.getAISit()); // mutex 4+1
+      tasks.addTask(5, new EntityAIDragonMate(dragon, 0.6)); // mutex 2+1
+      tasks.addTask(6, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
+      tasks.addTask(7, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
+      tasks.addTask(8, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
+      tasks.addTask(9, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
+      tasks.addTask(9, new EntityAIPanicChild(dragon, 1)); // mutex 1
+      tasks.addTask(10, new EntityAIWander(dragon, 1)); // mutex 1
+      tasks.addTask(11, new EntityAIWatchIdle(dragon)); // mutex 2
+      tasks.addTask(11, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
 
       float minAttackRange = 0;
       float maxAttackRange = 0;
-
       switch (getLifeStage()) {
         case EGG: break;
         case HATCHLING: {
@@ -458,8 +446,19 @@ public class DragonLifeStageHelper extends DragonHelper {
       }
 
       EntityAIRangedBreathAttack breathAttack = new
-        EntityAIRangedBreathAttack(dragon, 1, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
-      targetTasks.addTask(4, breathAttack); // mutex 1 + 2
+              EntityAIRangedBreathAttack(dragon, 1, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
+      tasks.addTask(3, breathAttack); // mutex 1 + 2
+
+      // mutex 1: waypointing
+      // mutex 2: continuous waypointing
+      airTasks.addTask(0, new EntityAIRideAir(dragon)); // mutex all
+      airTasks.addTask(0, new EntityAILand(dragon)); // mutex 0
+      airTasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
+
+      // mutex 1: generic targeting
+      targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(dragon)); // mutex 1
+      targetTasks.addTask(2, new EntityAIOwnerHurtTarget(dragon)); // mutex 1
+      targetTasks.addTask(3, new EntityAIHurtByTarget(dragon, false)); // mutex 1
       targetTasks.addTask(5, new EntityAIHunt(dragon, EntityAnimal.class, false,
                                               new EntityClassPredicate(
                                                       EntitySheep.class,

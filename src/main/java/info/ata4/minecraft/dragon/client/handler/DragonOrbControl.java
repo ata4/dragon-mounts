@@ -39,7 +39,7 @@ public class DragonOrbControl {
   }
 
   /**
-   * Every tick, check if the player is holding the Dragon Orb, and if so, whether the player is targeting someone with it
+   * Every tick, check if the player is holding the Dragon Orb, and if so, whether the player is targeting something with it
    * Send the target to the server at periodic intervals (if the target has changed significantly, or at least every x ticks)
    * @param evt
    */
