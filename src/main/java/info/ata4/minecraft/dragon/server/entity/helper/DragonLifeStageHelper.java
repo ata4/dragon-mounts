@@ -102,6 +102,16 @@ public class DragonLifeStageHelper extends DragonHelper {
         int age = getTicksSinceCreation();
         return DragonLifeStage.getLifeStageFromTickCount(age);
     }
+    
+    /**
+     * Returns the size multiplier for the current age.
+     * 
+     * @return size
+     */
+//    public float getScale() {
+//        int age = getTicksSinceCreation();
+//        return DragonLifeStage.getScaleFromTickCount(age);
+//    }
 
     public int getTicksSinceCreation() {
         if (!dragon.worldObj.isRemote) {
@@ -122,7 +132,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         ticksSinceCreationServer = ticksRead;
         dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
     }
-
+    
     /**
      * Returns the size multiplier for the current age.
      * 
@@ -323,9 +333,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     }
 
     private void updateScale() {
-        boolean savedOnGround = dragon.onGround;  // otherwise, setScale stops the dragon from landing while it is growing
         dragon.setScalePublic(getScale());
-        dragon.onGround = savedOnGround;
     }
     
     @Override

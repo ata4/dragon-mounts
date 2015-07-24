@@ -850,12 +850,16 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         double posXTmp = posX;
         double posYTmp = posY;
         double posZTmp = posZ;
+        boolean onGroundTmp = onGround;
         
         setScale(scale);
         
         // workaround for a vanilla bug; the position is apparently not set correcty
         // after changing the entity size, causing asynchronous server/client positioning
         setPosition(posXTmp, posYTmp, posZTmp);
+        
+        // otherwise, setScale stops the dragon from landing while it is growing
+        onGround = onGroundTmp;
     }
     
     @Override
