@@ -2,6 +2,7 @@ import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -46,6 +47,8 @@ public class BreathWeaponTargetTest
     teste1.toBytes(byteBuf);
     received = BreathWeaponTarget.fromBytes(byteBuf);
     assertTrue(received.exactlyMatches(teste1));
+
+
   }
 
   @Test

@@ -20,7 +20,10 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -80,6 +83,19 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   }
 
   private BreathWeaponTarget lastTickTarget = null;
+
+
+
+  private EntityAIOwnerHurtTarget meleeAttackAI = null;
+
+  private void meleeAttack(BreathWeaponTarget target)
+  {
+    EntityLivingBase owner = dragon.getOwnerEntity();
+    if (owner == null) return;
+    owner.setLastAttacker()
+    if (target)
+
+  }
 
   /**
    * Updates the task
