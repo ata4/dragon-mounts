@@ -30,7 +30,7 @@ def getGitTag = { ->
 }
 
 minecraft {
-    version = "1.8-11.14.1.1334"
+    version = "1.8-11.14.3.1499"
     runDir = "minecraft"
     
     // the mappings can be changed at any time, and must be in the following format.
