@@ -14,6 +14,7 @@ import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.util.DataLogger;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
@@ -746,7 +747,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public DragonBreathHelper getBreathHelper() {
     return getHelper(DragonBreathHelper.class);
   }
-
 
   public boolean getBooleanData(int index) {
         return (dataWatcher.getWatchableObjectByte(index) & 1) != 0;

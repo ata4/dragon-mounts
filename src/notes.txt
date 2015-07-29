@@ -192,6 +192,9 @@ EntityAIRangedBreathAttack as targeting AI
     if on ground - move to target separate AI
     if riding on ground or air - no effect
 
+
+looking is handled by movement AI.
+
 dragonattackmode ?
 breathweapontarget
 

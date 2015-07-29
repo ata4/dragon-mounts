@@ -152,10 +152,14 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     @Override
     protected void updateAITasks() {
         setTasksEnabled(tasks, isGroundAIEnabled());
-        setTasksEnabled(airTasks, isAirAIEnabled());
+//        setTasksEnabled(airTasks, isAirAIEnabled());
         
         super.updateAITasks();
-        airTasks.onUpdateTasks();
+        if (isAirAIEnabled()) {
+          airTasks.onUpdateTasks();
+          targetTasks.onUpdateTasks();
+          getLookHelper().onUpdateLook();
+        }
     }
     
     @Override
@@ -177,8 +181,8 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             } else {
                 inAirTicks = 0;
             }
-            
-            setFlying(inAirTicks > IN_AIR_THRESH);
+
+          setFlying(inAirTicks > IN_AIR_THRESH);
         }
         
         if (isFlying()) {

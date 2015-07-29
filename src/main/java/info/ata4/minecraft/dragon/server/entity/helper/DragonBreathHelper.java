@@ -161,6 +161,27 @@ public class DragonBreathHelper extends DragonHelper
     }
   }
 
+  public BreathWeaponTarget getBreathTargetForMoving()
+  {
+    return breathWeaponTarget;
+  }
+
+  /**
+   * check if the dragon has a breath target that it should move towards (or away from)
+   * @return true if the dragon has a movement target
+   */
+  public boolean hasBreathTargetForMoving() { return breathWeaponTarget != null;}
+
+  /** sets the target that the movement AI should move towards (or away from) to get to the optimal breathing distance
+   * @param targetForMoving the new target - NULL for no target
+   */
+  public void setBreathTargetForMoving(BreathWeaponTarget targetForMoving)
+  {
+    breathWeaponTarget = targetForMoving;
+  }
+
+  private BreathWeaponTarget breathWeaponTarget;
+
 //  /**
 //   * sets the breath weapon target selected by the player.  Will be used by the targeting AI to determine where to point
 //   *   the breath weapon

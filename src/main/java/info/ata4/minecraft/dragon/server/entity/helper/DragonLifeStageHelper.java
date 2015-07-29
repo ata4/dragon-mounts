@@ -15,6 +15,7 @@ import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.*;
+import info.ata4.minecraft.dragon.server.entity.ai.targeting.EntityAIRangedBreathAttack;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.block.Block;
@@ -22,7 +23,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -403,6 +403,8 @@ public class DragonLifeStageHelper extends DragonHelper {
         return;
       }
 
+      //--------------------------------------------------------
+
       // mutex 1: movement
       // mutex 2: looking
       // mutex 4: special state
@@ -445,9 +447,12 @@ public class DragonLifeStageHelper extends DragonHelper {
         }
       }
 
-      EntityAIRangedBreathAttack breathAttack = new
-              EntityAIRangedBreathAttack(dragon, 1, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
-      tasks.addTask(3, breathAttack); // mutex 1 + 2
+      EntityAIMoveToOptimalDistance movementAI = new
+              EntityAIMoveToOptimalDistance(dragon, 1, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
+      tasks.addTask(3, movementAI); // mutex 1 + 2
+
+
+      //--------------------------------------------------------
 
       // mutex 1: waypointing
       // mutex 2: continuous waypointing
@@ -455,10 +460,12 @@ public class DragonLifeStageHelper extends DragonHelper {
       airTasks.addTask(0, new EntityAILand(dragon)); // mutex 0
       airTasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
 
+      //--------------------------------------------------------
+
       // mutex 1: generic targeting
-      targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(dragon)); // mutex 1
-      targetTasks.addTask(2, new EntityAIOwnerHurtTarget(dragon)); // mutex 1
-      targetTasks.addTask(3, new EntityAIHurtByTarget(dragon, false)); // mutex 1
+      targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(dragon)); // mutex 1
+      targetTasks.addTask(3, new EntityAIOwnerHurtTarget(dragon)); // mutex 1
+      targetTasks.addTask(4, new EntityAIHurtByTarget(dragon, false)); // mutex 1
       targetTasks.addTask(5, new EntityAIHunt(dragon, EntityAnimal.class, false,
                                               new EntityClassPredicate(
                                                       EntitySheep.class,
@@ -466,7 +473,10 @@ public class DragonLifeStageHelper extends DragonHelper {
                                                       EntityChicken.class,
                                                       EntityRabbit.class
                                               )
-      )); // mutex 1
+                          )); // mutex 1
+      EntityAIRangedBreathAttack breathAttack = new
+              EntityAIRangedBreathAttack(dragon, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
+      targetTasks.addTask(1, breathAttack); // mutex 1
 
 
     }

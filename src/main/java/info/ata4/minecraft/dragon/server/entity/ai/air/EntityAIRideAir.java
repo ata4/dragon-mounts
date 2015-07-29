@@ -11,6 +11,7 @@ package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIRide;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.init.Items;
 import net.minecraft.util.Vec3;
@@ -93,8 +94,15 @@ public class EntityAIRideAir extends EntityAIRide {
 
             // control rotation with strafing
             if (rider.moveStrafing != 0) {
-              float newYawHead = dragon.getRotationYawHead() - rider.moveStrafing * 6;  // used to be rotationYaw, this seems to work better
-                dragon.setRotationYawHead(newYawHead);
+                dragon.rotationYaw -= rider.moveStrafing * 6;
+            }
+
+            // if we're breathing at a target, look at it
+            BreathWeaponTarget breathWeaponTarget = dragon.getBreathHelper().getPlayerSelectedTarget();
+            if (breathWeaponTarget != null) {
+                Vec3 dragonEyePos = dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0);
+                breathWeaponTarget.setEntityLook(dragon.worldObj, dragon.getLookHelper(), dragonEyePos,
+                        dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
             }
 
             double verticalSpeed = 0;
