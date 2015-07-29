@@ -23,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
@@ -90,10 +91,19 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
 
   private void meleeAttack(BreathWeaponTarget target)
   {
+    if (target.getTypeOfTarget() != BreathWeaponTarget.TypeOfTarget.ENTITY) return;
     EntityLivingBase owner = dragon.getOwnerEntity();
     if (owner == null) return;
-    owner.setLastAttacker()
-    if (target)
+
+    Entity targetEntity = target.getTargetEntity(dragon.getEntityWorld());
+    owner.setLastAttacker(targetEntity);
+    if (meleeAttackAI == null) {
+      EntityAIOwnerHurtTarget newAI = new EntityAIOwnerHurtTarget(dragon);
+      if (!newAI.shouldExecute()) return;
+      meleeAttackAI = newAI;
+      meleeAttackAI.startExecuting();
+    }
+
 
   }
 
@@ -144,10 +154,25 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       this.canSeeTargetTickCount = 0;
     }
 
+    double distanceToTargetSQ = currentTarget.distanceSQtoTarget(dragon.worldObj, dragon.getPositionVector());
+
+    // If the target is too close but the dragon can't back up (stays too close for more than a few seconds), bite.
+    final int BITE_MODE_TICKS = 80;
+    if (distanceToTargetSQ < minAttackDistanceSQ && distanceToTargetSQ >= 0) {
+      ++ticksBelowMinimumRange;
+    } else {
+      ticksBelowMinimumRange = 0;
+    }
+
+    boolean biteMode = (ticksBelowMinimumRange >= BITE_MODE_TICKS);
+    if (biteMode) {
+      meleeAttack(currentTarget);
+      return;
+    }
+
     // navigate to appropriate range: only change navigation path if the target has changed or there is no navigation path
     //  currently in progress
     final int SEE_TARGET_TICK_THRESHOLD = 40;
-    double distanceToTargetSQ = currentTarget.distanceSQtoTarget(dragon.worldObj, dragon.getPositionVector());
     if (distanceToTargetSQ < 0) {
       // don't move since distance not meaningful
     } else if (distanceToTargetSQ <= minAttackDistanceSQ) {
@@ -171,15 +196,6 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       }
     }
 
-    // If the target is too close but the dragon can't back up (stays too close for more than a few seconds), bite.
-    final int BITE_MODE_TICKS = 80;
-    if (distanceToTargetSQ < minAttackDistanceSQ && distanceToTargetSQ >= 0) {
-      ++ticksBelowMinimumRange;
-    } else {
-      ticksBelowMinimumRange = 0;
-    }
-
-    boolean biteMode = (ticksBelowMinimumRange >= BITE_MODE_TICKS);
     boolean targetRangeOK = distanceToTargetSQ < 0
             || (distanceToTargetSQ >= minAttackDistanceSQ && distanceToTargetSQ <= maxAttackDistanceSQ);
 
@@ -190,9 +206,6 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       dragon.getBreathHelper().setBreathingTarget(null);
     }
 
-    if (biteMode) { // todo swap to melee attack
-      System.out.println("Bite attack");
-    }
   }
 
   /**

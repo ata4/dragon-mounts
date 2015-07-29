@@ -161,7 +161,7 @@ On server, DragonOrbTarget (from network message sent from DragonOrbControl) - s
 On other clients, DragonOrbTarget (from datawatcher) - stored in Entity
 
 Entity: startBreathing, stopBreathing, setTarget
-  --> defers to the BreathWeaponStateMachine which has
+  --> defers to the BreathWeaponStateMachine which as
     IDLE, STARTING, SUSTAIN, STOPPING to control animation
     client side EntityFX
     server side burning etc
@@ -181,3 +181,27 @@ EntityLookHelper:
 rotates yaw and pitch to target position when looking
 rotates yaw back to renderYawOffset when not looking.
 constrain to +/-75 of renderYawOffset
+
+--------------------
+Refactoring of breathing AI:
+EntityAIRangedBreathAttack as targeting AI
+ - breathes if distance, angle, etc are correct
+ -  if range too close for too long, change to bite.
+ -  sets flag in entity for moveToCorrectTargetDistance
+ - sets target to move to -
+    if on ground - move to target separate AI
+    if riding on ground or air - no effect
+
+dragonattackmode ?
+breathweapontarget
+
+
+
+
+
+
+
+
+
+
+
