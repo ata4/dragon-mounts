@@ -1,6 +1,6 @@
 package info.ata4.minecraft.dragon.client.render;
 
-import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
@@ -33,7 +33,7 @@ public class BreathWeaponEmitter {
    * @param power the strength of the beam
    * @param tickCount
    */
-  public void spawnBreathParticles(World world, FlameBreathFX.Power power, int tickCount)
+  public void spawnBreathParticles(World world, BreathNode.Power power, int tickCount)
   {
 //    if (spawnedOne) return;
 //    TestEntityFX testEntityFX = new TestEntityFX(world, origin.xCoord, origin.yCoord + 5, origin.zCoord,

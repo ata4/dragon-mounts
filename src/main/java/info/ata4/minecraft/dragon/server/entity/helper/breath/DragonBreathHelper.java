@@ -1,8 +1,8 @@
-package info.ata4.minecraft.dragon.server.entity.helper;
+package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
-import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
 import net.minecraft.entity.Entity;
@@ -38,8 +38,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class DragonBreathHelper extends DragonHelper
 {
-  private static final Logger L = LogManager.getLogger();
-
   public DragonBreathHelper(EntityTameableDragon dragon, int dataWatcherIndexBreathTarget)
   {
     super(dragon);
@@ -49,17 +47,9 @@ public class DragonBreathHelper extends DragonHelper
       breathWeaponEmitter = new BreathWeaponEmitter();
     }
   }
-
-  private final int DATA_WATCHER_BREATH_TARGET;
-
-  private BreathWeaponTarget targetBeingBreathedAt = null;  // server: the target currently being breathed at
-  private BreathWeaponTarget lastBreathTargetSent = null;   // server: the last target sent to the client thru DataWatcher
-
-  private BreathState currentBreathState = BreathState.IDLE;
-  private int transitionStartTick;
-
-  private BreathWeaponEmitter breathWeaponEmitter = null;
-  private int tickCounter = 0;
+  public enum  BreathState {
+    IDLE, STARTING, SUSTAIN, STOPPING;
+    }
 
   public BreathState getCurrentBreathState() {return currentBreathState;}
 
@@ -115,12 +105,71 @@ public class DragonBreathHelper extends DragonHelper
     updateBreathState(target);
   }
 
-  public enum  BreathState {
-    IDLE, STARTING, SUSTAIN, STOPPING;
+  public BreathWeaponTarget getBreathTargetForMoving()
+  {
+    return breathWeaponTarget;
+  }
+
+  /** sets the target that the movement AI should move towards (or away from) to get to the optimal breathing distance
+   * @param targetForMoving the new target - NULL for no target
+   */
+  public void setBreathTargetForMoving(BreathWeaponTarget targetForMoving)
+  {
+    breathWeaponTarget = targetForMoving;
+  }
+
+  /**
+   * check if the dragon has a breath target that it should move towards (or away from)
+   * @return true if the dragon has a movement target
+   */
+  public boolean hasBreathTargetForMoving() { return breathWeaponTarget != null;}
+
+  /**
+   * For tamed dragons, returns the target that their controlling player has selected using the DragonOrb.
+   * Valid on server side only
+   * @return the player's selected target, or null if no player target or dragon isn't tamed.
+   */
+  public BreathWeaponTarget getPlayerSelectedTarget()
+  {
+    if (dragon.isClient()) {
+      L.warn("getPlayerSelectedTarget is valid on the server side only");
+      return null;
     }
 
-  private final int BREATH_START_DURATION = 5; // ticks
-  private final int BREATH_STOP_DURATION = 5; // ticks
+    Entity owner = dragon.getOwner();
+    if (owner == null || !(owner instanceof EntityPlayerMP)) {
+      return null;
+    }
+    EntityPlayerMP entityPlayerMP = (EntityPlayerMP)owner;
+    BreathWeaponTarget breathWeaponTarget = DragonOrbTargets.getInstance().getPlayerTarget(entityPlayerMP);
+    return breathWeaponTarget;
+  }
+
+  @Override
+  public void onLivingUpdate() {
+    ++tickCounter;
+    if (dragon.isClient()) {
+      onLivingUpdateClient();
+    } else {
+      onLivingUpdateServer();
+    }
+  }
+
+  @Override
+  public void writeToNBT(NBTTagCompound nbt) {}
+
+  @Override
+  public void readFromNBT(NBTTagCompound nbt) {}
+
+  @Override
+  public void applyEntityAttributes() {}
+
+  @Override
+  public void onDeathUpdate() {}
+
+  @Override
+  public void onDeath() {}
+  private static final Logger L = LogManager.getLogger();
 
   private void updateBreathState(BreathWeaponTarget targetBeingBreathedAt)
   {
@@ -161,100 +210,10 @@ public class DragonBreathHelper extends DragonHelper
     }
   }
 
-  public BreathWeaponTarget getBreathTargetForMoving()
-  {
-    return breathWeaponTarget;
-  }
-
-  /**
-   * check if the dragon has a breath target that it should move towards (or away from)
-   * @return true if the dragon has a movement target
-   */
-  public boolean hasBreathTargetForMoving() { return breathWeaponTarget != null;}
-
-  /** sets the target that the movement AI should move towards (or away from) to get to the optimal breathing distance
-   * @param targetForMoving the new target - NULL for no target
-   */
-  public void setBreathTargetForMoving(BreathWeaponTarget targetForMoving)
-  {
-    breathWeaponTarget = targetForMoving;
-  }
-
-  private BreathWeaponTarget breathWeaponTarget;
-
-//  /**
-//   * sets the breath weapon target selected by the player.  Will be used by the targeting AI to determine where to point
-//   *   the breath weapon
-//   * @param newPlayerSelectedTarget the target that the player wants the dragon to breathe at. null = no target
-//   */
-//  private void setPlayerSelectedTarget(BreathWeaponTarget newPlayerSelectedTarget)
-//  {
-//    if (newPlayerSelectedTarget == null) {
-//      clearPlayerSelectedTarget();
-//      return;
-//    }
-//    if (dragon.isClient()) {
-//
-//      playerSelectedTarget = newPlayerSelectedTarget;
-//      return;
-//    }
-//    playerSelectedTarget = newPlayerSelectedTarget;
-//    boolean updateDataWatcher = false;
-//    if (lastBreathTargetSent == null) {
-//      updateDataWatcher = true;
-//    } else {
-//      updateDataWatcher = !newPlayerSelectedTarget.approximatelyMatches(lastBreathTargetSent);
-//    }
-//    if (updateDataWatcher) {
-//      dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, playerSelectedTarget.toEncodedString());
-//    }
-//  }
-
-//  /**
-//   * clears the target for the breath weapon, i.e. no desired target
-//   */
-//  private void clearPlayerSelectedTarget()
-//  {
-//    playerSelectedTarget = null;
-//    if (dragon.isClient() || lastBreathTargetSent == null) return;
-//    dataWatcher.updateObject(DATA_WATCHER_BREATH_TARGET, "");
-//  }
-
-  /**
-   * For tamed dragons, returns the target that their controlling player has selected using the DragonOrb.
-   * Valid on server side only
-   * @return the player's selected target, or null if no player target or dragon isn't tamed.
-   */
-  public BreathWeaponTarget getPlayerSelectedTarget()
-  {
-    if (dragon.isClient()) {
-      L.warn("getPlayerSelectedTarget is valid on the server side only");
-      return null;
-    }
-
-    Entity owner = dragon.getOwner();
-    if (owner == null || !(owner instanceof EntityPlayerMP)) {
-      return null;
-    }
-    EntityPlayerMP entityPlayerMP = (EntityPlayerMP)owner;
-    BreathWeaponTarget breathWeaponTarget = DragonOrbTargets.getInstance().getPlayerTarget(entityPlayerMP);
-    return breathWeaponTarget;
-  }
-
-
-  @Override
-  public void onLivingUpdate() {
-    ++tickCounter;
-    if (dragon.isClient()) {
-      onLivingUpdateClient();
-    } else {
-      onLivingUpdateServer();
-    }
-  }
-
   private void onLivingUpdateServer()
   {
     BreathWeaponTarget target = getTarget();
+    updateBreathState(breathWeaponTarget);
   }
 
   private void onLivingUpdateClient()
@@ -267,7 +226,7 @@ public class DragonBreathHelper extends DragonHelper
       Vec3 destination = breathWeaponTarget.getTargetedPoint(dragon.worldObj, origin);
       if (destination != null && currentBreathState == BreathState.SUSTAIN) {
         breathWeaponEmitter.setBeamEndpoints(origin, destination);
-        FlameBreathFX.Power power = dragon.getLifeStageHelper().getBreathPower();
+        BreathNode.Power power = dragon.getLifeStageHelper().getBreathPower();
         breathWeaponEmitter.spawnBreathParticles(dragon.getEntityWorld(), power, tickCounter);
       }
     }
@@ -289,16 +248,15 @@ public class DragonBreathHelper extends DragonHelper
       return targetBeingBreathedAt;
     }
   }
-
-  @Override
-  public void writeToNBT(NBTTagCompound nbt) {}
-  @Override
-  public void readFromNBT(NBTTagCompound nbt) {}
-  @Override
-  public void applyEntityAttributes() {}
-  @Override
-  public void onDeathUpdate() {}
-  @Override
-  public void onDeath() {}
+  private final int DATA_WATCHER_BREATH_TARGET;
+  private final int BREATH_START_DURATION = 5; // ticks
+  private final int BREATH_STOP_DURATION = 5; // ticks
+  private BreathWeaponTarget targetBeingBreathedAt = null;  // server: the target currently being breathed at
+  private BreathWeaponTarget lastBreathTargetSent = null;   // server: the last target sent to the client thru DataWatcher
+  private BreathState currentBreathState = BreathState.IDLE;
+  private int transitionStartTick;
+  private BreathWeaponEmitter breathWeaponEmitter = null;
+  private int tickCounter = 0;
+  private BreathWeaponTarget breathWeaponTarget;
 
 }

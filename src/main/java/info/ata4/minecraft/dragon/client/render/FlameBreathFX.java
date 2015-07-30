@@ -1,5 +1,6 @@
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.RotatingQuad;
 import net.minecraft.client.Minecraft;
@@ -19,97 +20,66 @@ import java.util.Random;
 public class FlameBreathFX extends EntityFX {
   private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
 
-  public enum Power {SMALL, MEDIUM, LARGE};
-
-  protected float currentParticleSize;
-  protected float particleMaxSize;
+//  protected float currentParticleSize;
+//  protected float particleMaxSize;
 
   public float smokeChance = 0.1f;
   public float largeSmokeChance = 0.3f;
 
   private static final float MAX_ALPHA = 0.99F;
-  private static final double INITIAL_SPEED = 1.2; // blocks per tick
   private static final float AABB_RELATIVE_TO_SIZE = 0.5F;  // how big is the AABB relative to the fireball size.
 
   private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)
   private static final double AGE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
   private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
 
+  private BreathNode breathNode;
+
   public static FlameBreathFX createFlameBreathFX(World world, double x, double y, double z,
                                                   double directionX, double directionY, double directionZ,
-                                                  Power power,
+                                                  BreathNode.Power power,
                                                   float partialTicksHeadStart)
   {
     Vec3 direction = new Vec3(directionX, directionY, directionZ).normalize();
 
-    float speedFactor = 1.0F;
-    float ageFactor = 1.0F;
-    float sizeFactor = 1.0F;
-
-    switch (power) {
-      case SMALL: {
-        speedFactor = 0.25F;
-        ageFactor = 0.25F;
-        sizeFactor = 0.25F;
-        break;
-      }
-      case MEDIUM: {
-        speedFactor = 0.5F;
-        ageFactor = 0.5F;
-        sizeFactor = 0.5F;
-        break;
-      }
-      case LARGE: {
-        speedFactor = 1.0F;
-        ageFactor = 1.0F;
-        sizeFactor = 1.0F;
-        break;
-      }
-
-      default: {
-        System.err.println("Invalid power in createFlameBreathFX:" + power);
-      }
-    }
+    BreathNode newNode = new BreathNode(power);
+    float initialSpeed = newNode.getStartingSpeed();
 
     Random rand = new Random();
     double actualMotionX = direction.xCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
     double actualMotionY = direction.yCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
     double actualMotionZ = direction.zCoord + MathX.getTruncatedGaussian(rand, 0, SPEED_VARIATION_ABS);
-    actualMotionX *= speedFactor * INITIAL_SPEED;
-    actualMotionY *= speedFactor * INITIAL_SPEED;
-    actualMotionZ *= speedFactor * INITIAL_SPEED;
+    actualMotionX *= initialSpeed;
+    actualMotionY *= initialSpeed;
+    actualMotionZ *= initialSpeed;
 
     x += actualMotionX * partialTicksHeadStart;
     y += actualMotionY * partialTicksHeadStart;
     z += actualMotionZ * partialTicksHeadStart;
     return new FlameBreathFX(world, x, y, z, actualMotionX, actualMotionY, actualMotionZ,
-                             DEFAULT_BALL_SIZE * sizeFactor, (int)(DEFAULT_AGE_IN_TICKS * ageFactor));
-  }
-
-  private static final float DEFAULT_BALL_SIZE = 2.0F;
-  private static final int DEFAULT_AGE_IN_TICKS = 40;
-  private FlameBreathFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-    this(world, x, y, z, velocityX, velocityY, velocityZ, DEFAULT_BALL_SIZE, DEFAULT_AGE_IN_TICKS);
+                             newNode);
   }
 
   private FlameBreathFX(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ,
-                 float size, int age) {
+                        BreathNode i_breathNode) {
     super(world, x, y, z, velocityX, velocityY, velocityZ);
 
+    breathNode = i_breathNode;
     particleGravity = Blocks.fire.blockParticleGravity;  /// arbitrary block!  maybe not even required.
-    particleMaxSize = size * (float)MathX.getTruncatedGaussian(rand, 1, SIZE_VARIATION_FACTOR);
-    particleMaxAge = (int)(age * MathX.getTruncatedGaussian(rand, 1, AGE_VARIATION_FACTOR));
-    this.particleAlpha = MAX_ALPHA;  // a value less than 1 turns on alpha blending
-    currentParticleSize = getParticleSize(0.0F);
+    breathNode.setRelativeLifetime(MathX.getTruncatedGaussian(rand, 1, AGE_VARIATION_FACTOR));
+    breathNode.setRelativeSize(MathX.getTruncatedGaussian(rand, 1, SIZE_VARIATION_FACTOR));
 
-    float initialCollisionSize = AABB_RELATIVE_TO_SIZE * currentParticleSize;
+    particleMaxAge = (int)breathNode.getMaxLifeTime();
+    this.particleAlpha = MAX_ALPHA;  // a value less than 1 turns on alpha blending
+//    currentParticleSize = getParticleSize(0.0F);
+
+    float initialCollisionSize = AABB_RELATIVE_TO_SIZE * breathNode.getSize();
     changeSize(initialCollisionSize, initialCollisionSize);  // using setSize causes trouble.
 
     //undo random velocity variation of vanilla constructor
     motionX = velocityX;
     motionY = velocityY;
     motionZ = velocityZ;
-
 
     // set the texture to the flame texture, which we have previously added using TextureStitchEvent
     TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fireballRL.toString());
@@ -141,11 +111,10 @@ public class FlameBreathFX extends EntityFX {
     return 0xf000f0;
   }
 
-  private float getParticleSize(float fractionOfFullSize)
-  {
-    final float INITIAL_SIZE = 0.2F * particleMaxSize;
-    return INITIAL_SIZE + (particleMaxSize - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
-  }
+//  private float getParticleSize(float fractionOfFullSize)
+//  {
+//
+//  }
 
   @Override
   public void func_180434_a(WorldRenderer worldRenderer, Entity entity, float partialTick,
@@ -180,24 +149,26 @@ public class FlameBreathFX extends EntityFX {
 
   @Override
   public void onUpdate() {
-    float lifetimeFraction = (float) particleAge / (float) particleMaxAge;
-    lifetimeFraction = MathHelper.clamp_float(lifetimeFraction, 0.0F, 1.0F);
+//    float lifetimeFraction = (float) particleAge / (float) particleMaxAge;
+//    lifetimeFraction = MathHelper.clamp_float(lifetimeFraction, 0.0F, 1.0F);
 
     final float YOUNG_AGE = 0.25F;
     final float OLD_AGE = 0.75F;
 
+    float lifetimeFraction = breathNode.getLifetimeFraction();
     if (lifetimeFraction < YOUNG_AGE) {
-      float fractionalSize = MathHelper.sin(lifetimeFraction / YOUNG_AGE * (float) Math.PI / 2.0F);
-      currentParticleSize = getParticleSize(fractionalSize);
+//      float fractionalSize = MathHelper.sin(lifetimeFraction / YOUNG_AGE * (float) Math.PI / 2.0F);
+//      currentParticleSize = getParticleSize(fractionalSize);
       particleAlpha = MAX_ALPHA;
     } else if (lifetimeFraction < OLD_AGE) {
-      currentParticleSize = getParticleSize(1.0F);
+//      currentParticleSize = getParticleSize(1.0F);
       particleAlpha = MAX_ALPHA;
     } else {
-      currentParticleSize = getParticleSize(1.0F);
+//      currentParticleSize = getParticleSize(1.0F);
       particleAlpha = MAX_ALPHA * (1 - lifetimeFraction);
     }
 
+    float currentParticleSize = breathNode.getSize();
     changeSize(currentParticleSize * AABB_RELATIVE_TO_SIZE, currentParticleSize * AABB_RELATIVE_TO_SIZE);  // note - will change posX, posY, posZ to keep centre constant when resizing
 
     final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 5.0F; // factor to convert from particleSize to particleScale
@@ -234,11 +205,12 @@ public class FlameBreathFX extends EntityFX {
     }
 
     // slow particles age very fast (they look silly when sitting still)
-    final double SPEED_THRESHOLD = INITIAL_SPEED * 0.25;
+    final double SPEED_THRESHOLD = breathNode.getStartingSpeed() * 0.25;
     if (motionX * motionX + motionY * motionY + motionZ * motionZ < SPEED_THRESHOLD * SPEED_THRESHOLD) {
       particleAge += 20;
     }
 
+    breathNode.setAgeTicks(particleAge);
   }
 
   // change size of entity AABB used for collisions

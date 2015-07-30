@@ -9,13 +9,13 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
-import info.ata4.minecraft.dragon.client.render.FlameBreathFX;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.*;
 import info.ata4.minecraft.dragon.server.entity.ai.targeting.EntityAIRangedBreathAttack;
+import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.block.Block;
@@ -166,23 +166,23 @@ public class DragonLifeStageHelper extends DragonHelper {
       }
     }
 
-    public FlameBreathFX.Power getBreathPower() {
+    public BreathNode.Power getBreathPower() {
       switch (getLifeStage()) {
         case EGG: {
-          return FlameBreathFX.Power.SMALL;  // dummy
+          return BreathNode.Power.SMALL;  // dummy
         }
         case HATCHLING: {
-          return FlameBreathFX.Power.SMALL;
+          return BreathNode.Power.SMALL;
         }
         case JUVENILE: {
-          return FlameBreathFX.Power.MEDIUM;
+          return BreathNode.Power.MEDIUM;
         }
         case ADULT: {
-          return FlameBreathFX.Power.LARGE;
+          return BreathNode.Power.LARGE;
         }
         default: {
           L.error("Illegal lifestage in getScale():" + getLifeStage());
-          return FlameBreathFX.Power.SMALL;
+          return BreathNode.Power.SMALL;
         }
       }
     }

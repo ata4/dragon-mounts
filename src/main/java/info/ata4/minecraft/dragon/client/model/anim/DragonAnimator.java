@@ -12,7 +12,7 @@ package info.ata4.minecraft.dragon.client.model.anim;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.model.ModelPart;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonBreathHelper;
+import info.ata4.minecraft.dragon.server.entity.helper.breath.DragonBreathHelper;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
