@@ -1,11 +1,11 @@
 import info.ata4.minecraft.dragon.server.entity.helper.breath.LineSegment;
 import junit.framework.AssertionFailedError;
 import net.minecraft.util.Vec3;
+import net.minecraft.util.Vec3i;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by TGG on 31/07/2015.
@@ -137,4 +137,29 @@ public class LineSegmentTest
     return new LineSegment(point1, point2);
   }
 
+  @Test
+  public void testAddOverlappedCubes() throws Exception
+  {
+    HashSet<Vec3i> overlappedCubes = new HashSet<Vec3i>();
+    Vec3 point1 = new Vec3(0.5, 0.5, 0.5);
+    Vec3 point2 = new Vec3(4.5, 0.5, 0.5);
+    LineSegment testSegment = new LineSegment(point1, point2);
+    testSegment.addOverlappedCubes(overlappedCubes, 0.1);
+
+    // expect: [0,0,0], [1,0,0] ... [4,0,0]
+    List<Vec3i> allOverlaps = new ArrayList<Vec3i>(overlappedCubes);
+    assertTrue(allOverlaps.size() == 5);
+
+    HashSet<Vec3i> expected = new HashSet<Vec3i>();
+    expected.add(new Vec3i(0, 0, 0));
+    expected.add(new Vec3i(1, 0, 0));
+    expected.add(new Vec3i(2, 0, 0));
+    expected.add(new Vec3i(3, 0, 0));
+    expected.add(new Vec3i(4, 0, 0));
+
+    for (Vec3i entry : allOverlaps) {
+      assertTrue(expected.contains(entry));
+      expected.remove(entry);
+    }
+  }
 }

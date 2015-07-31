@@ -1,11 +1,11 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
+import info.ata4.minecraft.dragon.util.math.MathX;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import net.minecraft.util.Vec3i;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by TGG on 31/07/2015.
@@ -98,6 +98,162 @@ public class LineSegment
       newCopy.add(lineSegment.deepCopy());
     }
     return newCopy;
+  }
+
+  /**
+   * Find the cubes that are overlapped by this segment and add them to the set
+   * Is only approximate - uses a rectangular prism to approximate the beam
+   * @param overlappedCubes the set of cubes ([x,y,z] blockpos), will be added to
+   * @param radius approximate radius of beam in blocks;
+   * @return
+   */
+  public void addOverlappedCubes(Set<Vec3i> overlappedCubes, double radius)
+  {
+    // uses a crude algorithm to find which blocks the segment overlaps:
+    // chooses one of the three cardinal directions then takes slices along
+    //  that direction at points [x1,y1,z1], [x2,y2,z2] etc
+    //  on each slice, form a rectangle centred on the [x,y,z]
+    //  all cubes partially overlapped by the rectangle are added to the set.
+    // The rectangle height and width are expanded slightly depending on the
+    //   slope of the segment - the cross-section through the prism gets bigger
+    //   when it is cut at an angle
+    // we always choose to iterate along the axis with greatest change relative
+    //   to the other two
+
+    double minX = Math.min(smallerPoint.xCoord, largerPoint.xCoord);
+    double maxX = Math.max(smallerPoint.xCoord, largerPoint.xCoord);
+    double minY = Math.min(smallerPoint.yCoord, largerPoint.yCoord);
+    double maxY = Math.max(smallerPoint.yCoord, largerPoint.yCoord);
+    double minZ = Math.min(smallerPoint.zCoord, largerPoint.zCoord);
+    double maxZ = Math.max(smallerPoint.zCoord, largerPoint.zCoord);
+    double deltaX = maxX - minX;
+    double deltaY = maxY - minY;
+    double deltaZ = maxZ - minZ;
+    double length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+    final double BLOCK_STEP_SIZE = 0.5;
+    final int MAX_NUMBER_OF_STEPS = 10;
+    double stepSize = Math.min(radius, BLOCK_STEP_SIZE);
+    int numberOfSteps = (int)Math.ceil(length / stepSize);
+    numberOfSteps = Math.min(numberOfSteps, MAX_NUMBER_OF_STEPS);
+
+    int whichIsBiggest = 0;
+    double biggestDelta = deltaX;
+    if (deltaY > biggestDelta) {
+      whichIsBiggest = 1;
+      biggestDelta = deltaY;
+    }
+    if (deltaZ > biggestDelta) {
+      whichIsBiggest = 2;
+      biggestDelta = deltaZ;
+    }
+    final double ZERO_DELTA = 0.0001;
+    if (biggestDelta < ZERO_DELTA) {
+      whichIsBiggest = 3;
+    }
+
+    double halfSliceX = radius;
+    double halfSliceY = radius;
+    double halfSliceZ = radius;
+
+    switch (whichIsBiggest) {
+      case 0: {
+        double halfSlice = radius * length / deltaX;
+        double deltaYZ = Math.sqrt(deltaY*deltaY + deltaZ*deltaZ);
+        halfSliceY = radius + (halfSlice - radius) * deltaY / deltaYZ;
+        halfSliceZ = radius + (halfSlice - radius) * deltaZ / deltaYZ;
+        break;
+      }
+      case 1: {
+        double halfSlice = radius * length / deltaY;
+        double deltaXZ = Math.sqrt(deltaX*deltaX + deltaZ*deltaZ);
+        halfSliceX = radius + (halfSlice - radius) * deltaX / deltaXZ;
+        halfSliceZ = radius + (halfSlice - radius) * deltaZ / deltaXZ;
+        break;
+      }
+      case 2: {
+        double halfSlice = radius * length / deltaZ;
+        double deltaXY = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
+        halfSliceX = radius + (halfSlice - radius) * deltaX / deltaXY;
+        halfSliceY = radius + (halfSlice - radius) * deltaY / deltaXY;
+        break;
+      }
+      case 3: {
+        break;
+      }
+    }
+
+    double x = minX;
+    double y = minY;
+    double z = minZ;
+    for (int i = 0; i <= numberOfSteps; ++i) {
+      switch (whichIsBiggest) {
+        case 0: {
+          addOverlappedAroundPointInXplane(overlappedCubes, x, y, z, halfSliceY, halfSliceZ);
+          break;
+        }
+        case 1: {
+          addOverlappedAroundPointInYplane(overlappedCubes, x, y, z, halfSliceX, halfSliceZ);
+          break;
+        }
+        case 2: {
+          addOverlappedAroundPointInZplane(overlappedCubes, x, y, z, halfSliceX, halfSliceY);
+          break;
+        }
+        case 3: {  // no change at all -> point
+          addOverlappedAroundPointInXplane(overlappedCubes, minX, minY, minZ, halfSliceY, halfSliceZ);
+          addOverlappedAroundPointInYplane(overlappedCubes, minX, minY, minZ, halfSliceX, halfSliceZ);
+          addOverlappedAroundPointInZplane(overlappedCubes, minX, minY, minZ, halfSliceX, halfSliceY);
+          return;
+        }
+      }
+
+      x += deltaX / numberOfSteps;
+      y += deltaY / numberOfSteps;
+      z += deltaZ / numberOfSteps;
+    }
+  }
+
+  private void addOverlappedAroundPointInXplane(Set<Vec3i> overlappedPoints, double x, double y, double z,
+                                               double halfSliceY, double halfSliceZ)
+  {
+    int minY = (int)(y - halfSliceY);
+    int maxY = (int)(y + halfSliceY);
+    int minZ = (int)(z - halfSliceZ);
+    int maxZ = (int)(z + halfSliceZ);
+    for (int iy = minY; iy <= maxY; ++iy) {
+      for (int iz = minZ; iz <= maxZ; ++iz) {
+         overlappedPoints.add(new Vec3i((int)x, iy, iz));
+      }
+    }
+  }
+
+  private void addOverlappedAroundPointInYplane(Set<Vec3i> overlappedPoints, double x, double y, double z,
+                                               double halfSliceX, double halfSliceZ)
+  {
+    int minX = (int)(x - halfSliceX);
+    int maxX = (int)(x + halfSliceX);
+    int minZ = (int)(z - halfSliceZ);
+    int maxZ = (int)(z + halfSliceZ);
+    for (int ix = minX; ix <= maxX; ++ix) {
+      for (int iz = minZ; iz <= maxZ; ++iz) {
+        overlappedPoints.add(new Vec3i(ix, (int)y, iz));
+      }
+    }
+  }
+
+  private void addOverlappedAroundPointInZplane(Set<Vec3i> overlappedPoints, double x, double y, double z,
+                                               double halfSliceX, double halfSliceY)
+  {
+    int minX = (int)(x - halfSliceX);
+    int maxX = (int)(x + halfSliceX);
+    int minY = (int)(y - halfSliceY);
+    int maxY = (int)(y + halfSliceY);
+    for (int ix = minX; ix <= maxX; ++ix) {
+      for (int iy = minY; iy <= maxY; ++iy) {
+        overlappedPoints.add(new Vec3i(ix, iy, (int)z));
+      }
+    }
   }
 
   private static class SortByXLow implements Comparator<LineSegment> {
