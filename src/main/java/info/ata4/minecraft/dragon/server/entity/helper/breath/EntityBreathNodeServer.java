@@ -12,16 +12,16 @@ import java.util.Random;
  */
 class EntityBreathNodeServer extends Entity
 {
-  public static EntityBreathNodeServer createEntityBreathNode(World world, double x, double y, double z,
-                                                        double directionX, double directionY, double directionZ,
-                                                        BreathNode.Power power)
+  public static EntityBreathNodeServer createEntityBreathNodeServer(World world, double x, double y, double z,
+                                                                    double directionX, double directionY, double directionZ,
+                                                                    BreathNode.Power power)
   {
     Vec3 direction = new Vec3(directionX, directionY, directionZ).normalize();
 
     Random rand = new Random();
     BreathNode breathNode = new BreathNode(power);
     Vec3 actualMotion = breathNode.getRandomisedStartingMotion(direction, rand);
-    // don't randomise the other properties (eg size, age, etc) on the server.
+    // don't randomise the other properties (size, age) on the server.
 
     EntityBreathNodeServer newEntity = new EntityBreathNodeServer(world, x, y, z, actualMotion, breathNode);
     breathNode.changeEntitySizeToMatch(newEntity);
@@ -49,11 +49,7 @@ class EntityBreathNodeServer extends Entity
   public void onUpdate() {
     breathNode.changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
 
-    // extinguish when hitting water
-    if (handleWaterMovement()) {
-      setDead();
-      return;
-    }
+    handleWaterMovement();
 
     prevPosX = posX;
     prevPosY = posY;

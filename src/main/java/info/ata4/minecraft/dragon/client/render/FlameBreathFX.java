@@ -55,7 +55,7 @@ public class FlameBreathFX extends EntityFX {
     particleMaxAge = (int)breathNode.getMaxLifeTime(); // not used, but good for debugging
     this.particleAlpha = MAX_ALPHA;  // a value less than 1 turns on alpha blending
 
-    //undo random velocity variation of vanilla constructor
+    //undo random velocity variation of vanilla EntityFX constructor
     motionX = motion.xCoord;
     motionY = motion.yCoord;
     motionZ = motion.zCoord;
@@ -146,11 +146,9 @@ public class FlameBreathFX extends EntityFX {
       worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
     }
 
-    // extinguish when hitting water
+    // smoke / steam when hitting water.  node is responsible for aging to death
     if (handleWaterMovement()) {
       worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, 0, 0, 0);
-      setDead();
-      return;
     }
 
     prevPosX = posX;

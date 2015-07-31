@@ -86,6 +86,16 @@ Ctor
 - affectBlock for each block
 - affectEntity for each entity
 
+The breathweapon is made up of a number of discrete BreathNodes which
+BreathNode represents the age, size, and initial speed of each node;
+The position, speed, and collision detection are tracked in an Entity:
+EntityFX (FlameBreathFX) on the client - also does rendering changes
+EntityBreathNodeServer on the server - also creates breath effects on the server world
+
+There is fairly tight coupling between BreathNode and the Entity, because EntityBreathNodeServer can't extend EntityFX.
+The common modelling behaviour on client and server is hence in BreathNode and Entity.
+
+The dragonbreathhelper on the server creates a stream of EntityBreathNodeServer in BreathAffectedArea
 
 ------------------
 need head position
