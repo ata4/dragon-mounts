@@ -100,24 +100,42 @@ public class LineSegment
     return newCopy;
   }
 
+  public double getSegmentLength()
+  {
+    double deltaX = smallerPoint.xCoord - largerPoint.xCoord;
+    double deltaY = smallerPoint.yCoord - largerPoint.yCoord;
+    double deltaZ = smallerPoint.zCoord - largerPoint.zCoord;
+    double length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+    return length;
+  }
+
 
   /**
    * Creates a cloud of points around the line segment, to simulate the movement of a sphere starting from the
    *   beginning of the line segment and moving to the end.  Each point is mapped onto the world grid.
    * Uses stochastic simulation, each point is generated as
-   * 1) a point [x1,y1,z1] is chosen along the line segment, uniform probability distribution along the segment
+   * 1) a point [x1,y1,z1] is chosen along the line segment, evenly distributed according to the number of cloud points,
+   *    plus a small random jitter
    * 2) a random point [x2,y2,z2] is chosen within the sphere centred on [x1,y1,z1].  This is generated from spherical
    *    coordinates radius, phi, theta, uniformly distributed.  This puts more points near the centre of the sphere
    *    i.e. the density of points is highest in the centre which is roughly what we want.
-   * Each call to addStochasticCloud adds a total of 1.00 to the world grid - eg 1.0 to a single location, or
-   *   0.2 to location 1 and 0.8 to location 2, etc
+   * Each call to addStochasticCloud adds a total of totalDensity to the world grid -
+   *   eg if totalDensity = 1.0, it adds 1.0 to a single location, or 0.2 to location 1 and 0.8 to location 2, etc
    * @param hitDensity the density of points at each world grid location - is updated by the method
    * @param radius the radius of the sphere (blocks)
+   * @param totalDensity the total density to be added (eg 1.0F)
+   * @param numberOfCloudPoints number of cloud points to use (1 - 1000) - clamped if out of range
    */
-  public void addStochasticCloud(Map<Vec3i, Float> hitDensity, double radius) {
+  public void addStochasticCloud(Map<Vec3i, Float> hitDensity, double radius, float totalDensity, int numberOfCloudPoints) {
     initialiseTables();
-    final int NUMBER_OF_CLOUD_POINTS = 100;
-    final float DENSITY_PER_POINT = 1.0F / 100;
+    final int MINIMUM_REASONABLE_CLOUD_POINTS = 1;
+    final int MAXIMUM_REASONABLE_CLOUD_POINTS = 1000;
+    numberOfCloudPoints = MathHelper.clamp_int(numberOfCloudPoints,
+                                               MINIMUM_REASONABLE_CLOUD_POINTS, MAXIMUM_REASONABLE_CLOUD_POINTS);
+    final int NUMBER_OF_CLOUD_POINTS = numberOfCloudPoints;
+    final float DENSITY_PER_POINT = totalDensity / NUMBER_OF_CLOUD_POINTS;
+
+    final double SUBSEGMENT_WIDTH = 1.0 / (NUMBER_OF_CLOUD_POINTS + 1);
 
     //    Equation of sphere converting from polar to cartesian:
     //    x = r.cos(theta).sin(phi)
@@ -125,7 +143,9 @@ public class LineSegment
     //    z = r.cos(phi)
     Random random = new Random();
     for (int i = 0; i < NUMBER_OF_CLOUD_POINTS; ++i) {
-      double linePos = random.nextDouble();
+      double linePos = i * SUBSEGMENT_WIDTH;
+      double jitter = random.nextDouble() * SUBSEGMENT_WIDTH;
+      linePos += jitter;
       double x = MathX.lerp(smallerPoint.xCoord, largerPoint.xCoord, linePos);
       double y = MathX.lerp(smallerPoint.yCoord, largerPoint.yCoord, linePos);
       double z = MathX.lerp(smallerPoint.zCoord, largerPoint.zCoord, linePos);

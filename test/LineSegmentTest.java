@@ -170,10 +170,11 @@ public class LineSegmentTest
     Vec3 point1 = new Vec3(0.5, 0.5, 0.5);
     Vec3 point2 = new Vec3(4.5, 0.5, 0.5);
     LineSegment testSegment = new LineSegment(point1, point2);
-    testSegment.addStochasticCloud(densityMap, 0.45);
+    final float TOTAL_DENSITY_1 = 1000.0F;
+    testSegment.addStochasticCloud(densityMap, 0.45, TOTAL_DENSITY_1, 100);
 
     // expect: [0,0,0], [1,0,0] ... [4,0,0] only
-    // also expect total density approx = 1 within roundoff
+    // also expect total density approx = TOTAL_DENSITY within roundoff
     List<Vec3i> allOverlaps = new ArrayList<Vec3i>(densityMap.keySet());
     assertTrue(allOverlaps.size() == 5);
 
@@ -190,7 +191,7 @@ public class LineSegmentTest
       assertTrue(expected.contains(entry));
       expected.remove(entry);
     }
-    assertTrue(Math.abs(totalDensity - 1.0F) < 0.0001F);
+    assertTrue(Math.abs(totalDensity - TOTAL_DENSITY_1) < TOTAL_DENSITY_1 / 10000.0F);
 
   }
 
