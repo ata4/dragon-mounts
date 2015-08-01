@@ -162,4 +162,36 @@ public class LineSegmentTest
       expected.remove(entry);
     }
   }
+
+  @Test
+  public void testAddStochasticCloud() throws Exception
+  {
+    HashMap<Vec3i, Float> densityMap = new HashMap<Vec3i, Float>();
+    Vec3 point1 = new Vec3(0.5, 0.5, 0.5);
+    Vec3 point2 = new Vec3(4.5, 0.5, 0.5);
+    LineSegment testSegment = new LineSegment(point1, point2);
+    testSegment.addStochasticCloud(densityMap, 0.45);
+
+    // expect: [0,0,0], [1,0,0] ... [4,0,0] only
+    // also expect total density approx = 1 within roundoff
+    List<Vec3i> allOverlaps = new ArrayList<Vec3i>(densityMap.keySet());
+    assertTrue(allOverlaps.size() == 5);
+
+    HashSet<Vec3i> expected = new HashSet<Vec3i>();
+    expected.add(new Vec3i(0, 0, 0));
+    expected.add(new Vec3i(1, 0, 0));
+    expected.add(new Vec3i(2, 0, 0));
+    expected.add(new Vec3i(3, 0, 0));
+    expected.add(new Vec3i(4, 0, 0));
+
+    Float totalDensity = 0F;
+    for (Vec3i entry : allOverlaps) {
+      totalDensity += densityMap.get(entry);
+      assertTrue(expected.contains(entry));
+      expected.remove(entry);
+    }
+    assertTrue(Math.abs(totalDensity - 1.0F) < 0.0001F);
+
+  }
+
 }

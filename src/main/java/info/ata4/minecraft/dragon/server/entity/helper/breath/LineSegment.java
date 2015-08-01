@@ -100,6 +100,66 @@ public class LineSegment
     return newCopy;
   }
 
+
+  /**
+   * Creates a cloud of points around the line segment, to simulate the movement of a sphere starting from the
+   *   beginning of the line segment and moving to the end.  Each point is mapped onto the world grid.
+   * Uses stochastic simulation, each point is generated as
+   * 1) a point [x1,y1,z1] is chosen along the line segment, uniform probability distribution along the segment
+   * 2) a random point [x2,y2,z2] is chosen within the sphere centred on [x1,y1,z1].  This is generated from spherical
+   *    coordinates radius, phi, theta, uniformly distributed.  This puts more points near the centre of the sphere
+   *    i.e. the density of points is highest in the centre which is roughly what we want.
+   * Each call to addStochasticCloud adds a total of 1.00 to the world grid - eg 1.0 to a single location, or
+   *   0.2 to location 1 and 0.8 to location 2, etc
+   * @param hitDensity the density of points at each world grid location - is updated by the method
+   * @param radius the radius of the sphere (blocks)
+   */
+  public void addStochasticCloud(Map<Vec3i, Float> hitDensity, double radius) {
+    initialiseTables();
+    final int NUMBER_OF_CLOUD_POINTS = 100;
+    final float DENSITY_PER_POINT = 1.0F / 100;
+
+    //    Equation of sphere converting from polar to cartesian:
+    //    x = r.cos(theta).sin(phi)
+    //    y = r.sin(theta).sin(phi)
+    //    z = r.cos(phi)
+    Random random = new Random();
+    for (int i = 0; i < NUMBER_OF_CLOUD_POINTS; ++i) {
+      double linePos = random.nextDouble();
+      double x = MathX.lerp(smallerPoint.xCoord, largerPoint.xCoord, linePos);
+      double y = MathX.lerp(smallerPoint.yCoord, largerPoint.yCoord, linePos);
+      double z = MathX.lerp(smallerPoint.zCoord, largerPoint.zCoord, linePos);
+      int theta = random.nextInt(TABLE_POINTS);
+      int phi = random.nextInt(TABLE_POINTS);
+      double r = random.nextDouble() * radius;
+      double dx = r * cosTable[theta] * sinTable[phi];
+      double dy = r * sinTable[theta] * sinTable[phi];
+      double dz = r * cosTable[phi];
+      Vec3i gridLoc = new Vec3i(x + dx, y + dy, z + dz);
+      Float oldValue = hitDensity.get(gridLoc);
+      if (oldValue == null) {
+        oldValue = 0.0F;
+      }
+      hitDensity.put(gridLoc, oldValue + DENSITY_PER_POINT);
+    }
+  }
+
+  private static boolean tablesInitialised = false;
+  private static final int TABLE_POINTS = 256;
+  private static double [] sinTable = new double[TABLE_POINTS];
+  private static double [] cosTable = new double[TABLE_POINTS];
+
+  private static void initialiseTables()
+  {
+    if (tablesInitialised) return;
+    for (int i = 0; i < TABLE_POINTS; ++i) {
+      double angle = i * 2.0 * Math.PI / TABLE_POINTS;
+      sinTable[i] = Math.sin(angle);
+      cosTable[i] = Math.cos(angle);
+    }
+    tablesInitialised = true;
+  }
+
   /**
    * Find the cubes that are overlapped by this segment and add them to the set
    * Is only approximate - uses a rectangular prism to approximate the beam
