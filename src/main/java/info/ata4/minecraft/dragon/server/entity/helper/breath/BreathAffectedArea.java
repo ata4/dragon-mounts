@@ -1,20 +1,11 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
-import info.ata4.minecraft.dragon.util.Pair;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockWall;
-import net.minecraft.block.material.Material;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-import javax.sound.sampled.Line;
 import java.util.*;
 
 /**
@@ -50,58 +41,83 @@ public abstract class BreathAffectedArea
 
   }
 
-  private void compileAffected(World world, Map<LineSegment, BreathNode> breathNodes,
+  /**
+   * Models the collision of the breath nodes on the world blocks and entities:
+   * Each breathnode which contacts a world block will increase the corresponding 'hit density' by an amount proportional
+   *   to the intensity of the node and the degree of overlap between the node and the block.
+   * Likewise for the entities contacted by the breathnode
+   * @param world
+   * @param breathNodes the breathnodes in the breath weapon beam
+   * @param affectedBlocks each block touched by the beam has an entry in this map.  The hitDensity (float) is increased
+   *                       every time a node touches it.  blocks without an entry haven't been touched.
+   * @param affectedEntities every entity touched by the beam has an entry in this map (entityID).  The hitDensity (float)
+   *                         for an entity is increased every time a node touches it.  entities without an entry haven't
+   *                         been touched.
+   */
+  private void compileAffected(World world, Map<NodeLineSegment, BreathNode> breathNodes,
                                HashMap<Vec3i, Float> affectedBlocks, HashMap<Integer, Float> affectedEntities)
   {
     if (breathNodes.isEmpty()) return;
 
-    ArrayList<LineSegment> lineSegments = new ArrayList<LineSegment>(breathNodes.keySet());
-    ArrayList<LineSegment> xLowSorted = LineSegment.deepCopy(lineSegments);
-    LineSegment.sort(xLowSorted, LineSegment.SortOrder.X_LOW);
-
-    ArrayList<LineSegment> xHighSorted = LineSegment.deepCopy(xLowSorted);
-    LineSegment.sort(xHighSorted, LineSegment.SortOrder.X_HIGH);
-
-    ArrayList<LineSegment> yLowSorted = LineSegment.deepCopy(xHighSorted);
-    LineSegment.sort(yLowSorted, LineSegment.SortOrder.Y_LOW);
-
-    ArrayList<LineSegment> yHighSorted = LineSegment.deepCopy(yLowSorted);
-    LineSegment.sort(yHighSorted, LineSegment.SortOrder.Y_HIGH);
-
-    ArrayList<LineSegment> zLowSorted = LineSegment.deepCopy(yHighSorted);
-    LineSegment.sort(zLowSorted, LineSegment.SortOrder.Z_LOW);
-
-    ArrayList<LineSegment> zHighSorted = LineSegment.deepCopy(zLowSorted);
-    LineSegment.sort(zHighSorted, LineSegment.SortOrder.Z_HIGH);
+    ArrayList<NodeLineSegment> nodeLineSegments = new ArrayList<NodeLineSegment>(breathNodes.keySet());
 
     final int NUMBER_OF_CLOUD_POINTS = 10;
-    for (Map.Entry<LineSegment, BreathNode> segment : breathNodes.entrySet()) {
-      float radius = segment.getValue().getCurrentSize();
+    for (Map.Entry<NodeLineSegment, BreathNode> segment : breathNodes.entrySet()) {
       float intensity = segment.getValue().getCurrentIntensity();
-      segment.getKey().addStochasticCloud(affectedBlocks, radius, intensity, NUMBER_OF_CLOUD_POINTS);
+      segment.getKey().addStochasticCloud(affectedBlocks, intensity, NUMBER_OF_CLOUD_POINTS);
     }
 
-    int segmentCount = lineSegments.size();
-    double xMin = xLowSorted.get(0).smallerPoint.xCoord;
-    double xMax = xHighSorted.get(segmentCount-1).largerPoint.xCoord;
-    double yMin = yLowSorted.get(0).smallerPoint.yCoord;
-    double yMax = yHighSorted.get(segmentCount-1).largerPoint.yCoord;
-    double zMin = zLowSorted.get(0).smallerPoint.zCoord;
-    double zMax = zHighSorted.get(segmentCount-1).largerPoint.zCoord;
-
-    AxisAlignedBB allAABB = new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
+    AxisAlignedBB allAABB = NodeLineSegment.getAxisAlignedBoundingBoxForAll(nodeLineSegments);
     List<EntityLivingBase> allEntities = world.getEntitiesWithinAABB(EntityLivingBase.class, allAABB);
 
+    Multimap<Vec3i, Integer> occupiedByEntities = ArrayListMultimap.create();
+    Map<Integer, AxisAlignedBB> entityHitBoxes = new HashMap<Integer, AxisAlignedBB>();
     for (EntityLivingBase entityLivingBase : allEntities) {
-
+      AxisAlignedBB aabb = entityLivingBase.getEntityBoundingBox();
+      entityHitBoxes.put(entityLivingBase.getEntityId(), aabb);
+      for (int x = (int)aabb.minX; x <= (int)aabb.maxX; ++x) {
+        for (int y = (int)aabb.minY; y <= (int)aabb.maxY; ++y) {
+          for (int z = (int)aabb.minZ; z <= (int)aabb.maxZ; ++z) {
+            Vec3i pos = new Vec3i(x, y, z);
+            occupiedByEntities.put(pos, entityLivingBase.getEntityId());
+          }
+        }
+      }
     }
 
+    final int NUMBER_OF_ENTITY_CLOUD_POINTS = 10;
+    for (Map.Entry<NodeLineSegment, BreathNode> node : breathNodes.entrySet()) {
+      Set<Integer> checkedEntities = new HashSet<Integer>();
+      NodeLineSegment nodeLineSegment = node.getKey();
+      AxisAlignedBB aabb = nodeLineSegment.getAxisAlignedBoundingBox();
+      for (int x = (int)aabb.minX; x <= (int)aabb.maxX; ++x) {
+        for (int y = (int)aabb.minY; y <= (int)aabb.maxY; ++y) {
+          for (int z = (int)aabb.minZ; z <= (int)aabb.maxZ; ++z) {
+            Vec3i pos = new Vec3i(x, y, z);
+            Collection<Integer> entitiesHere = occupiedByEntities.get(pos);
+            if (entitiesHere != null) {
+              for (Integer entityID : entitiesHere) {
+                if (!checkedEntities.contains(entityID)) {
+                  checkedEntities.add(entityID);
+                  float intensity = node.getValue().getCurrentIntensity();
+                  float hitDensity = nodeLineSegment.collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
+                  if (hitDensity > 0.0) {
+                    Float currentDensity = affectedEntities.get(entityID);
+                    if (currentDensity == null) {
+                      currentDensity = 0.0F;
+                    }
+                    currentDensity += hitDensity;
+                    affectedEntities.put(entityID, currentDensity);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
-  private HashSet<BlockPos>;
-  private HashSet<Integer>;
 
   private LinkedList<EntityBreathNodeServer> breathNodes;
-
-
 
 }
