@@ -135,7 +135,7 @@ public class FlameBreathFX extends EntityFX {
       particleAlpha = MAX_ALPHA * (1 - lifetimeFraction);
     }
 
-    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 5.0F; // factor to convert from particleSize to particleScale
+    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 10.0F; // factor to convert from particleSize to particleScale
     float currentParticleSize = breathNode.getCurrentSize();
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 

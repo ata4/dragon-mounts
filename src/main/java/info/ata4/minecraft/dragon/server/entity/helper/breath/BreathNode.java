@@ -3,11 +3,8 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
-import net.minecraft.world.World;
 
-import java.util.Collection;
 import java.util.Random;
-import java.util.Set;
 
 /**
  * Created by TGG on 30/07/2015.
@@ -123,11 +120,11 @@ public class BreathNode
     //  (the entity update resetPositionToBB copies it back)
     // To fix this, we resize the AABB around the existing centre
 
-    final float AABB_RELATIVE_TO_SIZE = 0.5F;  // how big is the AABB relative to the fireball size.
+    final float AABB_RELATIVE_TO_SIZE = 1.0F;  // how big is the AABB relative to the fireball size.
 
-    float currentParticleSize = getCurrentSize();
-    int width = (int)(currentParticleSize * AABB_RELATIVE_TO_SIZE);
-    int height = (int)(currentParticleSize * AABB_RELATIVE_TO_SIZE);
+    float currentNodeSize = getCurrentSize();
+    int width = (int)(currentNodeSize * AABB_RELATIVE_TO_SIZE);
+    int height = (int)(currentNodeSize * AABB_RELATIVE_TO_SIZE);
 
     if (width != entity.width || height != entity.height) {
       AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
@@ -143,9 +140,10 @@ public class BreathNode
     }
   }
 
+  /** get size (diameter) of the breathnode in blocks
+   * @return the size (diameter) of the breathnode in blocks
+   */
   public float getCurrentSize() {
-    final float YOUNG_AGE = 0.25F;
-    final float OLD_AGE = 0.75F;
     float lifetimeFraction = getLifetimeFraction();
 
     float fractionOfFullSize = 1.0F;
@@ -153,10 +151,30 @@ public class BreathNode
       fractionOfFullSize = MathHelper.sin(lifetimeFraction / YOUNG_AGE * (float) Math.PI / 2.0F);
     }
 
-    final float PARTICLE_MAX_SIZE = DEFAULT_BALL_SIZE * sizePowerFactor * relativeSize;
-    final float INITIAL_SIZE = 0.2F * PARTICLE_MAX_SIZE;
-    return INITIAL_SIZE + (PARTICLE_MAX_SIZE - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
+    final float NODE_MAX_SIZE = NODE_DIAMETER_IN_BLOCKS * sizePowerFactor * relativeSize;
+    final float INITIAL_SIZE = 0.2F * NODE_MAX_SIZE;
+    return INITIAL_SIZE + (NODE_MAX_SIZE - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
   }
+
+  /** returns the current intensity of the node (eg for flame = how hot it is)
+   * @return current relative intensity - 0.0 = none, 1.0 = full
+   */
+  public float getCurrentIntensity()
+  {
+    float lifetimeFraction = getLifetimeFraction();
+
+    float fractionOfFullPower = 1.0F;
+    if (lifetimeFraction < YOUNG_AGE) {
+      fractionOfFullPower = MathHelper.sin(lifetimeFraction / YOUNG_AGE * (float) Math.PI / 2.0F);
+    } else if (lifetimeFraction >= 1.0F) {
+      fractionOfFullPower = 0.0F;
+    } else if (lifetimeFraction > OLD_AGE) {
+      fractionOfFullPower = MathHelper.sin((1.0F - lifetimeFraction) / (1.0F - OLD_AGE) * (float) Math.PI / 2.0F);
+    }
+
+    return fractionOfFullPower * intensityPowerFactor;
+  }
+
 
   public float getLifetimeFraction() {
     float lifetimeFraction = (float)ageTicks / getMaxLifeTime();
@@ -165,13 +183,17 @@ public class BreathNode
   }
 
   private static final float INITIAL_SPEED = 1.2F; // blocks per tick at full speed
-  private static final float DEFAULT_BALL_SIZE = 2.0F;
+  private static final float NODE_DIAMETER_IN_BLOCKS = 1.0F;
   private static final int DEFAULT_AGE_IN_TICKS = 40;
+
+  private final float YOUNG_AGE = 0.25F;
+  private final float OLD_AGE = 0.75F;
 
   private Power power;
   private float speedPowerFactor = 1.0F;
   private float lifetimePowerFactor = 1.0F;
   private float sizePowerFactor = 1.0F;
+  private float intensityPowerFactor = 1.0F;
 
   private void setPower(Power newPower) {
     power = newPower;
@@ -180,18 +202,21 @@ public class BreathNode
         speedPowerFactor = 0.25F;
         lifetimePowerFactor = 0.25F;
         sizePowerFactor = 0.25F;
+        intensityPowerFactor = 0.10F;
         break;
       }
       case MEDIUM: {
         speedPowerFactor = 0.5F;
         lifetimePowerFactor = 0.5F;
         sizePowerFactor = 0.5F;
+        intensityPowerFactor = 0.25F;
         break;
       }
       case LARGE: {
         speedPowerFactor = 1.0F;
         lifetimePowerFactor = 1.0F;
         sizePowerFactor = 1.0F;
+        intensityPowerFactor = 1.0F;
         break;
       }
 
