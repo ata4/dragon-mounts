@@ -213,17 +213,27 @@ public class DragonBreathHelper extends DragonHelper
   private void onLivingUpdateServer()
   {
     BreathWeaponTarget target = getTarget();
-    updateBreathState(breathWeaponTarget);
+    updateBreathState(target);
+
+    if (target != null) {
+      Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+      Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);
+      if (destination != null && currentBreathState == BreathState.SUSTAIN) {
+        BreathNode.Power power = dragon.getLifeStageHelper().getBreathPower();
+        breathAffectedArea.continueBreathing(dragon.getEntityWorld(), origin, destination, power);
+      }
+    }
+    breathAffectedArea.updateTick();
   }
 
   private void onLivingUpdateClient()
   {
-    BreathWeaponTarget breathWeaponTarget = getTarget();
-    updateBreathState(breathWeaponTarget);
+    BreathWeaponTarget target = getTarget();
+    updateBreathState(target);
 
-    if (breathWeaponTarget != null) {
+    if (target != null) {
       Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
-      Vec3 destination = breathWeaponTarget.getTargetedPoint(dragon.worldObj, origin);
+      Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);
       if (destination != null && currentBreathState == BreathState.SUSTAIN) {
         breathWeaponEmitter.setBeamEndpoints(origin, destination);
         BreathNode.Power power = dragon.getLifeStageHelper().getBreathPower();
@@ -241,9 +251,9 @@ public class DragonBreathHelper extends DragonHelper
   private BreathWeaponTarget getTarget()
   {
     if (dragon.isClient()) {
-      String target = dataWatcher.getWatchableObjectString(DATA_WATCHER_BREATH_TARGET);
-      BreathWeaponTarget breathWeaponTarget = BreathWeaponTarget.fromEncodedString(target);
-      return breathWeaponTarget;
+      String targetString = dataWatcher.getWatchableObjectString(DATA_WATCHER_BREATH_TARGET);
+      BreathWeaponTarget target = BreathWeaponTarget.fromEncodedString(targetString);
+      return target;
     } else {
       return targetBeingBreathedAt;
     }
@@ -258,5 +268,7 @@ public class DragonBreathHelper extends DragonHelper
   private BreathWeaponEmitter breathWeaponEmitter = null;
   private int tickCounter = 0;
   private BreathWeaponTarget breathWeaponTarget;
+
+  private BreathAffectedArea breathAffectedArea = new BreathAffectedArea();
 
 }

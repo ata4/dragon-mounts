@@ -19,17 +19,40 @@ Ctor
 - affectBlock for each block
 - affectEntity for each entity
 */
-public abstract class BreathAffectedArea
+public class BreathAffectedArea
 {
 
-  public void updateTickBreathing(Vec3 origin, Vec3 destination) {
+  public void continueBreathing(World world, Vec3 origin, Vec3 destination, BreathNode.Power power)
+  {
+    Vec3 direction = destination.subtract(origin).normalize();
 
+    EntityBreathNodeServer newNode = EntityBreathNodeServer.createEntityBreathNodeServer(
+            world, origin.xCoord, origin.yCoord, origin.zCoord, direction.xCoord, direction.yCoord, direction.zCoord,
+            power);
+
+    entityBreathNodes.add(newNode);
   }
 
-  public void updateTickNotBreathing() {
+  public void updateTick() {
+    List<NodeLineSegment> segments = new LinkedList<NodeLineSegment>();
+
+    Iterator<EntityBreathNodeServer> it = entityBreathNodes.iterator();
+    while (it.hasNext()) {
+      EntityBreathNodeServer entity = it.next();
+      if (entity.isDead) {
+        it.remove();
+      } else {
+        float radius = entity.getCurrentRadius();
+        Vec3 initialPosition = entity.getPositionVector();
+        entity.onUpdate();
+        Vec3 finalPosition = entity.getPositionVector();
+        segments.add(new NodeLineSegment(initialPosition, finalPosition, radius));
+      }
+    }
+
+    to be continued from here: collisions then actions
 
   }
-
 
   private void drawBreathNode(HashSet<BlockPos> blocksInBeam, HashSet<Integer> entitiesInBeam, Vec3 origin, Vec3 direction, float distance)
   {
@@ -118,6 +141,6 @@ public abstract class BreathAffectedArea
     }
   }
 
-  private LinkedList<EntityBreathNodeServer> breathNodes;
+  private LinkedList<EntityBreathNodeServer> entityBreathNodes;
 
 }

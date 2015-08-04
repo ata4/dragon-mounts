@@ -65,7 +65,11 @@ class EntityBreathNodeServer extends Entity
     }
   }
 
-  private BreathNode breathNode;
+  public float getCurrentRadius() {
+    return breathNode.getCurrentSize() / 2.0F;
+  }
+
+    private BreathNode breathNode;
 
   @Override
   protected void entityInit()
