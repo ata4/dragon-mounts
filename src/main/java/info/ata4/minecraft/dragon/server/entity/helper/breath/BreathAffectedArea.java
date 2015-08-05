@@ -8,6 +8,10 @@ import net.minecraft.world.World;
 
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkElementIndex;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
 * Created by TGG on 30/07/2015.
 * BreathAffectedArea base class
@@ -21,24 +25,38 @@ Ctor
 */
 public class BreathAffectedArea
 {
+  public BreathAffectedArea(BreathWeapon i_breathWeapon)
+  {
+    breathWeapon = i_breathWeapon;
+  }
 
+  /**
+   * Tell BreathAffectedArea that breathing is ongoing.  Call once per tick before updateTick()
+   * @param world
+   * @param origin  the origin of the beam
+   * @param destination the destination of the beam, used to calculate direction
+   * @param power
+   */
   public void continueBreathing(World world, Vec3 origin, Vec3 destination, BreathNode.Power power)
   {
     Vec3 direction = destination.subtract(origin).normalize();
 
-    EntityBreathNodeServer newNode = EntityBreathNodeServer.createEntityBreathNodeServer(
+    EntityBreathNode newNode = EntityBreathNode.createEntityBreathNodeServer(
             world, origin.xCoord, origin.yCoord, origin.zCoord, direction.xCoord, direction.yCoord, direction.zCoord,
             power);
 
     entityBreathNodes.add(newNode);
   }
 
-  public void updateTick() {
-    List<NodeLineSegment> segments = new LinkedList<NodeLineSegment>();
+  /** updates the BreathAffectedArea, called once per tick
+   */
+  public void updateTick(World world) {
+    ArrayList<NodeLineSegment> segments = new ArrayList<NodeLineSegment>();
 
-    Iterator<EntityBreathNodeServer> it = entityBreathNodes.iterator();
+    // create a list of NodeLineSegments from the motion path of the BreathNodes
+    Iterator<EntityBreathNode> it = entityBreathNodes.iterator();
     while (it.hasNext()) {
-      EntityBreathNodeServer entity = it.next();
+      EntityBreathNode entity = it.next();
       if (entity.isDead) {
         it.remove();
       } else {
@@ -50,18 +68,58 @@ public class BreathAffectedArea
       }
     }
 
-    to be continued from here: collisions then actions
+    updateBlockAndEntityHitDensities(world, segments, entityBreathNodes, blocksAffectedByBeam, entitiesAffectedByBeam);
 
+    implementEffectsOnBlocksTick(world, blocksAffectedByBeam);
+    implementEffectsOnEntitiesTick(world, entitiesAffectedByBeam);
+
+    decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
   }
 
-  private void drawBreathNode(HashSet<BlockPos> blocksInBeam, HashSet<Integer> entitiesInBeam, Vec3 origin, Vec3 direction, float distance)
+  private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, Float> affectedBlocks )
   {
-
+    for (Map.Entry<Vec3i, Float> blockInfo : affectedBlocks.entrySet()) {
+      float newHitDensity = breathWeapon.affectBlock(world, blockInfo.getKey(), blockInfo.getValue());
+      blockInfo.setValue(newHitDensity);
+    }
   }
 
-  private void moveNode()
+  private void implementEffectsOnEntitiesTick(World world, HashMap<Integer, Float> affectedEntities )
   {
+    for (Map.Entry<Vec3i, Float> blockInfo : affectedEntities.entrySet()) {
+      float newHitDensity = breathWeapon.affectEntity(world, blockInfo.getKey(), blockInfo.getValue());
+      blockInfo.setValue(newHitDensity);
+    }
+  }
 
+  /**
+   * decay the hit densities of the affected blocks and entities (eg for flame weapon - cools down)
+   */
+  private void decayBlockAndEntityHitDensities(HashMap<Vec3i, Float> affectedBlocks, HashMap<Integer, Float> affectedEntities)
+  {
+    Iterator<Map.Entry<Vec3i, Float>> itAffectedBlocks = affectedBlocks.entrySet().iterator();
+    while (itAffectedBlocks.hasNext()) {
+      Map.Entry<Vec3i, Float> affectedBlock = itAffectedBlocks.next();
+      float carryover = affectedBlock.getValue();
+      carryover = breathWeapon.decayBlockEffectTick(carryover);
+      if (carryover >= 0.0F) {
+        affectedBlock.setValue(carryover);
+      } else {
+        itAffectedBlocks.remove();
+      }
+    }
+
+    Iterator<Map.Entry<Integer, Float>> itAffectedEntities = affectedEntities.entrySet().iterator();
+    while (itAffectedBlocks.hasNext()) {
+      Map.Entry<Integer, Float> affectedEntity = itAffectedEntities.next();
+      float carryover = affectedEntity.getValue();
+      carryover = breathWeapon.decayEntityEffectTick(carryover);
+      if (carryover >= 0.0F) {
+        affectedEntity.setValue(carryover);
+      } else {
+        itAffectedEntities.remove();
+      }
+    }
   }
 
   /**
@@ -70,24 +128,30 @@ public class BreathAffectedArea
    *   to the intensity of the node and the degree of overlap between the node and the block.
    * Likewise for the entities contacted by the breathnode
    * @param world
-   * @param breathNodes the breathnodes in the breath weapon beam
+   * @param nodeLineSegments the nodeLineSegments in the breath weapon beam
+   * @param entityBreathNodes the breathnodes in the breath weapon beam  - parallel to nodeLineSegments, must correspond 1:1
    * @param affectedBlocks each block touched by the beam has an entry in this map.  The hitDensity (float) is increased
    *                       every time a node touches it.  blocks without an entry haven't been touched.
    * @param affectedEntities every entity touched by the beam has an entry in this map (entityID).  The hitDensity (float)
    *                         for an entity is increased every time a node touches it.  entities without an entry haven't
    *                         been touched.
    */
-  private void compileAffected(World world, Map<NodeLineSegment, BreathNode> breathNodes,
-                               HashMap<Vec3i, Float> affectedBlocks, HashMap<Integer, Float> affectedEntities)
+  private void updateBlockAndEntityHitDensities(World world,
+                                                ArrayList<NodeLineSegment> nodeLineSegments, ArrayList<EntityBreathNode> entityBreathNodes,
+                                                HashMap<Vec3i, Float> affectedBlocks, HashMap<Integer, Float> affectedEntities)
   {
-    if (breathNodes.isEmpty()) return;
+    checkNotNull(nodeLineSegments);
+    checkNotNull(entityBreathNodes);
+    checkNotNull(affectedBlocks);
+    checkNotNull(affectedEntities);
+    checkArgument(nodeLineSegments.size() == entityBreathNodes.size());
 
-    ArrayList<NodeLineSegment> nodeLineSegments = new ArrayList<NodeLineSegment>(breathNodes.keySet());
+    if (entityBreathNodes.isEmpty()) return;
 
     final int NUMBER_OF_CLOUD_POINTS = 10;
-    for (Map.Entry<NodeLineSegment, BreathNode> segment : breathNodes.entrySet()) {
-      float intensity = segment.getValue().getCurrentIntensity();
-      segment.getKey().addStochasticCloud(affectedBlocks, intensity, NUMBER_OF_CLOUD_POINTS);
+    for (int i = 0; i < nodeLineSegments.size(); ++i) {
+      float intensity = entityBreathNodes.get(i).getCurrentIntensity();
+      nodeLineSegments.get(i).addStochasticCloud(affectedBlocks, intensity, NUMBER_OF_CLOUD_POINTS);
     }
 
     AxisAlignedBB allAABB = NodeLineSegment.getAxisAlignedBoundingBoxForAll(nodeLineSegments);
@@ -109,10 +173,9 @@ public class BreathAffectedArea
     }
 
     final int NUMBER_OF_ENTITY_CLOUD_POINTS = 10;
-    for (Map.Entry<NodeLineSegment, BreathNode> node : breathNodes.entrySet()) {
+    for (int i = 0; i < nodeLineSegments.size(); ++i) {
       Set<Integer> checkedEntities = new HashSet<Integer>();
-      NodeLineSegment nodeLineSegment = node.getKey();
-      AxisAlignedBB aabb = nodeLineSegment.getAxisAlignedBoundingBox();
+      AxisAlignedBB aabb = nodeLineSegments.get(i).getAxisAlignedBoundingBox();
       for (int x = (int)aabb.minX; x <= (int)aabb.maxX; ++x) {
         for (int y = (int)aabb.minY; y <= (int)aabb.maxY; ++y) {
           for (int z = (int)aabb.minZ; z <= (int)aabb.maxZ; ++z) {
@@ -122,8 +185,8 @@ public class BreathAffectedArea
               for (Integer entityID : entitiesHere) {
                 if (!checkedEntities.contains(entityID)) {
                   checkedEntities.add(entityID);
-                  float intensity = node.getValue().getCurrentIntensity();
-                  float hitDensity = nodeLineSegment.collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
+                  float intensity = entityBreathNodes.get(i).getCurrentIntensity();
+                  float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
                   if (hitDensity > 0.0) {
                     Float currentDensity = affectedEntities.get(entityID);
                     if (currentDensity == null) {
@@ -141,6 +204,10 @@ public class BreathAffectedArea
     }
   }
 
-  private LinkedList<EntityBreathNodeServer> entityBreathNodes;
+  private ArrayList<EntityBreathNode> entityBreathNodes = new ArrayList<EntityBreathNode>();
+  private HashMap<Vec3i, Float> blocksAffectedByBeam = new HashMap<Vec3i, Float>();
+  private HashMap<Integer, Float> entitiesAffectedByBeam = new HashMap<Integer, Float>();
+
+  private BreathWeapon breathWeapon;
 
 }

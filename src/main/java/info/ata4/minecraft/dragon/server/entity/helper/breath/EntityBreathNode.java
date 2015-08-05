@@ -10,9 +10,9 @@ import java.util.Random;
 /**
  * Created by TGG on 31/07/2015.
  */
-class EntityBreathNodeServer extends Entity
+class EntityBreathNode extends Entity
 {
-  public static EntityBreathNodeServer createEntityBreathNodeServer(World world, double x, double y, double z,
+  public static EntityBreathNode createEntityBreathNodeServer(World world, double x, double y, double z,
                                                                     double directionX, double directionY, double directionZ,
                                                                     BreathNode.Power power)
   {
@@ -23,12 +23,12 @@ class EntityBreathNodeServer extends Entity
     Vec3 actualMotion = breathNode.getRandomisedStartingMotion(direction, rand);
     // don't randomise the other properties (size, age) on the server.
 
-    EntityBreathNodeServer newEntity = new EntityBreathNodeServer(world, x, y, z, actualMotion, breathNode);
+    EntityBreathNode newEntity = new EntityBreathNode(world, x, y, z, actualMotion, breathNode);
     breathNode.changeEntitySizeToMatch(newEntity);
     return newEntity;
   }
 
-  private EntityBreathNodeServer(World world, double x, double y, double z, Vec3 motion, BreathNode i_breathNode)
+  private EntityBreathNode(World world, double x, double y, double z, Vec3 motion, BreathNode i_breathNode)
   {
     super(world);
     breathNode = i_breathNode;
@@ -69,7 +69,9 @@ class EntityBreathNodeServer extends Entity
     return breathNode.getCurrentSize() / 2.0F;
   }
 
-    private BreathNode breathNode;
+  public float getCurrentIntensity() {return  breathNode.getCurrentIntensity();}
+
+  private BreathNode breathNode;
 
   @Override
   protected void entityInit()

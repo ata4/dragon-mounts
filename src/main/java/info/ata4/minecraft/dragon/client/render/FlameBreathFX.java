@@ -1,6 +1,7 @@
 package info.ata4.minecraft.dragon.client.render;
 
 import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
+import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNodeEntityHelper;
 import info.ata4.minecraft.dragon.util.math.RotatingQuad;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
