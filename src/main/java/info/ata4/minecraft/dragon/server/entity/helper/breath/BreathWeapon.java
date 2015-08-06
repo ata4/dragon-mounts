@@ -2,6 +2,8 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -28,9 +30,10 @@ public class BreathWeapon
    * @param world
    * @param blockPosition  the world [x,y,z] of the block
    * @param currentHitDensity
-   * @return the updated hit density
+   * @return the updated block hit density
    */
-  public float affectBlock(World world, Vec3i blockPosition, Float currentHitDensity)
+  public NodeLineSegment.BlockHitDensity affectBlock(World world, Vec3i blockPosition,
+                                                     NodeLineSegment.BlockHitDensity currentHitDensity)
   {
     checkNotNull(world);
     checkNotNull(blockPosition);
@@ -42,12 +45,20 @@ public class BreathWeapon
 
     Random rand = new Random();
 
+    // Flammable blocks: set fire to them once they have been exposed enough
+    // Non-flammable blocks:
+    // 1)
+
+
     for (EnumFacing facing : EnumFacing.values()) {
       BlockPos sideToIgnite = blockPos.offset(facing);
       if (block.isFlammable(world, sideToIgnite, facing)) {
         int flammability = block.getFlammability(world, sideToIgnite, facing);
         float thresholdHitDensity = convertFlammabilityToHitDensityThreshold(flammability);
-        if (currentHitDensity >= thresholdHitDensity && world.isAirBlock(sideToIgnite)) {
+        System.out.println("Threshold: " + thresholdHitDensity
+                + ", current:" + facing + "=" + currentHitDensity.getHitDensity(facing));
+        float densityOfThisFace = currentHitDensity.getHitDensity(facing);
+        if (densityOfThisFace >= thresholdHitDensity && world.isAirBlock(sideToIgnite)) {
           final float MIN_PITCH = 0.8F;
           final float MAX_PITCH = 1.2F;
           final float VOLUME = 1.0F;
@@ -57,27 +68,48 @@ public class BreathWeapon
         }
       }
     }
+    return currentHitDensity;
+//    FurnaceRecipes.instance().getSmeltingResult(block.getItemDropped())
+//    // non-silk harvest
+//    Item item = this.getItemDropped(state, rand, fortune);
+//    if (item != null)
+//    {
+//      ret.add(new ItemStack(item, 1, this.damageDropped(state)));
+//    }
+//
+//    // silk harvest:
+//    Item item = Item.getItemFromBlock(this);
+//
+//    if (item != null && item.getHasSubtypes())
+//    {
+//      i = this.getMetaFromState(state);
+//    }
+//
+//    return new ItemStack(item, 1, i);
+//
 
-    FurnaceRecipes.instance().getSmeltingResult(block.getItemDropped())
-    // non-silk harvest
-    Item item = this.getItemDropped(state, rand, fortune);
-    if (item != null)
-    {
-      ret.add(new ItemStack(item, 1, this.damageDropped(state)));
+
+  }
+
+  /** if the hitDensity is high enough, manipulate the block (eg set fire to it)
+   * @param world
+   * @param entityID  the world [x,y,z] of the block
+   * @param currentHitDensity
+   * @return the updated hit density
+   */
+  public float affectEntity(World world, Integer entityID, Float currentHitDensity)
+  {
+    checkNotNull(world);
+    checkNotNull(entityID);
+    checkNotNull(currentHitDensity);
+
+    Entity entity = world.getEntityByID(entityID);
+    if (entity == null || !(entity instanceof EntityLivingBase) || entity.isDead) {
+      return 0.0F;
     }
 
-    // silk harvest:
-    Item item = Item.getItemFromBlock(this);
-
-    if (item != null && item.getHasSubtypes())
-    {
-      i = this.getMetaFromState(state);
-    }
-
-    return new ItemStack(item, 1, i);
-
-
-
+    System.out.println("Burn " + entity.getName() + ":" + currentHitDensity);
+    return currentHitDensity;
   }
 
   /**

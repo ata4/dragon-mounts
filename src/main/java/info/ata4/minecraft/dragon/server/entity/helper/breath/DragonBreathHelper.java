@@ -46,6 +46,7 @@ public class DragonBreathHelper extends DragonHelper
     if (dragon.isClient()) {
       breathWeaponEmitter = new BreathWeaponEmitter();
     }
+    breathAffectedArea = new BreathAffectedArea(new BreathWeapon());
   }
   public enum  BreathState {
     IDLE, STARTING, SUSTAIN, STOPPING;
@@ -223,7 +224,7 @@ public class DragonBreathHelper extends DragonHelper
         breathAffectedArea.continueBreathing(dragon.getEntityWorld(), origin, destination, power);
       }
     }
-    breathAffectedArea.updateTick();
+    breathAffectedArea.updateTick(dragon.worldObj);
   }
 
   private void onLivingUpdateClient()
@@ -269,6 +270,6 @@ public class DragonBreathHelper extends DragonHelper
   private int tickCounter = 0;
   private BreathWeaponTarget breathWeaponTarget;
 
-  private BreathAffectedArea breathAffectedArea = new BreathAffectedArea();
+  private BreathAffectedArea breathAffectedArea;
 
 }

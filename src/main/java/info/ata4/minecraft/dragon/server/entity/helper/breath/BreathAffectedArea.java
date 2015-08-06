@@ -76,41 +76,47 @@ public class BreathAffectedArea
     decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
   }
 
-  private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, Float> affectedBlocks )
+  private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlocks )
   {
-    for (Map.Entry<Vec3i, Float> blockInfo : affectedBlocks.entrySet()) {
-      float newHitDensity = breathWeapon.affectBlock(world, blockInfo.getKey(), blockInfo.getValue());
+    for (Map.Entry<Vec3i, NodeLineSegment.BlockHitDensity> blockInfo : affectedBlocks.entrySet()) {
+      NodeLineSegment.BlockHitDensity newHitDensity = breathWeapon.affectBlock(world, blockInfo.getKey(), blockInfo.getValue());
       blockInfo.setValue(newHitDensity);
     }
   }
 
   private void implementEffectsOnEntitiesTick(World world, HashMap<Integer, Float> affectedEntities )
   {
-    for (Map.Entry<Vec3i, Float> blockInfo : affectedEntities.entrySet()) {
-      float newHitDensity = breathWeapon.affectEntity(world, blockInfo.getKey(), blockInfo.getValue());
-      blockInfo.setValue(newHitDensity);
+    for (Map.Entry<Integer, Float> entityInfo : affectedEntities.entrySet()) {
+      float newHitDensity = breathWeapon.affectEntity(world, entityInfo.getKey(), entityInfo.getValue());
+      entityInfo.setValue(newHitDensity);
     }
   }
 
   /**
    * decay the hit densities of the affected blocks and entities (eg for flame weapon - cools down)
    */
-  private void decayBlockAndEntityHitDensities(HashMap<Vec3i, Float> affectedBlocks, HashMap<Integer, Float> affectedEntities)
+  private void decayBlockAndEntityHitDensities(HashMap<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlocks,
+                                               HashMap<Integer, Float> affectedEntities)
   {
-    Iterator<Map.Entry<Vec3i, Float>> itAffectedBlocks = affectedBlocks.entrySet().iterator();
+    Iterator<Map.Entry<Vec3i, NodeLineSegment.BlockHitDensity>> itAffectedBlocks = affectedBlocks.entrySet().iterator();
     while (itAffectedBlocks.hasNext()) {
-      Map.Entry<Vec3i, Float> affectedBlock = itAffectedBlocks.next();
-      float carryover = affectedBlock.getValue();
-      carryover = breathWeapon.decayBlockEffectTick(carryover);
-      if (carryover >= 0.0F) {
-        affectedBlock.setValue(carryover);
-      } else {
+      Map.Entry<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlock = itAffectedBlocks.next();
+      NodeLineSegment.BlockHitDensity carryover = affectedBlock.getValue();
+      float highestDensity = 0.0F;
+      for (EnumFacing face : EnumFacing.values()) {
+        float newDensity = breathWeapon.decayBlockEffectTick(carryover.getHitDensity(face));
+        newDensity = Math.max(newDensity, 0.0F);
+        highestDensity = Math.max(newDensity, highestDensity);
+        carryover.setHitDensity(face, newDensity);
+      }
+      final float ZERO_DENSITY = 0.01F;
+      if (highestDensity < ZERO_DENSITY) {
         itAffectedBlocks.remove();
       }
     }
 
     Iterator<Map.Entry<Integer, Float>> itAffectedEntities = affectedEntities.entrySet().iterator();
-    while (itAffectedBlocks.hasNext()) {
+    while (itAffectedEntities.hasNext()) {
       Map.Entry<Integer, Float> affectedEntity = itAffectedEntities.next();
       float carryover = affectedEntity.getValue();
       carryover = breathWeapon.decayEntityEffectTick(carryover);
@@ -137,8 +143,10 @@ public class BreathAffectedArea
    *                         been touched.
    */
   private void updateBlockAndEntityHitDensities(World world,
-                                                ArrayList<NodeLineSegment> nodeLineSegments, ArrayList<EntityBreathNode> entityBreathNodes,
-                                                HashMap<Vec3i, Float> affectedBlocks, HashMap<Integer, Float> affectedEntities)
+                                                ArrayList<NodeLineSegment> nodeLineSegments,
+                                                ArrayList<EntityBreathNode> entityBreathNodes,
+                                                HashMap<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlocks,
+                                                HashMap<Integer, Float> affectedEntities)
   {
     checkNotNull(nodeLineSegments);
     checkNotNull(entityBreathNodes);
@@ -205,7 +213,8 @@ public class BreathAffectedArea
   }
 
   private ArrayList<EntityBreathNode> entityBreathNodes = new ArrayList<EntityBreathNode>();
-  private HashMap<Vec3i, Float> blocksAffectedByBeam = new HashMap<Vec3i, Float>();
+  private HashMap<Vec3i, NodeLineSegment.BlockHitDensity> blocksAffectedByBeam =
+          new HashMap<Vec3i, NodeLineSegment.BlockHitDensity>();
   private HashMap<Integer, Float> entitiesAffectedByBeam = new HashMap<Integer, Float>();
 
   private BreathWeapon breathWeapon;
