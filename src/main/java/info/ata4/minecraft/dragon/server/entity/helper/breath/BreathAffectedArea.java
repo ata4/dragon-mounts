@@ -76,53 +76,50 @@ public class BreathAffectedArea
     decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
   }
 
-  private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlocks )
+  private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, BreathAffectedBlock> affectedBlocks )
   {
-    for (Map.Entry<Vec3i, NodeLineSegment.BlockHitDensity> blockInfo : affectedBlocks.entrySet()) {
-      NodeLineSegment.BlockHitDensity newHitDensity = breathWeapon.affectBlock(world, blockInfo.getKey(), blockInfo.getValue());
+    for (Map.Entry<Vec3i, BreathAffectedBlock> blockInfo : affectedBlocks.entrySet()) {
+      BreathAffectedBlock newHitDensity = breathWeapon.affectBlock(world, blockInfo.getKey(), blockInfo.getValue());
       blockInfo.setValue(newHitDensity);
     }
   }
 
-  private void implementEffectsOnEntitiesTick(World world, HashMap<Integer, Float> affectedEntities )
+  private void implementEffectsOnEntitiesTick(World world, HashMap<Integer, BreathAffectedEntity> affectedEntities )
   {
-    for (Map.Entry<Integer, Float> entityInfo : affectedEntities.entrySet()) {
-      float newHitDensity = breathWeapon.affectEntity(world, entityInfo.getKey(), entityInfo.getValue());
-      entityInfo.setValue(newHitDensity);
+    Iterator<Map.Entry<Integer, BreathAffectedEntity>> itAffectedEntities = affectedEntities.entrySet().iterator();
+    while (itAffectedEntities.hasNext()) {
+      Map.Entry<Integer, BreathAffectedEntity> affectedEntity = itAffectedEntities.next();
+      BreathAffectedEntity newHitDensity = breathWeapon.affectEntity(world, affectedEntity.getKey(), affectedEntity.getValue());
+      if (newHitDensity == null) {
+        itAffectedEntities.remove();
+      } else {
+        affectedEntity.setValue(newHitDensity);
+      }
     }
   }
 
   /**
    * decay the hit densities of the affected blocks and entities (eg for flame weapon - cools down)
    */
-  private void decayBlockAndEntityHitDensities(HashMap<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlocks,
-                                               HashMap<Integer, Float> affectedEntities)
+  private void decayBlockAndEntityHitDensities(HashMap<Vec3i, BreathAffectedBlock> affectedBlocks,
+                                               HashMap<Integer, BreathAffectedEntity> affectedEntities)
   {
-    Iterator<Map.Entry<Vec3i, NodeLineSegment.BlockHitDensity>> itAffectedBlocks = affectedBlocks.entrySet().iterator();
+    Iterator<Map.Entry<Vec3i, BreathAffectedBlock>> itAffectedBlocks = affectedBlocks.entrySet().iterator();
     while (itAffectedBlocks.hasNext()) {
-      Map.Entry<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlock = itAffectedBlocks.next();
-      NodeLineSegment.BlockHitDensity carryover = affectedBlock.getValue();
-      float highestDensity = 0.0F;
-      for (EnumFacing face : EnumFacing.values()) {
-        float newDensity = breathWeapon.decayBlockEffectTick(carryover.getHitDensity(face));
-        newDensity = Math.max(newDensity, 0.0F);
-        highestDensity = Math.max(newDensity, highestDensity);
-        carryover.setHitDensity(face, newDensity);
-      }
-      final float ZERO_DENSITY = 0.01F;
-      if (highestDensity < ZERO_DENSITY) {
+      Map.Entry<Vec3i, BreathAffectedBlock> affectedBlock = itAffectedBlocks.next();
+      BreathAffectedBlock carryover = affectedBlock.getValue();
+      carryover.decayBlockEffectTick();
+      if (carryover.isUnaffected()) {
         itAffectedBlocks.remove();
       }
     }
 
-    Iterator<Map.Entry<Integer, Float>> itAffectedEntities = affectedEntities.entrySet().iterator();
+    Iterator<Map.Entry<Integer, BreathAffectedEntity>> itAffectedEntities = affectedEntities.entrySet().iterator();
     while (itAffectedEntities.hasNext()) {
-      Map.Entry<Integer, Float> affectedEntity = itAffectedEntities.next();
-      float carryover = affectedEntity.getValue();
-      carryover = breathWeapon.decayEntityEffectTick(carryover);
-      if (carryover >= 0.0F) {
-        affectedEntity.setValue(carryover);
-      } else {
+      Map.Entry<Integer, BreathAffectedEntity> affectedEntity = itAffectedEntities.next();
+      BreathAffectedEntity carryover = affectedEntity.getValue();
+      carryover.decayEntityEffectTick();
+      if (carryover.isUnaffected()) {
         itAffectedEntities.remove();
       }
     }
@@ -145,8 +142,8 @@ public class BreathAffectedArea
   private void updateBlockAndEntityHitDensities(World world,
                                                 ArrayList<NodeLineSegment> nodeLineSegments,
                                                 ArrayList<EntityBreathNode> entityBreathNodes,
-                                                HashMap<Vec3i, NodeLineSegment.BlockHitDensity> affectedBlocks,
-                                                HashMap<Integer, Float> affectedEntities)
+                                                HashMap<Vec3i, BreathAffectedBlock> affectedBlocks,
+                                                HashMap<Integer, BreathAffectedEntity> affectedEntities)
   {
     checkNotNull(nodeLineSegments);
     checkNotNull(entityBreathNodes);
@@ -196,11 +193,11 @@ public class BreathAffectedArea
                   float intensity = entityBreathNodes.get(i).getCurrentIntensity();
                   float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
                   if (hitDensity > 0.0) {
-                    Float currentDensity = affectedEntities.get(entityID);
+                    BreathAffectedEntity currentDensity = affectedEntities.get(entityID);
                     if (currentDensity == null) {
-                      currentDensity = 0.0F;
+                      currentDensity = new BreathAffectedEntity();
                     }
-                    currentDensity += hitDensity;
+                    currentDensity.addHitDensity(nodeLineSegments.get(i).getSegmentDirection(),  hitDensity);
                     affectedEntities.put(entityID, currentDensity);
                   }
                 }
@@ -213,9 +210,9 @@ public class BreathAffectedArea
   }
 
   private ArrayList<EntityBreathNode> entityBreathNodes = new ArrayList<EntityBreathNode>();
-  private HashMap<Vec3i, NodeLineSegment.BlockHitDensity> blocksAffectedByBeam =
-          new HashMap<Vec3i, NodeLineSegment.BlockHitDensity>();
-  private HashMap<Integer, Float> entitiesAffectedByBeam = new HashMap<Integer, Float>();
+  private HashMap<Vec3i, BreathAffectedBlock> blocksAffectedByBeam =
+          new HashMap<Vec3i, BreathAffectedBlock>();
+  private HashMap<Integer, BreathAffectedEntity> entitiesAffectedByBeam = new HashMap<Integer, BreathAffectedEntity>();
 
   private BreathWeapon breathWeapon;
 

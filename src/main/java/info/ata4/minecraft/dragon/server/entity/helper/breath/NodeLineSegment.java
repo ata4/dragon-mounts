@@ -53,6 +53,14 @@ public class NodeLineSegment
     return length;
   }
 
+  /** get the vector corresponding to the segment (from start point to end point)
+   * @return
+   */
+  public Vec3 getSegmentDirection()
+  {
+    return new Vec3(endPoint.xCoord - startPoint.xCoord, endPoint.yCoord - startPoint.yCoord, endPoint.zCoord - startPoint.zCoord);
+  }
+
   /** get an AABB which encompases the entire line segment including the node radius around each end
    * @return
    */
@@ -165,7 +173,7 @@ public class NodeLineSegment
    * @param totalDensity the total density to be added (eg 1.0F)
    * @param numberOfCloudPoints number of cloud points to use (1 - 1000) - clamped if out of range
    */
-  public void addStochasticCloud(Map<Vec3i, BlockHitDensity> hitDensity, float totalDensity, int numberOfCloudPoints) {
+  public void addStochasticCloud(Map<Vec3i, BreathAffectedBlock> hitDensity, float totalDensity, int numberOfCloudPoints) {
     initialiseTables();
     final int MINIMUM_REASONABLE_CLOUD_POINTS = 1;
     final int MAXIMUM_REASONABLE_CLOUD_POINTS = 1000;
@@ -195,50 +203,14 @@ public class NodeLineSegment
       double dy = r * sinTable[theta] * sinTable[phi];
       double dz = r * cosTable[phi];
       Vec3i gridLoc = new Vec3i(x + dx, y + dy, z + dz);
-      BlockHitDensity blockHitDensity = hitDensity.get(gridLoc);
-      if (blockHitDensity == null) {
-        blockHitDensity = new BlockHitDensity();
+      BreathAffectedBlock breathAffectedBlock = hitDensity.get(gridLoc);
+      if (breathAffectedBlock == null) {
+        breathAffectedBlock = new BreathAffectedBlock();
       }
       EnumFacing faceHit = getIntersectedFace(x, y, z, x+dx, y+dy, z+dz);
-      blockHitDensity.addHitDensity(faceHit, DENSITY_PER_POINT);
-      hitDensity.put(gridLoc, blockHitDensity);
+      breathAffectedBlock.addHitDensity(faceHit, DENSITY_PER_POINT);
+      hitDensity.put(gridLoc, breathAffectedBlock);
     }
-  }
-
-  public class BlockHitDensity
-  {
-    public BlockHitDensity()
-    {
-      hitDensity = new float[EnumFacing.values().length];
-    }
-
-    /**
-     * increases the hit density of the specified face.
-     * @param face the face being hit; null = no particular face
-     * @param increase the amount to increase the hit density by
-     */
-    public void addHitDensity(EnumFacing face, float increase)
-    {
-      if (face == null) {
-        for (EnumFacing facing : EnumFacing.values()) {
-          hitDensity[facing.getIndex()] += increase;
-        }
-      } else {
-        hitDensity[face.getIndex()] += increase;
-      }
-    }
-
-    public float getHitDensity(EnumFacing face)
-    {
-      return hitDensity[face.getIndex()];
-    }
-
-    public void setHitDensity(EnumFacing face, float newValue)
-    {
-      hitDensity[face.getIndex()] = newValue;
-    }
-
-    private float [] hitDensity;
   }
 
   /**

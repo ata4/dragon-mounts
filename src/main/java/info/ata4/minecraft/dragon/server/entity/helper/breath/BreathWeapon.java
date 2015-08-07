@@ -5,9 +5,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3i;
@@ -32,8 +29,8 @@ public class BreathWeapon
    * @param currentHitDensity
    * @return the updated block hit density
    */
-  public NodeLineSegment.BlockHitDensity affectBlock(World world, Vec3i blockPosition,
-                                                     NodeLineSegment.BlockHitDensity currentHitDensity)
+  public BreathAffectedBlock affectBlock(World world, Vec3i blockPosition,
+                                                     BreathAffectedBlock currentHitDensity)
   {
     checkNotNull(world);
     checkNotNull(blockPosition);
@@ -95,9 +92,9 @@ public class BreathWeapon
    * @param world
    * @param entityID  the world [x,y,z] of the block
    * @param currentHitDensity
-   * @return the updated hit density
+   * @return the updated hit density; null if entity dead or doesn't exist
    */
-  public float affectEntity(World world, Integer entityID, Float currentHitDensity)
+  public BreathAffectedEntity affectEntity(World world, Integer entityID, BreathAffectedEntity currentHitDensity)
   {
     checkNotNull(world);
     checkNotNull(entityID);
@@ -105,7 +102,7 @@ public class BreathWeapon
 
     Entity entity = world.getEntityByID(entityID);
     if (entity == null || !(entity instanceof EntityLivingBase) || entity.isDead) {
-      return 0.0F;
+      return null;
     }
 
     System.out.println("Burn " + entity.getName() + ":" + currentHitDensity);
@@ -125,46 +122,8 @@ public class BreathWeapon
     // want: leaves & flowers to burn instantly; gates to take ~1 second at full power, coal / logs to take ~3 seconds
     // hitDensity of 1 is approximately 1-2 ticks of full exposure from a single beam, so 3 seconds is ~30
 
-    float threshold = 150.0F / flammability;
+    float threshold = 50.0F / flammability;
     return threshold;
   }
-
-
-  private float BLOCK_DECAY_PERCENTAGE_PER_TICK = 5.0F;
-  private float BLOCK_RESET_EFFECT_THRESHOLD = 0.01F;
-
-  /** updates the breath weapon's effect for a given block
-   *   called every tick; used to decay the cumulative effect on the block
-   *   for example - a block being gently bathed in flame might gain 0.2 every time from the beam, and lose 0.2 every
-   *     tick in this method.
-   * @param currentFloat the current cumulative effect density (for a block)
-   * @return the new effect density; negative for effect expired
-   */
-  public float decayBlockEffectTick(float currentFloat)
-  {
-    final float EXPIRED_VALUE = -1.0F;
-    if (currentFloat < 0) return EXPIRED_VALUE;
-    currentFloat *= (1.0F - BLOCK_DECAY_PERCENTAGE_PER_TICK / 100.0F);
-    return (currentFloat < BLOCK_RESET_EFFECT_THRESHOLD)? EXPIRED_VALUE: currentFloat;
-  }
-
-  private float ENTITY_DECAY_PERCENTAGE_PER_TICK = 10.0F;
-  private float ENTITY_RESET_EFFECT_THRESHOLD = 0.01F;
-
-  /** updates the breath weapon's effect for a given entity
-   *   called every tick; used to decay the cumulative effect on the entity
-   *   for example - an entity being gently bathed in flame might gain 0.2 every time from the beam, and lose 0.2 every
-   *     tick in this method.
-   * @param currentFloat the current cumulative effect density (for an entity)
-   * @return the new effect density; negative for effect expired
-   */
-  public float decayEntityEffectTick(float currentFloat)
-  {
-    final float EXPIRED_VALUE = -1.0F;
-    if (currentFloat < 0) return EXPIRED_VALUE;
-    currentFloat *= (1.0F - ENTITY_DECAY_PERCENTAGE_PER_TICK / 100.0F);
-    return (currentFloat < ENTITY_RESET_EFFECT_THRESHOLD)? EXPIRED_VALUE: currentFloat;
-  }
-
 
 }

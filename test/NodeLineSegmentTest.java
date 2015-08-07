@@ -1,3 +1,4 @@
+import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathAffectedBlock;
 import info.ata4.minecraft.dragon.server.entity.helper.breath.NodeLineSegment;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
@@ -34,7 +35,7 @@ public class NodeLineSegmentTest
   public void testAddStochasticCloud() throws Exception
   {
     final float RADIUS = 0.45F;
-    HashMap<Vec3i, NodeLineSegment.BlockHitDensity> densityMap = new HashMap<Vec3i, NodeLineSegment.BlockHitDensity>();
+    HashMap<Vec3i, BreathAffectedBlock> densityMap = new HashMap<Vec3i, BreathAffectedBlock>();
     Vec3 point1 = new Vec3(0.5, 0.5, 0.5);
     Vec3 point2 = new Vec3(4.5, 0.5, 0.5);
     NodeLineSegment testSegment = new NodeLineSegment(point1, point2, RADIUS);
@@ -61,7 +62,7 @@ public class NodeLineSegmentTest
       assertTrue(expected.contains(entry));
       expected.remove(entry);
     }
-//    assertTrue(Math.abs(totalDensity - TOTAL_DENSITY_1000) < TOTAL_DENSITY_1000 / 10000.0F);
+    assertTrue(Math.abs(totalDensity - TOTAL_DENSITY_1000) < TOTAL_DENSITY_1000 / 10000.0F);
   }
 
   @Test
