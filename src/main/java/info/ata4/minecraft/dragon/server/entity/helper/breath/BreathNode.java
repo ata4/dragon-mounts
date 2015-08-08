@@ -29,7 +29,7 @@ public class BreathNode
   private float relativeSize = 1.0F;
   private float relativeLifetime = 1.0F;
 
-  private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)
+  private static final double SPEED_VARIATION_ABS = 0.0;  // plus or minus this amount (3 std deviations)  //todo reset to 0.1
   private static final double AGE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
   private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
 

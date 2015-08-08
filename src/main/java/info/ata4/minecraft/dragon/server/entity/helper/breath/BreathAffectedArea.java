@@ -30,6 +30,8 @@ public class BreathAffectedArea
     breathWeapon = i_breathWeapon;
   }
 
+  private static boolean firedOnce = false; // debugging
+  private static int ticks = 0; //debugging
   /**
    * Tell BreathAffectedArea that breathing is ongoing.  Call once per tick before updateTick()
    * @param world
@@ -39,7 +41,20 @@ public class BreathAffectedArea
    */
   public void continueBreathing(World world, Vec3 origin, Vec3 destination, BreathNode.Power power)
   {
+    firedOnce = true;
+//    if (++ticks == 200) {  //todo debugging remove
+//      ticks = 0;
+//      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
+//        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
+//      }
+//    }
+//    if (firedOnce) return;
+//    firedOnce = true;
+
     Vec3 direction = destination.subtract(origin).normalize();
+    System.out.format("Fired from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] direction = [%.2f, %.2f, %.2f]\n",
+                      origin.xCoord, origin.yCoord, origin.zCoord, destination.xCoord, destination.yCoord, destination.zCoord,
+                      direction.xCoord, direction.yCoord, direction.zCoord);
 
     EntityBreathNode newNode = EntityBreathNode.createEntityBreathNodeServer(
             world, origin.xCoord, origin.yCoord, origin.zCoord, direction.xCoord, direction.yCoord, direction.zCoord,
@@ -47,6 +62,8 @@ public class BreathAffectedArea
 
     entityBreathNodes.add(newNode);
   }
+
+  private static boolean printed = false; //todo remove debug
 
   /** updates the BreathAffectedArea, called once per tick
    */
@@ -74,8 +91,20 @@ public class BreathAffectedArea
     implementEffectsOnEntitiesTick(world, entitiesAffectedByBeam);
 
     decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
-  }
 
+    //todo remove debugging
+    if (firedOnce) {
+      firedOnce = false;
+      printed = false;
+    } else if (!printed) {
+      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
+        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
+      }
+      System.out.format("\n");
+      printed = true;
+    }
+  }
+todo next look at breathlogAtWall.txt; figure out why it doesnt line wup with world; sort blocks;  copy from saved games (backup)
   private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, BreathAffectedBlock> affectedBlocks )
   {
     for (Map.Entry<Vec3i, BreathAffectedBlock> blockInfo : affectedBlocks.entrySet()) {

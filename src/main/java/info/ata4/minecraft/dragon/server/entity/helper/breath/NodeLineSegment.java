@@ -184,6 +184,11 @@ public class NodeLineSegment
 
     final double SUBSEGMENT_WIDTH = 1.0 / (NUMBER_OF_CLOUD_POINTS + 1);
 
+//    System.out.format("from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] radius %.2f -->",
+//                      startPoint.xCoord, startPoint.yCoord, startPoint.zCoord,
+//                      endPoint.xCoord, endPoint.yCoord, endPoint.zCoord,
+//                      radius);   //todo debug remove
+
     //    Equation of sphere converting from polar to cartesian:
     //    x = r.cos(theta).sin(phi)
     //    y = r.sin(theta).sin(phi)
@@ -202,7 +207,10 @@ public class NodeLineSegment
       double dx = r * cosTable[theta] * sinTable[phi];
       double dy = r * sinTable[theta] * sinTable[phi];
       double dz = r * cosTable[phi];
+
       Vec3i gridLoc = new Vec3i(x + dx, y + dy, z + dz);
+//      System.out.format("[%.2f, %.2f, %.2f]: [%d, %d, %d] ", x+dx, y+dy, z+dz, gridLoc.getX(), gridLoc.getY(), gridLoc.getZ());   //todo debug remove
+
       BreathAffectedBlock breathAffectedBlock = hitDensity.get(gridLoc);
       if (breathAffectedBlock == null) {
         breathAffectedBlock = new BreathAffectedBlock();
@@ -211,6 +219,11 @@ public class NodeLineSegment
       breathAffectedBlock.addHitDensity(faceHit, DENSITY_PER_POINT);
       hitDensity.put(gridLoc, breathAffectedBlock);
     }
+//    System.out.format("\n");
+//    for (Map.Entry<Vec3i, BreathAffectedBlock> entry : hitDensity.entrySet()) {
+//      System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
+//    }
+
   }
 
   /**
