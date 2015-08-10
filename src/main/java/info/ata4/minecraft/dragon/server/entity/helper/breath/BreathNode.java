@@ -119,12 +119,11 @@ public class BreathNode
     // when the entity size is changed, it changes the bounding box but doesn't recentre it, so the xpos and zpos move
     //  (the entity update resetPositionToBB copies it back)
     // To fix this, we resize the AABB around the existing centre
+    // The AABB is centred around the entity xpos and zpos, but the minimum y is set equal to the entity ypos
 
-    final float AABB_RELATIVE_TO_SIZE = 1.0F;  // how big is the AABB relative to the fireball size.
-
-    float currentNodeSize = getCurrentSize();
-    int width = (int)(currentNodeSize * AABB_RELATIVE_TO_SIZE);
-    int height = (int)(currentNodeSize * AABB_RELATIVE_TO_SIZE);
+    float currentNodeAABBSize = getCurrentAABBcollisionSize();
+    float width = currentNodeAABBSize;
+    float height = currentNodeAABBSize;
 
     if (width != entity.width || height != entity.height) {
       AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
@@ -140,10 +139,27 @@ public class BreathNode
     }
   }
 
-  /** get size (diameter) of the breathnode in blocks
-   * @return the size (diameter) of the breathnode in blocks
+  private final float RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;
+  private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 0.5F;
+
+  /** get render size (diameter) of the breathnode in blocks
+   * @return the rendering size (diameter) of the breathnode in blocks
    */
-  public float getCurrentSize() {
+  public float getCurrentRenderDiameter() {
+    return getCurrentDiameterOfEffect() * RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER;
+  }
+
+  /** get the width and height of the breathnode collision AABB, in blocks
+   * @return the width and height of the breathnode collision AABB, in blocks
+   */
+  private float getCurrentAABBcollisionSize() {
+    return getCurrentDiameterOfEffect() * RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER;
+  }
+
+  /** get the size (diameter) of the area of effect of the breath node, in blocks
+   * @return the size (diameter) of the area of effect of the breathnode in blocks
+   */
+  public float getCurrentDiameterOfEffect() {
     float lifetimeFraction = getLifetimeFraction();
 
     float fractionOfFullSize = 1.0F;
@@ -155,6 +171,7 @@ public class BreathNode
     final float INITIAL_SIZE = 0.2F * NODE_MAX_SIZE;
     return INITIAL_SIZE + (NODE_MAX_SIZE - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
   }
+
 
   /** returns the current intensity of the node (eg for flame = how hot it is)
    * @return current relative intensity - 0.0 = none, 1.0 = full

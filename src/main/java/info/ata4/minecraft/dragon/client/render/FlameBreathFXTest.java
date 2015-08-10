@@ -102,7 +102,7 @@ public class FlameBreathFXTest extends EntityFX {
 
     double scale = 0.1F * this.particleScale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
-    double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY;
+    double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY + this.height / 2.0F;
     double z = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTick - interpPosZ;
 
     worldRenderer.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
@@ -118,8 +118,6 @@ public class FlameBreathFXTest extends EntityFX {
 
   private final float NODE_SIZE = 1.0F;
 
-
-
   @Override
   public void onUpdate() {
 
@@ -134,9 +132,13 @@ public class FlameBreathFXTest extends EntityFX {
     motionY = playerSP.posY + Y_OFFSET - posY;
     motionZ = playerSP.posZ + Z_OFFSET- posZ;
 
-    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 10.0F; // factor to convert from particleSize to particleScale
+    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 5.0F; // factor to convert from particleSize to particleScale
     float currentParticleSize = NODE_SIZE;
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
+
+    I AM CURRENTLY:
+    have just added a render offset to y to make it render with ypos at the bottom instead of the centre
+    need to adjust the particleScale to be half
 
     System.out.format("before:[%.2f, %.2f, %.2f],", posX, posY, posZ);
     changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
@@ -168,8 +170,8 @@ public class FlameBreathFXTest extends EntityFX {
     final float AABB_RELATIVE_TO_SIZE = 1.0F;  // how big is the AABB relative to the fireball size.
 
     float currentNodeSize = 1.0F;
-    int width = (int)(currentNodeSize * AABB_RELATIVE_TO_SIZE);
-    int height = (int)(currentNodeSize * AABB_RELATIVE_TO_SIZE);
+    float width = (currentNodeSize * AABB_RELATIVE_TO_SIZE);
+    float height = (currentNodeSize * AABB_RELATIVE_TO_SIZE);
 
     if (width != entity.width || height != entity.height) {
       AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
