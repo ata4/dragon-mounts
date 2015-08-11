@@ -136,7 +136,7 @@ public class FlameBreathFX extends EntityFX {
     }
 
     final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 10.0F; // factor to convert from particleSize to particleScale
-    float currentParticleSize = breathNode.getCurrentSize();
+    float currentParticleSize = breathNode.getCurrentRenderDiameter();
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 
     breathNode.changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing

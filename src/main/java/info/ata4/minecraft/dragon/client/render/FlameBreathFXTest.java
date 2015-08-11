@@ -103,6 +103,7 @@ public class FlameBreathFXTest extends EntityFX {
     double scale = 0.1F * this.particleScale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
     double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY + this.height / 2.0F;
+                                                                // centre of rendering is now y midpt not ymin
     double z = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTick - interpPosZ;
 
     worldRenderer.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
@@ -124,9 +125,9 @@ public class FlameBreathFXTest extends EntityFX {
     particleAlpha = MAX_ALPHA;
 
     EntityPlayerSP playerSP = Minecraft.getMinecraft().thePlayer;
-    final float X_OFFSET = 2.0F;
-    final float Y_OFFSET = 2.0F;
-    final float Z_OFFSET = 2.0F;
+    final float X_OFFSET = 1.0F;
+    final float Y_OFFSET = 1.0F;
+    final float Z_OFFSET = 0.0F;
 
     motionX = playerSP.posX + X_OFFSET- posX ;
     motionY = playerSP.posY + Y_OFFSET - posY;
@@ -135,10 +136,6 @@ public class FlameBreathFXTest extends EntityFX {
     final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 5.0F; // factor to convert from particleSize to particleScale
     float currentParticleSize = NODE_SIZE;
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
-
-    I AM CURRENTLY:
-    have just added a render offset to y to make it render with ypos at the bottom instead of the centre
-    need to adjust the particleScale to be half
 
     System.out.format("before:[%.2f, %.2f, %.2f],", posX, posY, posZ);
     changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
@@ -176,13 +173,14 @@ public class FlameBreathFXTest extends EntityFX {
     if (width != entity.width || height != entity.height) {
       AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
       double oldMidptX = (oldAABB.minX + oldAABB.maxX)/2.0;
+      double oldMidptY = (oldAABB.minY + oldAABB.maxY)/2.0;
       double oldMidptZ = (oldAABB.minZ + oldAABB.maxZ)/2.0;
 
       entity.width = width;
       entity.height = height;
 
-      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldAABB.minY, oldMidptZ - width / 2.0,
-                                                oldMidptX + width / 2.0, oldAABB.maxY, oldMidptZ + width / 2.0);
+      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldMidptY - height / 2.0, oldMidptZ - width / 2.0,
+                                                oldMidptX + width / 2.0, oldMidptY + height / 2.0, oldMidptZ + width / 2.0);
       entity.setEntityBoundingBox(newAABB);
     }
   }
