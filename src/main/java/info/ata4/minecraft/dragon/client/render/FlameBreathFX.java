@@ -17,7 +17,7 @@ import java.util.Random;
  * Created by TGG on 21/06/2015.
  */
 public class FlameBreathFX extends EntityFX {
-  private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
+  private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_firesdfs"); //todo put back to fire
 
   public float smokeChance = 0.1f;
   public float largeSmokeChance = 0.3f;
@@ -90,9 +90,33 @@ public class FlameBreathFX extends EntityFX {
     return 0xf000f0;
   }
 
+  /**
+   * Render the EntityFX onto the screen.
+   * The EntityFX is rendered as a two-dimensional object (Quad) in the world (three-dimensional coordinates).
+   *   The corners of the quad are chosen so that the EntityFX is drawn directly facing the viewer (or in other words,
+   *   so that the quad is always directly face-on to the screen.)
+   * In order to manage this, it needs to know two direction vectors:
+   * 1) the 3D vector direction corresponding to left-right on the viewer's screen (edgeLRdirection)
+   * 2) the 3D vector direction corresponding to up-down on the viewer's screen (edgeURdirection)
+   * These two vectors are calculated by the caller.
+   * For example, the top right corner of the quad on the viewer's screen is equal to the centre point of the quad (x,y,z)
+   *   plus the edgeLRdirection vector multiplied by half the quad's width, plus the edgeURdirection vector multiplied
+   *   by half the quad's height.
+   * NB edgeLRdirectionY is not provided because it's always 0, i.e. the top of the viewer's screen is always directly
+   *    up so moving left-right on the viewer's screen doesn't affect the y coordinate position in the world
+   * @param worldRenderer
+   * @param entity
+   * @param partialTick
+   * @param edgeLRdirectionX edgeLRdirection[XYZ] is the vector direction pointing left-right on the player's screen
+   * @param edgeUDdirectionY edgeUDdirection[XYZ] is the vector direction pointing up-down on the player's screen
+   * @param edgeLRdirectionZ edgeLRdirection[XYZ] is the vector direction pointing left-right on the player's screen
+   * @param edgeUDdirectionX edgeUDdirection[XYZ] is the vector direction pointing up-down on the player's screen
+   * @param edgeUDdirectionZ edgeUDdirection[XYZ] is the vector direction pointing up-down on the player's screen
+   */
   @Override
   public void func_180434_a(WorldRenderer worldRenderer, Entity entity, float partialTick,
-                            float yawX, float pitchXZ, float yawZ, float pitchYsinYaw, float pitchYcosYaw)
+                            float edgeLRdirectionX, float edgeUDdirectionY, float edgeLRdirectionZ,
+                            float edgeUDdirectionX, float edgeUDdirectionZ)
   {
     double minU = this.particleIcon.getMinU();
     double maxU = this.particleIcon.getMaxU();
@@ -106,19 +130,30 @@ public class FlameBreathFX extends EntityFX {
     tex.rotate90(random.nextInt(4));
 
     double scale = 0.1F * this.particleScale;
+    final double scaleLR = scale;
+    final double scaleUD = scale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
-    double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY;
+    double y = this.prevPosY + (this.posY - this.prevPosY) * partialTick - interpPosY + this.height / 2.0F;
+    // centre of rendering is now y midpt not ymin
     double z = this.prevPosZ + (this.posZ - this.prevPosZ) * partialTick - interpPosZ;
 
     worldRenderer.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha);
-    worldRenderer.addVertexWithUV(x - yawX * scale - pitchYsinYaw * scale, y - pitchXZ * scale,
-                                  z - yawZ * scale - pitchYcosYaw * scale,  tex.getU(0),  tex.getV(0));
-    worldRenderer.addVertexWithUV(x - yawX * scale + pitchYsinYaw * scale, y + pitchXZ * scale,
-                                  z - yawZ * scale + pitchYcosYaw * scale,  tex.getU(1),  tex.getV(1));
-    worldRenderer.addVertexWithUV(x + yawX * scale + pitchYsinYaw * scale,  y + pitchXZ * scale,
-                                  z + yawZ * scale + pitchYcosYaw * scale,  tex.getU(2),  tex.getV(2));
-    worldRenderer.addVertexWithUV(x + yawX * scale - pitchYsinYaw * scale,  y - pitchXZ * scale,
-                                  z + yawZ * scale - pitchYcosYaw * scale,  tex.getU(3),  tex.getV(3));
+    worldRenderer.addVertexWithUV(x - edgeLRdirectionX * scaleLR - edgeUDdirectionX * scaleUD,
+            y - edgeUDdirectionY * scaleUD,
+            z - edgeLRdirectionZ * scaleLR - edgeUDdirectionZ * scaleUD,
+            tex.getU(0),  tex.getV(0));
+    worldRenderer.addVertexWithUV(x - edgeLRdirectionX * scaleLR + edgeUDdirectionX * scaleUD,
+            y + edgeUDdirectionY * scaleUD,
+            z - edgeLRdirectionZ * scaleLR + edgeUDdirectionZ * scaleUD,
+            tex.getU(1),  tex.getV(1));
+    worldRenderer.addVertexWithUV(x + edgeLRdirectionX * scaleLR + edgeUDdirectionX * scaleUD,
+            y + edgeUDdirectionY * scaleUD,
+            z + edgeLRdirectionZ * scaleLR + edgeUDdirectionZ * scaleUD,
+            tex.getU(2),  tex.getV(2));
+    worldRenderer.addVertexWithUV(x + edgeLRdirectionX * scaleLR - edgeUDdirectionX * scaleUD,
+            y - edgeUDdirectionY * scaleUD,
+            z + edgeLRdirectionZ * scaleLR - edgeUDdirectionZ * scaleUD,
+            tex.getU(3),  tex.getV(3));
   }
 
   @Override
@@ -135,7 +170,7 @@ public class FlameBreathFX extends EntityFX {
       particleAlpha = MAX_ALPHA * (1 - lifetimeFraction);
     }
 
-    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 10.0F; // factor to convert from particleSize to particleScale
+    final float PARTICLE_SCALE_RELATIVE_TO_SIZE = 5.0F; // factor to convert from particleSize to particleScale
     float currentParticleSize = breathNode.getCurrentRenderDiameter();
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 

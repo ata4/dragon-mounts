@@ -26,11 +26,11 @@ public class BreathNode
 
   private float ageTicks;
 
-  private float relativeSize = 1.0F;
-  private float relativeLifetime = 1.0F;
+  private float relativeSizeOfThisNode = 1.0F;
+  private float relativeLifetimeOfThisNode = 1.0F;
 
   private static final double SPEED_VARIATION_ABS = 0.0;  // plus or minus this amount (3 std deviations)  //todo reset to 0.1
-  private static final double AGE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
+  private static final double AGE_VARIATION_FACTOR = 0.0;//0.25;   // plus or minus this amount (3 std deviations) //todo reset to 0.25
   private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
 
   /**
@@ -38,8 +38,8 @@ public class BreathNode
    * @param rand
    */
   public void randomiseProperties(Random rand) {
-    relativeLifetime = (float)(MathX.getTruncatedGaussian(rand, 1, AGE_VARIATION_FACTOR));
-    relativeSize = (float)(MathX.getTruncatedGaussian(rand, 1, SIZE_VARIATION_FACTOR));
+    relativeLifetimeOfThisNode = (float)(MathX.getTruncatedGaussian(rand, 1, AGE_VARIATION_FACTOR));
+    relativeSizeOfThisNode = (float)(MathX.getTruncatedGaussian(rand, 1, SIZE_VARIATION_FACTOR));
   }
 
   /**
@@ -69,7 +69,7 @@ public class BreathNode
 
   public float getMaxLifeTime()
   {
-    return lifetimePowerFactor * relativeLifetime * DEFAULT_AGE_IN_TICKS;
+    return lifetimePowerFactor * relativeLifetimeOfThisNode * DEFAULT_AGE_IN_TICKS;
   }
 
   public float getAgeTicks() {return ageTicks;}
@@ -140,7 +140,7 @@ public class BreathNode
   }
 
   private final float RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;
-  private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 0.5F;
+  private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;  // change to 0.5F
 
   /** get render size (diameter) of the breathnode in blocks
    * @return the rendering size (diameter) of the breathnode in blocks
@@ -167,7 +167,7 @@ public class BreathNode
       fractionOfFullSize = MathHelper.sin(lifetimeFraction / YOUNG_AGE * (float) Math.PI / 2.0F);
     }
 
-    final float NODE_MAX_SIZE = NODE_DIAMETER_IN_BLOCKS * sizePowerFactor * relativeSize;
+    final float NODE_MAX_SIZE = NODE_DIAMETER_IN_BLOCKS * sizePowerFactor * relativeSizeOfThisNode;
     final float INITIAL_SIZE = 0.2F * NODE_MAX_SIZE;
     return INITIAL_SIZE + (NODE_MAX_SIZE - INITIAL_SIZE) * MathHelper.clamp_float(fractionOfFullSize, 0.0F, 1.0F);
   }

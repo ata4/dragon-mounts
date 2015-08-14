@@ -35,15 +35,15 @@ public class BreathWeaponEmitter {
    */
   public void spawnBreathParticles(World world, BreathNode.Power power, int tickCount)
   {
-    if (!spawnedOne) {  //todo remove : spawns a test FX at a fixed offset from the player
-      spawnedOne = true;
-      FlameBreathFXTest flameBreathFX = FlameBreathFXTest.createFlameBreathFXTest(world,
-                                                                      origin.xCoord, origin.yCoord, origin.zCoord,
-                                                                      direction.xCoord, direction.yCoord, direction.zCoord,
-                                                                      power,
-                                                                      0);
-      Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);
-    }
+//    if (!spawnedOne) {  //todo remove : spawns a test FX at a fixed offset from the player
+//      spawnedOne = true;
+//      FlameBreathFXTest flameBreathFX = FlameBreathFXTest.createFlameBreathFXTest(world,
+//                                                                      origin.xCoord, origin.yCoord, origin.zCoord,
+//                                                                      direction.xCoord, direction.yCoord, direction.zCoord,
+//                                                                      power,
+//                                                                      0);
+//      Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);
+//    }
 
 //    if (spawnedOne) return;
 //    TestEntityFX testEntityFX = new TestEntityFX(world, origin.xCoord, origin.yCoord + 5, origin.zCoord,
