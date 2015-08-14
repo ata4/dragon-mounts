@@ -52,9 +52,9 @@ public class BreathAffectedArea
 //    firedOnce = true;
 
     Vec3 direction = destination.subtract(origin).normalize();
-    System.out.format("Fired from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] direction = [%.2f, %.2f, %.2f]\n",
-                      origin.xCoord, origin.yCoord, origin.zCoord, destination.xCoord, destination.yCoord, destination.zCoord,
-                      direction.xCoord, direction.yCoord, direction.zCoord);
+//    System.out.format("Fired from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] direction = [%.2f, %.2f, %.2f]\n",
+//                      origin.xCoord, origin.yCoord, origin.zCoord, destination.xCoord, destination.yCoord, destination.zCoord,
+//                      direction.xCoord, direction.yCoord, direction.zCoord);  todo remove
 
     EntityBreathNode newNode = EntityBreathNode.createEntityBreathNodeServer(
             world, origin.xCoord, origin.yCoord, origin.zCoord, direction.xCoord, direction.yCoord, direction.zCoord,
@@ -93,16 +93,16 @@ public class BreathAffectedArea
     decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
 
     //todo remove debugging
-    if (firedOnce) {
-      firedOnce = false;
-      printed = false;
-    } else if (!printed) {
-      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
-        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
-      }
-      System.out.format("\n");
-      printed = true;
-    }
+//    if (firedOnce) {
+//      firedOnce = false;
+//      printed = false;
+//    } else if (!printed) {
+//      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
+//        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
+//      }
+//      System.out.format("\n");
+//      printed = true;
+//    }
   }
 //todo next look at breathlogAtWall.txt; figure out why it doesnt line wup with world; sort blocks;  copy from saved games (backup)
   private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, BreathAffectedBlock> affectedBlocks )

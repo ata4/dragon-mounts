@@ -31,7 +31,7 @@ public class BreathNode
 
   private static final double SPEED_VARIATION_ABS = 0.0;  // plus or minus this amount (3 std deviations)  //todo reset to 0.1
   private static final double AGE_VARIATION_FACTOR = 0.0;//0.25;   // plus or minus this amount (3 std deviations) //todo reset to 0.25
-  private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
+  private static final double SIZE_VARIATION_FACTOR = 0.0; // 0.25;   // plus or minus this amount (3 std deviations)todo reset to 0.25
 
   /**
    * Randomise the maximum lifetime and the node size
@@ -94,6 +94,9 @@ public class BreathNode
     if (ageTicks++ > getMaxLifeTime()) {
       return;
     }
+
+    if (ageTicks > 0) return;     //todo remove
+
     // collision ages breath node faster
     if (parentEntity.isCollided) {
       ageTicks += 5;
@@ -128,13 +131,17 @@ public class BreathNode
     if (width != entity.width || height != entity.height) {
       AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
       double oldMidptX = (oldAABB.minX + oldAABB.maxX)/2.0;
+      double oldMidptY = (oldAABB.minY + oldAABB.maxY)/2.0;
       double oldMidptZ = (oldAABB.minZ + oldAABB.maxZ)/2.0;
 
       entity.width = width;
       entity.height = height;
+      if (width > 1.0) {
+        entity.width = width;
+      }
 
-      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldAABB.minY, oldMidptZ - width / 2.0,
-              oldMidptX + width / 2.0, oldAABB.maxY, oldMidptZ + width / 2.0);
+      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldMidptY - height / 2.0, oldMidptZ - width / 2.0,
+                                                oldMidptX + width / 2.0, oldMidptY + height / 2.0, oldMidptZ + width / 2.0);
       entity.setEntityBoundingBox(newAABB);
     }
   }

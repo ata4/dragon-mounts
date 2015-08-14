@@ -174,7 +174,10 @@ public class FlameBreathFX extends EntityFX {
     float currentParticleSize = breathNode.getCurrentRenderDiameter();
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 
-    breathNode.changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
+    //todo reinstate scale changing
+//    breathNode.changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
+    SOMETHING ABOUT this change of size causes collision with walls or ground to fail.
+
 
     // spawn a smoke trail after some time
     if (smokeChance != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= smokeChance) {
@@ -190,6 +193,8 @@ public class FlameBreathFX extends EntityFX {
     prevPosY = posY;
     prevPosZ = posZ;
     moveEntity(motionX, motionY, motionZ);
+    System.out.format("pos:[%.2f, %.2f, %.2f],", posX, posY, posZ);
+    System.out.format("%s\n", this.getEntityBoundingBox().toString());
 
     if (isCollided && onGround) {
         motionY -= 0.01F;         // ensure that we hit the ground next time too
