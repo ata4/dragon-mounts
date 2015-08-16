@@ -1,23 +1,35 @@
 package info.ata4.minecraft.dragon.client.render;
 
 import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
+import info.ata4.minecraft.dragon.util.EntityMoveAndResizeHelper;
+import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.RotatingQuad;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockWall;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 /**
  * Created by TGG on 21/06/2015.
  */
 public class FlameBreathFX extends EntityFX {
-  private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_firesdfs"); //todo put back to fire
+  private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
 
   public float smokeChance = 0.1f;
   public float largeSmokeChance = 0.3f;
@@ -42,7 +54,6 @@ public class FlameBreathFX extends EntityFX {
     y += actualMotion.yCoord * partialTicksHeadStart;
     z += actualMotion.zCoord * partialTicksHeadStart;
     FlameBreathFX newFlameBreathFX = new FlameBreathFX(world, x, y, z, actualMotion, breathNode);
-    breathNode.changeEntitySizeToMatch(newFlameBreathFX);
     return newFlameBreathFX;
   }
 
@@ -63,6 +74,7 @@ public class FlameBreathFX extends EntityFX {
     // set the texture to the flame texture, which we have previously added using TextureStitchEvent
     TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fireballRL.toString());
     func_180435_a(sprite);
+    entityMoveAndResizeHelper = new EntityMoveAndResizeHelper(this);
   }
 
   /**
@@ -174,11 +186,6 @@ public class FlameBreathFX extends EntityFX {
     float currentParticleSize = breathNode.getCurrentRenderDiameter();
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 
-    //todo reinstate scale changing
-//    breathNode.changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
-    SOMETHING ABOUT this change of size causes collision with walls or ground to fail.
-
-
     // spawn a smoke trail after some time
     if (smokeChance != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= smokeChance) {
       worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
@@ -189,12 +196,14 @@ public class FlameBreathFX extends EntityFX {
       worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, 0, 0, 0);
     }
 
+    float newAABBDiameter = breathNode.getCurrentAABBcollisionSize();
+
     prevPosX = posX;
     prevPosY = posY;
     prevPosZ = posZ;
-    moveEntity(motionX, motionY, motionZ);
-    System.out.format("pos:[%.2f, %.2f, %.2f],", posX, posY, posZ);
-    System.out.format("%s\n", this.getEntityBoundingBox().toString());
+    entityMoveAndResizeHelper.moveAndResizeEntity(motionX, motionY, motionZ, newAABBDiameter, newAABBDiameter);
+//    System.out.format("pos:[%.2f, %.2f, %.2f],", posX, posY, posZ);  //todo remove
+//    System.out.format("%s\n", this.getEntityBoundingBox().toString());
 
     if (isCollided && onGround) {
         motionY -= 0.01F;         // ensure that we hit the ground next time too
@@ -214,5 +223,10 @@ public class FlameBreathFX extends EntityFX {
     }
   }
 
+  @Override
+  public void moveEntity(double dx, double dy, double dz) {
+    entityMoveAndResizeHelper.moveAndResizeEntity(dx, dy, dz, this.width, this.height);
+  }
 
+  private EntityMoveAndResizeHelper entityMoveAndResizeHelper;
 }

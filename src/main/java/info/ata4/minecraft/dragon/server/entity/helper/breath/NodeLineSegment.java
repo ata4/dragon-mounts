@@ -219,7 +219,7 @@ public class NodeLineSegment
       breathAffectedBlock.addHitDensity(faceHit, DENSITY_PER_POINT);
       hitDensity.put(gridLoc, breathAffectedBlock);
     }
-//    System.out.format("\n");
+//    System.out.format("\n"); //todo remove debug
 //    for (Map.Entry<Vec3i, BreathAffectedBlock> entry : hitDensity.entrySet()) {
 //      System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
 //    }

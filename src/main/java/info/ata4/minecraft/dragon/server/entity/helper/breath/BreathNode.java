@@ -95,7 +95,7 @@ public class BreathNode
       return;
     }
 
-    if (ageTicks > 0) return;     //todo remove
+//    if (ageTicks > 0) return;     //todo remove
 
     // collision ages breath node faster
     if (parentEntity.isCollided) {
@@ -112,42 +112,40 @@ public class BreathNode
     }
   }
 
-  /**
-   * Change the size of the associated entity to match the node size
-   * @param entity
-   */
-  public void changeEntitySizeToMatch(Entity entity)
-  {
-    // change size of entity AABB used for collisions
-    // when the entity size is changed, it changes the bounding box but doesn't recentre it, so the xpos and zpos move
-    //  (the entity update resetPositionToBB copies it back)
-    // To fix this, we resize the AABB around the existing centre
-    // The AABB is centred around the entity xpos and zpos, but the minimum y is set equal to the entity ypos
-
-    float currentNodeAABBSize = getCurrentAABBcollisionSize();
-    float width = currentNodeAABBSize;
-    float height = currentNodeAABBSize;
-
-    if (width != entity.width || height != entity.height) {
-      AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
-      double oldMidptX = (oldAABB.minX + oldAABB.maxX)/2.0;
-      double oldMidptY = (oldAABB.minY + oldAABB.maxY)/2.0;
-      double oldMidptZ = (oldAABB.minZ + oldAABB.maxZ)/2.0;
-
-      entity.width = width;
-      entity.height = height;
-      if (width > 1.0) {
-        entity.width = width;
-      }
-
-      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldMidptY - height / 2.0, oldMidptZ - width / 2.0,
-                                                oldMidptX + width / 2.0, oldMidptY + height / 2.0, oldMidptZ + width / 2.0);
-      entity.setEntityBoundingBox(newAABB);
-    }
-  }
+//  /**
+//   * Change the size of the associated entity to match the node size
+//   * @param entity
+//   */
+//  @Deprecated
+//  public void changeEntitySizeToMatch(Entity entity)
+//  {
+//    // change size of entity AABB used for collisions
+//    // when the entity size is changed, it changes the bounding box but doesn't recentre it, so the xpos and zpos move
+//    //  (the entity update resetPositionToBB copies it back)
+//    // To fix this, we resize the AABB around the existing centre
+//    // The AABB is centred around the entity xpos and zpos, but the minimum y is set equal to the entity ypos
+//
+//    float currentNodeAABBSize = getCurrentAABBcollisionSize();
+//    float width = currentNodeAABBSize;
+//    float height = currentNodeAABBSize;
+//
+//    if (width != entity.width || height != entity.height) {
+//      AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
+//      double oldMidptX = (oldAABB.minX + oldAABB.maxX)/2.0;
+//      double oldMidptY = (oldAABB.minY + oldAABB.maxY)/2.0;
+//      double oldMidptZ = (oldAABB.minZ + oldAABB.maxZ)/2.0;
+//
+//      entity.width = width;
+//      entity.height = height;
+//
+//      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldMidptY - height / 2.0, oldMidptZ - width / 2.0,
+//                                                oldMidptX + width / 2.0, oldMidptY + height / 2.0, oldMidptZ + width / 2.0);
+//      entity.setEntityBoundingBox(newAABB);
+//    }
+//  }
 
   private final float RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;
-  private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;  // change to 0.5F
+  private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 0.5F;  // change to 0.5F
 
   /** get render size (diameter) of the breathnode in blocks
    * @return the rendering size (diameter) of the breathnode in blocks
@@ -159,7 +157,7 @@ public class BreathNode
   /** get the width and height of the breathnode collision AABB, in blocks
    * @return the width and height of the breathnode collision AABB, in blocks
    */
-  private float getCurrentAABBcollisionSize() {
+  public float getCurrentAABBcollisionSize() {
     return getCurrentDiameterOfEffect() * RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER;
   }
 
@@ -207,7 +205,7 @@ public class BreathNode
   }
 
   private static final float INITIAL_SPEED = 1.2F; // blocks per tick at full speed
-  private static final float NODE_DIAMETER_IN_BLOCKS = 1.0F;
+  private static final float NODE_DIAMETER_IN_BLOCKS = 2.0F;
   private static final int DEFAULT_AGE_IN_TICKS = 40;
 
   private final float YOUNG_AGE = 0.25F;

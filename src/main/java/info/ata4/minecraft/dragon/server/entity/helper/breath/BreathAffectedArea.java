@@ -31,6 +31,7 @@ public class BreathAffectedArea
   }
 
   private static boolean firedOnce = false; // debugging
+  private static boolean released = false; //debuggin
   private static int ticks = 0; //debugging
   /**
    * Tell BreathAffectedArea that breathing is ongoing.  Call once per tick before updateTick()
@@ -41,20 +42,21 @@ public class BreathAffectedArea
    */
   public void continueBreathing(World world, Vec3 origin, Vec3 destination, BreathNode.Power power)
   {
-    firedOnce = true;
+//    firedOnce = true;
 //    if (++ticks == 200) {  //todo debugging remove
 //      ticks = 0;
 //      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
 //        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
 //      }
 //    }
+//    released = false;
 //    if (firedOnce) return;
 //    firedOnce = true;
 
     Vec3 direction = destination.subtract(origin).normalize();
 //    System.out.format("Fired from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] direction = [%.2f, %.2f, %.2f]\n",
 //                      origin.xCoord, origin.yCoord, origin.zCoord, destination.xCoord, destination.yCoord, destination.zCoord,
-//                      direction.xCoord, direction.yCoord, direction.zCoord);  todo remove
+//                      direction.xCoord, direction.yCoord, direction.zCoord); // todo remove
 
     EntityBreathNode newNode = EntityBreathNode.createEntityBreathNodeServer(
             world, origin.xCoord, origin.yCoord, origin.zCoord, direction.xCoord, direction.yCoord, direction.zCoord,
@@ -80,6 +82,10 @@ public class BreathAffectedArea
         float radius = entity.getCurrentRadius();
         Vec3 initialPosition = entity.getPositionVector();
         entity.onUpdate();
+        HashMap<EnumFacing, AxisAlignedBB> recentCollisions = entity.getRecentCollisions();
+        for (Map.Entry<EnumFacing, AxisAlignedBB> entry : recentCollisions.entrySet()) {
+          UP TO HERE; FOR EACH COLLISION ADD TO THE LIST AND CAUSE HIGH DAMAGE, FIND BLOCKS WHICH OVERLAP SEE DO BLOCK COLLISIONS IN ENTITY
+        }
         Vec3 finalPosition = entity.getPositionVector();
         segments.add(new NodeLineSegment(initialPosition, finalPosition, radius));
       }
@@ -92,7 +98,11 @@ public class BreathAffectedArea
 
     decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
 
-    //todo remove debugging
+//    if (released) {       //todo remove for debugging only
+//      firedOnce = false;
+//    }
+//    released = true;
+//    //todo remove debugging
 //    if (firedOnce) {
 //      firedOnce = false;
 //      printed = false;

@@ -226,6 +226,17 @@ public class MathX {
       return new Vec3(source.xCoord * multiplier, source.yCoord * multiplier, source.zCoord * multiplier);
     }
 
+    public final static double MINIMUM_SIGNIFICANT_DIFFERENCE = 1e-3;
+
+    public static boolean isApproximatelyEqual(double x1, double x2) {
+
+      return Math.abs(x1 - x2) <= MINIMUM_SIGNIFICANT_DIFFERENCE;
+    }
+
+  public static boolean isSignificantlyDifferent(double x1, double x2) {
+
+    return Math.abs(x1 - x2) > MINIMUM_SIGNIFICANT_DIFFERENCE;
+  }
 
 
 

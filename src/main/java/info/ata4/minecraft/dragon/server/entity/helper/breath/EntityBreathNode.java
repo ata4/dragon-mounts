@@ -1,10 +1,14 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
+import info.ata4.minecraft.dragon.util.EntityMoveAndResizeHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
 import java.util.Random;
 
 /**
@@ -24,7 +28,6 @@ class EntityBreathNode extends Entity
     // don't randomise the other properties (size, age) on the server.
 
     EntityBreathNode newEntity = new EntityBreathNode(world, x, y, z, actualMotion, breathNode);
-    breathNode.changeEntitySizeToMatch(newEntity);
     return newEntity;
   }
 
@@ -43,18 +46,20 @@ class EntityBreathNode extends Entity
     motionX = motion.xCoord;
     motionY = motion.yCoord;
     motionZ = motion.zCoord;
+    entityMoveAndResizeHelper = new EntityMoveAndResizeHelper(this);
   }
 
   @Override
   public void onUpdate() {
-    breathNode.changeEntitySizeToMatch(this); // note - will change posX, posY, posZ to keep centre constant when resizing
 
     handleWaterMovement();
+
+    float newAABBDiameter = breathNode.getCurrentAABBcollisionSize();
 
     prevPosX = posX;
     prevPosY = posY;
     prevPosZ = posZ;
-    moveEntity(motionX, motionY, motionZ);
+    collisions = entityMoveAndResizeHelper.moveAndResizeEntity(motionX, motionY, motionZ, newAABBDiameter, newAABBDiameter);
 
     if (isCollided && onGround) {
       motionY -= 0.01F;         // ensure that we hit the ground next time too
@@ -71,7 +76,22 @@ class EntityBreathNode extends Entity
 
   public float getCurrentIntensity() {return  breathNode.getCurrentIntensity();}
 
+  /**
+   * Get a collection of the collisions that occurred during the last tick update
+   *@return returns a collection showing which parts of the entity collided with an object- eg
+   *        (WEST, [3,2,6]-->[3.5, 2, 6] means the west face of the entity collided; the entity tried to move to
+   *          x = 3, but got pushed back to x=3.5
+   */
+  public HashMap<EnumFacing, AxisAlignedBB> getRecentCollisions()
+  {
+    if (collisions == null) {
+      collisions = new HashMap<EnumFacing, AxisAlignedBB>();
+    }
+    return collisions;
+  }
+
   private BreathNode breathNode;
+  private EntityMoveAndResizeHelper entityMoveAndResizeHelper;
 
   @Override
   protected void entityInit()
@@ -87,4 +107,7 @@ class EntityBreathNode extends Entity
   protected void writeEntityToNBT(NBTTagCompound tagCompound)
   {
   }
+
+  private HashMap<EnumFacing, AxisAlignedBB> collisions;
+
 }

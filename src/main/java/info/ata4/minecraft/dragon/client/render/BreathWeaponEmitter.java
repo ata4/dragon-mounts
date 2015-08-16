@@ -61,7 +61,7 @@ public class BreathWeaponEmitter {
     }
     final int PARTICLES_PER_TICK = 4;
     for (int i = 0; i < PARTICLES_PER_TICK; ++i) {
-      if (++spawnSkip < 399) continue; //todo remove
+//      if (++spawnSkip < 399) continue; //todo remove
       spawnSkip = 0;
       float partialTickHeadStart = i / (float)PARTICLES_PER_TICK;
       Vec3 interpDirection = interpolateVec(previousDirection, direction, partialTickHeadStart);
