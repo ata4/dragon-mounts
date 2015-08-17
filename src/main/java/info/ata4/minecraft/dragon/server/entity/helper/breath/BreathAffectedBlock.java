@@ -52,8 +52,8 @@ public class BreathAffectedBlock
 //  }
 
   private final float BLOCK_DECAY_PERCENTAGE_PER_TICK = 10.0F;
-  private final float BLOCK_RESET_EFFECT_THRESHOLD = 0.0001F;  //todo change back to 0.01F
-  private final int TICKS_BEFORE_DECAY_STARTS = 10000; // todo change back to 10
+  private final float BLOCK_RESET_EFFECT_THRESHOLD = 0.01F;  //todo change back to 0.01F
+  private final int TICKS_BEFORE_DECAY_STARTS = 10; // todo change back to 10
 
   /** updates the breath weapon's effect for a given block
    *   called every tick; used to decay the cumulative effect on the block

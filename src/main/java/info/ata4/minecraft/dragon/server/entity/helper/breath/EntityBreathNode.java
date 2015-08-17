@@ -1,6 +1,7 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.util.EntityMoveAndResizeHelper;
+import info.ata4.minecraft.dragon.util.Pair;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -8,8 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by TGG on 31/07/2015.
@@ -60,6 +60,7 @@ class EntityBreathNode extends Entity
     prevPosY = posY;
     prevPosZ = posZ;
     collisions = entityMoveAndResizeHelper.moveAndResizeEntity(motionX, motionY, motionZ, newAABBDiameter, newAABBDiameter);
+    intensityAtCollision = getCurrentIntensity();
 
     if (isCollided && onGround) {
       motionY -= 0.01F;         // ensure that we hit the ground next time too
@@ -82,12 +83,20 @@ class EntityBreathNode extends Entity
    *        (WEST, [3,2,6]-->[3.5, 2, 6] means the west face of the entity collided; the entity tried to move to
    *          x = 3, but got pushed back to x=3.5
    */
-  public HashMap<EnumFacing, AxisAlignedBB> getRecentCollisions()
+  public Collection<Pair<EnumFacing, AxisAlignedBB>> getRecentCollisions()
   {
     if (collisions == null) {
-      collisions = new HashMap<EnumFacing, AxisAlignedBB>();
+      collisions = new ArrayList<Pair<EnumFacing, AxisAlignedBB>>();
     }
     return collisions;
+  }
+
+  /** The intensity of the node at the time the last collision occurred
+   * @return snapshot of getCurrentIntensity at the last collision.  Meaningless if getRecentCollisions() empty.
+   */
+  public float getIntensityAtCollision()
+  {
+    return intensityAtCollision;
   }
 
   private BreathNode breathNode;
@@ -108,6 +117,7 @@ class EntityBreathNode extends Entity
   {
   }
 
-  private HashMap<EnumFacing, AxisAlignedBB> collisions;
+  private Collection<Pair<EnumFacing, AxisAlignedBB>> collisions;
+  private float intensityAtCollision;
 
 }

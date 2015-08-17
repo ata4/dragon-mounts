@@ -2,6 +2,7 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import info.ata4.minecraft.dragon.util.Pair;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -82,12 +83,9 @@ public class BreathAffectedArea
         float radius = entity.getCurrentRadius();
         Vec3 initialPosition = entity.getPositionVector();
         entity.onUpdate();
-        HashMap<EnumFacing, AxisAlignedBB> recentCollisions = entity.getRecentCollisions();
-        for (Map.Entry<EnumFacing, AxisAlignedBB> entry : recentCollisions.entrySet()) {
-          UP TO HERE; FOR EACH COLLISION ADD TO THE LIST AND CAUSE HIGH DAMAGE, FIND BLOCKS WHICH OVERLAP SEE DO BLOCK COLLISIONS IN ENTITY
-        }
+        Collection<Pair<EnumFacing, AxisAlignedBB>> recentCollisions = entity.getRecentCollisions();
         Vec3 finalPosition = entity.getPositionVector();
-        segments.add(new NodeLineSegment(initialPosition, finalPosition, radius));
+        segments.add(new NodeLineSegment(initialPosition, finalPosition, radius, recentCollisions));
       }
     }
 
@@ -194,8 +192,9 @@ public class BreathAffectedArea
 
     final int NUMBER_OF_CLOUD_POINTS = 10;
     for (int i = 0; i < nodeLineSegments.size(); ++i) {
-      float intensity = entityBreathNodes.get(i).getCurrentIntensity();
+      float intensity = entityBreathNodes.get(i).getIntensityAtCollision();
       nodeLineSegments.get(i).addStochasticCloud(affectedBlocks, intensity, NUMBER_OF_CLOUD_POINTS);
+      nodeLineSegments.get(i).addBlockCollisions(affectedBlocks, intensity);
     }
 
     AxisAlignedBB allAABB = NodeLineSegment.getAxisAlignedBoundingBoxForAll(nodeLineSegments);
@@ -229,7 +228,7 @@ public class BreathAffectedArea
               for (Integer entityID : entitiesHere) {
                 if (!checkedEntities.contains(entityID)) {
                   checkedEntities.add(entityID);
-                  float intensity = entityBreathNodes.get(i).getCurrentIntensity();
+                  float intensity = entityBreathNodes.get(i).getIntensityAtCollision();
                   float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
                   if (hitDensity > 0.0) {
                     BreathAffectedEntity currentDensity = affectedEntities.get(entityID);

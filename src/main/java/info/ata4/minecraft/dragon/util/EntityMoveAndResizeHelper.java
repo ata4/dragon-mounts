@@ -6,6 +6,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,7 +37,7 @@ public class EntityMoveAndResizeHelper {
    *          x = 3, but got pushed back to x=3.5
    */
 
-  public HashMap<EnumFacing, AxisAlignedBB> moveAndResizeEntity(double dx, double dy, double dz, float newWidth, float newHeight) {
+  public Collection<Pair<EnumFacing, AxisAlignedBB>> moveAndResizeEntity(double dx, double dy, double dz, float newWidth, float newHeight) {
     entity.worldObj.theProfiler.startSection("moveflame");
     AxisAlignedBB entityAABB = entity.getEntityBoundingBox().offset(0, 0, 0);  // get a copy
 
@@ -136,11 +138,11 @@ public class EntityMoveAndResizeHelper {
       if (desiredDX < 0) {
         collidedZone = new AxisAlignedBB(entityAABB.minX + (desiredDX - dx), entityAABB.minY, entityAABB.minZ,
                                          entityAABB.minX, entityAABB.maxY, entityAABB.maxZ);
-        collisions.put(EnumFacing.WEST, collidedZone);
+        collisions.add(new Pair<EnumFacing, AxisAlignedBB>(EnumFacing.WEST, collidedZone));
       } else {
         collidedZone = new AxisAlignedBB(entityAABB.maxX, entityAABB.minY, entityAABB.minZ,
                                          entityAABB.maxX + (desiredDX - dx), entityAABB.maxY, entityAABB.maxZ);
-        collisions.put(EnumFacing.EAST, collidedZone);
+        collisions.add(new Pair<EnumFacing, AxisAlignedBB>(EnumFacing.EAST, collidedZone));
       }
     }
 
@@ -150,11 +152,11 @@ public class EntityMoveAndResizeHelper {
       if (desiredDY < 0) {
         collidedZone = new AxisAlignedBB(entityAABB.minX,  entityAABB.minY + (desiredDY - dy), entityAABB.minZ,
                                          entityAABB.maxX, entityAABB.minY, entityAABB.maxZ);
-        collisions.put(EnumFacing.DOWN, collidedZone);
+        collisions.add(new Pair<EnumFacing, AxisAlignedBB>(EnumFacing.DOWN, collidedZone));
       } else {
         collidedZone = new AxisAlignedBB(entityAABB.minX, entityAABB.maxY, entityAABB.minZ,
                                          entityAABB.maxX, entityAABB.maxY + (desiredDY - dy), entityAABB.maxZ);
-        collisions.put(EnumFacing.UP, collidedZone);
+        collisions.add(new Pair<EnumFacing, AxisAlignedBB>(EnumFacing.UP, collidedZone));
       }
     }
 
@@ -164,11 +166,11 @@ public class EntityMoveAndResizeHelper {
       if (desiredDZ < 0) {
         collidedZone = new AxisAlignedBB(entityAABB.minX, entityAABB.minY, entityAABB.minZ + (desiredDZ - dz),
                                          entityAABB.maxX, entityAABB.maxY, entityAABB.minZ);
-        collisions.put(EnumFacing.NORTH, collidedZone);
+        collisions.add(new Pair<EnumFacing, AxisAlignedBB>(EnumFacing.NORTH, collidedZone));
       } else {
         collidedZone = new AxisAlignedBB(entityAABB.minX, entityAABB.minY, entityAABB.maxZ,
                                          entityAABB.maxX, entityAABB.maxY, entityAABB.maxZ + (desiredDZ - dz));
-        collisions.put(EnumFacing.SOUTH, collidedZone);
+        collisions.add(new Pair<EnumFacing, AxisAlignedBB>(EnumFacing.SOUTH, collidedZone));
       }
     }
     entity.worldObj.theProfiler.endSection();
@@ -179,7 +181,7 @@ public class EntityMoveAndResizeHelper {
   // each entry is the face of the entity and the zone (AABB) that collided
   // eg (WEST, [3,2,6]-->[3.5, 2, 6] means the west face of the entity collided; the entity tried to move to
   //   x = 3, but got pushed back out to x=3.5
-  private HashMap<EnumFacing, AxisAlignedBB> collisions = new HashMap<EnumFacing, AxisAlignedBB>();
+  private List<Pair<EnumFacing, AxisAlignedBB>> collisions = new ArrayList<Pair<EnumFacing, AxisAlignedBB>>();
 
   private Entity entity;
 }

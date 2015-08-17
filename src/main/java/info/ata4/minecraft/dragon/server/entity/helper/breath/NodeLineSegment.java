@@ -1,6 +1,8 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
+import info.ata4.minecraft.dragon.util.Pair;
 import info.ata4.minecraft.dragon.util.math.MathX;
+import net.minecraft.block.material.Material;
 import net.minecraft.util.*;
 
 import java.util.*;
@@ -8,16 +10,26 @@ import java.util.*;
 /**
  * Created by TGG on 31/07/2015.
  * NodeLineSegment is used to represent a spherical node which has moved from one [x,y,z] point to a second [x,y,z] point.
- * Each line segment has a start point and a finish point.  The node has a defined radius.
+ * Each line segment has a start point and a finish point.  The node has a defined radius.  Optionally, the segment
+ *   can be provided with a collection of collisions as well (each collision corresponds to an AABB which is known to
+ *   overlap with a block or entity, as discovered while moving the node.  the facing shows which face of the node
+ *   collided with the object.
  *
  */
 public class NodeLineSegment
 {
   public NodeLineSegment(Vec3 i_startPoint, Vec3 i_endPoint, float i_radius)
   {
+    this(i_startPoint, i_endPoint, i_radius, null);
+  }
+
+  public NodeLineSegment(Vec3 i_startPoint, Vec3 i_endPoint, float i_radius,
+                         Collection<Pair<EnumFacing, AxisAlignedBB>> i_collisions)
+  {
     startPoint = i_startPoint;
     endPoint = i_endPoint;
     radius = i_radius;
+    collisions = (i_collisions != null) ? i_collisions : new ArrayList<Pair<EnumFacing, AxisAlignedBB>>();
   }
 
   /**
@@ -71,7 +83,11 @@ public class NodeLineSegment
     double maxY = Math.max(startPoint.yCoord, endPoint.yCoord) + radius;
     double minZ = Math.min(startPoint.zCoord, endPoint.zCoord) - radius;
     double maxZ = Math.max(startPoint.zCoord, endPoint.zCoord) + radius;
-    return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+    AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+    for (Pair<EnumFacing, AxisAlignedBB> collision : collisions) {
+      aabb = aabb.union(collision.getSecond());
+    }
+    return aabb;
   }
 
   /** return an AABB which contains all the line segments
@@ -81,31 +97,41 @@ public class NodeLineSegment
   public static AxisAlignedBB getAxisAlignedBoundingBoxForAll(Collection<NodeLineSegment> nodeLineSegments)
   {
     if (nodeLineSegments == null || nodeLineSegments.isEmpty()) return null;
-    double minX = Double.MAX_VALUE;
-    double maxX = Double.MIN_VALUE;
-    double minY = Double.MAX_VALUE;
-    double maxY = Double.MIN_VALUE;
-    double minZ = Double.MAX_VALUE;
-    double maxZ = Double.MIN_VALUE;
+//    double minX = Double.MAX_VALUE;
+//    double maxX = Double.MIN_VALUE;
+//    double minY = Double.MAX_VALUE;
+//    double maxY = Double.MIN_VALUE;
+//    double minZ = Double.MAX_VALUE;
+//    double maxZ = Double.MIN_VALUE;
 
+    AxisAlignedBB aabb = null;
     for (NodeLineSegment nodeLineSegment : nodeLineSegments) {
-      minX = Math.min(minX, nodeLineSegment.startPoint.xCoord - nodeLineSegment.radius);
-      minX = Math.min(minX, nodeLineSegment.endPoint.xCoord - nodeLineSegment.radius);
-      minY = Math.min(minY, nodeLineSegment.startPoint.yCoord - nodeLineSegment.radius);
-      minY = Math.min(minY, nodeLineSegment.endPoint.yCoord - nodeLineSegment.radius);
-      minZ = Math.min(minZ, nodeLineSegment.startPoint.zCoord - nodeLineSegment.radius);
-      minZ = Math.min(minZ, nodeLineSegment.endPoint.zCoord - nodeLineSegment.radius);
-      maxX = Math.max(maxX, nodeLineSegment.startPoint.xCoord + nodeLineSegment.radius);
-      maxX = Math.max(maxX, nodeLineSegment.endPoint.xCoord + nodeLineSegment.radius);
-      maxY = Math.max(maxY, nodeLineSegment.startPoint.yCoord + nodeLineSegment.radius);
-      maxY = Math.max(maxY, nodeLineSegment.endPoint.yCoord + nodeLineSegment.radius);
-      maxZ = Math.max(maxZ, nodeLineSegment.startPoint.zCoord + nodeLineSegment.radius);
-      maxZ = Math.max(maxZ, nodeLineSegment.endPoint.zCoord + nodeLineSegment.radius);
+      aabb = (aabb == null) ? nodeLineSegment.getAxisAlignedBoundingBox()
+                            : aabb.union(nodeLineSegment.getAxisAlignedBoundingBox());
+//      minX = Math.min(minX, nodeLineSegment.startPoint.xCoord - nodeLineSegment.radius);
+//      minX = Math.min(minX, nodeLineSegment.endPoint.xCoord - nodeLineSegment.radius);
+//      minY = Math.min(minY, nodeLineSegment.startPoint.yCoord - nodeLineSegment.radius);
+//      minY = Math.min(minY, nodeLineSegment.endPoint.yCoord - nodeLineSegment.radius);
+//      minZ = Math.min(minZ, nodeLineSegment.startPoint.zCoord - nodeLineSegment.radius);
+//      minZ = Math.min(minZ, nodeLineSegment.endPoint.zCoord - nodeLineSegment.radius);
+//      maxX = Math.max(maxX, nodeLineSegment.startPoint.xCoord + nodeLineSegment.radius);
+//      maxX = Math.max(maxX, nodeLineSegment.endPoint.xCoord + nodeLineSegment.radius);
+//      maxY = Math.max(maxY, nodeLineSegment.startPoint.yCoord + nodeLineSegment.radius);
+//      maxY = Math.max(maxY, nodeLineSegment.endPoint.yCoord + nodeLineSegment.radius);
+//      maxZ = Math.max(maxZ, nodeLineSegment.startPoint.zCoord + nodeLineSegment.radius);
+//      maxZ = Math.max(maxZ, nodeLineSegment.endPoint.zCoord + nodeLineSegment.radius);
     }
-    return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+    return aabb;
   }
 
-  /** stochastically check how much the line segment collides with the specified aabb
+  /** Models collision between the node and the given aabb (of an entity)
+   * Two checks:
+   * a) For each of the direct collisions for this node (overlaps between the node AABB and the world, as calculated
+   *   in the entity movement) - if any overlap occurs, apply the full density
+   * Otherwise:
+   * b) stochastically, based on the area of effect on nearby objects, even if no direct AABB overlap.  see below.
+   *
+   * stochastically check how much the line segment collides with the specified aabb
    * Uses stochastic simulation, each point is generated as
    * 1) a point [x1,y1,z1] is chosen along the line segment, evenly distributed according to the number of cloud points,
    *    plus a small random jitter
@@ -121,6 +147,13 @@ public class NodeLineSegment
   {
     final float NO_HIT = 0.0F;
     float retval = NO_HIT;
+
+    for (Pair<EnumFacing, AxisAlignedBB> collision : collisions) {
+      if (collision.getSecond().intersectsWith(aabb)) {
+        return totalDensity;
+      }
+    }
+
     initialiseTables();
     final int MINIMUM_REASONABLE_CLOUD_POINTS = 1;
     final int MAXIMUM_REASONABLE_CLOUD_POINTS = 1000;
@@ -128,7 +161,6 @@ public class NodeLineSegment
             MINIMUM_REASONABLE_CLOUD_POINTS, MAXIMUM_REASONABLE_CLOUD_POINTS);
     final int NUMBER_OF_CLOUD_POINTS = numberOfCloudPoints;
     final float DENSITY_PER_POINT = totalDensity / NUMBER_OF_CLOUD_POINTS;
-
     final double SUBSEGMENT_WIDTH = 1.0 / (NUMBER_OF_CLOUD_POINTS + 1);
 
     //    Equation of sphere converting from polar to cartesian:
@@ -224,6 +256,40 @@ public class NodeLineSegment
 //      System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
 //    }
 
+  }
+
+  /**
+   * For each of the direct collisions for this node (overlaps between the node AABB and the world, as calculated
+   *   in the entity movement), increment the hit density of the corresponding blocks
+   * (The collision may have been caused by an entity not the blocks, however if the block actually has nothing in
+   *   it then it won't be affected anyway.)
+   * @param hitDensity the density of points at each world grid location - is updated by the method
+   * @param densityPerCollision the total density to be added (eg 1.0F)
+   */
+  public void addBlockCollisions(Map<Vec3i, BreathAffectedBlock> hitDensity, float densityPerCollision) {
+
+    for (Pair<EnumFacing, AxisAlignedBB> collision : collisions) {
+      final double CONTRACTION = 0.001;
+      AxisAlignedBB aabb = collision.getSecond();
+      if (aabb.maxX - aabb.minX > 2 * CONTRACTION
+          && aabb.maxY - aabb.minY > 2 * CONTRACTION
+          && aabb.maxZ - aabb.minZ > 2 * CONTRACTION) {
+        aabb = aabb.contract(CONTRACTION, CONTRACTION, CONTRACTION);
+        BlockPos blockposMin = new BlockPos(aabb.minX, aabb.minY, aabb.minZ);
+        BlockPos blockposMax = new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ);
+
+        Iterator<BlockPos.MutableBlockPos> iterator = BlockPos.getAllInBox(blockposMin, blockposMax).iterator();
+        while (iterator.hasNext()) {
+          BlockPos blockpos = iterator.next();
+          BreathAffectedBlock breathAffectedBlock = hitDensity.get(blockpos);
+          if (breathAffectedBlock == null) {
+            breathAffectedBlock = new BreathAffectedBlock();
+          }
+          breathAffectedBlock.addHitDensity(collision.getFirst().getOpposite(), densityPerCollision);
+          hitDensity.put(blockpos, breathAffectedBlock);
+        }
+      }
+    }
   }
 
   /**
@@ -517,5 +583,5 @@ public class NodeLineSegment
   public Vec3 startPoint;
   public Vec3 endPoint;
   public float radius;
-
+  private Collection<Pair<EnumFacing, AxisAlignedBB>> collisions;
 }
