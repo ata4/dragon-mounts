@@ -112,7 +112,6 @@ public class BreathAffectedArea
 //      printed = true;
 //    }
   }
-//todo next look at breathlogAtWall.txt; figure out why it doesnt line wup with world; sort blocks;  copy from saved games (backup)
   private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, BreathAffectedBlock> affectedBlocks )
   {
     for (Map.Entry<Vec3i, BreathAffectedBlock> blockInfo : affectedBlocks.entrySet()) {

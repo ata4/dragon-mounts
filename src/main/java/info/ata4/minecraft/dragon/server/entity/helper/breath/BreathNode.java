@@ -29,9 +29,9 @@ public class BreathNode
   private float relativeSizeOfThisNode = 1.0F;
   private float relativeLifetimeOfThisNode = 1.0F;
 
-  private static final double SPEED_VARIATION_ABS = 0.0;  // plus or minus this amount (3 std deviations)  //todo reset to 0.1
-  private static final double AGE_VARIATION_FACTOR = 0.0;//0.25;   // plus or minus this amount (3 std deviations) //todo reset to 0.25
-  private static final double SIZE_VARIATION_FACTOR = 0.0; // 0.25;   // plus or minus this amount (3 std deviations)todo reset to 0.25
+  private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)  //todo reset to 0.1
+  private static final double AGE_VARIATION_FACTOR = 0.25;//0.25;   // plus or minus this amount (3 std deviations) //todo reset to 0.25
+  private static final double SIZE_VARIATION_FACTOR = 0.25; // 0.25;   // plus or minus this amount (3 std deviations)todo reset to 0.25
 
   /**
    * Randomise the maximum lifetime and the node size
