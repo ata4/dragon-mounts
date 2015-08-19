@@ -46,7 +46,7 @@ public class DragonBreathHelper extends DragonHelper
     if (dragon.isClient()) {
       breathWeaponEmitter = new BreathWeaponEmitter();
     }
-    breathAffectedArea = new BreathAffectedArea(new BreathWeapon());
+    breathAffectedArea = new BreathAffectedArea(new BreathWeapon(dragon));
   }
   public enum  BreathState {
     IDLE, STARTING, SUSTAIN, STOPPING;

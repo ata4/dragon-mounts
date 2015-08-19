@@ -1,13 +1,13 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Vec3i;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -23,6 +23,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BreathWeapon
 {
+  public BreathWeapon(EntityTameableDragon i_dragon)
+  {
+    dragon = i_dragon;
+  }
+
   /** if the hitDensity is high enough, manipulate the block (eg set fire to it)
    * @param world
    * @param blockPosition  the world [x,y,z] of the block
@@ -88,11 +93,12 @@ public class BreathWeapon
 
   }
 
-  /** if the hitDensity is high enough, manipulate the block (eg set fire to it)
+  /** if the hitDensity is high enough, manipulate the entity (eg set fire to it, damage it)
+   * A dragon can't be damaged by its own breathweapon.
    * @param world
-   * @param entityID  the world [x,y,z] of the block
-   * @param currentHitDensity
-   * @return the updated hit density; null if entity dead or doesn't exist
+   * @param entityID  the ID of the affected entity
+   * @param currentHitDensity the hit density
+   * @return the updated hit density; null if entity dead, doesn't exist, or otherwise not affected
    */
   public BreathAffectedEntity affectEntity(World world, Integer entityID, BreathAffectedEntity currentHitDensity)
   {
@@ -100,12 +106,29 @@ public class BreathWeapon
     checkNotNull(entityID);
     checkNotNull(currentHitDensity);
 
-    Entity entity = world.getEntityByID(entityID);
+    if (entityID == dragon.getEntityId()) return null;
+
+      Entity entity = world.getEntityByID(entityID);
     if (entity == null || !(entity instanceof EntityLivingBase) || entity.isDead) {
       return null;
     }
 
-//    System.out.println("Burn " + entity.getName() + ":" + currentHitDensity);
+    System.out.println("Burn " + entity + "=" + entity.getName() + ":" + currentHitDensity.getHitDensity()); //todo remove
+
+    if (entity.isImmuneToFire()) return currentHitDensity;
+
+    final float CATCH_FIRE_THRESHOLD = 10.0F;
+    final float BURN_SECONDS_PER_HIT_DENSITY = 0.4F;
+    final float DAMAGE_PER_HIT_DENSITY = 0.1F;
+
+    float hitDensity = currentHitDensity.getHitDensity();
+    if (hitDensity > CATCH_FIRE_THRESHOLD) {
+      entity.setFire((int)(hitDensity * BURN_SECONDS_PER_HIT_DENSITY));
+    }
+    if (currentHitDensity.applyDamageThisTick()) {
+      entity.attackEntityFrom(DamageSource.inFire, hitDensity * DAMAGE_PER_HIT_DENSITY);
+    }
+
     return currentHitDensity;
   }
 
@@ -126,4 +149,5 @@ public class BreathWeapon
     return threshold;
   }
 
+  protected EntityTameableDragon dragon;
 }

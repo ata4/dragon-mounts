@@ -73,7 +73,7 @@ public class NodeLineSegment
     return new Vec3(endPoint.xCoord - startPoint.xCoord, endPoint.yCoord - startPoint.yCoord, endPoint.zCoord - startPoint.zCoord);
   }
 
-  /** get an AABB which encompases the entire line segment including the node radius around each end
+  /** get an AABB which encompasses the entire line segment including the node radius around each end
    * @return
    */
   public AxisAlignedBB getAxisAlignedBoundingBox() {
@@ -187,6 +187,10 @@ public class NodeLineSegment
         retval += DENSITY_PER_POINT;
       }
     }
+//    System.out.format("[%s]: [%.3f, %.3f, %.3f] to [%.3f, %.3f, %.3f] %.3f\n", aabb.toString(),
+//                      startPoint.xCoord, startPoint.yCoord, startPoint.zCoord,
+//                      endPoint.xCoord, endPoint.yCoord, endPoint.zCoord,
+//                      retval);   //todo debug remove
     return retval;
   }
 

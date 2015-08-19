@@ -43,6 +43,8 @@ public class BreathAffectedArea
    */
   public void continueBreathing(World world, Vec3 origin, Vec3 destination, BreathNode.Power power)
   {
+//    if (--ticks < 0) return;// todo debugging remove
+//    ticks = 200;
 //    firedOnce = true;
 //    if (++ticks == 200) {  //todo debugging remove
 //      ticks = 0;
@@ -227,7 +229,7 @@ public class BreathAffectedArea
               for (Integer entityID : entitiesHere) {
                 if (!checkedEntities.contains(entityID)) {
                   checkedEntities.add(entityID);
-                  float intensity = entityBreathNodes.get(i).getIntensityAtCollision();
+                  float intensity = entityBreathNodes.get(i).getCurrentIntensity();
                   float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
                   if (hitDensity > 0.0) {
                     BreathAffectedEntity currentDensity = affectedEntities.get(entityID);

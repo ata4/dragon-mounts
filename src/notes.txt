@@ -1,8 +1,19 @@
-outstanding bugs
-- tick handlers
-- bone for sit doesn't work.
+Still to do:
+- document code structure
+- strip out debugging
+- sound of flame
+- dragon sounds roar juvenile
+- test with built version; dedicated server version
+OK- breath effect on entities
+- breath effect on blocks
+- breath immunity for player holding orb?
+OK- dragon should not burn itself
+- dragon breath position not correct when hovering
+- add flying motion vector to breath vector?
 
--HOME for AI?
+later
+- different breath types
+
 
 DataWatcher usage:
 see http://wiki.vg/Entities#Entity_Metadata_Format
