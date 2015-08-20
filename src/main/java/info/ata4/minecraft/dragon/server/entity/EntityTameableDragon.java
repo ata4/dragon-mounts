@@ -221,6 +221,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
   private float lastRotationYawHeadFromServer = 0;
   public float getLastRotationYawHeadFromServer() {return lastRotationYawHeadFromServer;}
 
+  private int tickForSoundDebug = 0;
+  private int pitchstep = 0;
+
   @Override
     public void onLivingUpdate() {
 //      String logName = isClient() ? "Client-onLivingUpdate" : "Server-onLivingUpdate";
@@ -228,6 +231,25 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 //            Float.toString(renderYawOffset) + "," +
 //            Float.toString(rotationYaw);
 //        DataLogger.logData(logName, output);
+
+//    if (++tickForSoundDebug >= 40) {      //todo remove for debugging
+//      tickForSoundDebug = 0;
+//      float volume = 1.0F;
+//      float pitch = 1.0F;
+//      if (pitchstep <=0) {
+//        pitch *= (10 + pitchstep)/10.0F;
+//      } else {
+//        pitch *= pitchstep;
+//      }
+//      playSound("mob.enderdragon.growl", volume, pitch);
+//      System.out.format("pitch: %.2f\n", pitch);
+//      ++pitchstep;
+//      if (pitchstep > 10) {
+//        pitchstep = -10;
+//      }
+//    }
+
+
 
         if (!DebugFreezeAnimator.isFrozen()) {
             for (DragonHelper helper : helpers.values()) {
@@ -402,7 +424,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected float getSoundPitch() {
-        return super.getSoundPitch() * (2 - getScale());
+        return super.getSoundPitch() * (1.0F + 4.0F * (1 - getScale()));
     }
     
     /**

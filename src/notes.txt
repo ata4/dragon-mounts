@@ -6,13 +6,17 @@ Still to do:
 - test with built version; dedicated server version
 OK- breath effect on entities
 - breath effect on blocks
-- breath immunity for player holding orb?
+- breath immunity for player holding orb? for rider
 OK- dragon should not burn itself
 - dragon breath position not correct when hovering
 - add flying motion vector to breath vector?
+- ignore click on block
 
 later
 - different breath types
+- dragon can fly around without rider
+-change to configuration screen
+-visual targeting indication
 
 
 DataWatcher usage:
