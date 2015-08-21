@@ -234,14 +234,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 
 //    if (++tickForSoundDebug >= 40) {      //todo remove for debugging
 //      tickForSoundDebug = 0;
-//      float volume = 1.0F;
+//      float masterVolume = 1.0F;
 //      float pitch = 1.0F;
 //      if (pitchstep <=0) {
 //        pitch *= (10 + pitchstep)/10.0F;
 //      } else {
 //        pitch *= pitchstep;
 //      }
-//      playSound("mob.enderdragon.growl", volume, pitch);
+//      playSound("mob.enderdragon.growl", masterVolume, pitch);
 //      System.out.format("pitch: %.2f\n", pitch);
 //      ++pitchstep;
 //      if (pitchstep > 10) {
@@ -386,7 +386,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         float v = getSoundVolume();
         float p = getSoundPitch();
 
-        // lower pitch and volume for breathing sounds
+        // lower pitch and masterVolume for breathing sounds
         if (sound.endsWith("breathe")) {
             v *= 0.5;
             p *= 0.5;
@@ -412,7 +412,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     }
     
     /**
-     * Returns the volume for the sounds this mob makes.
+     * Returns the masterVolume for the sounds this mob makes.
      */
     @Override
     protected float getSoundVolume() {
