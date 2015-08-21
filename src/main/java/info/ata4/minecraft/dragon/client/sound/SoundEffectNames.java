@@ -11,7 +11,7 @@ public enum SoundEffectNames
 {
   WEAPON_FIRE_START("mob.enderdragon.weaponfirestart"),
   WEAPON_FIRE_LOOP("mob.enderdragon.weaponfireloop"),
-  ;
+  WEAPON_FIRE_STOP("mob.enderdragon.weaponfirestop");
 
   public final String getJsonName() {return DragonMounts.AID + ":" + jsonName;}
 

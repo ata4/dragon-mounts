@@ -112,7 +112,7 @@ public class FlameBreathFX extends EntityFX {
    * 2) the 3D vector direction corresponding to up-down on the viewer's screen (edgeURdirection)
    * These two vectors are calculated by the caller.
    * For example, the top right corner of the quad on the viewer's screen is equal to the centre point of the quad (x,y,z)
-   *   plus the edgeLRdirection vector multiplied by half the quad's width, plus the edgeURdirection vector multiplied
+   *   plus the edgeLRdirection vector multiplied by half the quad's width, plus the edgeUDdirection vector multiplied
    *   by half the quad's height.
    * NB edgeLRdirectionY is not provided because it's always 0, i.e. the top of the viewer's screen is always directly
    *    up so moving left-right on the viewer's screen doesn't affect the y coordinate position in the world
