@@ -1,10 +1,13 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.client.render.BreathWeaponEmitter;
+import info.ata4.minecraft.dragon.client.sound.SoundController;
+import info.ata4.minecraft.dragon.client.sound.SoundEffectBreathWeapon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -240,6 +243,42 @@ public class DragonBreathHelper extends DragonHelper
         BreathNode.Power power = dragon.getLifeStageHelper().getBreathPower();
         breathWeaponEmitter.spawnBreathParticles(dragon.getEntityWorld(), power, tickCounter);
       }
+    }
+    //todo remove debugging
+
+    if (soundController == null) {
+      soundController = new SoundController();
+    }
+    if (soundEffectBreathWeapon == null) {
+      soundEffectBreathWeapon = new SoundEffectBreathWeapon(soundController, weaponInfoLink);
+    }
+    soundEffectBreathWeapon.performTick(Minecraft.getMinecraft().thePlayer);
+  }
+
+  private SoundController soundController;
+  private SoundEffectBreathWeapon soundEffectBreathWeapon;
+  private WeaponInfoLink weaponInfoLink = new WeaponInfoLink();
+
+  public class WeaponInfoLink implements SoundEffectBreathWeapon.WeaponSoundUpdateLink {
+
+    @Override
+    public boolean refreshWeaponSoundInfo(SoundEffectBreathWeapon.WeaponSoundInfo infoToUpdate) {
+      BreathWeaponTarget target = getTarget();
+      boolean isBreathing = false;
+
+      if (target != null) {
+        Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+        Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);
+        if (destination != null && currentBreathState == BreathState.SUSTAIN) {
+          isBreathing = true;
+          infoToUpdate.dragonHeadLocation = origin;
+          infoToUpdate.relativeVolume = dragon.getScale();
+        }
+      }
+      infoToUpdate.breathingState = isBreathing ? SoundEffectBreathWeapon.WeaponSoundInfo.State.BREATHING
+                                                : SoundEffectBreathWeapon.WeaponSoundInfo.State.IDLE;
+
+      return true;
     }
   }
 

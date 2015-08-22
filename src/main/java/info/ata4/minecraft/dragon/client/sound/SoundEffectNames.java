@@ -9,9 +9,10 @@ import info.ata4.minecraft.dragon.DragonMounts;
  */
 public enum SoundEffectNames
 {
-  WEAPON_FIRE_START("mob.enderdragon.weaponfirestart"),
-  WEAPON_FIRE_LOOP("mob.enderdragon.weaponfireloop"),
-  WEAPON_FIRE_STOP("mob.enderdragon.weaponfirestop");
+  WEAPON_FIRE_HEAD_START("mob.enderdragon.weaponfireheadstart"),
+  WEAPON_FIRE_HEAD_LOOP1("mob.enderdragon.weaponfireheadloop1"),
+  WEAPON_FIRE_HEAD_LOOP2("mob.enderdragon.weaponfireheadloop2"),
+  WEAPON_FIRE_HEAD_STOP("mob.enderdragon.weaponfireheadstop");
 
   public final String getJsonName() {return DragonMounts.AID + ":" + jsonName;}
 
