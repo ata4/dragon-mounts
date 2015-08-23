@@ -30,6 +30,11 @@ public class SoundController
     soundEffectsToTick.remove(sound);
   }
 
+  public boolean isSoundPlaying(PositionedSound sound)
+  {
+    return Minecraft.getMinecraft().getSoundHandler().isSoundPlaying(sound);
+  }
+
   /** tick all the sounds that need it
    */
   public void onTick()

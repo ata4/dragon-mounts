@@ -17,18 +17,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Created by TheGreyGhost on 8/10/14.
  *
  * Used to create sound effects for the breath weapon tool - start up, sustained loop, and wind-down
- * It overlays a number of component sounds to produce the breath weapon effect
- * The components are:
- * A) The sound made by the dragon's head
+ * The sound made by the dragon's head
  *   1) initial startup
- *   2) looping while breathing (two looping sounds which overlap)
+ *   2) looping while breathing
  *   3) stopping when done
- * B) The sound made by the breath weapon beam
- *   1) fades in
- *   2) loops while breathing (two looping sounds which overlap)
- *   3) fades out
- *   4) the volume and epicentre are set by the closest part of the beam to the player
- *
+ *  Sometimes the sound doesn't layer properly on the first try.  I don't know why.
  *
  * The SoundEffectBreathWeapon corresponds to the breath weapon of a single dragon.  Typical usage is:
  * 1) create an instance, and provide a callback function (WeaponSoundUpdateLink)
@@ -44,8 +37,8 @@ public class SoundEffectBreathWeapon
   {
     soundController = i_soundController;
     headStartRL = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_START.getJsonName());
-    headLoopRL1 = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_LOOP1.getJsonName());
-    headLoopRL2 = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_LOOP2.getJsonName());
+    headLoopRL = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_LOOP.getJsonName());
+//    headLoopRL2 = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_LOOP2.getJsonName());
     headStopRL = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_STOP.getJsonName());
     weaponSoundUpdateLink = i_weaponSoundUpdateLink;
   }
@@ -92,12 +85,17 @@ public class SoundEffectBreathWeapon
       soundController.stopSound(headStartupSound);
       headStartupSound = null;
     }
-    for (BreathWeaponSound sound : headLoopSounds) {
-      if (sound != null) {
-        soundController.stopSound(sound);
-      }
+//    for (BreathWeaponSound sound : headLoopSounds) {
+//      if (sound != null) {
+//        soundController.stopSound(sound);
+//      }
+//    }
+//    headLoopSounds.clear();
+    if (headLoopSound != null) {
+      soundController.stopSound(headLoopSound);
+      headLoopSound = null;
     }
-    headLoopSounds.clear();
+
     if (headStoppingSound != null) {
       soundController.stopSound(headStoppingSound);
       headStoppingSound = null;
@@ -108,11 +106,12 @@ public class SoundEffectBreathWeapon
   private void setAllStopFlags()
   {
     if (headStartupSound != null) { headStartupSound.setDonePlaying();}
-    for (BreathWeaponSound sound : headLoopSounds) {
-      if (sound != null) {
-        sound.setDonePlaying();
-      }
-    }
+    if (headLoopSound != null) { headLoopSound.setDonePlaying();}
+//    for (BreathWeaponSound sound : headLoopSounds) {
+//      if (sound != null) {
+//        sound.setDonePlaying();
+//      }
+//    }
     if (headStoppingSound != null) { headStoppingSound.setDonePlaying();}
   }
 
@@ -136,14 +135,10 @@ public class SoundEffectBreathWeapon
     headSoundSettings.playerDistanceToEpicentre =
               (float) weaponSoundInfo.dragonHeadLocation.distanceTo(entityPlayerSP.getPositionVector());
 
-    final int HEAD_STARTUP_TICKS = 10;    // todo need to change this approach because one-shot sounds stop ticking when done...
+    final int HEAD_STARTUP_TICKS = 40;
     final int HEAD_STOPPING_TICKS = 60;
 
-    TODO reduce transition between start and loop - increase start length and crossfade?
-
-    sounds don't always layer correctly?
-
-    player gets burned by fireballs even though the balls are nowhere near the player'
+    //todo  player gets burned by fireballs even though the balls are nowhere near the player'
 
     // if state has changed, stop and start component sounds appropriately
 
@@ -181,30 +176,32 @@ public class SoundEffectBreathWeapon
       case BREATHING: {
         if (headStartupSound != null && headStartupSound.getPlayCountdown() <= 0) {
           stopAllHeadSounds();
-          headLoopSounds.clear();
-          headLoopSounds.add(new BreathWeaponSound(headLoopRL1, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
-          headLoopSounds.add(new BreathWeaponSound(headLoopRL2, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
+//          headLoopSounds.clear();
+//          headLoopSounds.add(new BreathWeaponSound(headLoopRL1, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
+//          headLoopSounds.add(new BreathWeaponSound(headLoopRL2, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
+          headLoopSound = new BreathWeaponSound(headLoopRL, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings);
+          soundController.playSound(headLoopSound);
         }
 
-          final int HEAD_LOOP_MIN_TICKS = 40;
-        final int HEAD_LOOP_MAX_TICKS = 100;
-        for (int i = 0; i < headLoopSounds.size(); ++i) {
-          BreathWeaponSound headLoopSound = headLoopSounds.get(i);
-          if (headLoopSound != null && headLoopSound.getPlayCountdown() < 0) {
-            soundController.stopSound(headLoopSound);
-            ResourceLocation rl = (random.nextBoolean()) ? headLoopRL1 : headLoopRL2;
-            headLoopSound = new BreathWeaponSound(rl, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings);
-            int playDuration = HEAD_LOOP_MIN_TICKS + random.nextInt(HEAD_LOOP_MAX_TICKS - HEAD_LOOP_MIN_TICKS);
-            headLoopSound.setPlayCountdown(playDuration);
-            soundController.playSound(headLoopSound);
-            headLoopSounds.set(i, headLoopSound);
-          }
-        }
+//        final int HEAD_LOOP_MIN_TICKS = 40;
+//        final int HEAD_LOOP_MAX_TICKS = 100;
+//        for (int i = 0; i < headLoopSounds.size(); ++i) {
+//          BreathWeaponSound headLoopSound = headLoopSounds.get(i);
+//          if (headLoopSound != null && headLoopSound.getPlayCountdown() < 0) {
+//            soundController.stopSound(headLoopSound);
+//            ResourceLocation rl = (random.nextBoolean()) ? headLoopRL1 : headLoopRL2;
+//            headLoopSound = new BreathWeaponSound(rl, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings);
+//            int playDuration = HEAD_LOOP_MIN_TICKS + random.nextInt(HEAD_LOOP_MAX_TICKS - HEAD_LOOP_MIN_TICKS);
+//            headLoopSound.setPlayCountdown(playDuration);
+//            soundController.playSound(headLoopSound);
+//            headLoopSounds.set(i, headLoopSound);
+//          }
+//        }
         break;
       }
       case IDLE: {
         if (headStoppingSound != null) {
-          if (headStoppingSound.getPlayCountdown() <= 0) {
+          if (headStoppingSound.getPlayCountdown() <= 0 || !soundController.isSoundPlaying(headStoppingSound)) {
             soundController.stopSound(headStoppingSound);
             headStoppingSound = null;
           }
@@ -304,14 +301,16 @@ public class SoundEffectBreathWeapon
 //  private ComponentSoundSettings failSettings = new ComponentSoundSettings(0.01F);
 
   private BreathWeaponSound headStartupSound;
-  private ArrayList<BreathWeaponSound> headLoopSounds = new ArrayList<BreathWeaponSound>();
+  private BreathWeaponSound headLoopSound;
+//  private ArrayList<BreathWeaponSound> headLoopSounds = new ArrayList<BreathWeaponSound>();
   private BreathWeaponSound headStoppingSound;
 //  private ArrayList<BreathWeaponSound> beamSounds;
 
   private SoundController soundController;
   private ResourceLocation headStartRL;
-  private ResourceLocation headLoopRL1;
-  private ResourceLocation headLoopRL2;
+  private ResourceLocation headLoopRL;
+//  private ResourceLocation headLoopRL1;
+//  private ResourceLocation headLoopRL2;
   private ResourceLocation headStopRL;
 //  private ResourceLocation beamLoopResource;
 
