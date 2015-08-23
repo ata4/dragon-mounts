@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -156,6 +157,10 @@ public class SoundEffectBreathWeapon
         case BREATHING: {
 //          breathingStartTick = ticksElapsed;
           stopAllHeadSounds();
+          BreathWeaponSound preloadLoop = new BreathWeaponSound(headLoopRL, Mode.PRELOAD);
+          soundController.playSound(preloadLoop);
+          BreathWeaponSound preLoadStop = new BreathWeaponSound(headStopRL, Mode.PRELOAD);
+          soundController.playSound(preLoadStop);
           headStartupSound = new BreathWeaponSound(headStartRL, HEAD_MIN_VOLUME, RepeatType.NO_REPEAT,
                                                    headSoundSettings);
           headStartupSound.setPlayCountdown(HEAD_STARTUP_TICKS);
@@ -201,7 +206,7 @@ public class SoundEffectBreathWeapon
       }
       case IDLE: {
         if (headStoppingSound != null) {
-          if (headStoppingSound.getPlayCountdown() <= 0 || !soundController.isSoundPlaying(headStoppingSound)) {
+          if (headStoppingSound.getPlayCountdown() <= 0) {   //|| !soundController.isSoundPlaying(headStoppingSound)) {  causes strange bug "channel null in method 'stop'"
             soundController.stopSound(headStoppingSound);
             headStoppingSound = null;
           }
@@ -347,6 +352,7 @@ public class SoundEffectBreathWeapon
   }
 
   public enum RepeatType {REPEAT, NO_REPEAT}
+  public enum Mode {PRELOAD, PLAY}
 
   private class BreathWeaponSound extends PositionedSound implements ITickableSound
   {
@@ -358,6 +364,25 @@ public class SoundEffectBreathWeapon
       volume = i_volume;
       attenuationType = AttenuationType.NONE;
       soundSettings = i_soundSettings;
+      playMode = Mode.PLAY;
+    }
+
+    /**
+     * Preload for this sound (plays at very low volume).
+     * Can't be a static method because that's not allowed in inner class
+     * @param i_resourceLocation the sound to be played
+     * @param mode dummy argument.  Must always be PRELOAD
+     */
+    public BreathWeaponSound(ResourceLocation i_resourceLocation, Mode mode)
+    {
+      super(i_resourceLocation);
+      checkArgument(mode == Mode.PRELOAD);
+      repeat = false;
+      final float VERY_LOW_VOLUME = 0.001F;
+      volume = VERY_LOW_VOLUME;
+      attenuationType = AttenuationType.NONE;
+      soundSettings = null;
+      playMode = Mode.PRELOAD;
     }
 
     private void setDonePlaying() {
@@ -365,7 +390,8 @@ public class SoundEffectBreathWeapon
     }
 
     private boolean donePlaying;
-    ComponentSoundSettings soundSettings;
+    private ComponentSoundSettings soundSettings;
+    private Mode playMode;
 
     public int getPlayCountdown() {
       return playTimeCountDown;
@@ -389,6 +415,12 @@ public class SoundEffectBreathWeapon
       final float MAXIMUM_VOLUME = 1.00F;
       final float INSIDE_VOLUME = 1.00F;
       final float OFF_VOLUME = 0.0F;
+
+      if (playMode == Mode.PRELOAD) {
+//        this.volume = OFF_VOLUME;
+        return;
+      }
+
       --playTimeCountDown;
       if (!soundSettings.playing) {
 //        donePlaying = true;

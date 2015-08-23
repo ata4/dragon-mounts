@@ -342,7 +342,9 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected String getLivingSound() {
-        if (isEgg() || isFlying()) {
+        if (isEgg()
+                || isFlying()
+                || getBreathHelper().getCurrentBreathState() != DragonBreathHelper.BreathState.IDLE) {
             return null;
         } else {
             return getBreed().getLivingSound(this);
