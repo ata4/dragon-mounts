@@ -264,15 +264,15 @@ public class DragonBreathHelper extends DragonHelper
     @Override
     public boolean refreshWeaponSoundInfo(SoundEffectBreathWeapon.WeaponSoundInfo infoToUpdate) {
       BreathWeaponTarget target = getTarget();
-      boolean isBreathing = false;
+      Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+      infoToUpdate.dragonHeadLocation = origin;
+      infoToUpdate.relativeVolume = dragon.getScale();
 
+      boolean isBreathing = false;
       if (target != null) {
-        Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
         Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);
         if (destination != null && currentBreathState == BreathState.SUSTAIN) {
           isBreathing = true;
-          infoToUpdate.dragonHeadLocation = origin;
-          infoToUpdate.relativeVolume = dragon.getScale();
         }
       }
       infoToUpdate.breathingState = isBreathing ? SoundEffectBreathWeapon.WeaponSoundInfo.State.BREATHING

@@ -41,10 +41,6 @@ public class EntityMoveAndResizeHelper {
     entity.worldObj.theProfiler.startSection("moveflame");
     AxisAlignedBB entityAABB = entity.getEntityBoundingBox().offset(0, 0, 0);  // get a copy
 
-    if (entity.posY < 4.0) {
-      double breakpoint = entity.posY; //todo remove
-    }
-
     double wDXplus = (newWidth - entity.width) / 2.0;
     double wDYplus = (newHeight - entity.height) / 2.0;
     double wDZplus = (newWidth - entity.width) / 2.0;
@@ -87,10 +83,6 @@ public class EntityMoveAndResizeHelper {
       wDZplus = 0;
       wDZneg = 0;
     }
-    if (entityAABB.minY < 4.0) {
-      double breakpoint = entityAABB.minY; //todo remove
-    }
-
 
     entityAABB = new AxisAlignedBB(entityAABB.minX + wDXneg, entityAABB.minY + wDYneg, entityAABB.minZ + wDZneg,
                                    entityAABB.maxX + wDXplus, entityAABB.maxY + wDYplus, entityAABB.maxZ + wDZplus);
@@ -103,9 +95,7 @@ public class EntityMoveAndResizeHelper {
       dy = aabb.calculateYOffset(entityAABB, dy);
     }
     entityAABB = entityAABB.offset(0, dy, 0);
-    if (entityAABB.minY < 4.0) {
-      double breakpoint = entityAABB.minY; //todo remove
-    }
+
     for (AxisAlignedBB aabb : collidingAABB) {
       dx = aabb.calculateXOffset(entityAABB, dx);
     }
@@ -120,9 +110,7 @@ public class EntityMoveAndResizeHelper {
     entity.posX = (entityAABB.minX + entityAABB.maxX) / 2.0;
     entity.posY = entityAABB.minY;
     entity.posZ = (entityAABB.minZ + entityAABB.maxZ) / 2.0;
-    if (entity.posY < 4.0) {
-      double breakpoint = entityAABB.minY; //todo remove
-    }
+
     entity.isCollidedHorizontally = desiredDX != dx || desiredDZ != dz;
     entity.isCollidedVertically = desiredDY != dy;
     entity.onGround = entity.isCollidedVertically && desiredDY < 0.0;

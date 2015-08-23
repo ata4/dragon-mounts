@@ -20,5 +20,29 @@
     "sounds": [
       "mob/enderdragon/death"
     ]
+  },
+  "mob.enderdragon.weaponfireheadstart": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/weaponfireheadstart"
+    ]
+  },
+  "mob.enderdragon.weaponfireheadloop1": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/weaponfireheadloop1"
+    ]
+  },
+  "mob.enderdragon.weaponfireheadloop2": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/weaponfireheadloop2"
+    ]
+  },
+  "mob.enderdragon.weaponfireheadstop": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/weaponfireheadstop"
+    ]
   }
 }

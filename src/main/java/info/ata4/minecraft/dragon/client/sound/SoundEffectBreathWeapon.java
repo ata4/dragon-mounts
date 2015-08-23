@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Created by TheGreyGhost on 8/10/14.
  *
@@ -95,6 +97,7 @@ public class SoundEffectBreathWeapon
         soundController.stopSound(sound);
       }
     }
+    headLoopSounds.clear();
     if (headStoppingSound != null) {
       soundController.stopSound(headStoppingSound);
       headStoppingSound = null;
@@ -104,13 +107,13 @@ public class SoundEffectBreathWeapon
 
   private void setAllStopFlags()
   {
-    if (headStartupSound != null) { headStartupSound.donePlaying = true;}
+    if (headStartupSound != null) { headStartupSound.setDonePlaying();}
     for (BreathWeaponSound sound : headLoopSounds) {
       if (sound != null) {
-        sound.donePlaying = true;
+        sound.setDonePlaying();
       }
     }
-    if (headStoppingSound != null) { headStoppingSound.donePlaying = true;}
+    if (headStoppingSound != null) { headStoppingSound.setDonePlaying();}
   }
 
   /**
@@ -125,18 +128,22 @@ public class SoundEffectBreathWeapon
       setAllStopFlags();
       return;
     }
+    checkNotNull(weaponSoundInfo.dragonHeadLocation);
+    headSoundSettings.playing = true;
     headSoundSettings.masterVolume = weaponSoundInfo.relativeVolume;
     headSoundSettings.soundEpicentre = weaponSoundInfo.dragonHeadLocation;
-    if (weaponSoundInfo.dragonHeadLocation == null) {
-      final float ARBITRARY_SMALL_DISTANCE = 0.1F;
-      headSoundSettings.playerDistanceToEpicentre = ARBITRARY_SMALL_DISTANCE;
-    } else {
-      headSoundSettings.playerDistanceToEpicentre =
-              (float) weaponSoundInfo.dragonHeadLocation.distanceTo(entityPlayerSP.getPositionVector());
-    }
 
-    final int HEAD_STARTUP_TICKS = 40;
+    headSoundSettings.playerDistanceToEpicentre =
+              (float) weaponSoundInfo.dragonHeadLocation.distanceTo(entityPlayerSP.getPositionVector());
+
+    final int HEAD_STARTUP_TICKS = 10;    // todo need to change this approach because one-shot sounds stop ticking when done...
     final int HEAD_STOPPING_TICKS = 60;
+
+    TODO reduce transition between start and loop - increase start length and crossfade?
+
+    sounds don't always layer correctly?
+
+    player gets burned by fireballs even though the balls are nowhere near the player'
 
     // if state has changed, stop and start component sounds appropriately
 
@@ -161,7 +168,7 @@ public class SoundEffectBreathWeapon
           break;
         }
         default: {
-          System.err.printf("Illegal weaponSoundInfo.ringState:" + weaponSoundInfo.breathingState + " in " + this
+          System.err.printf("Illegal weaponSoundInfo.breathingState:" + weaponSoundInfo.breathingState + " in " + this
                   .getClass());
         }
       }
@@ -179,9 +186,10 @@ public class SoundEffectBreathWeapon
           headLoopSounds.add(new BreathWeaponSound(headLoopRL2, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
         }
 
-        final int HEAD_LOOP_MIN_TICKS = 40;
+          final int HEAD_LOOP_MIN_TICKS = 40;
         final int HEAD_LOOP_MAX_TICKS = 100;
-        for (BreathWeaponSound headLoopSound : headLoopSounds) {
+        for (int i = 0; i < headLoopSounds.size(); ++i) {
+          BreathWeaponSound headLoopSound = headLoopSounds.get(i);
           if (headLoopSound != null && headLoopSound.getPlayCountdown() < 0) {
             soundController.stopSound(headLoopSound);
             ResourceLocation rl = (random.nextBoolean()) ? headLoopRL1 : headLoopRL2;
@@ -189,6 +197,7 @@ public class SoundEffectBreathWeapon
             int playDuration = HEAD_LOOP_MIN_TICKS + random.nextInt(HEAD_LOOP_MAX_TICKS - HEAD_LOOP_MIN_TICKS);
             headLoopSound.setPlayCountdown(playDuration);
             soundController.playSound(headLoopSound);
+            headLoopSounds.set(i, headLoopSound);
           }
         }
         break;
@@ -352,6 +361,10 @@ public class SoundEffectBreathWeapon
       soundSettings = i_soundSettings;
     }
 
+    private void setDonePlaying() {
+      donePlaying = true;
+    }
+
     private boolean donePlaying;
     ComponentSoundSettings soundSettings;
 
@@ -373,15 +386,15 @@ public class SoundEffectBreathWeapon
 
     @Override
     public void update() {
-      final float MINIMUM_VOLUME = 0.01F;
-      final float MAXIMUM_VOLUME = 0.05F;
-      final float INSIDE_VOLUME = 0.10F;
+      final float MINIMUM_VOLUME = 0.10F;
+      final float MAXIMUM_VOLUME = 1.00F;
+      final float INSIDE_VOLUME = 1.00F;
       final float OFF_VOLUME = 0.0F;
+      --playTimeCountDown;
       if (!soundSettings.playing) {
 //        donePlaying = true;
         this.volume = OFF_VOLUME;
       } else {
-        --playTimeCountDown;
 //        System.out.println(boundaryHumInfo.playerDistanceToEpicentre);
         this.xPosF = (float)soundSettings.soundEpicentre.xCoord;
         this.yPosF = (float)soundSettings.soundEpicentre.yCoord;

@@ -57,8 +57,8 @@ public class BreathWeapon
       if (block.isFlammable(world, sideToIgnite, facing)) {
         int flammability = block.getFlammability(world, sideToIgnite, facing);
         float thresholdHitDensity = convertFlammabilityToHitDensityThreshold(flammability);
-        System.out.println("Threshold: " + thresholdHitDensity
-                + ", current:" + facing + "=" + currentHitDensity.getHitDensity(facing));
+//        System.out.println("Threshold: " + thresholdHitDensity                              //todo remove
+//                + ", current:" + facing + "=" + currentHitDensity.getHitDensity(facing));
         float densityOfThisFace = currentHitDensity.getHitDensity(facing);
         if (densityOfThisFace >= thresholdHitDensity && world.isAirBlock(sideToIgnite)) {
           final float MIN_PITCH = 0.8F;
@@ -113,7 +113,7 @@ public class BreathWeapon
       return null;
     }
 
-    System.out.println("Burn " + entity + "=" + entity.getName() + ":" + currentHitDensity.getHitDensity()); //todo remove
+//    System.out.println("Burn " + entity + "=" + entity.getName() + ":" + currentHitDensity.getHitDensity()); //todo remove
 
     if (entity.isImmuneToFire()) return currentHitDensity;
 
