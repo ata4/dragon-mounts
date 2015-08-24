@@ -5,11 +5,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -47,20 +50,23 @@ public class BreathWeapon
 
     Random rand = new Random();
 
-    // Flammable blocks: set fire to them once they have been exposed enough
+    // Flammable blocks: set fire to them once they have been exposed enough.  After sufficient exposure, destroy the
+    //   block (otherwise -if it's raining, the burning block will keep going out)
     // Non-flammable blocks:
-    // 1)
-
+    // 1) liquids (except lava) evaporate
+    // 2) If the block can be smelted (eg sand), then convert the block to the smelted version
+    // 3) If the block can't be smelted then convert to lava
 
     for (EnumFacing facing : EnumFacing.values()) {
       BlockPos sideToIgnite = blockPos.offset(facing);
       if (block.isFlammable(world, sideToIgnite, facing)) {
         int flammability = block.getFlammability(world, sideToIgnite, facing);
-        float thresholdHitDensity = convertFlammabilityToHitDensityThreshold(flammability);
+        float thresholdForIgnition = convertFlammabilityToHitDensityThreshold(flammability);
+        float thresholdForDestruction = thresholdForIgnition * 10;
 //        System.out.println("Threshold: " + thresholdHitDensity                              //todo remove
 //                + ", current:" + facing + "=" + currentHitDensity.getHitDensity(facing));
         float densityOfThisFace = currentHitDensity.getHitDensity(facing);
-        if (densityOfThisFace >= thresholdHitDensity && world.isAirBlock(sideToIgnite)) {
+        if (densityOfThisFace >= thresholdForIgnition && world.isAirBlock(sideToIgnite)) {
           final float MIN_PITCH = 0.8F;
           final float MAX_PITCH = 1.2F;
           final float VOLUME = 1.0F;
@@ -68,10 +74,18 @@ public class BreathWeapon
                   "fire.ignite", VOLUME, MIN_PITCH + rand.nextFloat() * (MAX_PITCH - MIN_PITCH));
           world.setBlockState(sideToIgnite, Blocks.fire.getDefaultState());
         }
+        if (densityOfThisFace >= thresholdForDestruction) {
+          world.setBlockToAir(blockPos);
+        }
       }
     }
+
+
+
+
     return currentHitDensity;
-//    FurnaceRecipes.instance().getSmeltingResult(block.getItemDropped())
+
+
 //    // non-silk harvest
 //    Item item = this.getItemDropped(state, rand, fortune);
 //    if (item != null)
@@ -92,6 +106,43 @@ public class BreathWeapon
 
 
   }
+
+  private BlockBurnProperties getBurnProperties(IBlockState iBlockState)
+  {
+    Block block = iBlockState.getBlock();
+    if (blockBurnPropertiesCache.containsKey(block)) {
+      return  blockBurnPropertiesCache.get(block);
+    }
+
+    Item itemFromBlock = Item.getItemFromBlock(block);
+    ItemStack itemStack;
+    if (itemFromBlock != null && itemFromBlock.getHasSubtypes())     {
+      int metadata = block.getMetaFromState(iBlockState);
+      itemStack = new ItemStack(itemFromBlock, 1, metadata);
+    } else {
+      itemStack = new ItemStack(itemFromBlock);
+    }
+
+    ItemStack smeltingResult = FurnaceRecipes.instance().getSmeltingResult(itemStack);
+    Block smeltedResultBlock = Block.getBlockFromItem(smeltingResult.getItem());
+    IBlockState iBlockStateSmelted = smeltedResultBlock.getStateFromMeta(smeltingResult.getMetadata());
+
+    BlockBurnProperties blockBurnProperties = new BlockBurnProperties();
+    blockBurnProperties.burnResult = iBlockStateSmelted;
+    blockBurnProperties.threshold = 10;
+    blockBurnPropertiesCache.put(block, blockBurnProperties);
+
+    TODO ADD FOR LIQUIDS, SNOW, BLOCKS WHICH TURN TO LAVA.  FIGURE OUT THRESHOLDS.
+  }
+
+
+
+  private static class BlockBurnProperties {
+    public IBlockState burnResult;  // null if no effect
+    public float threshold;
+  }
+
+  private HashMap<Block, BlockBurnProperties> blockBurnPropertiesCache = new HashMap<Block, BlockBurnProperties>();
 
   /** if the hitDensity is high enough, manipulate the entity (eg set fire to it, damage it)
    * A dragon can't be damaged by its own breathweapon.
