@@ -21,22 +21,59 @@
       "mob/enderdragon/death"
     ]
   },
-  "mob.enderdragon.weaponfireheadstart": {
+  "mob.enderdragon.breathweapon.adultbreathefirestart": {
     "category": "neutral",
     "sounds": [
-      "mob/enderdragon/weaponfireheadstart-a"
+      "mob/enderdragon/breathweapon/adultbreathefirestart"
     ]
   },
-  "mob.enderdragon.weaponfireheadloop": {
+  "mob.enderdragon.breathweapon.adultbreathefireloop": {
     "category": "neutral",
     "sounds": [
-      "mob/enderdragon/weaponfireheadloop-b"
+      "mob/enderdragon/breathweapon/adultbreathefireloop"
     ]
   },
-  "mob.enderdragon.weaponfireheadstop": {
+  "mob.enderdragon.breathweapon.adultbreathefirestop": {
     "category": "neutral",
     "sounds": [
-      "mob/enderdragon/weaponfireheadstop"
+      "mob/enderdragon/breathweapon/adultbreathefirestop"
+    ]
+  },
+  "mob.enderdragon.breathweapon.juvenilebreathefirestart": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathweapon/juvenilebreathefirestart"
+    ]
+  },
+  "mob.enderdragon.breathweapon.juvenilebreathefireloop": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathweapon/juvenilebreathefireloop"
+    ]
+  },
+  "mob.enderdragon.breathweapon.juvenilebreathefirestop": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathweapon/juvenilebreathefirestop"
+    ]
+  },
+  "mob.enderdragon.breathweapon.hatchlingbreathefirestart": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathweapon/hatchlingbreathefirestart"
+    ]
+  },
+  "mob.enderdragon.breathweapon.hatchlingbreathefireloop": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathweapon/hatchlingbreathefireloop"
+    ]
+  },
+  "mob.enderdragon.breathweapon.hatchlingbreathefirestop": {
+    "category": "neutral",
+    "sounds": [
+      "mob/enderdragon/breathweapon/hatchlingbreathefirestop"
     ]
   }
+
 }

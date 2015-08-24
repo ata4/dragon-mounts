@@ -1,5 +1,6 @@
 package info.ata4.minecraft.dragon.client.sound;
 
+import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.client.audio.ITickableSound;
 import net.minecraft.client.audio.PositionedSound;
@@ -37,21 +38,10 @@ public class SoundEffectBreathWeapon
   public SoundEffectBreathWeapon(SoundController i_soundController, WeaponSoundUpdateLink i_weaponSoundUpdateLink)
   {
     soundController = i_soundController;
-    headStartRL = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_START.getJsonName());
-    headLoopRL = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_LOOP.getJsonName());
-//    headLoopRL2 = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_LOOP2.getJsonName());
-    headStopRL = new ResourceLocation(SoundEffectNames.WEAPON_FIRE_HEAD_STOP.getJsonName());
     weaponSoundUpdateLink = i_weaponSoundUpdateLink;
   }
 
-  private Random random = new Random();
-
   private final float HEAD_MIN_VOLUME = 0.02F;
-  private final float HEAD_MAX_VOLUME = 0.2F;
-  private final float PERFORM_MIN_VOLUME = 0.02F;
-  private final float PERFORM_MAX_VOLUME = 0.2F;
-  private final float FAIL_MIN_VOLUME = 0.02F;
-  private final float FAIL_MAX_VOLUME = 0.2F;
 
   public void startPlaying(EntityPlayerSP entityPlayerSP)
   {
@@ -59,12 +49,6 @@ public class SoundEffectBreathWeapon
     currentWeaponState = WeaponSoundInfo.State.IDLE;
     performTick(entityPlayerSP);
   }
-
-//  public void startPlayingIfNotAlreadyPlaying(EntityPlayerSP entityPlayerSP)
-//  {
-//    if (performSound != null && !performSound.isDonePlaying()) return;
-//    startPlaying(entityPlayerSP);
-//  }
 
   public void stopPlaying()
   {
@@ -74,10 +58,6 @@ public class SoundEffectBreathWeapon
   private void stopAllSounds()
   {
     stopAllHeadSounds();
-//    if (failSound != null) {
-//      soundController.stopSound(failSound);
-//      failSound = null;
-//    }
   }
 
   private void stopAllHeadSounds()
@@ -86,12 +66,6 @@ public class SoundEffectBreathWeapon
       soundController.stopSound(headStartupSound);
       headStartupSound = null;
     }
-//    for (BreathWeaponSound sound : headLoopSounds) {
-//      if (sound != null) {
-//        soundController.stopSound(sound);
-//      }
-//    }
-//    headLoopSounds.clear();
     if (headLoopSound != null) {
       soundController.stopSound(headLoopSound);
       headLoopSound = null;
@@ -108,11 +82,6 @@ public class SoundEffectBreathWeapon
   {
     if (headStartupSound != null) { headStartupSound.setDonePlaying();}
     if (headLoopSound != null) { headLoopSound.setDonePlaying();}
-//    for (BreathWeaponSound sound : headLoopSounds) {
-//      if (sound != null) {
-//        sound.setDonePlaying();
-//      }
-//    }
     if (headStoppingSound != null) { headStoppingSound.setDonePlaying();}
   }
 
@@ -148,7 +117,8 @@ public class SoundEffectBreathWeapon
         case IDLE: {
 //          breathingStopTick = ticksElapsed;
           stopAllHeadSounds();
-          headStoppingSound = new BreathWeaponSound(headStopRL, HEAD_MIN_VOLUME, RepeatType.NO_REPEAT,
+          headStoppingSound = new BreathWeaponSound(weaponSound(SoundPart.STOP, weaponSoundInfo.lifeStage), 
+                                                    HEAD_MIN_VOLUME, RepeatType.NO_REPEAT,
                                                     headSoundSettings);
           headStoppingSound.setPlayCountdown(HEAD_STOPPING_TICKS);
           soundController.playSound(headStoppingSound);
@@ -157,11 +127,14 @@ public class SoundEffectBreathWeapon
         case BREATHING: {
 //          breathingStartTick = ticksElapsed;
           stopAllHeadSounds();
-          BreathWeaponSound preloadLoop = new BreathWeaponSound(headLoopRL, Mode.PRELOAD);
+          BreathWeaponSound preloadLoop = new BreathWeaponSound(weaponSound(SoundPart.LOOP, weaponSoundInfo.lifeStage), 
+                                                                Mode.PRELOAD);
           soundController.playSound(preloadLoop);
-          BreathWeaponSound preLoadStop = new BreathWeaponSound(headStopRL, Mode.PRELOAD);
+          BreathWeaponSound preLoadStop = new BreathWeaponSound(weaponSound(SoundPart.STOP, weaponSoundInfo.lifeStage),
+                  Mode.PRELOAD);
           soundController.playSound(preLoadStop);
-          headStartupSound = new BreathWeaponSound(headStartRL, HEAD_MIN_VOLUME, RepeatType.NO_REPEAT,
+          headStartupSound = new BreathWeaponSound(weaponSound(SoundPart.START, weaponSoundInfo.lifeStage), 
+                                                   HEAD_MIN_VOLUME, RepeatType.NO_REPEAT,
                                                    headSoundSettings);
           headStartupSound.setPlayCountdown(HEAD_STARTUP_TICKS);
           soundController.playSound(headStartupSound);
@@ -181,27 +154,11 @@ public class SoundEffectBreathWeapon
       case BREATHING: {
         if (headStartupSound != null && headStartupSound.getPlayCountdown() <= 0) {
           stopAllHeadSounds();
-//          headLoopSounds.clear();
-//          headLoopSounds.add(new BreathWeaponSound(headLoopRL1, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
-//          headLoopSounds.add(new BreathWeaponSound(headLoopRL2, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings));
-          headLoopSound = new BreathWeaponSound(headLoopRL, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings);
+          headLoopSound = new BreathWeaponSound(weaponSound(SoundPart.LOOP, weaponSoundInfo.lifeStage), 
+                                                HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings);
           soundController.playSound(headLoopSound);
         }
 
-//        final int HEAD_LOOP_MIN_TICKS = 40;
-//        final int HEAD_LOOP_MAX_TICKS = 100;
-//        for (int i = 0; i < headLoopSounds.size(); ++i) {
-//          BreathWeaponSound headLoopSound = headLoopSounds.get(i);
-//          if (headLoopSound != null && headLoopSound.getPlayCountdown() < 0) {
-//            soundController.stopSound(headLoopSound);
-//            ResourceLocation rl = (random.nextBoolean()) ? headLoopRL1 : headLoopRL2;
-//            headLoopSound = new BreathWeaponSound(rl, HEAD_MIN_VOLUME, RepeatType.REPEAT, headSoundSettings);
-//            int playDuration = HEAD_LOOP_MIN_TICKS + random.nextInt(HEAD_LOOP_MAX_TICKS - HEAD_LOOP_MIN_TICKS);
-//            headLoopSound.setPlayCountdown(playDuration);
-//            soundController.playSound(headLoopSound);
-//            headLoopSounds.set(i, headLoopSound);
-//          }
-//        }
         break;
       }
       case IDLE: {
@@ -219,105 +176,19 @@ public class SoundEffectBreathWeapon
     }
   }
 
-//        final int POWERUP_SOUND_DURATION_TICKS = 40;
-//        final int POWERUP_VOLUME_RAMP_TICKS = 10;
-//        final int POWERUP_VOLUME_CROSSFADE_TICKS = 10;
-//
-//        if (ticksElapsed - headStartupTick <= POWERUP_SOUND_DURATION_TICKS) {
-//          float newVolume = HEAD_MIN_VOLUME + (HEAD_MAX_VOLUME - HEAD_MIN_VOLUME) * (ticksElapsed - headStartupTick) / (float)POWERUP_VOLUME_RAMP_TICKS;
-//          headStartSettings.masterVolume = UsefulFunctions.clipToRange(newVolume, HEAD_MIN_VOLUME, HEAD_MAX_VOLUME);
-//
-//          newVolume = PERFORM_MIN_VOLUME + (PERFORM_MAX_VOLUME - PERFORM_MIN_VOLUME) * (ticksElapsed - headStartupTick) / (float)POWERUP_VOLUME_RAMP_TICKS;
-//          headStoppingSettings.masterVolume = UsefulFunctions.clipToRange(newVolume, PERFORM_MIN_VOLUME, PERFORM_MAX_VOLUME);
-//          headLoopSettings.masterVolume = 0.0F;
-//        } else if (ticksElapsed - headStartupTick <= POWERUP_SOUND_DURATION_TICKS + POWERUP_VOLUME_CROSSFADE_TICKS) {
-//          int crossfadeTicks = ticksElapsed - headStartupTick - POWERUP_SOUND_DURATION_TICKS;
-//          float newVolume = HEAD_MIN_VOLUME + (HEAD_MAX_VOLUME - HEAD_MIN_VOLUME) * crossfadeTicks / (float)POWERUP_VOLUME_CROSSFADE_TICKS;
-//          headLoopSettings.masterVolume = UsefulFunctions.clipToRange(newVolume, HEAD_MIN_VOLUME, HEAD_MAX_VOLUME);
-//          headStartSettings.masterVolume = HEAD_MAX_VOLUME - headLoopSettings.masterVolume;
-//          headStoppingSettings.masterVolume = PERFORM_MAX_VOLUME;
-//        } else {
-//          headLoopSettings.masterVolume = HEAD_MAX_VOLUME;
-//          headStoppingSettings.masterVolume = PERFORM_MAX_VOLUME;
-//          headStartSettings.masterVolume = 0;
-//        }
-//
-//        final int PERFORM_VOLUME_FADEDOWN_TICKS = 5;
-//        if (currentWeaponState == WeaponSoundInfo.State.PERFORMING_ACTION) {
-//          headStoppingSettings.masterVolume = PERFORM_MAX_VOLUME;
-//          int crossfadeTime = ticksElapsed - performStartTick;
-//          if (crossfadeTime <= PERFORM_VOLUME_FADEDOWN_TICKS) {
-//            float newVolume = HEAD_MAX_VOLUME / (float)PERFORM_VOLUME_FADEDOWN_TICKS;
-//            headStartSettings.masterVolume = newVolume;
-//            headLoopSettings.masterVolume = newVolume;
-//          } else {
-//            headLoopSettings.masterVolume = 0;
-//            headStartSettings.masterVolume = 0;
-//          }
-//        }
-//        break;
-//      }
-//      case SPIN_DOWN:
-//      case SPIN_UP_ABORT: {
-//        headStartSettings.masterVolume = 0;
-//        headLoopSettings.masterVolume = 0;
-//
-//        final int ABORT_VOLUME_FADEDOWN_TICKS = 20;
-//        headStoppingSettings.masterVolume -= PERFORM_MAX_VOLUME / (float)ABORT_VOLUME_FADEDOWN_TICKS;
-//        if (headStoppingSettings.masterVolume < 0) {
-//          headStoppingSettings.masterVolume = 0;
-//          if (performSound != null) {
-////            performSound.donePlaying = true;
-//            soundController.stopSound(performSound);
-//          }
-//        }
-//        break;
-//      }
-//      case FAILURE: {
-//        headStartSettings.masterVolume = 0;
-//        headLoopSettings.masterVolume = 0;
-//        failSettings.masterVolume = FAIL_MAX_VOLUME;
-//
-//        final int FAILURE_VOLUME_FADEDOWN_TICKS = 20;
-//        headStoppingSettings.masterVolume -= PERFORM_MAX_VOLUME / (float)FAILURE_VOLUME_FADEDOWN_TICKS;
-//        if (headStoppingSettings.masterVolume < 0) {
-//          headStoppingSettings.masterVolume = 0;
-//          if (performSound != null) {
-////            performSound.donePlaying = true;
-//            soundController.stopSound(performSound);
-//          }
-//        }
-//        break;
-//      }
-
-  private int ticksElapsed;
-  private int breathingStartTick;
-  private int breathingStopTick;
-  private int headStartupTick;
-  private int performStartTick;
-  private int performStopTick;
-  private int failureStartTick;
-  private int spinupAbortTick;
   WeaponSoundInfo.State currentWeaponState = WeaponSoundInfo.State.IDLE;
 
   private ComponentSoundSettings headSoundSettings = new ComponentSoundSettings(1.0F);
-//  private ComponentSoundSettings headLoopSettings = new ComponentSoundSettings(0.01F);
-//  private ComponentSoundSettings headStoppingSettings = new ComponentSoundSettings(0.01F);
-//  private ComponentSoundSettings failSettings = new ComponentSoundSettings(0.01F);
 
   private BreathWeaponSound headStartupSound;
   private BreathWeaponSound headLoopSound;
-//  private ArrayList<BreathWeaponSound> headLoopSounds = new ArrayList<BreathWeaponSound>();
   private BreathWeaponSound headStoppingSound;
-//  private ArrayList<BreathWeaponSound> beamSounds;
 
+  private int ticksElapsed;
   private SoundController soundController;
-  private ResourceLocation headStartRL;
-  private ResourceLocation headLoopRL;
-//  private ResourceLocation headLoopRL1;
-//  private ResourceLocation headLoopRL2;
-  private ResourceLocation headStopRL;
-//  private ResourceLocation beamLoopResource;
+//  private ResourceLocation headStartRL;
+//  private ResourceLocation headLoopRL;
+//  private ResourceLocation headStopRL;
 
   private WeaponSoundUpdateLink weaponSoundUpdateLink;
 
@@ -336,6 +207,7 @@ public class SoundEffectBreathWeapon
     public Collection<Vec3> pointsWithinBeam;
     public Vec3 dragonHeadLocation;
     public float relativeVolume; // 0 to 1
+    public DragonLifeStage lifeStage;
   }
 
   // settings for each component sound
@@ -383,6 +255,7 @@ public class SoundEffectBreathWeapon
       attenuationType = AttenuationType.NONE;
       soundSettings = null;
       playMode = Mode.PRELOAD;
+      preloadTimeCountDown = 5;  // play for a few ticks only
     }
 
     private void setDonePlaying() {
@@ -402,6 +275,7 @@ public class SoundEffectBreathWeapon
     }
 
     private int playTimeCountDown = -1;
+    private int preloadTimeCountDown = 0;
 
 
     @Override
@@ -417,7 +291,9 @@ public class SoundEffectBreathWeapon
       final float OFF_VOLUME = 0.0F;
 
       if (playMode == Mode.PRELOAD) {
-//        this.volume = OFF_VOLUME;
+        if (--preloadTimeCountDown <= 0) {
+          this.volume = OFF_VOLUME;
+        }
         return;
       }
 
@@ -442,4 +318,50 @@ public class SoundEffectBreathWeapon
       }
     }
   }
+
+  protected enum SoundPart {START, LOOP, STOP};
+
+  /**
+   * Returns the sound for the given breed, lifestage, and sound part 
+   * @param soundPart which part of the breathing sound?
+   * @param lifeStage how old is the dragon?
+   * @return the resourcelocation corresponding to the desired sound
+   */
+  protected ResourceLocation weaponSound(SoundPart soundPart, DragonLifeStage lifeStage)
+  {
+    final SoundEffectNames hatchling[] = {SoundEffectNames.HATCHLING_BREATHE_FIRE_START,
+                                          SoundEffectNames.HATCHLING_BREATHE_FIRE_LOOP,
+                                          SoundEffectNames.HATCHLING_BREATHE_FIRE_STOP};
+
+    final SoundEffectNames juvenile[] = {SoundEffectNames.JUVENILE_BREATHE_FIRE_START,
+                                          SoundEffectNames.JUVENILE_BREATHE_FIRE_LOOP,
+                                          SoundEffectNames.JUVENILE_BREATHE_FIRE_STOP};
+
+    final SoundEffectNames adult[] = {SoundEffectNames.ADULT_BREATHE_FIRE_START,
+                                      SoundEffectNames.ADULT_BREATHE_FIRE_LOOP,
+                                      SoundEffectNames.ADULT_BREATHE_FIRE_STOP};
+
+    SoundEffectNames [] soundEffectNames;
+    switch (lifeStage) {
+      case HATCHLING: {
+        soundEffectNames = hatchling;
+        break;
+      }
+      case JUVENILE: {
+        soundEffectNames = juvenile;
+        break;
+      }
+      case ADULT: {
+        soundEffectNames = adult;
+        break;
+      }
+      default: {
+        System.err.println("Unknown lifestage:" + lifeStage + " in weaponSound()");
+        soundEffectNames = hatchling; // dummy
+      }
+    }
+    return new ResourceLocation(soundEffectNames[soundPart.ordinal()].getJsonName());
+  }
+
+
 }
