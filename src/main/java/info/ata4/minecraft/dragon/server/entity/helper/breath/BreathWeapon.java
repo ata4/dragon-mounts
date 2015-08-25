@@ -2,10 +2,15 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -80,31 +85,13 @@ public class BreathWeapon
       }
     }
 
-
-
-
-    return currentHitDensity;
-
-
-//    // non-silk harvest
-//    Item item = this.getItemDropped(state, rand, fortune);
-//    if (item != null)
-//    {
-//      ret.add(new ItemStack(item, 1, this.damageDropped(state)));
-//    }
-//
-//    // silk harvest:
-//    Item item = Item.getItemFromBlock(this);
-//
-//    if (item != null && item.getHasSubtypes())
-//    {
-//      i = this.getMetaFromState(state);
-//    }
-//
-//    return new ItemStack(item, 1, i);
-//
-
-
+    BlockBurnProperties burnProperties = getBurnProperties(iBlockState);
+    if (burnProperties.burnResult == null
+        || currentHitDensity.getMaxHitDensity() < burnProperties.threshold) {
+      return currentHitDensity;
+    }
+    world.setBlockState(blockPos, burnProperties.burnResult);
+    return new BreathAffectedBlock();  // reset to zero
   }
 
   private BlockBurnProperties getBurnProperties(IBlockState iBlockState)
@@ -114,33 +101,121 @@ public class BreathWeapon
       return  blockBurnPropertiesCache.get(block);
     }
 
+    BlockBurnProperties blockBurnProperties = new BlockBurnProperties();
+    IBlockState result = getSmeltingResult(iBlockState);
+    blockBurnProperties.threshold = 20;
+    if (result == null) {
+      blockBurnProperties.threshold = 3;
+      result = getScorchedResult(iBlockState);
+    }
+    if (result == null) {
+      blockBurnProperties.threshold = 5;
+      result = getVaporisedLiquidResult(iBlockState);
+    }
+    if (result == null) {
+      blockBurnProperties.threshold = 100;
+      result = getMoltenLavaResult(iBlockState);
+    }
+    blockBurnProperties.burnResult = result;
+    blockBurnPropertiesCache.put(block, blockBurnProperties);
+    return blockBurnProperties;
+  }
+
+  private static class BlockBurnProperties {
+    public IBlockState burnResult = null;  // null if no effect
+    public float threshold;
+  }
+
+  /** if sourceBlock can be smelted, return the smelting result as a block
+   * @param sourceBlock
+   * @return the smelting result, or null if none
+   */
+  private static IBlockState getSmeltingResult(IBlockState sourceBlock)
+  {
+    Block block = sourceBlock.getBlock();
     Item itemFromBlock = Item.getItemFromBlock(block);
     ItemStack itemStack;
     if (itemFromBlock != null && itemFromBlock.getHasSubtypes())     {
-      int metadata = block.getMetaFromState(iBlockState);
+      int metadata = block.getMetaFromState(sourceBlock);
       itemStack = new ItemStack(itemFromBlock, 1, metadata);
     } else {
       itemStack = new ItemStack(itemFromBlock);
     }
 
     ItemStack smeltingResult = FurnaceRecipes.instance().getSmeltingResult(itemStack);
-    Block smeltedResultBlock = Block.getBlockFromItem(smeltingResult.getItem());
-    IBlockState iBlockStateSmelted = smeltedResultBlock.getStateFromMeta(smeltingResult.getMetadata());
-
-    BlockBurnProperties blockBurnProperties = new BlockBurnProperties();
-    blockBurnProperties.burnResult = iBlockStateSmelted;
-    blockBurnProperties.threshold = 10;
-    blockBurnPropertiesCache.put(block, blockBurnProperties);
-
-    TODO ADD FOR LIQUIDS, SNOW, BLOCKS WHICH TURN TO LAVA.  FIGURE OUT THRESHOLDS.
+    if (smeltingResult != null) {
+      Block smeltedResultBlock = Block.getBlockFromItem(smeltingResult.getItem());
+      if (smeltedResultBlock != null) {
+        IBlockState iBlockStateSmelted = smeltedResultBlock.getStateFromMeta(smeltingResult.getMetadata());
+        return iBlockStateSmelted;
+      }
+    }
+    if (block == Blocks.iron_ore) return Blocks.iron_block.getDefaultState();
+    if (block == Blocks.gold_ore) return Blocks.gold_block.getDefaultState();
+    if (block == Blocks.emerald_ore) return Blocks.emerald_block.getDefaultState();
+    if (block == Blocks.diamond_ore) return Blocks.diamond_block.getDefaultState();
+    if (block == Blocks.coal_ore) return Blocks.coal_block.getDefaultState();
+    if (block == Blocks.redstone_ore) return Blocks.redstone_block.getDefaultState();
+    if (block == Blocks.lapis_ore) return Blocks.lapis_block.getDefaultState();
+    if (block == Blocks.quartz_ore) return Blocks.quartz_block.getDefaultState();
+    return null;
   }
 
+  /** if sourceBlock is a liquid or snow that can be molten or vaporised, return the result as a block
+   *
+   * @param sourceBlock
+   * @return the vaporised result, or null if none
+   */
+  private static IBlockState getVaporisedLiquidResult(IBlockState sourceBlock)
+  {
+    Block block = sourceBlock.getBlock();
+    Material material = block.getMaterial();
 
-
-  private static class BlockBurnProperties {
-    public IBlockState burnResult;  // null if no effect
-    public float threshold;
+    if (material == Material.water) {
+      return Blocks.air.getDefaultState();
+    } else if (material == Material.snow || material == Material.ice) {
+      final int SMALL_LIQUID_AMOUNT = 4;
+      return Blocks.flowing_water.getDefaultState().withProperty(BlockLiquid.LEVEL, SMALL_LIQUID_AMOUNT);
+    } else if (material == Material.packedIce || material == Material.craftedSnow) {
+      final int LARGE_LIQUID_AMOUNT = 1;
+      return Blocks.flowing_water.getDefaultState().withProperty(BlockLiquid.LEVEL, LARGE_LIQUID_AMOUNT);
+    }
+    return null;
   }
+
+  /** if sourceBlock is a block that can be melted to lave, return the result as a block
+   * @param sourceBlock
+   * @return the molten lava result, or null if none
+   */
+  private static IBlockState getMoltenLavaResult(IBlockState sourceBlock)
+  {
+    Block block = sourceBlock.getBlock();
+    Material material = block.getMaterial();
+
+    if (material == Material.sand || material == Material.clay
+            || material == Material.glass || material == Material.iron
+            || material == Material.ground || material == Material.rock) {
+      final int LARGE_LIQUID_AMOUNT = 1;
+      return Blocks.lava.getDefaultState().withProperty(BlockLiquid.LEVEL, LARGE_LIQUID_AMOUNT);
+    }
+    return null;
+  }
+
+  /** if sourceBlock is a block that isn't flammable but can be scorched / changed, return the result as a block
+   * @param sourceBlock
+   * @return the scorched result, or null if none
+   */
+  private static IBlockState getScorchedResult(IBlockState sourceBlock)
+  {
+    Block block = sourceBlock.getBlock();
+    Material material = block.getMaterial();
+
+    if (material == Material.grass) {
+      return Blocks.dirt.getDefaultState();
+    }
+    return null;
+  }
+
 
   private HashMap<Block, BlockBurnProperties> blockBurnPropertiesCache = new HashMap<Block, BlockBurnProperties>();
 

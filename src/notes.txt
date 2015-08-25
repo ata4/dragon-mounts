@@ -5,7 +5,7 @@ OK sound of flame
 OK dragon sounds roar juvenile
 - test with built version; dedicated server version
 OK- breath effect on entities
-- breath effect on blocks
+OK- breath effect on blocks
 - breath immunity for player holding orb? for rider
 OK- dragon should not burn itself
 - dragon breath position not correct when hovering
