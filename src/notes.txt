@@ -11,7 +11,7 @@ OK- dragon should not burn itself
 - dragon breath position not correct when hovering
 - add flying motion vector to breath vector?
 - ignore click on block
-- small breath beam still hits player who is nowhere near
+OK small breath beam still hits player who is nowhere near
 OK after a flammable block takes enough damage, destroy it (rain puts out fire)
 
 later

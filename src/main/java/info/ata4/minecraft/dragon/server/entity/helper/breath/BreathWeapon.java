@@ -243,9 +243,9 @@ public class BreathWeapon
 
     if (entity.isImmuneToFire()) return currentHitDensity;
 
-    final float CATCH_FIRE_THRESHOLD = 10.0F;
-    final float BURN_SECONDS_PER_HIT_DENSITY = 0.4F;
-    final float DAMAGE_PER_HIT_DENSITY = 0.1F;
+    final float CATCH_FIRE_THRESHOLD = 2.5F;
+    final float BURN_SECONDS_PER_HIT_DENSITY = 1.0F;
+    final float DAMAGE_PER_HIT_DENSITY = 0.5F;
 
     float hitDensity = currentHitDensity.getHitDensity();
     if (hitDensity > CATCH_FIRE_THRESHOLD) {

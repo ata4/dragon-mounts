@@ -71,6 +71,16 @@ public class BreathWeaponEmitter {
               interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
               power,
               partialTickHeadStart);
+
+      // todo remove
+//      Vec3 interpDirection = new Vec3(0, 0, 0);
+//      Vec3 interpOrigin = new Vec3(1000, 10, 1500);
+//      FlameBreathFX flameBreathFX = FlameBreathFX.createFlameBreathFX(world,
+//              interpOrigin.xCoord, interpOrigin.yCoord, interpOrigin.zCoord,
+//              interpDirection.xCoord, interpDirection.yCoord, interpDirection.zCoord,
+//              BreathNode.Power.LARGE,
+//              partialTickHeadStart);
+
       Minecraft.getMinecraft().effectRenderer.addEffect(flameBreathFX);
     }
     previousDirection = direction;

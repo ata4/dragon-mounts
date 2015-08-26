@@ -55,9 +55,9 @@ public class BreathAffectedEntity
     return true;
   }
 
-  private float ENTITY_DECAY_PERCENTAGE_PER_TICK = 10.0F;
+  private float ENTITY_DECAY_PERCENTAGE_PER_TICK = 5.0F;
   private float ENTITY_RESET_EFFECT_THRESHOLD = 0.01F;
-  private final int TICKS_BEFORE_DECAY_STARTS = 10;
+  private final int TICKS_BEFORE_DECAY_STARTS = 40;
   private final int TICKS_BETWEEN_DAMAGE_APPLICATION = 20;  // apply damage every x ticks
 
   /** updates the breath weapon's effect for a given entity

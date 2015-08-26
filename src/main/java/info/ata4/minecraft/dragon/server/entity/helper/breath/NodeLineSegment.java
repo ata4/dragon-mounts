@@ -185,8 +185,12 @@ public class NodeLineSegment
           && y >= aabb.minY && y <= aabb.maxY
           && z >= aabb.minZ && z <= aabb.maxZ  ) {
         retval += DENSITY_PER_POINT;
+//        System.out.format("hit: [%.3f, %.3f, %.3f] radius %.3f ", x, y, z, radius);
       }
     }
+//    if (retval > 0) {
+//      System.out.format("damage %.3f\n", retval);
+//    }
 //    System.out.format("[%s]: [%.3f, %.3f, %.3f] to [%.3f, %.3f, %.3f] %.3f\n", aabb.toString(),
 //                      startPoint.xCoord, startPoint.yCoord, startPoint.zCoord,
 //                      endPoint.xCoord, endPoint.yCoord, endPoint.zCoord,

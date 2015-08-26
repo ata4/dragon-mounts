@@ -2,7 +2,10 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.Pair;
+import info.ata4.minecraft.dragon.util.math.MathX;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -204,16 +207,18 @@ public class BreathAffectedArea
     Multimap<Vec3i, Integer> occupiedByEntities = ArrayListMultimap.create();
     Map<Integer, AxisAlignedBB> entityHitBoxes = new HashMap<Integer, AxisAlignedBB>();
     for (EntityLivingBase entityLivingBase : allEntities) {
-      AxisAlignedBB aabb = entityLivingBase.getEntityBoundingBox();
-      entityHitBoxes.put(entityLivingBase.getEntityId(), aabb);
-      for (int x = (int)aabb.minX; x <= (int)aabb.maxX; ++x) {
-        for (int y = (int)aabb.minY; y <= (int)aabb.maxY; ++y) {
-          for (int z = (int)aabb.minZ; z <= (int)aabb.maxZ; ++z) {
-            Vec3i pos = new Vec3i(x, y, z);
-            occupiedByEntities.put(pos, entityLivingBase.getEntityId());
+//      if (!(entityLivingBase instanceof EntityTameableDragon)) { //todo remove debugging only
+        AxisAlignedBB aabb = entityLivingBase.getEntityBoundingBox();
+        entityHitBoxes.put(entityLivingBase.getEntityId(), aabb);
+        for (int x = (int) aabb.minX; x <= (int) aabb.maxX; ++x) {
+          for (int y = (int) aabb.minY; y <= (int) aabb.maxY; ++y) {
+            for (int z = (int) aabb.minZ; z <= (int) aabb.maxZ; ++z) {
+              Vec3i pos = new Vec3i(x, y, z);
+              occupiedByEntities.put(pos, entityLivingBase.getEntityId());
+            }
           }
         }
-      }
+//      }
     }
 
     final int NUMBER_OF_ENTITY_CLOUD_POINTS = 10;
@@ -230,14 +235,27 @@ public class BreathAffectedArea
                 if (!checkedEntities.contains(entityID)) {
                   checkedEntities.add(entityID);
                   float intensity = entityBreathNodes.get(i).getCurrentIntensity();
-                  float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(aabb, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
-                  if (hitDensity > 0.0) {
-                    BreathAffectedEntity currentDensity = affectedEntities.get(entityID);
-                    if (currentDensity == null) {
-                      currentDensity = new BreathAffectedEntity();
+                  Entity entityToCheck = world.getEntityByID(entityID);
+                  if (entityToCheck != null) {
+                    AxisAlignedBB entityAABB = entityToCheck.getEntityBoundingBox();
+
+                    // normalise the intensity according to the entity size (area) - smaller entities are harder to hit
+                    //  and it looks odd when the flame washes over them without doing anything.
+
+                    double entitySize = entityAABB.getAverageEdgeLength();
+                    entitySize = MathX.clamp(entitySize, 0.1, 2.0);
+                    intensity /= (entitySize*entitySize);
+
+                    float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(entityAABB, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
+                    if (hitDensity > 0.0) {
+                      BreathAffectedEntity currentDensity = affectedEntities.get(entityID);
+                      if (currentDensity == null) {
+                        currentDensity = new BreathAffectedEntity();
+                      }
+                      currentDensity.addHitDensity(nodeLineSegments.get(i).getSegmentDirection(), hitDensity);
+                      affectedEntities.put(entityID, currentDensity);
+//                      System.out.format("hitDensity: %.3f\n", currentDensity.getHitDensity()); //todo remove
                     }
-                    currentDensity.addHitDensity(nodeLineSegments.get(i).getSegmentDirection(),  hitDensity);
-                    affectedEntities.put(entityID, currentDensity);
                   }
                 }
               }

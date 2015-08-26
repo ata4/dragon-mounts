@@ -11,10 +11,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.Sys;
 
 /**
  * Created by TGG on 8/07/2015.
@@ -216,6 +218,16 @@ public class DragonBreathHelper extends DragonHelper
 
   private void onLivingUpdateServer()
   {
+//    Entity dragonOwner = dragon.getOwner();
+//    if (dragonOwner != null) {
+//      AxisAlignedBB entityAABB = dragonOwner.getEntityBoundingBox();
+//      Vec3 startpoint = new Vec3(1000, 10, 1500);
+//      Vec3 endpoint = new Vec3(1000, 10, 1500);
+//      float radius = 0.01F;
+//      NodeLineSegment nodeLineSegment = new NodeLineSegment(startpoint, endpoint, radius);
+//      float hitDensity = nodeLineSegment.collisionCheckAABB(entityAABB, 10.0F, 10);
+//      System.out.println("hits:" + hitDensity);
+//    }
     BreathWeaponTarget target = getTarget();
     updateBreathState(target);
 
@@ -244,7 +256,6 @@ public class DragonBreathHelper extends DragonHelper
         breathWeaponEmitter.spawnBreathParticles(dragon.getEntityWorld(), power, tickCounter);
       }
     }
-    //todo remove debugging
 
     if (soundController == null) {
       soundController = new SoundController();
