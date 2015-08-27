@@ -125,11 +125,15 @@ public class NodeLineSegment
   }
 
   /** Models collision between the node and the given aabb (of an entity)
-   * Two checks:
+   * Three checks:
    * a) For each of the direct collisions for this node (overlaps between the node AABB and the world, as calculated
-   *   in the entity movement) - if any overlap occurs, apply the full density
+   *   in the entity movement) - if any overlap occurs, apply the full density.  (Currently not used)
    * Otherwise:
-   * b) stochastically, based on the area of effect on nearby objects, even if no direct AABB overlap.  see below.
+   * b) stochastically, based on the area of effect on nearby objects, even if no direct AABB overlap.  see below.  This
+   *   is most useful when the node is small compared to the aabb.
+   * and
+   * c) check corner of the aabb to see if it lies inside the nodelinesegment.  This is most useful when the node is large
+   *    compared to the aabb.
    *
    * stochastically check how much the line segment collides with the specified aabb
    * Uses stochastic simulation, each point is generated as
@@ -145,15 +149,78 @@ public class NodeLineSegment
    */
   public float collisionCheckAABB(AxisAlignedBB aabb, float totalDensity, int numberOfCloudPoints)
   {
-    final float NO_HIT = 0.0F;
-    float retval = NO_HIT;
-
     for (Pair<EnumFacing, AxisAlignedBB> collision : collisions) {
       if (collision.getSecond().intersectsWith(aabb)) {
         return totalDensity;
       }
     }
+    float stochasticHitDensity = collisionCheckAABBstochastic(aabb, totalDensity, numberOfCloudPoints);
+    float aabbCornersHitDensity = collisionCheckAABBcorners(aabb, totalDensity);
+    return Math.max(stochasticHitDensity, aabbCornersHitDensity);
+  }
 
+  /** Check all eight corners of the aabb to see how many lie within the nodelinesegment.
+   * Most useful for when the aabb is smaller than the nodelinesegment
+   * @param aabb the aabb to check against
+   * @param totalDensity the density of a complete collision
+   * @return a value from 0.0 (no collision) to totalDensity (total collision)
+   */
+  public float collisionCheckAABBcorners(AxisAlignedBB aabb, float totalDensity)
+  {
+    int cornersInside = 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.minX, aabb.minY, aabb.minZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.minX, aabb.minY, aabb.maxZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.minX, aabb.maxY, aabb.minZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.minX, aabb.maxY, aabb.maxZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.maxX, aabb.minY, aabb.minZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.maxX, aabb.minY, aabb.maxZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.maxX, aabb.maxY, aabb.minZ) ? 1 : 0;
+    cornersInside += isPointWithinNodeLineSegment(aabb.maxX, aabb.maxY, aabb.maxZ) ? 1 : 0;
+    return cornersInside * totalDensity / 8.0F;
+  }
+
+  /** check whether the given point lies within the nodeLineSegment (i.e. within the sphere around the start point,
+   *   within the sphere around the end point, or within the cylinder about the line connecting start and end)
+   * @param x [x,y,z] is the world coordinate to check
+   * @return true if it lies inside, false otherwise
+   */
+  public boolean isPointWithinNodeLineSegment(double x, double y, double z)
+  {
+    // first, find the closest point on the line segment between start and finish.
+    // This is given by the formula
+    //  projection_of_u_on_v = v . ( u dot v) / length(v)^2
+    // where u = vector from startpoint to test point, and v = vector from startpoint to endpoint
+
+    Vec3 deltaAxis = endPoint.subtract(startPoint);
+    Vec3 deltaPointToCheck = new Vec3(x - startPoint.xCoord, y - startPoint.yCoord, z - startPoint.zCoord);
+    double deltaAxisLengthSq = deltaAxis.xCoord * deltaAxis.xCoord + deltaAxis.yCoord * deltaAxis.yCoord
+                               + deltaAxis.zCoord * deltaAxis.zCoord;
+    double dotProduct = deltaAxis.dotProduct(deltaPointToCheck);
+    Vec3 closestPoint;
+    if (dotProduct <= 0) {
+      closestPoint = new Vec3(0,0,0);
+    } else if (dotProduct >= deltaAxisLengthSq) {
+      closestPoint = deltaAxis;
+    } else {
+      double projectionFraction = dotProduct / deltaAxisLengthSq;
+      closestPoint = new Vec3(deltaAxis.xCoord * projectionFraction, deltaAxis.yCoord * projectionFraction,
+                                 deltaAxis.zCoord * projectionFraction);
+    }
+    return closestPoint.squareDistanceTo(deltaPointToCheck) <= radius * radius;
+  }
+
+  private final float NO_HIT_DENSITY_VALUE = 0.0F;
+
+  /** Choose a number of random points from the nodelinesegment and see how many of them lie within the given aabb.
+   * Most useful for when the aabb is larger than the nodelinesegment.
+   * @param aabb the aabb to check against
+   * @param totalDensity the density of a complete collision
+   * @param numberOfCloudPoints number of cloud points to use (1 - 1000) - clamped if out of range
+   * @return a value from 0.0 (no collision) to totalDensity (total collision)
+   */
+  private float collisionCheckAABBstochastic(AxisAlignedBB aabb, float totalDensity, int numberOfCloudPoints)
+  {
+    float retval = NO_HIT_DENSITY_VALUE;
     initialiseTables();
     final int MINIMUM_REASONABLE_CLOUD_POINTS = 1;
     final int MAXIMUM_REASONABLE_CLOUD_POINTS = 1000;
@@ -182,8 +249,8 @@ public class NodeLineSegment
       y +=  r * sinTable[theta] * sinTable[phi];
       z +=  r * cosTable[phi];
       if (x >= aabb.minX && x <= aabb.maxX
-          && y >= aabb.minY && y <= aabb.maxY
-          && z >= aabb.minZ && z <= aabb.maxZ  ) {
+              && y >= aabb.minY && y <= aabb.maxY
+              && z >= aabb.minZ && z <= aabb.maxZ  ) {
         retval += DENSITY_PER_POINT;
 //        System.out.format("hit: [%.3f, %.3f, %.3f] radius %.3f ", x, y, z, radius);
       }
@@ -197,6 +264,7 @@ public class NodeLineSegment
 //                      retval);   //todo debug remove
     return retval;
   }
+
 
   /**
    * Creates a cloud of points around the line segment, to simulate the movement of a sphere starting from the

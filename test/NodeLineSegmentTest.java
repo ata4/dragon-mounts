@@ -1,5 +1,6 @@
 import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathAffectedBlock;
 import info.ata4.minecraft.dragon.server.entity.helper.breath.NodeLineSegment;
+import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
@@ -88,6 +89,54 @@ public class NodeLineSegmentTest
     density = testSegment.collisionCheckAABB(aabbSome, TOTAL_DENSITY_1000, NUMBER_OF_CLOUD_POINTS);
     assertTrue(density > TOTAL_DENSITY_1000 / 10000.0F
                && Math.abs(density - TOTAL_DENSITY_1000) > TOTAL_DENSITY_1000 / 10000.0F);
+  }
+
+  @Test
+  public void testIsPointWithinNodeLineSegment()
+  {
+    final float RADIUS = 0.60F;
+    Vec3 point1 = new Vec3(1.0, 2.0, 3.0);
+    Vec3 point2 = new Vec3(6.0, 5.0, 4.0);
+    NodeLineSegment testSegment = new NodeLineSegment(point1, point2, RADIUS);
+    final float TOTAL_DENSITY_1000 = 1000.0F;
+
+
+    assertTrue(testSegment.isPointWithinNodeLineSegment(1.0, 2.0, 3.0));
+    assertTrue(testSegment.isPointWithinNodeLineSegment(6.0, 5.0, 4.0));
+    assertTrue(testSegment.isPointWithinNodeLineSegment(3.5, 3.5, 3.5));
+
+    Random rand = new Random();
+    for (int i = 0; i < 10000; ++i) {
+      Vec3 pt1 = new Vec3(rand.nextInt(30), rand.nextInt(30), rand.nextInt(30));
+      Vec3 pt2 = new Vec3(rand.nextInt(30), rand.nextInt(30), rand.nextInt(30));
+      Vec3 delta = pt2.subtract(pt1);
+      NodeLineSegment testSegment1 = new NodeLineSegment(pt1, pt2, RADIUS);
+
+      final int NUMBER_OF_CLOUD_POINTS = 100;
+      final double SUBSEGMENT_WIDTH = 1.0 / NUMBER_OF_CLOUD_POINTS;
+      for (int j = 0; j < NUMBER_OF_CLOUD_POINTS; ++j) {
+        double linePos = j * SUBSEGMENT_WIDTH;
+        double jitter = rand.nextDouble() * SUBSEGMENT_WIDTH;
+        linePos += jitter;
+        double x = MathX.lerp(pt1.xCoord, pt2.xCoord, linePos);
+        double y = MathX.lerp(pt1.yCoord, pt2.yCoord, linePos);
+        double z = MathX.lerp(pt1.zCoord, pt2.zCoord, linePos);
+        double theta = rand.nextDouble() * 2.0 * Math.PI;
+        double phi = rand.nextDouble() * 2.0 * Math.PI;
+        double r = rand.nextDouble() * RADIUS;
+        x +=  r * Math.cos(theta) * Math.sin(phi);
+        y +=  r * Math.sin(theta) * Math.sin(phi);
+        z +=  r * Math.cos(phi);
+        assertTrue(testSegment1.isPointWithinNodeLineSegment(x, y, z));
+      }
+      double justPastFraction = 1.01 * RADIUS / pt1.distanceTo(pt2);
+      assertFalse(testSegment1.isPointWithinNodeLineSegment(MathX.lerp(pt1.xCoord, pt2.xCoord, -justPastFraction),
+                                                            MathX.lerp(pt1.yCoord, pt2.yCoord, -justPastFraction),
+                                                            MathX.lerp(pt1.zCoord, pt2.zCoord, -justPastFraction)));
+      assertFalse(testSegment1.isPointWithinNodeLineSegment(MathX.lerp(pt1.xCoord, pt2.xCoord, 1+justPastFraction),
+              MathX.lerp(pt1.yCoord, pt2.yCoord, 1+justPastFraction),
+              MathX.lerp(pt1.zCoord, pt2.zCoord, 1+justPastFraction)));
+    }
   }
 
   @Test

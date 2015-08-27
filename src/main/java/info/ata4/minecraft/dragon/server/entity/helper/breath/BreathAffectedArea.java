@@ -239,12 +239,12 @@ public class BreathAffectedArea
                   if (entityToCheck != null) {
                     AxisAlignedBB entityAABB = entityToCheck.getEntityBoundingBox();
 
-                    // normalise the intensity according to the entity size (area) - smaller entities are harder to hit
-                    //  and it looks odd when the flame washes over them without doing anything.
-
-                    double entitySize = entityAABB.getAverageEdgeLength();
-                    entitySize = MathX.clamp(entitySize, 0.1, 2.0);
-                    intensity /= (entitySize*entitySize);
+//                    // normalise the intensity according to the entity size (area) - smaller entities are harder to hit
+//                    //  and it looks odd when the flame washes over them without doing anything.
+//
+//                    double entitySize = entityAABB.getAverageEdgeLength();
+//                    entitySize = MathX.clamp(entitySize, 0.1, 2.0);
+//                    intensity /= (entitySize*entitySize);
 
                     float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(entityAABB, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
                     if (hitDensity > 0.0) {
@@ -254,7 +254,7 @@ public class BreathAffectedArea
                       }
                       currentDensity.addHitDensity(nodeLineSegments.get(i).getSegmentDirection(), hitDensity);
                       affectedEntities.put(entityID, currentDensity);
-//                      System.out.format("hitDensity: %.3f\n", currentDensity.getHitDensity()); //todo remove
+                      System.out.format("hitDensity: %.3f\n", currentDensity.getHitDensity()); //todo remove
                     }
                   }
                 }
