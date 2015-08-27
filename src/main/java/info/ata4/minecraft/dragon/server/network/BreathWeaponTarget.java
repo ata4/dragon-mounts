@@ -53,7 +53,7 @@ public class BreathWeaponTarget
   public TypeOfTarget getTypeOfTarget() {return  typeOfTarget;}
 
   /**
-   *  get the entity being targeted
+   *  getChangeInValue the entity being targeted
    * @param world
    * @return null if not found or not valid
    */
@@ -309,7 +309,7 @@ public class BreathWeaponTarget
     }
   }
 
-  /** get the point being targeted in [x,y,z]
+  /** getChangeInValue the point being targeted in [x,y,z]
    * @param world
    * @param origin the origin of the breath weapon (dragon's throat)
    * @return an [x,y,z] to fire the beam at; or null if none

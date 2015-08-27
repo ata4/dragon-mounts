@@ -147,21 +147,21 @@ public class BreathNode
   private final float RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;
   private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 0.5F;  // change to 0.5F
 
-  /** get render size (diameter) of the breathnode in blocks
+  /** getChangeInValue render size (diameter) of the breathnode in blocks
    * @return the rendering size (diameter) of the breathnode in blocks
    */
   public float getCurrentRenderDiameter() {
     return getCurrentDiameterOfEffect() * RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER;
   }
 
-  /** get the width and height of the breathnode collision AABB, in blocks
+  /** getChangeInValue the width and height of the breathnode collision AABB, in blocks
    * @return the width and height of the breathnode collision AABB, in blocks
    */
   public float getCurrentAABBcollisionSize() {
     return getCurrentDiameterOfEffect() * RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER;
   }
 
-  /** get the size (diameter) of the area of effect of the breath node, in blocks
+  /** getChangeInValue the size (diameter) of the area of effect of the breath node, in blocks
    * @return the size (diameter) of the area of effect of the breathnode in blocks
    */
   public float getCurrentDiameterOfEffect() {

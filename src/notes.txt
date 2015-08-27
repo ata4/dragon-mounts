@@ -10,9 +10,10 @@ OK- breath effect on blocks
 OK- dragon should not burn itself
 - dragon breath position not correct when hovering
 - add flying motion vector to breath vector?
-- ignore click on block
+OK ignore click on block
 OK small breath beam still hits player who is nowhere near
 OK after a flammable block takes enough damage, destroy it (rain puts out fire)
+- aiming is awkward when riding the dragon.
 
 later
 - different breath types

@@ -65,7 +65,7 @@ public class NodeLineSegment
     return length;
   }
 
-  /** get the vector corresponding to the segment (from start point to end point)
+  /** getChangeInValue the vector corresponding to the segment (from start point to end point)
    * @return
    */
   public Vec3 getSegmentDirection()
@@ -73,7 +73,7 @@ public class NodeLineSegment
     return new Vec3(endPoint.xCoord - startPoint.xCoord, endPoint.yCoord - startPoint.yCoord, endPoint.zCoord - startPoint.zCoord);
   }
 
-  /** get an AABB which encompasses the entire line segment including the node radius around each end
+  /** getChangeInValue an AABB which encompasses the entire line segment including the node radius around each end
    * @return
    */
   public AxisAlignedBB getAxisAlignedBoundingBox() {
@@ -203,8 +203,7 @@ public class NodeLineSegment
       closestPoint = deltaAxis;
     } else {
       double projectionFraction = dotProduct / deltaAxisLengthSq;
-      closestPoint = new Vec3(deltaAxis.xCoord * projectionFraction, deltaAxis.yCoord * projectionFraction,
-                                 deltaAxis.zCoord * projectionFraction);
+      closestPoint = MathX.multiply(deltaAxis, projectionFraction);
     }
     return closestPoint.squareDistanceTo(deltaPointToCheck) <= radius * radius;
   }

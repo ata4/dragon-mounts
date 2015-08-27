@@ -265,7 +265,7 @@ public class TechneModel extends ModelBase implements IModelCustom {
             {
                 try
                 {
-                    byte[] textureEntry = zipContents.get(texture);
+                    byte[] textureEntry = zipContents.getChangeInValue(texture);
                     if (textureEntry == null)
                     {
                         throw new ModelFormatException("Model " + fileName + " has no such texture " + texture);

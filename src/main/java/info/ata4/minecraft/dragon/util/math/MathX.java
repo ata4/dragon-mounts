@@ -233,11 +233,19 @@ public class MathX {
       return Math.abs(x1 - x2) <= MINIMUM_SIGNIFICANT_DIFFERENCE;
     }
 
-  public static boolean isSignificantlyDifferent(double x1, double x2) {
+  public static boolean isSignificantlyDifferent(double x1, double x2)
+  {
 
     return Math.abs(x1 - x2) > MINIMUM_SIGNIFICANT_DIFFERENCE;
   }
 
-
+    /** return the modulus (always positive)
+     * @param numerator
+     * @param divisor
+     * @return calculates the numerator modulus by divisor, always positive
+     */
+  public static int modulus(int numerator, int divisor) {
+      return (numerator % divisor + divisor) % divisor;
+  }
 
 }

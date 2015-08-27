@@ -39,7 +39,7 @@ public class EntityMoveAndResizeHelper {
 
   public Collection<Pair<EnumFacing, AxisAlignedBB>> moveAndResizeEntity(double dx, double dy, double dz, float newWidth, float newHeight) {
     entity.worldObj.theProfiler.startSection("moveflame");
-    AxisAlignedBB entityAABB = entity.getEntityBoundingBox().offset(0, 0, 0);  // get a copy
+    AxisAlignedBB entityAABB = entity.getEntityBoundingBox().offset(0, 0, 0);  // getChangeInValue a copy
 
     double wDXplus = (newWidth - entity.width) / 2.0;
     double wDYplus = (newHeight - entity.height) / 2.0;

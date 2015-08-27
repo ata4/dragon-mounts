@@ -61,10 +61,10 @@ public class ClientProxy extends CommonProxy {
       RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
       RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
 
-        FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
+      FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
       DragonOrbControl.createSingleton(getNetwork());
+      DragonOrbControl.initialiseInterceptors();
       FMLCommonHandler.instance().bus().register(DragonOrbControl.getInstance());
-
     }
 
   /**

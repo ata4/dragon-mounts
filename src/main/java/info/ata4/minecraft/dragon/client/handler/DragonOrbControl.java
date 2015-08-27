@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.client.handler;
 
         import info.ata4.minecraft.dragon.DragonMounts;
+        import info.ata4.minecraft.dragon.client.userinput.KeyBindingInterceptor;
         import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
         import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
         import info.ata4.minecraft.dragon.server.util.ItemUtils;
@@ -52,9 +53,11 @@ public class DragonOrbControl {
     boolean oldTriggerHeld = triggerHeld;
 
     if (!ItemUtils.hasEquipped(entityPlayerSP, DragonMounts.proxy.itemDragonOrb)) {
+      enableClickInterception(false);
       triggerHeld = false;
     } else {
-      triggerHeld = entityPlayerSP.isUsingItem();
+      enableClickInterception(true);
+      triggerHeld = useItemButtonInterceptor.isUnderlyingKeyDown();
       if (triggerHeld) {
         final float MAX_ORB_RANGE = 20.0F;
         MovingObjectPosition mop = RayTraceServer.getMouseOver(entityPlayerSP.getEntityWorld(), entityPlayerSP, MAX_ORB_RANGE);
@@ -116,4 +119,25 @@ public class DragonOrbControl {
     network = i_network;
     lastTargetSent = null;
   }
+
+  public static KeyBindingInterceptor attackButtonInterceptor;
+  public static KeyBindingInterceptor useItemButtonInterceptor;
+
+  public static void initialiseInterceptors()
+  {
+    attackButtonInterceptor = new KeyBindingInterceptor(Minecraft.getMinecraft().gameSettings.keyBindAttack);
+    Minecraft.getMinecraft().gameSettings.keyBindAttack = attackButtonInterceptor;
+    attackButtonInterceptor.setInterceptionActive(false);
+
+    useItemButtonInterceptor = new KeyBindingInterceptor(Minecraft.getMinecraft().gameSettings.keyBindUseItem);
+    Minecraft.getMinecraft().gameSettings.keyBindUseItem = useItemButtonInterceptor;
+    useItemButtonInterceptor.setInterceptionActive(false);
+  }
+
+  public static void enableClickInterception(boolean interception)
+  {
+    useItemButtonInterceptor.setInterceptionActive(interception);
+    attackButtonInterceptor.setInterceptionActive(interception);
+  }
+
 }

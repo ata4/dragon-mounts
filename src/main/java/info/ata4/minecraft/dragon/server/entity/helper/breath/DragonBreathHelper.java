@@ -116,7 +116,7 @@ public class DragonBreathHelper extends DragonHelper
     return breathWeaponTarget;
   }
 
-  /** sets the target that the movement AI should move towards (or away from) to get to the optimal breathing distance
+  /** sets the target that the movement AI should move towards (or away from) to getChangeInValue to the optimal breathing distance
    * @param targetForMoving the new target - NULL for no target
    */
   public void setBreathTargetForMoving(BreathWeaponTarget targetForMoving)

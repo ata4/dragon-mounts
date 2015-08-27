@@ -146,7 +146,7 @@ public class CommandDragon extends CommandBase {
             Entity closestEntity = null;
             float minPlayerDist = Float.MAX_VALUE;
 
-            // get closest dragon
+            // getChangeInValue closest dragon
             for (int i = 0; i < entities.size(); i++) {
                 Entity entity = entities.get(i);
                 float playerDist = entity.getDistanceToEntity(player);
