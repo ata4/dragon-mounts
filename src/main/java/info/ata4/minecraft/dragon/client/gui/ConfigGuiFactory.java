@@ -1,7 +1,7 @@
 package info.ata4.minecraft.dragon.client.gui;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import minecraftbyexample.MinecraftByExample;
+import info.ata4.minecraft.dragon.DragonMountsConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
@@ -32,7 +32,7 @@ public class ConfigGuiFactory implements IModGuiFactory
 	@Override
 	public Class<? extends GuiScreen> mainConfigGuiClass()
 	{
-		return MBEConfigGui.class; //tells Forge which class represents our main GUI screen
+		return DragonMountConfigGui.class; //tells Forge which class represents our main GUI screen
 	}
 	
 	//The following two functions are needed for implementation only, the config gui does not require them
@@ -50,9 +50,9 @@ public class ConfigGuiFactory implements IModGuiFactory
 	
 	//This class inherits from GuiConfig, a specialized GuiScreen designed to display your
 	// configuration categories
-	public static class MBEConfigGui extends GuiConfig
+	public static class DragonMountConfigGui extends GuiConfig
 	{
-		public MBEConfigGui(GuiScreen parentScreen)
+		public DragonMountConfigGui(GuiScreen parentScreen)
 		{
 			//I18n function basically "translates" or localizes the given key using the appropriate .lang file
 			super(parentScreen, getConfigElements(), DragonMounts.ID,
@@ -86,14 +86,14 @@ public class ConfigGuiFactory implements IModGuiFactory
 				//Additionally, Forge best practices say to put the path to the config file for the category as
 				// the title for the category config screen
 
-        Configuration configuration = MBEConfiguration.getConfig();
-        ConfigElement cat_general = new ConfigElement(configuration.getCategory(MBEConfiguration.CATEGORY_NAME_GENERAL));
+        Configuration configuration = DragonMounts.instance.getConfig().getConfig();
+        ConfigElement cat_general = new ConfigElement(configuration.getCategory(DragonMountsConfig.CATEGORY_NAME_OPTIONS));
         List<IConfigElement> propertiesOnThisScreen = cat_general.getChildElements();
         String windowTitle = configuration.toString();
 
         return new GuiConfig(this.owningScreen, propertiesOnThisScreen,
                               this.owningScreen.modID,
-                              MBEConfiguration.CATEGORY_NAME_GENERAL,
+                              DragonMountsConfig.CATEGORY_NAME_OPTIONS,
                               this.configElement.requiresWorldRestart() || this.owningScreen.allRequireWorldRestart,
                               this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
                               windowTitle);
@@ -112,14 +112,14 @@ public class ConfigGuiFactory implements IModGuiFactory
 			@Override
 			protected GuiScreen buildChildScreen()
 			{
-        Configuration configuration = MBEConfiguration.getConfig();
-        ConfigElement cat_general = new ConfigElement(configuration.getCategory(MBEConfiguration.CATEGORY_NAME_OTHER));
+        Configuration configuration = DragonMounts.instance.getConfig().getConfig();
+        ConfigElement cat_general = new ConfigElement(configuration.getCategory(DragonMountsConfig.CATEGORY_NAME_DEBUG));
         List<IConfigElement> propertiesOnThisScreen = cat_general.getChildElements();
         String windowTitle = configuration.toString();
 
         return new GuiConfig(this.owningScreen, propertiesOnThisScreen,
                              this.owningScreen.modID,
-                             MBEConfiguration.CATEGORY_NAME_OTHER,
+                             DragonMountsConfig.CATEGORY_NAME_DEBUG,
                              this.configElement.requiresWorldRestart() || this.owningScreen.allRequireWorldRestart,
                              this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
                              windowTitle);

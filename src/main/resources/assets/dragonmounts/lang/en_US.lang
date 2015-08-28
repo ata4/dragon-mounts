@@ -26,3 +26,21 @@ key.dragon.flyDown=Fly Down
 
 attribute.name.generic.movementSpeedAir=Speed (Air)
 
+gui.config.maintitle=DragonMounts configuration
+gui.config.category.options=Options
+gui.config.category.options.tooltip=Options
+gui.config.category.debug=Debug Settings
+gui.config.category.debug.tooltip=Debug Settings
+
+gui.config.options.eggs_in_chest=Eggs In Chest
+gui.config.options.orb_target_auto_lock=Target Autolock
+gui.config.options.orb_highlight_target=Target Highlight
+gui.config.debug.dragon_entity_id=EntityID
+gui.config.debug.debug=Debug Mode
+gui.config.options.eggs_in_chest.tooltip=Spawn dragon eggs in generated chests
+gui.config.options.orb_target_auto_lock.tooltip=Clicking the dragon orb locks on to the target until released
+gui.config.options.orb_highlight_target.tooltip=The dragon orb shows a highlight around the target
+gui.config.debug.dragon_entity_id.tooltip=Overrides the entity ID for dragons to fix problems with manual IDs from other mods.  -1 = auto.
+gui.config.debug.debug.tooltip=Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.
+
+

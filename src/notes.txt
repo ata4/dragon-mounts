@@ -6,20 +6,20 @@ OK dragon sounds roar juvenile
 - test with built version; dedicated server version
 OK- breath effect on entities
 OK- breath effect on blocks
-- breath immunity for player holding orb? for rider
 OK- dragon should not burn itself
 - dragon breath position not correct when hovering
-- add flying motion vector to breath vector?
 OK ignore click on block
 OK small breath beam still hits player who is nowhere near
 OK after a flammable block takes enough damage, destroy it (rain puts out fire)
-- aiming is awkward when riding the dragon.
 
 later
 - different breath types
 - dragon can fly around without rider
--change to configuration screen
--visual targeting indication
+OK change to configuration screen
+OK visual targeting indication
+- breath immunity for player holding orb? for rider
+- add flying motion vector to breath vector?
+- aiming is awkward when riding the dragon.
 
 
 DataWatcher usage:
