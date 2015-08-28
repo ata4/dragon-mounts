@@ -29,10 +29,10 @@ public class RayTraceServer
             lookDirection.yCoord * maxDistance,
             lookDirection.zCoord * maxDistance);
     final boolean STOP_ON_LIQUID = true;
-    final boolean IGNORE_BOUNDING_BOX = false;
+    final boolean IGNORE_BOUNDING_BOX = true;
     final boolean RETURN_NULL_IF_NO_COLLIDE = true;
     MovingObjectPosition targetedBlock = world.rayTraceBlocks(positionEyes, endOfLook,
-            STOP_ON_LIQUID, IGNORE_BOUNDING_BOX,
+            STOP_ON_LIQUID, !IGNORE_BOUNDING_BOX,
             !RETURN_NULL_IF_NO_COLLIDE);
 
     double collisionDistanceSQ = maxDistance * maxDistance;

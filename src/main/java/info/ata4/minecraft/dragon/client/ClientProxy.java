@@ -13,6 +13,7 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
 import info.ata4.minecraft.dragon.client.handler.DragonControl;
 import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
+import info.ata4.minecraft.dragon.client.handler.TargetHighlighter;
 import info.ata4.minecraft.dragon.client.handler.TextureStitcherBreathFX;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import netscape.security.Target;
 
 import java.io.File;
 
@@ -40,6 +42,7 @@ public class ClientProxy extends CommonProxy {
     public void onPreInit(FMLPreInitializationEvent evt)
     {
       super.onPreInit(evt);
+      DragonMounts.instance.getConfig().clientInit();
       MinecraftForge.EVENT_BUS.register(new TextureStitcherBreathFX());
     }
 
@@ -65,6 +68,7 @@ public class ClientProxy extends CommonProxy {
       DragonOrbControl.createSingleton(getNetwork());
       DragonOrbControl.initialiseInterceptors();
       FMLCommonHandler.instance().bus().register(DragonOrbControl.getInstance());
+      MinecraftForge.EVENT_BUS.register(new TargetHighlighter());
     }
 
   /**

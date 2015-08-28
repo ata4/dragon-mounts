@@ -119,7 +119,19 @@ public class BreathWeaponTarget
     }
     switch (movingObjectPosition.typeOfHit) {
       case BLOCK: {
-        return targetLocation(movingObjectPosition.hitVec);
+        // when the side of a block is hit, we can't tell which block it was, because the hitVec is on the boundary.
+        //  to solve this, we push the hitVec back off the boundary if this is the zpos, ypos, or xpos face
+        final double NUDGE = 0.001;
+        switch (movingObjectPosition.sideHit) {
+          case EAST:
+            return targetLocation(movingObjectPosition.hitVec.subtract(NUDGE, 0, 0));
+          case UP:
+            return targetLocation(movingObjectPosition.hitVec.subtract(0, NUDGE, 0));
+          case SOUTH:
+            return targetLocation(movingObjectPosition.hitVec.subtract(0, 0, NUDGE));
+          default:
+            return targetLocation(movingObjectPosition.hitVec);
+        }
       }
       case ENTITY: {
         return targetEntity(movingObjectPosition.entityHit);

@@ -55,12 +55,14 @@ public class DragonOrbControl {
     if (!ItemUtils.hasEquipped(entityPlayerSP, DragonMounts.proxy.itemDragonOrb)) {
       enableClickInterception(false);
       triggerHeld = false;
+      targetBeingLookedAt = null;
     } else {
       enableClickInterception(true);
-      triggerHeld = useItemButtonInterceptor.isUnderlyingKeyDown();
+      final float MAX_ORB_RANGE = 20.0F;
+      MovingObjectPosition mop = RayTraceServer.getMouseOver(entityPlayerSP.getEntityWorld(), entityPlayerSP, MAX_ORB_RANGE);
+      targetBeingLookedAt = BreathWeaponTarget.fromMovingObjectPosition(mop, entityPlayerSP);
+      triggerHeld = attackButtonInterceptor.isUnderlyingKeyDown();
       if (triggerHeld) {
-        final float MAX_ORB_RANGE = 20.0F;
-        MovingObjectPosition mop = RayTraceServer.getMouseOver(entityPlayerSP.getEntityWorld(), entityPlayerSP, MAX_ORB_RANGE);
         breathWeaponTarget = BreathWeaponTarget.fromMovingObjectPosition(mop, entityPlayerSP);
       }
     }
@@ -109,9 +111,19 @@ public class DragonOrbControl {
     }
   }
 
+  /**
+   * Get the block or entity that the dragon orb cursor is currently pointing at
+   * @return BreathWeaponTarget, or null for none
+   */
+  public BreathWeaponTarget getTargetBeingLookedAt()
+  {
+    return targetBeingLookedAt;
+  }
+
   private boolean triggerHeld = false;
   private BreathWeaponTarget breathWeaponTarget;
   private BreathWeaponTarget lastTargetSent;
+  private BreathWeaponTarget targetBeingLookedAt;
 
   private static DragonOrbControl instance = null;
 
@@ -120,8 +132,8 @@ public class DragonOrbControl {
     lastTargetSent = null;
   }
 
-  public static KeyBindingInterceptor attackButtonInterceptor;
-  public static KeyBindingInterceptor useItemButtonInterceptor;
+  private static KeyBindingInterceptor attackButtonInterceptor;
+  private static KeyBindingInterceptor useItemButtonInterceptor;
 
   public static void initialiseInterceptors()
   {
@@ -129,14 +141,14 @@ public class DragonOrbControl {
     Minecraft.getMinecraft().gameSettings.keyBindAttack = attackButtonInterceptor;
     attackButtonInterceptor.setInterceptionActive(false);
 
-    useItemButtonInterceptor = new KeyBindingInterceptor(Minecraft.getMinecraft().gameSettings.keyBindUseItem);
-    Minecraft.getMinecraft().gameSettings.keyBindUseItem = useItemButtonInterceptor;
-    useItemButtonInterceptor.setInterceptionActive(false);
+//    useItemButtonInterceptor = new KeyBindingInterceptor(Minecraft.getMinecraft().gameSettings.keyBindUseItem);
+//    Minecraft.getMinecraft().gameSettings.keyBindUseItem = useItemButtonInterceptor;
+//    useItemButtonInterceptor.setInterceptionActive(false);
   }
 
   public static void enableClickInterception(boolean interception)
   {
-    useItemButtonInterceptor.setInterceptionActive(interception);
+//    useItemButtonInterceptor.setInterceptionActive(interception);
     attackButtonInterceptor.setInterceptionActive(interception);
   }
 
