@@ -17,7 +17,7 @@ later
 - dragon can fly around without rider
 OK change to configuration screen
 OK visual targeting indication
-- breath immunity for player holding orb? for rider
+OK breath immunity for player holding orb? for rider
 - add flying motion vector to breath vector?
 - aiming is awkward when riding the dragon.
 

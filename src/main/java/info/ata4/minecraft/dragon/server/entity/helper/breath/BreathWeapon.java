@@ -1,6 +1,10 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
+import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.DragonMountsConfig;
+import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -8,6 +12,7 @@ import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumDyeColor;
@@ -220,7 +225,8 @@ public class BreathWeapon
   private HashMap<Block, BlockBurnProperties> blockBurnPropertiesCache = new HashMap<Block, BlockBurnProperties>();
 
   /** if the hitDensity is high enough, manipulate the entity (eg set fire to it, damage it)
-   * A dragon can't be damaged by its own breathweapon.
+   * A dragon can't be damaged by its own breathweapon;
+   * If the "orbholder immune" option is on, and the entity is a player holding a dragon orb, ignore damage.
    * @param world
    * @param entityID  the ID of the affected entity
    * @param currentHitDensity the hit density
@@ -234,10 +240,19 @@ public class BreathWeapon
 
     if (entityID == dragon.getEntityId()) return null;
 
-      Entity entity = world.getEntityByID(entityID);
+    Entity entity = world.getEntityByID(entityID);
     if (entity == null || !(entity instanceof EntityLivingBase) || entity.isDead) {
       return null;
     }
+
+    if (entity instanceof EntityPlayer) {
+      EntityPlayer entityPlayer = (EntityPlayer)entity;
+      if (DragonMounts.instance.getConfig().isOrbHolderImmune()
+          && ItemUtils.hasEquipped(entityPlayer, DragonMounts.instance.proxy.itemDragonOrb)) {
+        return null;
+      }
+    }
+
 
 //    System.out.println("Burn " + entity + "=" + entity.getName() + ":" + currentHitDensity.getHitDensity()); //todo remove
 

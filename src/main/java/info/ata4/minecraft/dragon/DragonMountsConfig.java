@@ -51,6 +51,7 @@ public class DragonMountsConfig
   private boolean debug = false;
   private boolean orbTargetAutoLock = true;
   private boolean orbHighlightTarget = true;
+  private boolean orbHolderImmune = true;
 
   public DragonMountsConfig(Configuration i_config)
   {
@@ -90,6 +91,8 @@ public class DragonMountsConfig
   {
     return orbHighlightTarget;
   }
+
+  public boolean isOrbHolderImmune() {return orbHolderImmune;}
 
   public static final String CATEGORY_NAME_OPTIONS = "category_options";
   public static final String CATEGORY_NAME_DEBUG = "category_debug";
@@ -184,8 +187,13 @@ public class DragonMountsConfig
 
     final boolean DEFAULT_HIGHLIGHT = true;
     Property propOrbHighlightTarget = config.get(CATEGORY_NAME_OPTIONS, "orbHighlightTarget", DEFAULT_HIGHLIGHT);
-    propOrbHighlightTarget.comment = "Should the dragon orb show a highlight around the target";
+    propOrbHighlightTarget.comment = "Should the dragon orb show a highlight around the target?";
     propOrbHighlightTarget.setLanguageKey("gui.config.options.orb_highlight_target");
+
+    final boolean DEFAULT_IMMUNE = true;
+    Property propOrbHolderImmune = config.get(CATEGORY_NAME_OPTIONS, "orbHolderImmune", DEFAULT_IMMUNE);
+    propOrbHolderImmune.comment = "Is the orb holder immune to dragon breath?";
+    propOrbHolderImmune.setLanguageKey("gui.config.options.orb_holder_immune");
 
     final int DEFAULT_ENTITY_ID_AUTOASSIGN = -1;
     final int MIN_ENTITY_ID = -1;
@@ -208,6 +216,7 @@ public class DragonMountsConfig
     List<String> propOrderOptions = new ArrayList<String>();
     propOrderOptions.add(propOrbHighlightTarget.getName()); //push the config value's name into the ordered list
     propOrderOptions.add(propOrbTargetAutoLock.getName());
+    propOrderOptions.add(propOrbHolderImmune.getName());
     propOrderOptions.add(propEggsInChests.getName());
     config.setCategoryPropertyOrder(CATEGORY_NAME_OPTIONS, propOrderOptions);
 
@@ -229,6 +238,7 @@ public class DragonMountsConfig
       eggsInChests = propEggsInChests.getBoolean(DEFAULT_EGGS_IN_CHEST);
       orbTargetAutoLock = propOrbTargetAutoLock.getBoolean(DEFAULT_AUTOLOCK);
       orbHighlightTarget = propOrbHighlightTarget.getBoolean(DEFAULT_HIGHLIGHT);
+      orbHolderImmune = propOrbHolderImmune.getBoolean(DEFAULT_IMMUNE);
       dragonEntityID = propDragonEntityID.getInt(DEFAULT_ENTITY_ID_AUTOASSIGN);
       if (dragonEntityID > MAX_ENTITY_ID || dragonEntityID < MIN_ENTITY_ID) {
         dragonEntityID = DEFAULT_ENTITY_ID_AUTOASSIGN;
@@ -244,6 +254,7 @@ public class DragonMountsConfig
     propEggsInChests.set(eggsInChests);
     propOrbTargetAutoLock.set(orbTargetAutoLock);
     propOrbHighlightTarget.set(orbHighlightTarget);
+    propOrbHolderImmune.set(orbHolderImmune);
     propDragonEntityID.set(dragonEntityID);
     propDebug.set(debug);
 

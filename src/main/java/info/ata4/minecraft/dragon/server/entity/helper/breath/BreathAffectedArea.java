@@ -254,7 +254,7 @@ public class BreathAffectedArea
                       }
                       currentDensity.addHitDensity(nodeLineSegments.get(i).getSegmentDirection(), hitDensity);
                       affectedEntities.put(entityID, currentDensity);
-                      System.out.format("hitDensity: %.3f\n", currentDensity.getHitDensity()); //todo remove
+//                      System.out.format("hitDensity: %.3f\n", currentDensity.getHitDensity()); //todo remove
                     }
                   }
                 }
