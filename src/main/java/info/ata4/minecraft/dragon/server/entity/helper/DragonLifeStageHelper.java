@@ -311,7 +311,7 @@ public class DragonLifeStageHelper extends DragonHelper {
             return;
         }
 
-      // animate egg wiggle based on the time the eggs take to hatch
+      // updateFromAnimator egg wiggle based on the time the eggs take to hatch
         int age = getTicksSinceCreation();
         int hatchAge = DragonLifeStage.HATCHLING.getDurationInTicks();
         float fractionComplete = age / (float)hatchAge;

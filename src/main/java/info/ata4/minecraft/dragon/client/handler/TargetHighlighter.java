@@ -98,7 +98,7 @@ public class TargetHighlighter
    * @param aabb the aabb to draw
    * @param entityPlayer used to offset based on player's eye position
    * @param partialTick
-   * @param animationTimerMS a timer used to animate the bounding box (expands & contracts). 0 = no effect.  Elapsed
+   * @param animationTimerMS a timer used to updateFromAnimator the bounding box (expands & contracts). 0 = no effect.  Elapsed
    *                         time in milliseconds.
    */
   private void drawAABB(AxisAlignedBB aabb, EntityPlayer entityPlayer, double partialTick, int animationTimerMS,

@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
+import info.ata4.minecraft.dragon.client.model.anim.DragonAnimatorCommon;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
@@ -60,7 +60,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public static final float BASE_HEIGHT = 3f;
     public static final int HOME_RADIUS = 256;
     public static final Item FAVORITE_FOOD = Items.fish;
-    
+
     // data value IDs
     private static final int INDEX_SADDLED = 20;
     private static final int INDEX_BREEDER = 21;
@@ -75,12 +75,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     // server/client delegates
     private Map<Class, DragonHelper> helpers;
 
-    private DragonHeadPositionHelper dragonHeadPositionHelper;
+//    private DragonHeadPositionHelper dragonHeadPositionHelper;
 
-    public DragonHeadPositionHelper getDragonHeadPositionHelper() { return dragonHeadPositionHelper;}
+//    public DragonHeadPositionHelper getDragonHeadPositionHelper() { return dragonHeadPositionHelper;}
 
-    // client-only delegates
-    private DragonAnimator animator;
+    private DragonAnimatorCommon animator;
     
     // server-only flags
     private BitSet controlFlags;
@@ -111,7 +110,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         // enables walking over blocks
         stepHeight = 1;
-        dragonHeadPositionHelper = new DragonHeadPositionHelper(this);
     }
     
     @Override
@@ -130,9 +128,19 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         }
         
         // don't use this on server side or you're asking for trouble!
-        if (isClient()) {
-            animator = new DragonAnimator(this);
-        }
+//        if (isClient()) {
+            animator = new DragonAnimatorCommon(this);
+//        }
+
+//      dragonHeadPositionHelper = new DragonHeadPositionHelper(this, getBreed().getNumberOfNeckSegments());
+      //todo initialise the animator somehow...
+//      animator.animate();
+//      dragonHeadPositionHelper.calculateHeadAndNeckDefaults();
+//      DragonHeadPositionHelper headPositionHelper = getDragonHeadPositionHelper();
+//
+//      float bodyPitch = getModelPitch();
+//      headPositionHelper.calculateHeadAndNeck(animBase, flutter, sit, walk, speed, ground,
+//                                              lookYaw, lookPitch, bodyPitch, breath);
     }
 
     @Override
@@ -255,13 +263,10 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             for (DragonHelper helper : helpers.values()) {
                 helper.onLivingUpdate();
             }
-
-            if (isClient()) {
-              if (!isEgg()) {
-                  animator.setOnGround(!isFlying());
-                  animator.update();
-              }
-            } else {
+          animator.setOnGround(!isFlying());
+          animator.update();
+          animator.animate();
+            if (isServer()) {
                 // set home position near owner when tamed
                 //  setHomeArea renamed to EntityCreature.func_175449_a()
                 if (isTamed()) {
@@ -734,7 +739,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         return getReproductionHelper().createChild(mate);
     }
     
-    public DragonAnimator getAnimator() {
+    public DragonAnimatorCommon getAnimator() {
         return animator;
     }
     

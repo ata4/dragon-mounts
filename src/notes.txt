@@ -12,6 +12,10 @@ OK ignore click on block
 OK small breath beam still hits player who is nowhere near
 OK after a flammable block takes enough damage, destroy it (rain puts out fire)
 
+hatchling repeatedly opens & closes mouth when trying to breathe
+
+HeadPositionNumbers on client & server don't match up.
+
 later
 - different breath types
 - dragon can fly around without rider

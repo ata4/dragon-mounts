@@ -232,7 +232,7 @@ public class DragonBreathHelper extends DragonHelper
     updateBreathState(target);
 
     if (target != null) {
-      Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+      Vec3 origin = dragon.getAnimator().getThroatPosition();
       Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);
       if (destination != null && currentBreathState == BreathState.SUSTAIN) {
         BreathNode.Power power = dragon.getLifeStageHelper().getBreathPower();
@@ -248,7 +248,7 @@ public class DragonBreathHelper extends DragonHelper
     updateBreathState(target);
 
     if (target != null) {
-      Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+      Vec3 origin = dragon.getAnimator().getThroatPosition();
       Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);
       if (destination != null && currentBreathState == BreathState.SUSTAIN) {
         breathWeaponEmitter.setBeamEndpoints(origin, destination);
@@ -275,7 +275,12 @@ public class DragonBreathHelper extends DragonHelper
     @Override
     public boolean refreshWeaponSoundInfo(SoundEffectBreathWeapon.WeaponSoundInfo infoToUpdate) {
       BreathWeaponTarget target = getTarget();
-      Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+      Vec3 origin;
+//      try {
+        origin = dragon.getAnimator().getThroatPosition();
+//      } catch (IllegalStateException ise) {  // if dragon isn't ready yet, just ignore.
+//        origin = new Vec3(0,0,0);
+//      }
       infoToUpdate.dragonHeadLocation = origin;
       infoToUpdate.relativeVolume = dragon.getScale();
       infoToUpdate.lifeStage = dragon.getLifeStageHelper().getLifeStage();

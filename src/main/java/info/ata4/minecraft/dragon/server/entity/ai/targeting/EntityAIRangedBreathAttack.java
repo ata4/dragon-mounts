@@ -163,7 +163,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
    */
   private boolean areHeadAnglesWithinTolerance()
   {
-    Vec3 origin = dragon.getDragonHeadPositionHelper().getThroatPosition();
+    Vec3 origin = dragon.getAnimator().getThroatPosition();
     Vec3 targetedPoint = currentTarget.getTargetedPoint(dragon.worldObj, origin);
     if (targetedPoint == null) return false;
     double deltaX = targetedPoint.xCoord - origin.xCoord;

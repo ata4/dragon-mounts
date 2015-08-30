@@ -134,11 +134,15 @@ public class DragonBreed {
         return DragonMounts.AID + ":mob.enderdragon.death";
     }
 
-
-
-
     @Override
     public String toString() {
         return name;
     }
+
+    public int getNumberOfNeckSegments() {return 7;}
+
+    public int getNumberOfTailSegments() {return 12;}
+
+    public int getNumberOfWingFingers() {return 4;}
+
 }

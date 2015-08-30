@@ -6,20 +6,145 @@ import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
-import java.util.Random;
-
 /**
 * Created by TGG on 24/06/2015.
+ *
+ * Usage:
+ * 1) Caller should use setHeadLocation to provide details of where the head is rotated relative to the body
+ * 2) Caller should use setBodyPitch to tell the pitch of the dragon's body
+ * 3) call getThroatPosition() to get the [x,y,z] position of the throat.
 */
 public class DragonHeadPositionHelper
 {
-  public DragonHeadPositionHelper(EntityTameableDragon parent)
+  public DragonHeadPositionHelper(EntityTameableDragon parent, int i_numberOfNeckSegments)
   {
     dragon = parent;
+    NUMBER_OF_NECK_SEGMENTS = i_numberOfNeckSegments;
   }
 
+  /** calculate the position, rotation angles, and scale of the head and all segments in the neck
+   * @param animBase
+   * @param flutter
+   * @param sit
+   * @param walk
+   * @param speed
+   * @param ground
+   * @param lookYaw
+   * @param lookPitch
+   * @param bodyPitch
+   * @param breath
+   */
+  public void calculateHeadAndNeck(float animBase, float flutter, float sit, float walk, float speed, float ground,
+                                   float lookYaw, float lookPitch, float bodyPitch, float breath)
+  {
+    neckSegments = new SegmentSizePositionRotation[NUMBER_OF_NECK_SEGMENTS];
+    head = new SegmentSizePositionRotation();
+    SegmentSizePositionRotation currentSegment = new SegmentSizePositionRotation();
+
+    currentSegment.rotationPointX = 0;
+    currentSegment.rotationPointY = 14;
+    currentSegment.rotationPointZ = -8;
+    currentSegment.rotateAngleX = 0;
+    currentSegment.rotateAngleY = 0;
+    currentSegment.rotateAngleZ = 0;
+
+    double health = dragon.getHealthRelative();
+    for (int i = 0; i < NUMBER_OF_NECK_SEGMENTS; i++) {
+      float vertMulti = (i + 1) / (float)NUMBER_OF_NECK_SEGMENTS;
+
+      float baseRotX = MathX.cos((float) i * 0.45f + animBase) * 0.15f;
+      baseRotX *= MathX.lerp(0.2f, 1, flutter);
+      baseRotX *= MathX.lerp(1, 0.2f, sit);
+      float ofsRotX = MathX.sin(vertMulti * MathX.PI_F * 0.9f) * 0.75f;
+
+      // basic up/down movement
+      currentSegment.rotateAngleX = baseRotX;
+      // reduce rotation when on ground
+      currentSegment.rotateAngleX *= MathX.slerp(1, 0.5f, walk);
+      // flex neck down when hovering
+      currentSegment.rotateAngleX += (1 - speed) * vertMulti;
+      // lower neck on low health
+      currentSegment.rotateAngleX -= MathX.lerp(0, ofsRotX, ground * health);
+      // use looking yaw
+      currentSegment.rotateAngleY = MathX.toRadians(lookYaw) * vertMulti * speed;
+
+      // update size (scale)
+      currentSegment.scaleX = currentSegment.scaleY = MathX.lerp(1.6f, 1, vertMulti);
+      currentSegment.scaleZ = 0.6f;
+
+      // todo copy into animator
+//
+//      // hide the first and every second scale
+//      model.neckScale.isHidden = i % 2 != 0 || i == 0;
+//
+//      // update proxy
+//      model.neckProxy[i].update();
+
+      neckSegments[i] = currentSegment.getCopy();
+
+      // move next segment behind the current one
+      float neckSize = DragonModel.NECK_SIZE * currentSegment.scaleZ - 1.4f;
+      currentSegment.rotationPointX -= MathX.sin(currentSegment.rotateAngleY) * MathX.cos(currentSegment.rotateAngleX) * neckSize;
+      currentSegment.rotationPointY += MathX.sin(currentSegment.rotateAngleX) * neckSize;
+      currentSegment.rotationPointZ -= MathX.cos(currentSegment.rotateAngleY) * MathX.cos(currentSegment.rotateAngleX) * neckSize;
+    }
+    neck = currentSegment.getCopy();  // might not be required, not sure, so do it anyway...
+
+    final float HEAD_TILT_DURING_BREATH = -0.1F;
+    head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed) + breath * HEAD_TILT_DURING_BREATH;
+    head.rotateAngleY = currentSegment.rotateAngleY;
+    head.rotateAngleZ = currentSegment.rotateAngleZ * 0.2f;
+
+    head.rotationPointX = currentSegment.rotationPointX;
+    head.rotationPointY = currentSegment.rotationPointY;
+    head.rotationPointZ = currentSegment.rotationPointZ;
+
+    // todo copy to animator
+//    final float BITE_ANGLE = 0.75F;
+//    final float BREATH_ANGLE = 0.75F;
+//    model.jaw.rotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
+//    model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
+  }
+
+  public SegmentSizePositionRotation getHeadPositionSizeLocation()
+  {
+    if (head == null) {
+      throw new IllegalStateException("DragonHeadPositionHelper.calculateHeadAndNeck() must be called first");
+    }
+    return head.getCopy();
+  }
+
+  public SegmentSizePositionRotation getNeckPositionSizeLocation()
+  {
+    if (neck == null) {
+      throw new IllegalStateException("DragonHeadPositionHelper.calculateHeadAndNeck() must be called first");
+    }
+    return neck.getCopy();
+  }
+
+  public SegmentSizePositionRotation[] getNeckSegmentPositionSizeLocations()
+  {
+    if (neckSegments == null) {
+      throw new IllegalStateException("DragonHeadPositionHelper.calculateHeadAndNeck() must be called first");
+    }
+    SegmentSizePositionRotation[] retval = new SegmentSizePositionRotation[neckSegments.length];
+    for (int i = 0; i < neckSegments.length; ++i) {
+      retval[i] = neckSegments[i].getCopy();
+    }
+    return retval;
+  }
+
+  /** Calculate the position of the dragon's throat
+   * Must have previously called calculateHeadAndNeck()
+   * @return the world [x,y,z] of the throat
+   */
   public Vec3 getThroatPosition()
   {
+    if (head == null) {
+      throw new IllegalStateException("DragonHeadPositionHelper.calculateHeadAndNeck() must be called first");
+    }
+
+    System.out.println((dragon.worldObj.isRemote ? "client:" : "server:") + head);
 //    float eyeHeight = dragon.getEyeHeight();
 //    Vec3 posVec = dragon.getPositionVector();
 //    float yaw = dragon.rotationYaw;
@@ -56,9 +181,9 @@ public class DragonHeadPositionHelper
     final float THROAT_Y_OFFSET = -8;
     final float THROAT_Z_OFFSET = -17;
 
-    Vec3 headOffset =  new Vec3((headLocation.rotationPointX + HEAD_X_OFFSET) * BODY_X_SCALE,
-                                (headLocation.rotationPointY + HEAD_Y_OFFSET) * BODY_Y_SCALE,
-                                (headLocation.rotationPointZ + HEAD_Z_OFFSET) * BODY_Z_SCALE);
+    Vec3 headOffset =  new Vec3((head.rotationPointX + HEAD_X_OFFSET) * BODY_X_SCALE,
+                                (head.rotationPointY + HEAD_Y_OFFSET) * BODY_Y_SCALE,
+                                (head.rotationPointZ + HEAD_Z_OFFSET) * BODY_Z_SCALE);
 
     // offset of the throat position relative to the head origin- rotate and pitch to match head
 
@@ -66,8 +191,8 @@ public class DragonHeadPositionHelper
             THROAT_Y_OFFSET * HEAD_Y_SCALE,
             THROAT_Z_OFFSET * HEAD_Z_SCALE);
 
-    throatOffset = throatOffset.rotatePitch(headLocation.rotateAngleX);
-    throatOffset = throatOffset.rotateYaw(-headLocation.rotateAngleY);
+    throatOffset = throatOffset.rotatePitch(head.rotateAngleX);
+    throatOffset = throatOffset.rotateYaw(-head.rotateAngleY);
 
 //    Random random = new Random();
 //    if (random.nextBoolean()) {
@@ -117,29 +242,13 @@ public class DragonHeadPositionHelper
     return new Vec3(d0, d1, d2);
   }
 
-  public void setHeadLocation(HeadLocation headLocation) {
-    this.headLocation = headLocation;
-  }
+//  public void setSegmentSizePositionRotation(SegmentSizePositionRotation segmentSizePositionRotation) {
+//    this.head = segmentSizePositionRotation;
+//  }
 
-  public static class HeadLocation
-  {
-    public float rotationPointX;
-    public float rotationPointY;
-    public float rotationPointZ;
-    public float rotateAngleX;
-    public float rotateAngleY;
-    public float rotateAngleZ;
-
-    @Override
-    public String toString()
-    {
-      return "rotationPoint [" + rotationPointX + ", " + rotationPointY + ", " + rotationPointZ + "], "
-              + "rotateAngleX [" + rotateAngleX + ", " + rotateAngleY + ", " + rotateAngleZ + "]";
-    }
-  }
-
-  private HeadLocation headLocation = new HeadLocation();
-
+  private SegmentSizePositionRotation[] neckSegments;
+  private SegmentSizePositionRotation head;
+  private SegmentSizePositionRotation neck;  //not required?  not sure.
 
 //  // taken from DragonAnimator.animHeadAndNeck
 //  private HeadLocation calculateHeadPosition(EntityTameableDragon dragon) {
@@ -205,4 +314,6 @@ public class DragonHeadPositionHelper
 
 
   private EntityTameableDragon dragon;
+  private final int NUMBER_OF_NECK_SEGMENTS;
+
 }
