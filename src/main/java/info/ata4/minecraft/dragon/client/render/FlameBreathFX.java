@@ -50,6 +50,7 @@ public class FlameBreathFX extends EntityFX {
     breathNode.randomiseProperties(rand);
     Vec3 actualMotion = breathNode.getRandomisedStartingMotion(direction, rand);
 
+    actualMotion = new Vec3(0,0,0); //todo remove
     x += actualMotion.xCoord * partialTicksHeadStart;
     y += actualMotion.yCoord * partialTicksHeadStart;
     z += actualMotion.zCoord * partialTicksHeadStart;
@@ -142,6 +143,7 @@ public class FlameBreathFX extends EntityFX {
     tex.rotate90(random.nextInt(4));
 
     double scale = 0.1F * this.particleScale;
+    scale = 0.1F; //todo remove
     final double scaleLR = scale;
     final double scaleUD = scale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
