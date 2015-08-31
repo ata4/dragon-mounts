@@ -247,6 +247,9 @@ public class DragonBreathHelper extends DragonHelper
     BreathWeaponTarget target = getTarget();
     updateBreathState(target);
 
+    Vec3 vec3 = new Vec3(1, 0, 0); //todo remove
+    target = BreathWeaponTarget.targetDirection(vec3);  //todo remove
+
     if (target != null) {
       Vec3 origin = dragon.getAnimator().getThroatPosition();
       Vec3 destination = target.getTargetedPoint(dragon.worldObj, origin);

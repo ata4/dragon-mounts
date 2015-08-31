@@ -29,14 +29,15 @@ public class DragonHeadPositionHelper
    * @param walk
    * @param speed
    * @param ground
-   * @param lookYaw
+   * @param netLookYaw
    * @param lookPitch
    * @param bodyPitch
    * @param breath
    */
   public void calculateHeadAndNeck(float animBase, float flutter, float sit, float walk, float speed, float ground,
-                                   float lookYaw, float lookPitch, float bodyPitch, float breath)
+                                   float netLookYaw, float lookPitch, float bodyPitch, float breath)
   {
+//    System.out.format("%s bodyPitch=%.0f\n", (dragon.worldObj.isRemote ? "client:" : "server:                "), bodyPitch);  // todo remove
     neckSegments = new SegmentSizePositionRotation[NUMBER_OF_NECK_SEGMENTS];
     head = new SegmentSizePositionRotation();
     SegmentSizePositionRotation currentSegment = new SegmentSizePositionRotation();
@@ -66,21 +67,13 @@ public class DragonHeadPositionHelper
       // lower neck on low health
       currentSegment.rotateAngleX -= MathX.lerp(0, ofsRotX, ground * health);
       // use looking yaw
-      currentSegment.rotateAngleY = MathX.toRadians(lookYaw) * vertMulti * speed;
+      currentSegment.rotateAngleY = MathX.toRadians(netLookYaw) * vertMulti * speed;
 
       // update size (scale)
       currentSegment.scaleX = currentSegment.scaleY = MathX.lerp(1.6f, 1, vertMulti);
       currentSegment.scaleZ = 0.6f;
 
-      // todo copy into animator
-//
-//      // hide the first and every second scale
-//      model.neckScale.isHidden = i % 2 != 0 || i == 0;
-//
-//      // update proxy
-//      model.neckProxy[i].update();
-
-      neckSegments[i] = currentSegment.getCopy();
+       neckSegments[i] = currentSegment.getCopy();
 
       // move next segment behind the current one
       float neckSize = DragonModel.NECK_SIZE * currentSegment.scaleZ - 1.4f;
@@ -91,6 +84,8 @@ public class DragonHeadPositionHelper
     neck = currentSegment.getCopy();  // might not be required, not sure, so do it anyway...
 
     final float HEAD_TILT_DURING_BREATH = -0.1F;
+//    System.out.format("%s lookPitch=%.2f, speed=%.2f, breath=%.2f\n",
+//            (dragon.worldObj.isRemote ? "client:" : "server:"), lookPitch, speed, breath);
     head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed) + breath * HEAD_TILT_DURING_BREATH;
     head.rotateAngleY = currentSegment.rotateAngleY;
     head.rotateAngleZ = currentSegment.rotateAngleZ * 0.2f;
@@ -98,13 +93,7 @@ public class DragonHeadPositionHelper
     head.rotationPointX = currentSegment.rotationPointX;
     head.rotationPointY = currentSegment.rotationPointY;
     head.rotationPointZ = currentSegment.rotationPointZ;
-
-    // todo copy to animator
-//    final float BITE_ANGLE = 0.75F;
-//    final float BREATH_ANGLE = 0.75F;
-//    model.jaw.rotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
-//    model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
-  }
+   }
 
   public SegmentSizePositionRotation getHeadPositionSizeLocation()
   {
@@ -144,7 +133,7 @@ public class DragonHeadPositionHelper
       throw new IllegalStateException("DragonHeadPositionHelper.calculateHeadAndNeck() must be called first");
     }
 
-    System.out.println((dragon.worldObj.isRemote ? "client:" : "server:") + head);
+//    System.out.println((dragon.worldObj.isRemote ? "client:" : "server:") + head);  // todo remove
 //    float eyeHeight = dragon.getEyeHeight();
 //    Vec3 posVec = dragon.getPositionVector();
 //    float yaw = dragon.rotationYaw;
@@ -197,6 +186,15 @@ public class DragonHeadPositionHelper
 //    Random random = new Random();
 //    if (random.nextBoolean()) {
     Vec3 headPlusThroatOffset = headOffset.add(throatOffset);
+
+    float bodyPitch = dragon.getBodyPitch();
+//    bodyPitch = 60; // todo remove!
+
+    bodyPitch = (float)Math.toRadians(bodyPitch);
+    String before = headPlusThroatOffset.toString();
+    headPlusThroatOffset = headPlusThroatOffset.rotatePitch(-bodyPitch);
+    String after = headPlusThroatOffset.toString();
+    System.out.format("before=%s, after=%s\n", before, after);
 
     //rotate body
     headPlusThroatOffset = headPlusThroatOffset.rotateYaw((float) (Math.toRadians(-renderYawOffset) + Math.PI));
@@ -311,7 +309,6 @@ public class DragonHeadPositionHelper
 //    model.jaw.rotateAngleX = jaw * 0.75f;
 //    model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
 //  }
-
 
   private EntityTameableDragon dragon;
   private final int NUMBER_OF_NECK_SEGMENTS;

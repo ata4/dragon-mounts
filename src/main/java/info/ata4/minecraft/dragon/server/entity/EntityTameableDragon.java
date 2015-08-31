@@ -17,6 +17,7 @@ import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.entity.helper.breath.DragonBreathHelper;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
+import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -223,11 +224,20 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 //    String sidePreText = isClient() ? "Client" : "Server";
 //    DataLogger.logData(sidePreText + "-SetRotationYawHead", Float.toString(rotation));
 
-    lastRotationYawHeadFromServer = rotation;
+//    lastRotationYawHeadFromServer = rotation;
   }
 
-  private float lastRotationYawHeadFromServer = 0;
-  public float getLastRotationYawHeadFromServer() {return lastRotationYawHeadFromServer;}
+
+  /** returns the pitch of the dragon's body
+   * @return
+   */
+  public float getBodyPitch()
+  {
+    return animator.getBodyPitch();
+  }
+
+//  private float lastRotationYawHeadFromServer = 0;
+//  public float getLastRotationYawHeadFromServer() {return lastRotationYawHeadFromServer;}
 
   private int tickForSoundDebug = 0;
   private int pitchstep = 0;
@@ -258,27 +268,36 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 //    }
 
 
+    if (!DebugFreezeAnimator.isFrozen()) {
+      for (DragonHelper helper : helpers.values()) {
+        helper.onLivingUpdate();
+      }
+      animator.setOnGround(!isFlying());
 
-        if (!DebugFreezeAnimator.isFrozen()) {
-            for (DragonHelper helper : helpers.values()) {
-                helper.onLivingUpdate();
-            }
-          animator.setOnGround(!isFlying());
-          animator.update();
-          animator.animate();
-            if (isServer()) {
-                // set home position near owner when tamed
-                //  setHomeArea renamed to EntityCreature.func_175449_a()
-                if (isTamed()) {
-                    Entity owner = getOwner();
-                    if (owner != null) {
-                        BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
-                        func_175449_a(ownerPosition, HOME_RADIUS);
-                    }
-                }
-            }
-          super.onLivingUpdate();
+      if (isServer()) {
+        final float DUMMY_MOVETIME = 0;
+        final float DUMMY_MOVESPEED = 0;
+        animator.setMovement(DUMMY_MOVETIME, DUMMY_MOVESPEED);
+        float netYawHead = getRotationYawHead() - renderYawOffset;
+        animator.setLook(netYawHead, rotationPitch);
+        animator.setTicksExisted(ticksExisted);
+        animator.update();
+        animator.animate();
+
+        // set home position near owner when tamed
+        //  setHomeArea renamed to EntityCreature.func_175449_a()
+        if (isTamed()) {
+          Entity owner = getOwner();
+          if (owner != null) {
+            BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
+            func_175449_a(ownerPosition, HOME_RADIUS);
+          }
         }
+      } else {
+        animator.update();  // all other animator parameters are set by the model renderer
+      }
+      super.onLivingUpdate();
+    }
     }
     
     /**

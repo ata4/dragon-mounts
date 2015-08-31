@@ -10,8 +10,6 @@
 package info.ata4.minecraft.dragon.client.model.anim;
 
 import info.ata4.minecraft.dragon.client.model.DragonModel;
-import info.ata4.minecraft.dragon.client.model.ModelPart;
-import info.ata4.minecraft.dragon.client.model.ModelPartProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonHeadPositionHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.SegmentSizePositionRotation;
@@ -19,6 +17,7 @@ import info.ata4.minecraft.dragon.server.entity.helper.breath.DragonBreathHelper
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
 
 /**
@@ -34,7 +33,7 @@ public class DragonAnimatorCommon {
   private float ticksExisted;
   private float moveTime;
   private float moveSpeed;
-  private float lookYaw;
+  private float netLookYaw;  //yaw of the head relative to the body
   private float lookPitch;
   private double prevRenderYawOffset;
   private double yawAbs;
@@ -198,9 +197,11 @@ public class DragonAnimatorCommon {
     this.moveSpeed = moveSpeed;
   }
 
-  public void setLook(float lookYaw, float lookPitch) {
+  public void setLook(float netLookYaw, float lookPitch) {
     // don't twist the neck
-    this.lookYaw = MathX.clamp(lookYaw, -120, 120);
+//    System.out.format("%s netLookYaw=%.0f, lookPitch=%.0f\n", (entity.worldObj.isRemote ? "client:" : "server:"), netLookYaw, lookPitch);  // todo remove
+
+    this.netLookYaw = MathX.clamp(netLookYaw, -120, 120);
     this.lookPitch = MathX.clamp(lookPitch, -90, 90);
   }
 
@@ -382,7 +383,7 @@ public class DragonAnimatorCommon {
   protected void animHeadAndNeck() {
     float bodyPitch = getBodyPitch();
     dragonHeadPositionHelper.calculateHeadAndNeck(animBase, flutter, sit, walk, speed, ground,
-                                            lookYaw, lookPitch, bodyPitch, breath);
+            netLookYaw, lookPitch, bodyPitch, breath);
     final float BITE_ANGLE = 0.75F;
     final float BREATH_ANGLE = 0.75F;
     jawRotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
@@ -424,7 +425,7 @@ public class DragonAnimatorCommon {
 ////            // lower neck on low health
 ////            model.neck.rotateAngleX -= MathX.lerp(0, ofsRotX, ground * health);
 ////            // use looking yaw
-////            model.neck.rotateAngleY = MathX.toRadians(lookYaw) * vertMulti * speed;
+////            model.neck.rotateAngleY = MathX.toRadians(netLookYaw) * vertMulti * speed;
 ////
 ////            // update scale
 ////            model.neck.renderScaleX = model.neck.renderScaleY = MathX.lerp(1.6f, 1, vertMulti);
@@ -680,8 +681,11 @@ public class DragonAnimatorCommon {
   public float getBodyPitch(float pt) {
     float pitchMovingMax = 90;
     float pitchMoving = (float) MathX.clamp(yTrail.getChangeInValue(pt, 5, 0) * 10, -pitchMovingMax, pitchMovingMax);
-    float pitchHover = 60;
-    return MathX.slerp(pitchHover, pitchMoving, speed);
+    double xPos = Minecraft.getMinecraft().thePlayer.posX; //todo remove
+//    float pitchHover = 60;
+    float pitchHover = (float)((System.currentTimeMillis() / 1000.0 * 18) % 180.0) - 90; //todo remove
+//    return MathX.slerp(pitchHover, pitchMoving, speed);  todo restore
+    return pitchHover;//todo remove
   }
 
   public float getModelOffsetX() {
