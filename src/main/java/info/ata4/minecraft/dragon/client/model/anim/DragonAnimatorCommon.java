@@ -18,6 +18,7 @@ import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 
 /**
@@ -681,9 +682,13 @@ public class DragonAnimatorCommon {
   public float getBodyPitch(float pt) {
     float pitchMovingMax = 90;
     float pitchMoving = (float) MathX.clamp(yTrail.getChangeInValue(pt, 5, 0) * 10, -pitchMovingMax, pitchMovingMax);
-    double xPos = Minecraft.getMinecraft().thePlayer.posX; //todo remove
+    EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+    if (ep == null) return  0;
+    double xPos = ep.posX; //todo remove
 //    float pitchHover = 60;
-    float pitchHover = (float)((System.currentTimeMillis() / 1000.0 * 18) % 180.0) - 90; //todo remove
+    long time = System.currentTimeMillis() / 5000;
+    time %= 9;
+    float pitchHover = (float)(time * 22.5) - 90; //todo remove
 //    return MathX.slerp(pitchHover, pitchMoving, speed);  todo restore
     return pitchHover;//todo remove
   }
