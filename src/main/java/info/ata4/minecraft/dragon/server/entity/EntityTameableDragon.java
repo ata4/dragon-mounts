@@ -134,7 +134,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 //        }
 
 //      dragonHeadPositionHelper = new DragonHeadPositionHelper(this, getBreed().getNumberOfNeckSegments());
-      //todo initialise the animator somehow...
 //      animator.animate();
 //      dragonHeadPositionHelper.calculateHeadAndNeckDefaults();
 //      DragonHeadPositionHelper headPositionHelper = getDragonHeadPositionHelper();

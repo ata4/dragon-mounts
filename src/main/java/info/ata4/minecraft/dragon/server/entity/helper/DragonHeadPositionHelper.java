@@ -206,13 +206,13 @@ public class DragonHeadPositionHelper
     //rotate body
 
     bodyPitch = (float)Math.toRadians(bodyPitch);
-    String before = headPlusThroatOffset.toString();
+//    String before = headPlusThroatOffset.toString();
 
     headPlusThroatOffset = headPlusThroatOffset.add(CENTRE_OFFSET);
     headPlusThroatOffset = headPlusThroatOffset.rotatePitch(-bodyPitch);
     headPlusThroatOffset = headPlusThroatOffset.subtract(CENTRE_OFFSET);
-    String after = headPlusThroatOffset.toString();
-    System.out.format("before=%s, after=%s\n", before, after);
+//    String after = headPlusThroatOffset.toString();
+//    System.out.format("before=%s, after=%s\n", before, after);
 
     headPlusThroatOffset = headPlusThroatOffset.rotateYaw((float) (Math.toRadians(-renderYawOffset) + Math.PI));
 

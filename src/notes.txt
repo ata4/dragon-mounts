@@ -7,14 +7,15 @@ OK dragon sounds roar juvenile
 OK- breath effect on entities
 OK- breath effect on blocks
 OK- dragon should not burn itself
-- dragon breath position not correct when hovering
+OK dragon breath position not correct when hovering
 OK ignore click on block
 OK small breath beam still hits player who is nowhere near
 OK after a flammable block takes enough damage, destroy it (rain puts out fire)
+- zoom out view when in 3rd person
+- dragon loses height when flying
+OK? hatchling repeatedly opens & closes mouth when trying to breathe
 
-hatchling repeatedly opens & closes mouth when trying to breathe
-
-HeadPositionNumbers on client & server don't match up.
+OK HeadPositionNumbers on client & server don't match up.
 
 later
 - different breath types

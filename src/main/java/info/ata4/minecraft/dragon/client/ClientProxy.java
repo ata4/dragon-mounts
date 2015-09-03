@@ -11,10 +11,7 @@ package info.ata4.minecraft.dragon.client;
 
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
-import info.ata4.minecraft.dragon.client.handler.DragonControl;
-import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
-import info.ata4.minecraft.dragon.client.handler.TargetHighlighter;
-import info.ata4.minecraft.dragon.client.handler.TextureStitcherBreathFX;
+import info.ata4.minecraft.dragon.client.handler.*;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
@@ -57,6 +54,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void onPostInit(FMLPostInitializationEvent event)
     {
+      super.onPostInit(event);
       if (DragonMounts.instance.getConfig().isDebug()) {
         MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
       }
@@ -69,6 +67,7 @@ public class ClientProxy extends CommonProxy {
       DragonOrbControl.initialiseInterceptors();
       FMLCommonHandler.instance().bus().register(DragonOrbControl.getInstance());
       MinecraftForge.EVENT_BUS.register(new TargetHighlighter());
+      FMLCommonHandler.instance().bus().register(new DragonEntityWatcher());
     }
 
   /**

@@ -50,7 +50,7 @@ public class FlameBreathFX extends EntityFX {
     breathNode.randomiseProperties(rand);
     Vec3 actualMotion = breathNode.getRandomisedStartingMotion(direction, rand);
 
-    actualMotion = new Vec3(0,0,0); //todo remove
+//    actualMotion = new Vec3(0,0,0); //todo remove
     x += actualMotion.xCoord * partialTicksHeadStart;
     y += actualMotion.yCoord * partialTicksHeadStart;
     z += actualMotion.zCoord * partialTicksHeadStart;
@@ -143,7 +143,7 @@ public class FlameBreathFX extends EntityFX {
     tex.rotate90(random.nextInt(4));
 
     double scale = 0.1F * this.particleScale;
-    scale = 0.1F; //todo remove
+//    scale = 0.1F; //todo remove
     final double scaleLR = scale;
     final double scaleUD = scale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
@@ -188,11 +188,10 @@ public class FlameBreathFX extends EntityFX {
     float currentParticleSize = breathNode.getCurrentRenderDiameter();
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 
-    //todo reinstate
-//    // spawn a smoke trail after some time
-//    if (smokeChance != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= smokeChance) {
-//      worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
-//    }
+    // spawn a smoke trail after some time
+    if (smokeChance != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= smokeChance) {
+      worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
+    }
 
     // smoke / steam when hitting water.  node is responsible for aging to death
     if (handleWaterMovement()) {

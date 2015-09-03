@@ -1,7 +1,10 @@
 package info.ata4.minecraft.dragon.client.handler;
 
+import com.google.common.collect.Lists;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.DragonMountsConfig;
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathWeapon;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
 import info.ata4.minecraft.dragon.util.math.MathX;
@@ -15,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,6 +26,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.function.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,29 +52,48 @@ public class TargetHighlighter
 
     event.setCanceled(true);
 
-    BreathWeaponTarget targetBeingBreathedAt = DragonOrbControl.getInstance().getTarget();
-    if (targetBeingBreathedAt != null) {
-      return;
-    }
-
     if (!DragonMounts.instance.getConfig().isOrbHighlightTarget()) {
       return;
     }
 
-    switch (targetBeingLookedAt.getTypeOfTarget()) {
+    BreathWeaponTarget targetToHighlight = targetBeingLookedAt;
+    BreathWeaponTarget targetLockedOn = DragonOrbControl.getInstance().getTargetLockedOn();
+    if (targetLockedOn != null) {
+      targetToHighlight = targetLockedOn;
+    }
+
+//    World world = event.player.worldObj;
+//    List loadedEntities = world.getLoadedEntityList();
+//    for (Object entity : loadedEntities) {
+//      if (entity instanceof EntityTameableDragon) {
+//        EntityTameableDragon dragon = (EntityTameableDragon) entity;
+//        if (dragon.isOwner(event.player)) {
+//          BreathWeaponTarget breathWeaponTarget = dragon.getBreathHelper().getPlayerSelectedTarget();
+//          if (breathWeaponTarget != null) {
+//            targetToHighlight = breathWeaponTarget;
+//          }
+//        }
+//      }
+//    }
+//    BreathWeaponTarget targetBeingBreathedAt = DragonOrbControl.getInstance().getTarget();
+//    if (targetBeingBreathedAt != null) {
+//      targetToHighlight = targetBeingBreathedAt;
+//    }
+
+    switch (targetToHighlight.getTypeOfTarget()) {
       case ENTITY: {
-        highlightEntity(targetBeingLookedAt.getTargetEntity(event.player.getEntityWorld()), event.player, event.partialTicks);
+        highlightEntity(targetToHighlight.getTargetEntity(event.player.getEntityWorld()), event.player, event.partialTicks);
         break;
       }
       case LOCATION: {
-        highlightBlock(targetBeingLookedAt.getTargetedLocation(), event.player, event.partialTicks);
+        highlightBlock(targetToHighlight.getTargetedLocation(), event.player, event.partialTicks);
         break;
       }
       case DIRECTION: {
         return;
       }
       default: {
-        System.err.println("Unknown target type in blockHighlightDecider : " + targetBeingLookedAt.getTypeOfTarget());
+        System.err.println("Unknown target type in blockHighlightDecider : " + targetToHighlight.getTypeOfTarget());
         return;
       }
     }

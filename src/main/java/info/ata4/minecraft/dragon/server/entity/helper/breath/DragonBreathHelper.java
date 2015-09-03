@@ -116,7 +116,7 @@ public class DragonBreathHelper extends DragonHelper
     return breathWeaponTarget;
   }
 
-  /** sets the target that the movement AI should move towards (or away from) to getChangeInValue to the optimal breathing distance
+  /** sets the target that the movement AI should move towards (or away from) to move to the optimal breathing distance
    * @param targetForMoving the new target - NULL for no target
    */
   public void setBreathTargetForMoving(BreathWeaponTarget targetForMoving)
@@ -132,20 +132,21 @@ public class DragonBreathHelper extends DragonHelper
 
   /**
    * For tamed dragons, returns the target that their controlling player has selected using the DragonOrb.
-   * Valid on server side only
    * @return the player's selected target, or null if no player target or dragon isn't tamed.
    */
   public BreathWeaponTarget getPlayerSelectedTarget()
   {
-    if (dragon.isClient()) {
-      L.warn("getPlayerSelectedTarget is valid on the server side only");
+    Entity owner = dragon.getOwner();
+    if (owner == null) {
       return null;
     }
 
-    Entity owner = dragon.getOwner();
-    if (owner == null || !(owner instanceof EntityPlayerMP)) {
-      return null;
+    if (dragon.isClient()) {
+//      L.warn("getPlayerSelectedTarget is valid on the server side only");
+//      return null;
+      return getTarget();
     }
+
     EntityPlayerMP entityPlayerMP = (EntityPlayerMP)owner;
     BreathWeaponTarget breathWeaponTarget = DragonOrbTargets.getInstance().getPlayerTarget(entityPlayerMP);
     return breathWeaponTarget;
@@ -247,8 +248,8 @@ public class DragonBreathHelper extends DragonHelper
     BreathWeaponTarget target = getTarget();
     updateBreathState(target);
 
-    Vec3 vec3 = new Vec3(1, 0, 0); //todo remove
-    target = BreathWeaponTarget.targetDirection(vec3);  //todo remove
+//    Vec3 vec3 = new Vec3(1, 0, 0); //todo remove
+//    target = BreathWeaponTarget.targetDirection(vec3);  //todo remove
 
     if (target != null) {
       Vec3 origin = dragon.getAnimator().getThroatPosition();

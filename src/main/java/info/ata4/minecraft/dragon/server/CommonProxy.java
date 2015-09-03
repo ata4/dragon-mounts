@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server;
 
 import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.client.handler.DragonEntityWatcher;
 import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
@@ -25,6 +26,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -77,7 +79,6 @@ public class CommonProxy {
 
     public void onPostInit(FMLPostInitializationEvent event)
     {
-
     }
     
     public void onServerStarted(FMLServerStartedEvent evt) {

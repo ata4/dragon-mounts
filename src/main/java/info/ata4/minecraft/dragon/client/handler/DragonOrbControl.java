@@ -94,6 +94,17 @@ public class DragonOrbControl {
       }
       network.sendToServer(message);
     }
+
+    // if autolock is on, only change target when the player releases the button
+    // (used on client side only, for rendering)  Server side AI is used for the real autolock
+    boolean orbTargetAutoLock = DragonMounts.instance.getConfig().isOrbTargetAutoLock();
+    if (breathWeaponTarget != null && triggerHeld) {
+      if (!orbTargetAutoLock || targetLockedOn == null) {
+        targetLockedOn = breathWeaponTarget;
+      }
+    } else {
+      targetLockedOn = null;
+    }
   }
 
   private final int MAX_TIME_NO_MESSAGE = 20;  // send a message at least this many ticks or less
@@ -120,10 +131,16 @@ public class DragonOrbControl {
     return targetBeingLookedAt;
   }
 
+  public BreathWeaponTarget getTargetLockedOn()
+  {
+    return targetLockedOn;
+  }
+
   private boolean triggerHeld = false;
   private BreathWeaponTarget breathWeaponTarget;
   private BreathWeaponTarget lastTargetSent;
   private BreathWeaponTarget targetBeingLookedAt;
+  private BreathWeaponTarget targetLockedOn;  // used client side only, for rendering.  server-side lockon is in AI
 
   private static DragonOrbControl instance = null;
 

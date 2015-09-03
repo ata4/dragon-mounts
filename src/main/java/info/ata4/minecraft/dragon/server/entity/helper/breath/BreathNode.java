@@ -95,7 +95,7 @@ public class BreathNode
       return;
     }
 
-    if (ageTicks > 0) return;     //todo remove
+//    if (ageTicks > 0) return;     //todo remove
 
     // collision ages breath node faster
     if (parentEntity.isCollided) {
