@@ -3,6 +3,9 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.math.MathX;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
@@ -189,14 +192,28 @@ public class DragonHeadPositionHelper
 
     float bodyPitch = dragon.getBodyPitch();
 //    bodyPitch = 60; // todo remove!
+//
+//    double y = 0;
+//    double z = 0;
+//    EntityPlayerSP playerSP = Minecraft.getMinecraft().thePlayer;
+//    ItemStack is1 = playerSP.inventory.getStackInSlot(0);
+//    ItemStack is2 = playerSP.inventory.getStackInSlot(1);
+//    if (is1 != null) y = is1.stackSize;
+//    if (is2 != null) z = is2.stackSize;
+//    Vec3 CENTRE_OFFSET = new Vec3(0, -y * BODY_Y_SCALE,  z * BODY_Z_SCALE);
+    Vec3 CENTRE_OFFSET = new Vec3(0, -6 * BODY_Y_SCALE,  19 * BODY_Z_SCALE);
+
+    //rotate body
 
     bodyPitch = (float)Math.toRadians(bodyPitch);
     String before = headPlusThroatOffset.toString();
+
+    headPlusThroatOffset = headPlusThroatOffset.add(CENTRE_OFFSET);
     headPlusThroatOffset = headPlusThroatOffset.rotatePitch(-bodyPitch);
+    headPlusThroatOffset = headPlusThroatOffset.subtract(CENTRE_OFFSET);
     String after = headPlusThroatOffset.toString();
     System.out.format("before=%s, after=%s\n", before, after);
 
-    //rotate body
     headPlusThroatOffset = headPlusThroatOffset.rotateYaw((float) (Math.toRadians(-renderYawOffset) + Math.PI));
 
     Vec3 throatPos = bodyOrigin.add(headPlusThroatOffset);

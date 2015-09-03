@@ -244,7 +244,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 
   @Override
     public void onLivingUpdate() {
-      this.motionY = (10 - this.posY) / 10.0;
+//      this.motionY = (10 - this.posY) / 10.0;
 //      String logName = isClient() ? "Client-onLivingUpdate" : "Server-onLivingUpdate";
 //      String output = Float.toString(getRotationYawHead()) + "," +
 //            Float.toString(renderYawOffset) + "," +

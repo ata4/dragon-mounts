@@ -686,9 +686,11 @@ public class DragonAnimatorCommon {
     if (ep == null) return  0;
     double xPos = ep.posX; //todo remove
 //    float pitchHover = 60;
-    long time = System.currentTimeMillis() / 5000;
-    time %= 9;
-    float pitchHover = (float)(time * 22.5) - 90; //todo remove
+//    long time = System.currentTimeMillis() / 5000;
+//    time %= 3;
+//    float pitchHover = (float)(time * 90) - 90; //todo remove
+    long time = System.currentTimeMillis() % 10000;
+    float pitchHover = (float)(time * 180 / 10000.0) - 90; //todo remove
 //    return MathX.slerp(pitchHover, pitchMoving, speed);  todo restore
     return pitchHover;//todo remove
   }
