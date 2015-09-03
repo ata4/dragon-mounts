@@ -143,7 +143,7 @@ public class FlameBreathFX extends EntityFX {
     tex.rotate90(random.nextInt(4));
 
     double scale = 0.1F * this.particleScale;
-    scale = 0.1F; //todo remove
+    scale = 1.0F; //todo remove
     final double scaleLR = scale;
     final double scaleUD = scale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;

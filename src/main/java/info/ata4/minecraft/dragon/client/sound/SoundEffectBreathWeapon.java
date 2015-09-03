@@ -108,8 +108,6 @@ public class SoundEffectBreathWeapon
     final int HEAD_STARTUP_TICKS = 40;
     final int HEAD_STOPPING_TICKS = 60;
 
-    //todo  player gets burned by fireballs even though the balls are nowhere near the player'
-
     // if state has changed, stop and start component sounds appropriately
 
     if (weaponSoundInfo.breathingState != currentWeaponState) {
