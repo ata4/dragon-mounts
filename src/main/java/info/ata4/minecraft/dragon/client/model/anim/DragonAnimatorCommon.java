@@ -265,7 +265,7 @@ public class DragonAnimatorCommon {
   /**
    * Updates the animation state. Called on every tick.
    */
-  public void update() {
+  public void tickingUpdate() {
     if (DebugFreezeAnimator.isFrozen()) {
       return;
     }

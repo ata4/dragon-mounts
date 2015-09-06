@@ -11,7 +11,7 @@ OK dragon breath position not correct when hovering
 OK ignore click on block
 OK small breath beam still hits player who is nowhere near
 OK after a flammable block takes enough damage, destroy it (rain puts out fire)
-- zoom out view when in 3rd person
+OK zoom out view when in 3rd person
 - dragon loses height when flying
 OK? hatchling repeatedly opens & closes mouth when trying to breathe
 

@@ -17,7 +17,6 @@ import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.entity.helper.breath.DragonBreathHelper;
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
-import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -267,7 +266,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
 //      }
 //    }
 
-
     if (!DebugFreezeAnimator.isFrozen()) {
       for (DragonHelper helper : helpers.values()) {
         helper.onLivingUpdate();
@@ -281,7 +279,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         float netYawHead = getRotationYawHead() - renderYawOffset;
         animator.setLook(netYawHead, rotationPitch);
         animator.setTicksExisted(ticksExisted);
-        animator.update();
+        animator.tickingUpdate();
         animator.animate();
 
         // set home position near owner when tamed
@@ -294,9 +292,21 @@ public class EntityTameableDragon extends EntityFlyingTameable {
           }
         }
       } else {
-        animator.update();  // all other animator parameters are set by the model renderer
+        animator.tickingUpdate();  // all other animator parameters are set by the model renderer
       }
+      if (!this.worldObj.isRemote) {                    // todo remove
+        System.out.format("y:%.1f", this.posY);
+        if (this.posY < 15) {
+          this.posY = this.posY;
+        }
+      }
+
       super.onLivingUpdate();
+      if (!this.worldObj.isRemote) {
+        System.out.format(" -> %.1f\n", this.posY);
+      }
+
+
     }
     }
     
