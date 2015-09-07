@@ -39,19 +39,20 @@ public class EntityAIRideAir extends EntityAIRide {
             Vec3 wp = rider.getLookVec();
             
             x = wp.xCoord;
-            y = wp.yCoord;
+//            y = wp.yCoord;
             z = wp.zCoord;
             
             // scale with distance
             x *= dist;
-            y *= dist;
+//            y *= dist;
             z *= dist;
             
             // convert to absolute position
             x += dragon.posX;
-            y += dragon.posY;
             z += dragon.posZ;
-            
+
+            y = dragon.posY;  // don't change altitude
+
             dragon.getWaypoint().set(x, y, z);
             
             dragon.setMoveSpeedAirHoriz(1);
@@ -60,20 +61,22 @@ public class EntityAIRideAir extends EntityAIRide {
             Vec3 wp = dragon.getLookVec();
             
             x = wp.xCoord;
-            y = wp.yCoord;
+//            y = wp.yCoord;
             z = wp.zCoord;
 
             // scale with distance
             x *= dist;
-            y *= dist;
+//            y *= dist;
             z *= dist;
 
             // convert to absolute position
             x += dragon.posX;
-            y += dragon.posY;
+//            y += dragon.posY;
             z += dragon.posZ;
 
-            dragon.getWaypoint().set(x, y, z);
+          y = dragon.posY;  // don't change altitude
+
+          dragon.getWaypoint().set(x, y, z);
             
             double speedAir = 0; 
             

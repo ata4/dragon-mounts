@@ -53,7 +53,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     public EntityAITasks airTasks;
     
     private DragonFlightWaypoint waypoint;
-    private double airSpeedHorizonal = 1.5;
+    private double airSpeedHorizontal = 1.5;
     private double airSpeedVertical = 0;
     private float yawAdd;
     private int yawSpeed = 30;
@@ -228,7 +228,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             double deltaZ = waypoint.posZ - posZ;
             
             double speedAir = getEntityAttribute(MOVE_SPEED_AIR).getAttributeValue();
-            double speedHoriz = airSpeedHorizonal * speedAir;
+            double speedHoriz = airSpeedHorizontal * speedAir;
             double speedVert = airSpeedVertical;
             
             deltaY /= Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
@@ -353,7 +353,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      * @return relative horizontal speed multiplier
      */
     public double getMoveSpeedAirHoriz() {
-        return this.airSpeedHorizonal;
+        return this.airSpeedHorizontal;
     }
     
     /**
@@ -363,7 +363,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      */
     public void setMoveSpeedAirHoriz(double airSpeedHorizonal) {
         L.trace("setMoveSpeedAirHoriz({})", airSpeedHorizonal);
-        this.airSpeedHorizonal = airSpeedHorizonal;
+        this.airSpeedHorizontal = airSpeedHorizonal;
     }
     
     /**
