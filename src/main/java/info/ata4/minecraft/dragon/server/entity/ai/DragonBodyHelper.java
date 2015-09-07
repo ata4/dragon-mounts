@@ -51,13 +51,6 @@ public class DragonBodyHelper extends EntityBodyHelper
     // 1) snap the body yaw (renderYawOffset) to the movement direction (rotationYaw)
     // 2) constrain the head yaw (rotationYawHead) to be within +/- 90 of the body yaw (renderYawOffset)
     if (dragon.isFlying() || distSQ > MOVEMENT_THRESHOLD_SQ) {
-//      String sidePreText = dragon.isClient() ? "Client" : "Server";
-//      String output = Float.toString(dragon.getRotationYawHead()) + "," +
-//              Float.toString(dragon.renderYawOffset) + "," +
-//              Float.toString(dragon.rotationYaw) + "," +
-//              Double.toString(distSQ) + ", above";
-//      DataLogger.logData(sidePreText + "-updateRenderAngles", output);
-
       dragon.renderYawOffset = dragon.rotationYaw;
       float newRotationYawHead = MathX.constrainAngle(dragon.getRotationYawHead(), dragon.renderYawOffset,
                                                       maximumHeadBodyAngleDifference);
@@ -75,7 +68,7 @@ public class DragonBodyHelper extends EntityBodyHelper
     } else {
       turnTicks++;
 
-      // constrain the body yaw to a tighter zone around the head yaw as time increases
+      // as time increases, constrain the body yaw to an increasingly tighter zone around the head yaw
       if (turnTicks > turnTicksLimit) {
         maximumHeadBodyAngleDifference = Math.max(1 - (float) (turnTicks - turnTicksLimit) / turnTicksLimit, 0) * 75;
       }
@@ -84,12 +77,5 @@ public class DragonBodyHelper extends EntityBodyHelper
     float rotationYawHead = dragon.getRotationYawHead();
     dragon.renderYawOffset = MathX.constrainAngle(dragon.renderYawOffset, rotationYawHead, maximumHeadBodyAngleDifference);
     dragon.rotationYaw = dragon.renderYawOffset;
-//
-//    String sidePreText = dragon.isClient() ? "Client" : "Server";
-//    String output = Float.toString(dragon.getRotationYawHead()) + "," +
-//            Float.toString(dragon.renderYawOffset) + "," +
-//            Float.toString(dragon.rotationYaw) + ", " +
-//            Double.toString(distSQ) + ", below";
-//    DataLogger.logData(sidePreText + "-updateRenderAngles", output);
   }
 }

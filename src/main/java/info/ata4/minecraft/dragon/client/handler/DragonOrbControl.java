@@ -1,3 +1,45 @@
+
+package info.ata4.minecraft.dragon.client.handler;
+
+import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.client.userinput.KeyBindingInterceptor;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
+import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
+import info.ata4.minecraft.dragon.server.util.ItemUtils;
+import info.ata4.minecraft.dragon.server.util.RayTraceServer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+
+/**
+ * This event handler is used to capture player input while the player is holding the dragon orb:
+ * If the player is holding the dragon orb, records whether the player is holding down the
+ *   trigger and what the current target is (where the player is pointing the cursor)
+ * Transmits this information to the server.
+ * If the AutoLock option is selected, the orb will lock on to a target for as long as the trigger is held down.
+ * If the autolock option isn't selected, the orb will change to whatever target is currently being looked at
+ *
+ * Usage:
+ * SETUP
+ * (1) Register a server-side message handler for DragonTargetMessage
+ * (2) Create the singleton in PostInit (client only) using DragonOrbControl.createSingleton(getNetwork());
+ * (3) Initialise the keypress interception in PostInit (client only) using DragonOrbControl.initialiseInterceptors();
+ * (4) Register the handler in PostInit(client only) using FMLCommonHandler.instance().bus()
+ *        .register(DragonOrbControl.getInstance());
+ *
+ * POLLING
+ * (1) get the singleton instance using getInstance()
+ * (2) getTargetBeingLookedAt() returns the target being looked at, regardless of whether the trigger is held or not, and
+ *       regardless of whether there is an autolock target
+ * (3) getTarget() returns the target of the orb while the trigger is being held.
+ * (4) getTargetLockedOn() returns the target being breathed at (may be different to getTarget() if autolock is on).
+ *     Client side only.
+ *
+ */
+
 /*
  ** 2013 October 27
  **
@@ -7,25 +49,7 @@
  **    May you find forgiveness for yourself and forgive others.
  **    May you share freely, never taking more than you give.
  */
-package info.ata4.minecraft.dragon.client.handler;
 
-        import info.ata4.minecraft.dragon.DragonMounts;
-        import info.ata4.minecraft.dragon.client.userinput.KeyBindingInterceptor;
-        import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
-        import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
-        import info.ata4.minecraft.dragon.server.util.ItemUtils;
-        import info.ata4.minecraft.dragon.server.util.RayTraceServer;
-        import net.minecraft.client.Minecraft;
-        import net.minecraft.client.entity.EntityPlayerSP;
-        import net.minecraft.util.*;
-        import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-        import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
-        import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-
-/**
- * If the player is holding the dragon orb, records whether the player is holding down the
- *   trigger and what the current target is (where the player is pointing the cursor)
- */
 public class DragonOrbControl {
 
   private SimpleNetworkWrapper network;

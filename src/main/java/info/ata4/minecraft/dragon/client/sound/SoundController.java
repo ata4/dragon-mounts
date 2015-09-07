@@ -10,6 +10,7 @@ import java.util.Map;
 /**
 * User: The Grey Ghost
 * Date: 17/04/2014
+ * Was intended to encapsulate sound effects.  Doesn't do anything at the moment.
 */
 public class SoundController
 {

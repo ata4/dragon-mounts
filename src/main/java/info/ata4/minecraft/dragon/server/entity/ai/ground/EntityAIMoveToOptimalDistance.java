@@ -30,7 +30,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 /**Moves the dragon to the optimal distance from the breath weapon target- not too close, not too far
- * The location to move to is set by the targeting AI, it is stored in EntityTameableDragon.breathTargetForMoving
+ * The location to move to taken from the dragon breath helper's getBreathTargetForMoving
+ *   (The location is set by the targeting AI)
  */
 public class EntityAIMoveToOptimalDistance extends EntityAIBase {
   /** The entity the AI instance has been applied to */

@@ -23,7 +23,8 @@ import net.minecraft.util.Vec3;
 
 /**
  * Animation control class to put useless reptiles in motion.
- *
+ * Refactored to remove all client-side-only model code into DragonModel.
+ * This was necessary to allow the server to calculate head positions for spawning the breath weapons
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonAnimatorCommon {
@@ -200,8 +201,6 @@ public class DragonAnimatorCommon {
 
   public void setLook(float netLookYaw, float lookPitch) {
     // don't twist the neck
-//    System.out.format("%s netLookYaw=%.0f, lookPitch=%.0f\n", (entity.worldObj.isRemote ? "client:" : "server:"), netLookYaw, lookPitch);  // todo remove
-
     this.netLookYaw = MathX.clamp(netLookYaw, -120, 120);
     this.lookPitch = MathX.clamp(lookPitch, -90, 90);
   }
@@ -238,22 +237,12 @@ public class DragonAnimatorCommon {
     }
     wingsDown = newWingsDown;
 
-//        // update flags
-//        model.back.isHidden = entity.isSaddled();
-
     cycleOfs = (cycleOfs * cycleOfs + cycleOfs * 2) * 0.05f;
 
     // reduce up/down amplitude
     cycleOfs *= MathX.lerp(0.5f, 1, flutter);
     cycleOfs *= MathX.lerp(1, 0.5f, ground);
 
-//        // update offsets
-//        model.offsetX = getModelOffsetX();
-//        model.offsetY = getModelOffsetY();
-//        model.offsetZ = getModelOffsetZ();
-//
-//        // update pitch
-//        model.pitch = getBodyPitch();
 
     // updateFromAnimator body parts
     animHeadAndNeck();
@@ -389,78 +378,6 @@ public class DragonAnimatorCommon {
     final float BREATH_ANGLE = 0.75F;
     jawRotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
     jawRotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
-
-//      DragonHeadPositionHelper.SegmentSizePositionRotation[] segmentData =
-//              headPositionHelper.getNeckSegmentPositionSizeLocations();
-//
-////        model.neck.rotationPointX = 0;
-////        model.neck.rotationPointY = 14;
-////        model.neck.rotationPointZ = -8;
-////
-////        model.neck.rotateAngleX = 0;
-////        model.neck.rotateAngleY = 0;
-////        model.neck.rotateAngleZ = 0;
-//
-////        double health = entity.getHealthRelative();
-////        float neckSize;
-//
-//        if (model.neckProxy.length != segmentData.length) {
-//          throw new IllegalArgumentException("DragonModel.VERTS_NECK and " +
-//                                                     "EntityTameableDragon.NUMBER_OF_NECK_SEGMENTS must match.");
-//          // I couldn't think of a way to synch these without breaking a pile of stuff.
-//        }
-//        for (int i = 0; i < model.neckProxy.length; i++) {
-//          copyPositionRotationLocation(model.neck, segmentData[i]);
-////
-////            float baseRotX = MathX.cos((float) i * 0.45f + animBase) * 0.15f;
-////            baseRotX *= MathX.lerp(0.2f, 1, flutter);
-////            baseRotX *= MathX.lerp(1, 0.2f, sit);
-////            float ofsRotX = MathX.sin(vertMulti * MathX.PI_F * 0.9f) * 0.75f;
-////
-////            // basic up/down movement
-////            model.neck.rotateAngleX = baseRotX;
-////            // reduce rotation when on ground
-////            model.neck.rotateAngleX *= MathX.slerp(1, 0.5f, walk);
-////            // flex neck down when hovering
-////            model.neck.rotateAngleX += (1 - speed) * vertMulti;
-////            // lower neck on low health
-////            model.neck.rotateAngleX -= MathX.lerp(0, ofsRotX, ground * health);
-////            // use looking yaw
-////            model.neck.rotateAngleY = MathX.toRadians(netLookYaw) * vertMulti * speed;
-////
-////            // update scale
-////            model.neck.renderScaleX = model.neck.renderScaleY = MathX.lerp(1.6f, 1, vertMulti);
-////            model.neck.renderScaleZ = 0.6f;
-//
-//            // hide the first and every second scale
-//            model.neckScale.isHidden = i % 2 != 0 || i == 0;
-//
-//            // update proxy
-//            model.neckProxy[i].update();
-//
-////            // move next proxy behind the current one
-////            neckSize = DragonModel.NECK_SIZE * model.neck.renderScaleZ - 1.4f;
-////            model.neck.rotationPointX -= MathX.sin(model.neck.rotateAngleY) * MathX.cos(model.neck.rotateAngleX) * neckSize;
-////            model.neck.rotationPointY += MathX.sin(model.neck.rotateAngleX) * neckSize;
-////            model.neck.rotationPointZ -= MathX.cos(model.neck.rotateAngleY) * MathX.cos(model.neck.rotateAngleX) * neckSize;
-//        }
-//
-//        copyPositionRotationLocation(model.neck, headPositionHelper.getNeckPositionSizeLocation());
-//        copyPositionRotationLocation(model.head, headPositionHelper.getHeadPositionSizeLocation());
-//
-////        final float HEAD_TILT_DURING_BREATH = -0.1F;
-////        model.head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed) + breath * HEAD_TILT_DURING_BREATH;
-////        model.head.rotateAngleY = model.neck.rotateAngleY;
-////        model.head.rotateAngleZ = model.neck.rotateAngleZ * 0.2f;
-////
-////        model.head.rotationPointX = model.neck.rotationPointX;
-////        model.head.rotationPointY = model.neck.rotationPointY;
-////        model.head.rotationPointZ = model.neck.rotationPointZ;
-//
-//        final float BITE_ANGLE = 0.75F;
-//        final float BREATH_ANGLE = 0.75F;
-//        model.jaw.rotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);
-//        model.jaw.rotateAngleX += (1 - MathX.sin(animBase)) * 0.1f * flutter;
   }
 
   protected void animWings() {
@@ -604,16 +521,11 @@ public class DragonAnimatorCommon {
       tail.rotateAngleX -= (1 - speed) * vertMulti * 2;
       tail.rotateAngleY += MathX.toRadians(180 - yawOfs);
 
-//            // display horns near the tip
-//            boolean horn = i > TAIL_SEGMENTS - 7 && i < TAIL_SEGMENTS - 3;
-//            model.tailHornLeft.isHidden = model.tailHornRight.isHidden = !horn;
-
       // update scale
       float neckScale = MathX.lerp(1.5f, 0.3f, vertMulti);
       tail.setScale(neckScale);
 
 //            // update proxy
-//            model.tailProxy[i].update();
       tailSegments[i] = tail.getCopy();
 
       // move next proxy behind the current one
@@ -682,15 +594,7 @@ public class DragonAnimatorCommon {
   public float getBodyPitch(float pt) {
     float pitchMovingMax = 90;
     float pitchMoving = (float) MathX.clamp(yTrail.getChangeInValue(pt, 5, 0) * 10, -pitchMovingMax, pitchMovingMax);
-//    EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-//    if (ep == null) return  0;
-//    double xPos = ep.posX; //todo remove
     float pitchHover = 60;
-//    long time = System.currentTimeMillis() / 5000;
-//    time %= 3;
-//    float pitchHover = (float)(time * 90) - 90; //todo remove
-//    long time = System.currentTimeMillis() % 10000;
-//    float pitchHover = (float)(time * 180 / 10000.0) - 90; //todo remove
     return MathX.slerp(pitchHover, pitchMoving, speed);
   }
 

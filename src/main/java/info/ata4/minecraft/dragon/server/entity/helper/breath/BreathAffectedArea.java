@@ -16,6 +16,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkElementIndex;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+I AM UP TO THIS CLASS
+
 /**
 * Created by TGG on 30/07/2015.
 * BreathAffectedArea base class
@@ -34,9 +36,6 @@ public class BreathAffectedArea
     breathWeapon = i_breathWeapon;
   }
 
-  private static boolean firedOnce = false; // debugging
-  private static boolean released = false; //debuggin
-  private static int ticks = 0; //debugging
   /**
    * Tell BreathAffectedArea that breathing is ongoing.  Call once per tick before updateTick()
    * @param world
@@ -46,23 +45,7 @@ public class BreathAffectedArea
    */
   public void continueBreathing(World world, Vec3 origin, Vec3 destination, BreathNode.Power power)
   {
-//    if (--ticks < 0) return;// todo debugging remove
-//    ticks = 200;
-//    firedOnce = true;
-//    if (++ticks == 200) {  //todo debugging remove
-//      ticks = 0;
-//      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
-//        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
-//      }
-//    }
-//    released = false;
-//    if (firedOnce) return;
-//    firedOnce = true;
-
     Vec3 direction = destination.subtract(origin).normalize();
-//    System.out.format("Fired from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] direction = [%.2f, %.2f, %.2f]\n",
-//                      origin.xCoord, origin.yCoord, origin.zCoord, destination.xCoord, destination.yCoord, destination.zCoord,
-//                      direction.xCoord, direction.yCoord, direction.zCoord); // todo remove
 
     EntityBreathNode newNode = EntityBreathNode.createEntityBreathNodeServer(
             world, origin.xCoord, origin.yCoord, origin.zCoord, direction.xCoord, direction.yCoord, direction.zCoord,
@@ -70,8 +53,6 @@ public class BreathAffectedArea
 
     entityBreathNodes.add(newNode);
   }
-
-  private static boolean printed = false; //todo remove debug
 
   /** updates the BreathAffectedArea, called once per tick
    */
@@ -100,23 +81,8 @@ public class BreathAffectedArea
     implementEffectsOnEntitiesTick(world, entitiesAffectedByBeam);
 
     decayBlockAndEntityHitDensities(blocksAffectedByBeam, entitiesAffectedByBeam);
-
-//    if (released) {       //todo remove for debugging only
-//      firedOnce = false;
-//    }
-//    released = true;
-//    //todo remove debugging
-//    if (firedOnce) {
-//      firedOnce = false;
-//      printed = false;
-//    } else if (!printed) {
-//      for (Map.Entry<Vec3i, BreathAffectedBlock> entry : blocksAffectedByBeam.entrySet()) {
-//        System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
-//      }
-//      System.out.format("\n");
-//      printed = true;
-//    }
   }
+
   private void implementEffectsOnBlocksTick(World world, HashMap<Vec3i, BreathAffectedBlock> affectedBlocks )
   {
     for (Map.Entry<Vec3i, BreathAffectedBlock> blockInfo : affectedBlocks.entrySet()) {
@@ -207,7 +173,6 @@ public class BreathAffectedArea
     Multimap<Vec3i, Integer> occupiedByEntities = ArrayListMultimap.create();
     Map<Integer, AxisAlignedBB> entityHitBoxes = new HashMap<Integer, AxisAlignedBB>();
     for (EntityLivingBase entityLivingBase : allEntities) {
-//      if (!(entityLivingBase instanceof EntityTameableDragon)) { //todo remove debugging only
         AxisAlignedBB aabb = entityLivingBase.getEntityBoundingBox();
         entityHitBoxes.put(entityLivingBase.getEntityId(), aabb);
         for (int x = (int) aabb.minX; x <= (int) aabb.maxX; ++x) {
@@ -230,23 +195,18 @@ public class BreathAffectedArea
           for (int z = (int)aabb.minZ; z <= (int)aabb.maxZ; ++z) {
             Vec3i pos = new Vec3i(x, y, z);
             Collection<Integer> entitiesHere = occupiedByEntities.get(pos);
+
             if (entitiesHere != null) {
               for (Integer entityID : entitiesHere) {
                 if (!checkedEntities.contains(entityID)) {
                   checkedEntities.add(entityID);
                   float intensity = entityBreathNodes.get(i).getCurrentIntensity();
                   Entity entityToCheck = world.getEntityByID(entityID);
+
                   if (entityToCheck != null) {
                     AxisAlignedBB entityAABB = entityToCheck.getEntityBoundingBox();
-
-//                    // normalise the intensity according to the entity size (area) - smaller entities are harder to hit
-//                    //  and it looks odd when the flame washes over them without doing anything.
-//
-//                    double entitySize = entityAABB.getAverageEdgeLength();
-//                    entitySize = MathX.clamp(entitySize, 0.1, 2.0);
-//                    intensity /= (entitySize*entitySize);
-
                     float hitDensity = nodeLineSegments.get(i).collisionCheckAABB(entityAABB, intensity, NUMBER_OF_ENTITY_CLOUD_POINTS);
+
                     if (hitDensity > 0.0) {
                       BreathAffectedEntity currentDensity = affectedEntities.get(entityID);
                       if (currentDensity == null) {
@@ -254,7 +214,6 @@ public class BreathAffectedArea
                       }
                       currentDensity.addHitDensity(nodeLineSegments.get(i).getSegmentDirection(), hitDensity);
                       affectedEntities.put(entityID, currentDensity);
-//                      System.out.format("hitDensity: %.3f\n", currentDensity.getHitDensity()); //todo remove
                     }
                   }
                 }

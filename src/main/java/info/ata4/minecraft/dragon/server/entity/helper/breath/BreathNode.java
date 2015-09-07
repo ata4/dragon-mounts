@@ -29,9 +29,9 @@ public class BreathNode
   private float relativeSizeOfThisNode = 1.0F;
   private float relativeLifetimeOfThisNode = 1.0F;
 
-  private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)  //todo reset to 0.1
-  private static final double AGE_VARIATION_FACTOR = 0.25;//0.25;   // plus or minus this amount (3 std deviations) //todo reset to 0.25
-  private static final double SIZE_VARIATION_FACTOR = 0.25; // 0.25;   // plus or minus this amount (3 std deviations)todo reset to 0.25
+  private static final double SPEED_VARIATION_ABS = 0.1;  // plus or minus this amount (3 std deviations)
+  private static final double AGE_VARIATION_FACTOR = 0.25;  // plus or minus this amount (3 std deviations)
+  private static final double SIZE_VARIATION_FACTOR = 0.25;   // plus or minus this amount (3 std deviations)
 
   /**
    * Randomise the maximum lifetime and the node size
@@ -95,8 +95,6 @@ public class BreathNode
       return;
     }
 
-//    if (ageTicks > 0) return;     //todo remove
-
     // collision ages breath node faster
     if (parentEntity.isCollided) {
       ageTicks += 5;
@@ -111,38 +109,6 @@ public class BreathNode
       ageTicks += 20;
     }
   }
-
-//  /**
-//   * Change the size of the associated entity to match the node size
-//   * @param entity
-//   */
-//  @Deprecated
-//  public void changeEntitySizeToMatch(Entity entity)
-//  {
-//    // change size of entity AABB used for collisions
-//    // when the entity size is changed, it changes the bounding box but doesn't recentre it, so the xpos and zpos move
-//    //  (the entity update resetPositionToBB copies it back)
-//    // To fix this, we resize the AABB around the existing centre
-//    // The AABB is centred around the entity xpos and zpos, but the minimum y is set equal to the entity ypos
-//
-//    float currentNodeAABBSize = getCurrentAABBcollisionSize();
-//    float width = currentNodeAABBSize;
-//    float height = currentNodeAABBSize;
-//
-//    if (width != entity.width || height != entity.height) {
-//      AxisAlignedBB oldAABB = entity.getEntityBoundingBox();
-//      double oldMidptX = (oldAABB.minX + oldAABB.maxX)/2.0;
-//      double oldMidptY = (oldAABB.minY + oldAABB.maxY)/2.0;
-//      double oldMidptZ = (oldAABB.minZ + oldAABB.maxZ)/2.0;
-//
-//      entity.width = width;
-//      entity.height = height;
-//
-//      AxisAlignedBB newAABB = new AxisAlignedBB(oldMidptX - width / 2.0, oldMidptY - height / 2.0, oldMidptZ - width / 2.0,
-//                                                oldMidptX + width / 2.0, oldMidptY + height / 2.0, oldMidptZ + width / 2.0);
-//      entity.setEntityBoundingBox(newAABB);
-//    }
-//  }
 
   private final float RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;
   private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 0.5F;  // change to 0.5F

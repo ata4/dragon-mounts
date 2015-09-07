@@ -2,42 +2,50 @@ package info.ata4.minecraft.dragon.client.render;
 
 import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
 import info.ata4.minecraft.dragon.util.EntityMoveAndResizeHelper;
-import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.RotatingQuad;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockWall;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.crash.CrashReport;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 /**
  * Created by TGG on 21/06/2015.
+ * EntityFX that makes up the flame breath weapon; client side.
+ *
+ * Usage:
+ * (1) create a new FlameBreathFX using createFlameBreathFX
+ *
  */
 public class FlameBreathFX extends EntityFX {
   private final ResourceLocation fireballRL = new ResourceLocation("dragonmounts:entities/breath_fire");
 
-  public float smokeChance = 0.1f;
-  public float largeSmokeChance = 0.3f;
+  private final float SMOKE_CHANCE = 0.1f;
+  private final float LARGE_SMOKE_CHANCE = 0.3f;
 
   private static final float MAX_ALPHA = 0.99F;
 
   private BreathNode breathNode;
 
+  /**
+   * creates a single EntityFX from the given parameters.  Applies some random spread to direction.
+   * @param world
+   * @param x world [x,y,z] to spawn at (coordinates are the centre point of the fireball)
+   * @param y
+   * @param z
+   * @param directionX initial world direction [x,y,z] - will be normalised.
+   * @param directionY
+   * @param directionZ
+   * @param power the power of the ball
+   * @param partialTicksHeadStart if spawning multiple EntityFX per tick, use this parameter to spread the starting
+   *                              location in the direction
+   * @return the new FlameBreathFX
+   */
   public static FlameBreathFX createFlameBreathFX(World world, double x, double y, double z,
                                                   double directionX, double directionY, double directionZ,
                                                   BreathNode.Power power,
@@ -50,7 +58,6 @@ public class FlameBreathFX extends EntityFX {
     breathNode.randomiseProperties(rand);
     Vec3 actualMotion = breathNode.getRandomisedStartingMotion(direction, rand);
 
-//    actualMotion = new Vec3(0,0,0); //todo remove
     x += actualMotion.xCoord * partialTicksHeadStart;
     y += actualMotion.yCoord * partialTicksHeadStart;
     z += actualMotion.zCoord * partialTicksHeadStart;
@@ -143,7 +150,6 @@ public class FlameBreathFX extends EntityFX {
     tex.rotate90(random.nextInt(4));
 
     double scale = 0.1F * this.particleScale;
-//    scale = 0.1F; //todo remove
     final double scaleLR = scale;
     final double scaleUD = scale;
     double x = this.prevPosX + (this.posX - this.prevPosX) * partialTick - interpPosX;
@@ -170,6 +176,8 @@ public class FlameBreathFX extends EntityFX {
             tex.getU(3),  tex.getV(3));
   }
 
+  /** call once per tick to update the EntityFX size, position, collisions, etc
+   */
   @Override
   public void onUpdate() {
     final float YOUNG_AGE = 0.25F;
@@ -189,7 +197,7 @@ public class FlameBreathFX extends EntityFX {
     particleScale = PARTICLE_SCALE_RELATIVE_TO_SIZE * currentParticleSize;
 
     // spawn a smoke trail after some time
-    if (smokeChance != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= smokeChance) {
+    if (SMOKE_CHANCE != 0 && rand.nextFloat() < lifetimeFraction && rand.nextFloat() <= SMOKE_CHANCE) {
       worldObj.spawnParticle(getSmokeParticleID(), posX, posY, posZ, motionX * 0.5, motionY * 0.5, motionZ * 0.5);
     }
 
@@ -204,8 +212,6 @@ public class FlameBreathFX extends EntityFX {
     prevPosY = posY;
     prevPosZ = posZ;
     entityMoveAndResizeHelper.moveAndResizeEntity(motionX, motionY, motionZ, newAABBDiameter, newAABBDiameter);
-//    System.out.format("pos:[%.2f, %.2f, %.2f],", posX, posY, posZ);  //todo remove
-//    System.out.format("%s\n", this.getEntityBoundingBox().toString());
 
     if (isCollided && onGround) {
         motionY -= 0.01F;         // ensure that we hit the ground next time too
@@ -218,13 +224,19 @@ public class FlameBreathFX extends EntityFX {
   }
 
   protected EnumParticleTypes getSmokeParticleID() {
-    if (largeSmokeChance != 0 && rand.nextFloat() <= largeSmokeChance) {
+    if (LARGE_SMOKE_CHANCE != 0 && rand.nextFloat() <= LARGE_SMOKE_CHANCE) {
       return EnumParticleTypes.SMOKE_LARGE;
     } else {
       return EnumParticleTypes.SMOKE_NORMAL;
     }
   }
 
+  /** Vanilla moveEntity does a pile of unneeded calculations, and also doesn't handle resize around the centre properly,
+   * so replace with a custom one
+   * @param dx the amount to move the entity in world coordinates [dx, dy, dz]
+   * @param dy
+   * @param dz
+   */
   @Override
   public void moveEntity(double dx, double dy, double dz) {
     entityMoveAndResizeHelper.moveAndResizeEntity(dx, dy, dz, this.width, this.height);

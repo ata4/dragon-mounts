@@ -18,9 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Created by TGG on 21/06/2015.
+ * Generates the configuration screen for the mod
+ */
+
 public class ConfigGuiFactory implements IModGuiFactory
 {
 	//this class is accessed when Forge needs a GUI made relating to your mod (e.g. config GUI)
+	// see @Mod annotation in DragonMounts
 	
 	@Override
 	public void initialize(Minecraft minecraftInstance)

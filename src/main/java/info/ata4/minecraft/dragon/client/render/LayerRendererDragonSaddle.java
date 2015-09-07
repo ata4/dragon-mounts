@@ -6,7 +6,8 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
 
 /**
- * Created by EveryoneElse on 14/06/2015.
+ * Created by TGG on 14/06/2015.
+ * Render the dragon's saddle.
  */
 public class LayerRendererDragonSaddle implements LayerRenderer {
   private final DragonRenderer dragonRenderer;

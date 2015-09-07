@@ -27,6 +27,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Generic model for all winged tetrapod dragons.
+ * Uses DragonAnimatorCommon to calculate sub-component positions
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */

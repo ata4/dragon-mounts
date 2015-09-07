@@ -36,7 +36,7 @@ public class DragonMounts {
     public static final String ID = "DragonMounts";
     public static final String AID = ID.toLowerCase();
     public static final String VERSION = "@VERSION@";
-    public static final String GUIFACTORY = "info.ata4.minecraft.dragon.client.gui.ConfigGuiFactory"; //delete if MBE70 not present
+    public static final String GUIFACTORY = "info.ata4.minecraft.dragon.client.gui.ConfigGuiFactory";
 
   @SidedProxy(
         serverSide = "info.ata4.minecraft.dragon.server.ServerProxy",

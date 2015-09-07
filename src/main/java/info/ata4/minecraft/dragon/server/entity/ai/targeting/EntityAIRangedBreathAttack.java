@@ -26,12 +26,17 @@ import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
+/**
+ * Selects the appropriate target based on the DragonOrb targeting information.  Applies Autolock if requested.
+ * Once the target is at the correct range, breathe at it.  Bite if the dragon can't move far enough away.
+ *   (Moving towards the target is handled by a different AI task)
+ */
+
 public class EntityAIRangedBreathAttack extends EntityAIBase {
   /** The entity the AI instance has been applied to */
   private final EntityTameableDragon dragon;
 
   private float minAttackDistanceSQ;
-  private float optimalAttackDistanceSQ;
   private float maxAttackDistanceSQ;
 
   private int targetDeselectedCountDown = 0;  // Countdown after player deselects target
@@ -44,7 +49,6 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
   {
     this.dragon = i_dragon;
     this.minAttackDistanceSQ = i_minAttackDistance * i_minAttackDistance;
-    this.optimalAttackDistanceSQ = i_optimalAttackDistance * i_optimalAttackDistance;
     this.maxAttackDistanceSQ = i_maxAttackDistance * i_maxAttackDistance;
     this.setMutexBits(1);
   }
@@ -139,7 +143,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
       dragon.getBreathHelper().setBreathTargetForMoving(currentTarget);
     }
 
-    // breath at the target if the conditions are right
+    // breathe at the target if the conditions are right
 
     boolean targetRangeOK = distanceToTargetSQ < 0
             || (distanceToTargetSQ >= minAttackDistanceSQ && distanceToTargetSQ <= maxAttackDistanceSQ);

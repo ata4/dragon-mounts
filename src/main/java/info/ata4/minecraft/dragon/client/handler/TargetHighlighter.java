@@ -33,6 +33,9 @@ import java.util.function.Predicate;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
+ * Highlights the current target of the dragon orb.
+ * Usage:
+ * (1) Register the handler during PostInit client only
  * Created by TGG on 28/08/2015.
  */
 public class TargetHighlighter
@@ -61,24 +64,6 @@ public class TargetHighlighter
     if (targetLockedOn != null) {
       targetToHighlight = targetLockedOn;
     }
-
-//    World world = event.player.worldObj;
-//    List loadedEntities = world.getLoadedEntityList();
-//    for (Object entity : loadedEntities) {
-//      if (entity instanceof EntityTameableDragon) {
-//        EntityTameableDragon dragon = (EntityTameableDragon) entity;
-//        if (dragon.isOwner(event.player)) {
-//          BreathWeaponTarget breathWeaponTarget = dragon.getBreathHelper().getPlayerSelectedTarget();
-//          if (breathWeaponTarget != null) {
-//            targetToHighlight = breathWeaponTarget;
-//          }
-//        }
-//      }
-//    }
-//    BreathWeaponTarget targetBeingBreathedAt = DragonOrbControl.getInstance().getTarget();
-//    if (targetBeingBreathedAt != null) {
-//      targetToHighlight = targetBeingBreathedAt;
-//    }
 
     switch (targetToHighlight.getTypeOfTarget()) {
       case ENTITY: {

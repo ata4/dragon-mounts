@@ -23,7 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *   1) initial startup
  *   2) looping while breathing
  *   3) stopping when done
- *  Sometimes the sound doesn't layer properly on the first try.  I don't know why.
+ *  Sometimes the sound doesn't layer properly on the first try.  I don't know why.  I have implemented a preload
+ *    which seems to help.
  *
  * The SoundEffectBreathWeapon corresponds to the breath weapon of a single dragon.  Typical usage is:
  * 1) create an instance, and provide a callback function (WeaponSoundUpdateLink)
@@ -31,6 +32,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * 3) once per tick, call performTick().
  *   3a) performTick() will call the WeaponSoundUpdateLink.refreshWeaponSoundInfo(), which should return the
  *       current data relevant to the sound (eg whether the dragon is breathing, and the location of the beam)
+ *
+ * Is intended to be subclassed for future different breath weapons.
  *
  */
 public class SoundEffectBreathWeapon
@@ -184,10 +187,6 @@ public class SoundEffectBreathWeapon
 
   private int ticksElapsed;
   private SoundController soundController;
-//  private ResourceLocation headStartRL;
-//  private ResourceLocation headLoopRL;
-//  private ResourceLocation headStopRL;
-
   private WeaponSoundUpdateLink weaponSoundUpdateLink;
 
   /**
@@ -297,10 +296,8 @@ public class SoundEffectBreathWeapon
 
       --playTimeCountDown;
       if (!soundSettings.playing) {
-//        donePlaying = true;
         this.volume = OFF_VOLUME;
       } else {
-//        System.out.println(boundaryHumInfo.playerDistanceToEpicentre);
         this.xPosF = (float)soundSettings.soundEpicentre.xCoord;
         this.yPosF = (float)soundSettings.soundEpicentre.yCoord;
         this.zPosF = (float)soundSettings.soundEpicentre.zCoord;

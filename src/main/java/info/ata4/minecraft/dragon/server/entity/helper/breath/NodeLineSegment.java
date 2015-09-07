@@ -251,16 +251,8 @@ public class NodeLineSegment
               && y >= aabb.minY && y <= aabb.maxY
               && z >= aabb.minZ && z <= aabb.maxZ  ) {
         retval += DENSITY_PER_POINT;
-//        System.out.format("hit: [%.3f, %.3f, %.3f] radius %.3f ", x, y, z, radius);
       }
     }
-//    if (retval > 0) {
-//      System.out.format("damage %.3f\n", retval);
-//    }
-//    System.out.format("[%s]: [%.3f, %.3f, %.3f] to [%.3f, %.3f, %.3f] %.3f\n", aabb.toString(),
-//                      startPoint.xCoord, startPoint.yCoord, startPoint.zCoord,
-//                      endPoint.xCoord, endPoint.yCoord, endPoint.zCoord,
-//                      retval);   //todo debug remove
     return retval;
   }
 
@@ -291,11 +283,6 @@ public class NodeLineSegment
 
     final double SUBSEGMENT_WIDTH = 1.0 / (NUMBER_OF_CLOUD_POINTS + 1);
 
-//    System.out.format("from [%.2f, %.2f, %.2f] to [%.2f, %.2f, %.2f] radius %.2f -->",
-//                      startPoint.xCoord, startPoint.yCoord, startPoint.zCoord,
-//                      endPoint.xCoord, endPoint.yCoord, endPoint.zCoord,
-//                      radius);   //todo debug remove
-
     //    Equation of sphere converting from polar to cartesian:
     //    x = r.cos(theta).sin(phi)
     //    y = r.sin(theta).sin(phi)
@@ -316,7 +303,6 @@ public class NodeLineSegment
       double dz = r * cosTable[phi];
 
       Vec3i gridLoc = new Vec3i(x + dx, y + dy, z + dz);
-//      System.out.format("[%.2f, %.2f, %.2f]: [%d, %d, %d] ", x+dx, y+dy, z+dz, gridLoc.getX(), gridLoc.getY(), gridLoc.getZ());   //todo debug remove
 
       BreathAffectedBlock breathAffectedBlock = hitDensity.get(gridLoc);
       if (breathAffectedBlock == null) {
@@ -326,11 +312,6 @@ public class NodeLineSegment
       breathAffectedBlock.addHitDensity(faceHit, DENSITY_PER_POINT);
       hitDensity.put(gridLoc, breathAffectedBlock);
     }
-//    System.out.format("\n"); //todo remove debug
-//    for (Map.Entry<Vec3i, BreathAffectedBlock> entry : hitDensity.entrySet()) {
-//      System.out.println(entry.getKey() + ":" + entry.getValue().getMaxHitDensity());
-//    }
-
   }
 
   /**
