@@ -8,12 +8,18 @@ import java.util.Random;
 
 /**
  * Created by TGG on 30/07/2015.
- * BreathNode represents the age, size, and initial speed of each node;
+ * BreathNode represents the age, size, and initial speed of each node in a breath weapon stream;
  * It is used with an associated Entity:
  *   BreathNode tracks the age and size
  *   Entity tracks the position, motion, and collision detection
  *
- *   updateAge() and changeEntitySizeToMatch() are used to keep the two synchronised
+ *   updateAge() is used to keep the two synchronised
+ *
+ *   A breathnode has three characteristic diameters:
+ *   1) getCurrentRenderDiameter() - the size for rendering
+ *   2) getCurrentDiameterOfEffect() - the diameter that will be affected by the breath weapon node
+ *   3) getCurrentAABBCollionSize() - the size used for collision detection with entities or the world
+ *
  */
 public class BreathNode
 {
@@ -22,7 +28,7 @@ public class BreathNode
     setPower(i_power);
   }
 
-  public enum Power {SMALL, MEDIUM, LARGE}
+  public enum Power {SMALL, MEDIUM, LARGE} // how powerful is this node?
 
   private float ageTicks;
 
@@ -113,21 +119,21 @@ public class BreathNode
   private final float RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER = 1.0F;
   private final float RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER = 0.5F;  // change to 0.5F
 
-  /** getChangeInValue render size (diameter) of the breathnode in blocks
+  /** get the current render size (diameter) of the breathnode in blocks
    * @return the rendering size (diameter) of the breathnode in blocks
    */
   public float getCurrentRenderDiameter() {
     return getCurrentDiameterOfEffect() * RATIO_OF_RENDER_DIAMETER_TO_EFFECT_DIAMETER;
   }
 
-  /** getChangeInValue the width and height of the breathnode collision AABB, in blocks
+  /** get the current width and height of the breathnode collision AABB, in blocks
    * @return the width and height of the breathnode collision AABB, in blocks
    */
   public float getCurrentAABBcollisionSize() {
     return getCurrentDiameterOfEffect() * RATIO_OF_COLLISION_DIAMETER_TO_EFFECT_DIAMETER;
   }
 
-  /** getChangeInValue the size (diameter) of the area of effect of the breath node, in blocks
+  /** get the current size (diameter) of the area of effect of the breath node, in blocks
    * @return the size (diameter) of the area of effect of the breathnode in blocks
    */
   public float getCurrentDiameterOfEffect() {

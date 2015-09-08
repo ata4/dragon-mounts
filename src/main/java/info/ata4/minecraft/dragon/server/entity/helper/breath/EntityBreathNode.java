@@ -13,7 +13,14 @@ import java.util.*;
 
 /**
  * Created by TGG on 31/07/2015.
- */
+ * Server side; tracks the position, motion, and collision detection of a breath node in a breath weapon stream,
+ * Used with an associated BreathNode to track age, size and initial speed
+ *
+ * Usage:
+ * 1) construct using createEntityBreathNodeServer
+ * 2) call onUpdate() every tick to move and collide
+ * 3) various getters for intensity, radius, and recent collisions.
+  */
 class EntityBreathNode extends Entity
 {
   public static EntityBreathNode createEntityBreathNodeServer(World world, double x, double y, double z,

@@ -28,6 +28,8 @@ import org.lwjgl.Sys;
  * The selection of an actual target (typically - based on the player desired target), navigation of dragon to the appropriate range,
  *   turning the dragon to face the target, is done by targeting AI.
  * DragonBreathHelper is also responsible for
+ *  - tracking the current breath state (IDLE, STARTING, SUSTAINED BREATHING, STOPPING)
+ *  - sound effects
  *  - adding delays for jaw open / breathing start
  *  - interrupting the beam when the dragon is facing the wrong way / the angle of the beam mismatches the head angle
  *  Usage:
@@ -111,7 +113,9 @@ public class DragonBreathHelper extends DragonHelper
     updateBreathState(target);
   }
 
-  public BreathWeaponTarget getBreathTargetForMoving()
+  /** gets the target that the movement AI should move towards (or away from) to move to the optimal breathing distance
+  */
+   public BreathWeaponTarget getBreathTargetForMoving()
   {
     return breathWeaponTarget;
   }
@@ -142,8 +146,6 @@ public class DragonBreathHelper extends DragonHelper
     }
 
     if (dragon.isClient()) {
-//      L.warn("getPlayerSelectedTarget is valid on the server side only");
-//      return null;
       return getTarget();
     }
 
@@ -219,16 +221,6 @@ public class DragonBreathHelper extends DragonHelper
 
   private void onLivingUpdateServer()
   {
-//    Entity dragonOwner = dragon.getOwner();
-//    if (dragonOwner != null) {
-//      AxisAlignedBB entityAABB = dragonOwner.getEntityBoundingBox();
-//      Vec3 startpoint = new Vec3(1000, 10, 1500);
-//      Vec3 endpoint = new Vec3(1000, 10, 1500);
-//      float radius = 0.01F;
-//      NodeLineSegment nodeLineSegment = new NodeLineSegment(startpoint, endpoint, radius);
-//      float hitDensity = nodeLineSegment.collisionCheckAABB(entityAABB, 10.0F, 10);
-//      System.out.println("hits:" + hitDensity);
-//    }
     BreathWeaponTarget target = getTarget();
     updateBreathState(target);
 
@@ -271,17 +263,14 @@ public class DragonBreathHelper extends DragonHelper
   private SoundEffectBreathWeapon soundEffectBreathWeapon;
   private WeaponInfoLink weaponInfoLink = new WeaponInfoLink();
 
+  // Callback link to provide the Sound generator with state information
   public class WeaponInfoLink implements SoundEffectBreathWeapon.WeaponSoundUpdateLink {
 
     @Override
     public boolean refreshWeaponSoundInfo(SoundEffectBreathWeapon.WeaponSoundInfo infoToUpdate) {
       BreathWeaponTarget target = getTarget();
       Vec3 origin;
-//      try {
-        origin = dragon.getAnimator().getThroatPosition();
-//      } catch (IllegalStateException ise) {  // if dragon isn't ready yet, just ignore.
-//        origin = new Vec3(0,0,0);
-//      }
+      origin = dragon.getAnimator().getThroatPosition();
       infoToUpdate.dragonHeadLocation = origin;
       infoToUpdate.relativeVolume = dragon.getScale();
       infoToUpdate.lifeStage = dragon.getLifeStageHelper().getLifeStage();

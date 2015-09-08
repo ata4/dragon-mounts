@@ -31,8 +31,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Created by TGG on 5/08/2015.
  *
- * Models a breathweapon for the dragon
- * Currently does fire only
+ * Models the effects of a breathweapon on blocks and entities
+ * Usage:
+ * 1) Construct with a parent dragon
+ * 2) affectBlock() to apply an area of effect to the given block (eg set fire to it)
+ * 3) affectEntity() to apply an area of effect to the given entity (eg damage it)
+ *
+ * Currently does fire only.  Intended to be subclassed later on for different weapon types.
  */
 public class BreathWeapon
 {
