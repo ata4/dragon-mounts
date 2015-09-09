@@ -10,7 +10,6 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.util.DataLogger;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.EntityBodyHelper;
 

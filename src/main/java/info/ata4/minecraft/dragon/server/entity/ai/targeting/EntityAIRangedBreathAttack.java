@@ -21,8 +21,6 @@ import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
@@ -152,7 +150,7 @@ public class EntityAIRangedBreathAttack extends EntityAIBase {
     boolean canSeeTarget = true;
     if (currentTarget.getTypeOfTarget() == BreathWeaponTarget.TypeOfTarget.ENTITY) {
       Entity targetEntity = currentTarget.getTargetEntity(dragon.worldObj);
-      canSeeTarget = (targetEntity == null) ? false : dragon.getEntitySenses().canSee(targetEntity);
+      canSeeTarget = (targetEntity != null) && dragon.getEntitySenses().canSee(targetEntity);
     }
     if (breathingNow && canSeeTarget && targetRangeOK && headAngleOK) {
       dragon.getBreathHelper().setBreathingTarget(currentTarget);

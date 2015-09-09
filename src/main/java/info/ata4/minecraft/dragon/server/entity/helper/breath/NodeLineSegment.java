@@ -2,7 +2,6 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.util.Pair;
 import info.ata4.minecraft.dragon.util.math.MathX;
-import net.minecraft.block.material.Material;
 import net.minecraft.util.*;
 
 import java.util.*;

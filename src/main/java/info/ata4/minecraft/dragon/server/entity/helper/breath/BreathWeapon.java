@@ -1,25 +1,23 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.DragonMountsConfig;
-import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -251,7 +249,7 @@ public class BreathWeapon
     if (entity instanceof EntityPlayer) {
       EntityPlayer entityPlayer = (EntityPlayer)entity;
       if (DragonMounts.instance.getConfig().isOrbHolderImmune()
-          && ItemUtils.hasEquipped(entityPlayer, DragonMounts.instance.proxy.itemDragonOrb)) {
+          && ItemUtils.hasEquipped(entityPlayer, DragonMounts.proxy.itemDragonOrb)) {
         return null;
       }
     }

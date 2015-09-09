@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.Vector;
 
 /**
  * Created by TGG on 6/07/2015.
@@ -37,7 +36,7 @@ import java.util.Vector;
  */
 public class BreathWeaponTarget
 {
-  public enum TypeOfTarget {LOCATION, ENTITY, DIRECTION};
+  public enum TypeOfTarget {LOCATION, ENTITY, DIRECTION}
 
   public static BreathWeaponTarget targetLocation(Vec3 location) {
     BreathWeaponTarget retval = new BreathWeaponTarget(TypeOfTarget.LOCATION);

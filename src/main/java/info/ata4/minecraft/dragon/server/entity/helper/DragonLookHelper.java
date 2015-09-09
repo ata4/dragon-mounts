@@ -1,15 +1,11 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
-import info.ata4.minecraft.dragon.server.util.DataLogger;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityLookHelper;
 import net.minecraft.util.MathHelper;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
  * For debugging.  Just copied the base class (too many private fields!)

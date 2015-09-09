@@ -8,9 +8,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -194,7 +192,7 @@ public class SoundEffectBreathWeapon
    */
   public interface WeaponSoundUpdateLink
   {
-    public boolean refreshWeaponSoundInfo(WeaponSoundInfo infoToUpdate);
+    boolean refreshWeaponSoundInfo(WeaponSoundInfo infoToUpdate);
   }
 
   public static class WeaponSoundInfo
@@ -314,7 +312,7 @@ public class SoundEffectBreathWeapon
     }
   }
 
-  protected enum SoundPart {START, LOOP, STOP};
+  protected enum SoundPart {START, LOOP, STOP}
 
   /**
    * Returns the sound for the given breed, lifestage, and sound part 

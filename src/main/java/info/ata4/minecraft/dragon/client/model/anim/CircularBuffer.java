@@ -10,12 +10,10 @@
 package info.ata4.minecraft.dragon.client.model.anim;
 
 import info.ata4.minecraft.dragon.util.math.MathX;
-import net.minecraft.util.MathHelper;
 
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Very simple fixed size circular buffer implementation for animation purposes.

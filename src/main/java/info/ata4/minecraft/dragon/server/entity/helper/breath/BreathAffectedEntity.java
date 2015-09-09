@@ -1,6 +1,5 @@
 package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 
 /**
@@ -64,7 +63,6 @@ public class BreathAffectedEntity
    *   called every tick; used to decay the cumulative effect on the entity
    *   for example - an entity being gently bathed in flame might gain 0.2 every time from the beam, and lose 0.2 every
    *     tick in this method.
-   * @return the new effect density; negative for effect expired
    */
   public void decayEntityEffectTick()
   {

@@ -3,9 +3,6 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.math.MathX;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 

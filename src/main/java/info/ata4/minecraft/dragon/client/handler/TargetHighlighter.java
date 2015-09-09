@@ -1,36 +1,20 @@
 package info.ata4.minecraft.dragon.client.handler;
 
-import com.google.common.collect.Lists;
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.DragonMountsConfig;
-import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathWeapon;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
-import info.ata4.minecraft.dragon.server.network.DragonOrbTargets;
 import info.ata4.minecraft.dragon.util.math.MathX;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.*;
-import net.minecraft.world.World;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.function.Predicate;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Highlights the current target of the dragon orb.
@@ -43,7 +27,7 @@ public class TargetHighlighter
   /**
    * If the player is holding the dragon orb but not currently holding the attack button down, override the normal
    *   highlighting with a custom highlighting. Otherwise, revert to the default.
-   * @param event
+   * @param event the event
    */
   @SubscribeEvent
   public void blockHighlightDecider(DrawBlockHighlightEvent event)

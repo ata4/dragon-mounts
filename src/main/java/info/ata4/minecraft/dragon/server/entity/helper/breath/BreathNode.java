@@ -2,7 +2,8 @@ package info.ata4.minecraft.dragon.server.entity.helper.breath;
 
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.*;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 
 import java.util.Random;
 
@@ -171,7 +172,7 @@ public class BreathNode
 
 
   public float getLifetimeFraction() {
-    float lifetimeFraction = (float)ageTicks / getMaxLifeTime();
+    float lifetimeFraction = ageTicks / getMaxLifeTime();
     lifetimeFraction = MathHelper.clamp_float(lifetimeFraction, 0.0F, 1.0F);
     return lifetimeFraction;
   }

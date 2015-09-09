@@ -1,7 +1,6 @@
 package info.ata4.minecraft.dragon.server.util;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import net.minecraftforge.client.event.TextureStitchEvent;
 
 import java.io.File;
 import java.io.FileNotFoundException;

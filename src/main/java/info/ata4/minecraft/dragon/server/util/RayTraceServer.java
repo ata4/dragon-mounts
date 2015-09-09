@@ -1,6 +1,5 @@
 package info.ata4.minecraft.dragon.server.util;
 
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;

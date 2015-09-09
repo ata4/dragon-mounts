@@ -14,17 +14,10 @@
 
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
-import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.DragonMountsConfig;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
-import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -101,7 +94,7 @@ public class EntityAIMoveToOptimalDistance extends EntityAIBase {
     boolean canSeeTarget = true;
     if (currentTarget.getTypeOfTarget() == BreathWeaponTarget.TypeOfTarget.ENTITY) {
       Entity targetEntity = currentTarget.getTargetEntity(dragon.worldObj);
-      canSeeTarget = (targetEntity == null) ? false : dragon.getEntitySenses().canSee(targetEntity);
+      canSeeTarget = (targetEntity != null) && dragon.getEntitySenses().canSee(targetEntity);
     }
     if (canSeeTarget) {
       ++this.canSeeTargetTickCount;

@@ -11,12 +11,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.Sys;
 
 /**
  * Created by TGG on 8/07/2015.
@@ -56,7 +54,7 @@ public class DragonBreathHelper extends DragonHelper
     breathAffectedArea = new BreathAffectedArea(new BreathWeapon(dragon));
   }
   public enum  BreathState {
-    IDLE, STARTING, SUSTAIN, STOPPING;
+    IDLE, STARTING, SUSTAIN, STOPPING
     }
 
   public BreathState getCurrentBreathState() {return currentBreathState;}

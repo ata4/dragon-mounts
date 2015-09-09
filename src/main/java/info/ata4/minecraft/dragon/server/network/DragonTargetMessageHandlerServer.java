@@ -9,11 +9,8 @@
  */
 package info.ata4.minecraft.dragon.server.network;
 
-import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import io.netty.channel.ChannelHandler.Sharable;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

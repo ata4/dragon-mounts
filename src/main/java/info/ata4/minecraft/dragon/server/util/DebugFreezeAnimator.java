@@ -1,10 +1,7 @@
 package info.ata4.minecraft.dragon.server.util;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.DragonMountsConfig;
 import org.lwjgl.input.Keyboard;
-
-import java.awt.*;
 
 /**
  * Created by TGG on 29/06/2015.

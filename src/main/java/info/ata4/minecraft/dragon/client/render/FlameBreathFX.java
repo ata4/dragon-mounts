@@ -9,7 +9,9 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -20,6 +22,7 @@ import java.util.Random;
  *
  * Usage:
  * (1) create a new FlameBreathFX using createFlameBreathFX
+ * (2) spawn it as per normal
  *
  */
 public class FlameBreathFX extends EntityFX {
