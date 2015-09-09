@@ -6,7 +6,8 @@
 //import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 //
 ///**
-// * Created by EveryoneElse on 18/07/2015.
+// * Created by TGG on 18/07/2015.
+// *  Used to suppress spawning of other entities to make debugging easier.
 // */
 //public class EntitySpawnSuppressor {
 //

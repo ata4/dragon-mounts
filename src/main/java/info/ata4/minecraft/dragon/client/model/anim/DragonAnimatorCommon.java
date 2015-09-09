@@ -17,8 +17,6 @@ import info.ata4.minecraft.dragon.server.entity.helper.breath.DragonBreathHelper
 import info.ata4.minecraft.dragon.server.util.DebugFreezeAnimator;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.math.Spline;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 
 /**
@@ -373,7 +371,7 @@ public class DragonAnimatorCommon {
   protected void animHeadAndNeck() {
     float bodyPitch = getBodyPitch();
     dragonHeadPositionHelper.calculateHeadAndNeck(animBase, flutter, sit, walk, speed, ground,
-            netLookYaw, lookPitch, bodyPitch, breath);
+            netLookYaw, lookPitch, breath);
     final float BITE_ANGLE = 0.75F;
     final float BREATH_ANGLE = 0.75F;
     jawRotateAngleX = (bite * BITE_ANGLE + breath * BREATH_ANGLE);

@@ -21,6 +21,19 @@ import java.util.Vector;
  * Created by TGG on 6/07/2015.
  * The target of the dragon's breath weapon
  * Can be a world location [x,y,z], a particular entity, or a direction [x,y,z]
+ * Typical usage:
+ * (1a) use targetLocation(), targetEntity(), targetEntityID(), or targetDirection() to create a target.
+ *    or
+ * (1b) fromMovingObjectPosition to create a target from a raytraced MOP
+ *    or
+ * (1c) fromBytes to create from a bytebuf, typically from network message
+ *    or
+ * (1d) fromEncodedString to create from a printable string (Base64), typically from a datawatcher
+ * (2) use getters to retrieve the target type and details.
+ * (3) toBytes or toEncodedString to create a serialised representation (for network or datawatcher respectively)
+ * (4) setEntityLook() to set the look of the entity based on the target
+ * (5) setNavigationPath/Avoid() to set navigate towards or away from the target
+ * (6) plus some utility methods to check if the target is near or far, if it has changed, etc
  */
 public class BreathWeaponTarget
 {

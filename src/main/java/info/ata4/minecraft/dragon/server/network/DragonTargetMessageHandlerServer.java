@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Network handler for dragon control messages.
+ * Network handler for dragon targeting messages (client tells the server what the dragon should target).
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */

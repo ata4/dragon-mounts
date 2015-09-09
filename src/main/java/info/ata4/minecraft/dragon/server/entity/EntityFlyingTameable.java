@@ -285,16 +285,9 @@ public abstract class EntityFlyingTameable extends EntityTameable {
  
         // update AI
 
-//        if (isAIEnabled()) {
-            worldObj.theProfiler.startSection("newAi");
-            updateAITasks();
-            worldObj.theProfiler.endSection();
-//        } else {
-//            worldObj.theProfiler.startSection("oldAi");
-//            updateEntityActionState();
-//            worldObj.theProfiler.endSection();
-//            rotationYawHead = rotationYaw;
-//        }
+        worldObj.theProfiler.startSection("newAi");
+        updateAITasks();
+        worldObj.theProfiler.endSection();
 
         // apply collision
         List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
@@ -337,9 +330,6 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     public double getAltitude() {
       BlockPos entityPos = new BlockPos(posX, posY, posZ);
       BlockPos groundPos = worldObj.getHorizon(entityPos);
-//        int blockX = (int) (posX - 0.5);
-//        int blockZ = (int) (posZ - 0.5);
-//        return posY - worldObj.getHeightValue(blockX, blockZ);
       return posY - groundPos.getY();
     }
     

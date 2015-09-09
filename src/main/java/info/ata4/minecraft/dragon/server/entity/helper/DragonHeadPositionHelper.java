@@ -11,11 +11,15 @@ import net.minecraft.util.Vec3;
 
 /**
 * Created by TGG on 24/06/2015.
+ * Helps to specify the position & orientation of the head and neck segments.
+ * Can be used on both client and server sides.
  *
  * Usage:
- * 1) Caller should use setHeadLocation to provide details of where the head is rotated relative to the body
- * 2) Caller should use setBodyPitch to tell the pitch of the dragon's body
- * 3) call getThroatPosition() to get the [x,y,z] position of the throat.
+ * 1) Create an instance
+ * 2) call calculateHeadAndNeck() to set the neck and head positions & angles
+ * 3) call getThroatPosition() to get the [x,y,z] position of the throat, uses body pitch from the dragon.
+ * 4) getHeadPositionSizeLocation, getNeckPositionSizeLocation, getNeckSegmentPositionSizeLocations are used to
+ *    provide detailed position information for the model
 */
 public class DragonHeadPositionHelper
 {
@@ -34,11 +38,10 @@ public class DragonHeadPositionHelper
    * @param ground
    * @param netLookYaw
    * @param lookPitch
-   * @param bodyPitch
    * @param breath
    */
   public void calculateHeadAndNeck(float animBase, float flutter, float sit, float walk, float speed, float ground,
-                                   float netLookYaw, float lookPitch, float bodyPitch, float breath)
+                                   float netLookYaw, float lookPitch, float breath)
   {
     neckSegments = new SegmentSizePositionRotation[NUMBER_OF_NECK_SEGMENTS];
     head = new SegmentSizePositionRotation();
@@ -86,8 +89,6 @@ public class DragonHeadPositionHelper
     neck = currentSegment.getCopy();  // might not be required, not sure, so do it anyway...
 
     final float HEAD_TILT_DURING_BREATH = -0.1F;
-//    System.out.format("%s lookPitch=%.2f, speed=%.2f, breath=%.2f\n",
-//            (dragon.worldObj.isRemote ? "client:" : "server:"), lookPitch, speed, breath);
     head.rotateAngleX = MathX.toRadians(lookPitch) + (1 - speed) + breath * HEAD_TILT_DURING_BREATH;
     head.rotateAngleY = currentSegment.rotateAngleY;
     head.rotateAngleZ = currentSegment.rotateAngleZ * 0.2f;

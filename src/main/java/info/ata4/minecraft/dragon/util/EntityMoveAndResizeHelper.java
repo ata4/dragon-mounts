@@ -23,6 +23,7 @@ public class EntityMoveAndResizeHelper {
   {
     entity = parentEntity;
   }
+
   /**
    * Tries to moves the entity by the passed in displacement. Args: dx, dy, dz
    * Copied from vanilla; irrelevant parts deleted; modify to accommodate a change in size
@@ -36,10 +37,9 @@ public class EntityMoveAndResizeHelper {
    *        (WEST, [3,2,6]-->[3.5, 2, 6] means the west face of the entity collided; the entity tried to move to
    *          x = 3, but got pushed back to x=3.5
    */
-
   public Collection<Pair<EnumFacing, AxisAlignedBB>> moveAndResizeEntity(double dx, double dy, double dz, float newWidth, float newHeight) {
     entity.worldObj.theProfiler.startSection("moveflame");
-    AxisAlignedBB entityAABB = entity.getEntityBoundingBox().offset(0, 0, 0);  // getChangeInValue a copy
+    AxisAlignedBB entityAABB = entity.getEntityBoundingBox().offset(0, 0, 0);  // get a copy
 
     double wDXplus = (newWidth - entity.width) / 2.0;
     double wDYplus = (newHeight - entity.height) / 2.0;

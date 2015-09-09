@@ -2,6 +2,11 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 /**
 * Created by TGG on 30/08/2015.
+ * Encapsulates the Size and Position of a model segment, with default values.
+ *   Typical usage:
+ * 1) An instance is created
+ * 2) One or more of the values are changed
+ * 3) copyIfValid is used on all values, to only copy/update those which were changed
 */
 public class SegmentSizePositionRotation implements Cloneable
 {

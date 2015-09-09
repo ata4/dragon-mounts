@@ -10,10 +10,17 @@ import java.util.*;
 /**
  * Created by TGG on 31/07/2015.
  * NodeLineSegment is used to represent a spherical node which has moved from one [x,y,z] point to a second [x,y,z] point.
- * Each line segment has a start point and a finish point.  The node has a defined radius.  Optionally, the segment
+ * Each line segment has a start point and a finish point.  The node has a defined radius.
+ * The line segment is then used to detect collisions with other objects
+ *
+ * Optionally, the segment
  *   can be provided with a collection of collisions as well (each collision corresponds to an AABB which is known to
  *   overlap with a block or entity, as discovered while moving the node.  the facing shows which face of the node
- *   collided with the object.
+ *   collided with the object.)
+ *  Typical usage:
+ *  (1) create node segment with a start point, finish point, and node radius.  Optional collisions from entity moving.
+ *  (2) collisionCheckAABB(), collisionCheckAABBcorners(), addStochasticCloud() and/or addBlockCollisions() to
+ *      perform collision checks of the against the node against blocks or entities
  *
  */
 public class NodeLineSegment
@@ -97,29 +104,12 @@ public class NodeLineSegment
   public static AxisAlignedBB getAxisAlignedBoundingBoxForAll(Collection<NodeLineSegment> nodeLineSegments)
   {
     if (nodeLineSegments == null || nodeLineSegments.isEmpty()) return null;
-//    double minX = Double.MAX_VALUE;
-//    double maxX = Double.MIN_VALUE;
-//    double minY = Double.MAX_VALUE;
-//    double maxY = Double.MIN_VALUE;
-//    double minZ = Double.MAX_VALUE;
-//    double maxZ = Double.MIN_VALUE;
 
     AxisAlignedBB aabb = null;
     for (NodeLineSegment nodeLineSegment : nodeLineSegments) {
       aabb = (aabb == null) ? nodeLineSegment.getAxisAlignedBoundingBox()
                             : aabb.union(nodeLineSegment.getAxisAlignedBoundingBox());
-//      minX = Math.min(minX, nodeLineSegment.startPoint.xCoord - nodeLineSegment.radius);
-//      minX = Math.min(minX, nodeLineSegment.endPoint.xCoord - nodeLineSegment.radius);
-//      minY = Math.min(minY, nodeLineSegment.startPoint.yCoord - nodeLineSegment.radius);
-//      minY = Math.min(minY, nodeLineSegment.endPoint.yCoord - nodeLineSegment.radius);
-//      minZ = Math.min(minZ, nodeLineSegment.startPoint.zCoord - nodeLineSegment.radius);
-//      minZ = Math.min(minZ, nodeLineSegment.endPoint.zCoord - nodeLineSegment.radius);
-//      maxX = Math.max(maxX, nodeLineSegment.startPoint.xCoord + nodeLineSegment.radius);
-//      maxX = Math.max(maxX, nodeLineSegment.endPoint.xCoord + nodeLineSegment.radius);
-//      maxY = Math.max(maxY, nodeLineSegment.startPoint.yCoord + nodeLineSegment.radius);
-//      maxY = Math.max(maxY, nodeLineSegment.endPoint.yCoord + nodeLineSegment.radius);
-//      maxZ = Math.max(maxZ, nodeLineSegment.startPoint.zCoord + nodeLineSegment.radius);
-//      maxZ = Math.max(maxZ, nodeLineSegment.endPoint.zCoord + nodeLineSegment.radius);
+
     }
     return aabb;
   }
@@ -387,254 +377,6 @@ public class NodeLineSegment
     tablesInitialised = true;
   }
 
-  //  public enum SortOrder {X_LOW, X_HIGH, Y_LOW, Y_HIGH, Z_LOW, Z_HIGH}
-//
-//  public static void sort(List<NodeLineSegment> nodeLineSegments, SortOrder sortOrder)
-//  {
-//    switch (sortOrder) {
-//      case X_LOW:
-//      case X_HIGH: {
-//        for (NodeLineSegment segment : nodeLineSegments) {
-//          if (segment.startPoint.xCoord > segment.endPoint.xCoord) {
-//            segment.swapPoints();
-//          }
-//        }
-//        Comparator<NodeLineSegment> comparator = (sortOrder == SortOrder.X_LOW) ? new SortByXLow() : new SortByXHigh();
-//        nodeLineSegments.sort(comparator);
-//        break;
-//      }
-//      case Y_LOW:
-//      case Y_HIGH: {
-//        for (NodeLineSegment segment : nodeLineSegments) {
-//          if (segment.startPoint.yCoord > segment.endPoint.yCoord) {
-//            segment.swapPoints();
-//          }
-//        }
-//        Comparator<NodeLineSegment> comparator = (sortOrder == SortOrder.Y_LOW) ? new SortByYLow() : new SortByYHigh();
-//        nodeLineSegments.sort(comparator);
-//        break;
-//      }
-//      case Z_LOW:
-//      case Z_HIGH: {
-//        for (NodeLineSegment segment : nodeLineSegments) {
-//          if (segment.startPoint.zCoord > segment.endPoint.zCoord) {
-//            segment.swapPoints();
-//          }
-//        }
-//        Comparator<NodeLineSegment> comparator = (sortOrder == SortOrder.Z_LOW) ? new SortByZLow() : new SortByZHigh();
-//        nodeLineSegments.sort(comparator);
-//        break;
-//      }
-//      default: {
-//        System.err.println("Illegal SortOrder in LineSegment.sort:" + sortOrder);
-//        return;
-//      }
-//    }
-//  }
-
-//  /**
-//   * Find the cubes that are overlapped by this segment and add them to the set
-//   * Is only approximate - uses a rectangular prism to approximate the beam
-//   * @param overlappedCubes the set of cubes ([x,y,z] blockpos), will be added to
-//   * @param radius approximate radius of beam in blocks;
-//   * @return
-//   */
-//  public void addOverlappedCubes(Set<Vec3i> overlappedCubes, double radius)
-//  {
-//    // uses a crude algorithm to find which blocks the segment overlaps:
-//    // chooses one of the three cardinal directions then takes slices along
-//    //  that direction at points [x1,y1,z1], [x2,y2,z2] etc
-//    //  on each slice, form a rectangle centred on the [x,y,z]
-//    //  all cubes partially overlapped by the rectangle are added to the set.
-//    // The rectangle height and width are expanded slightly depending on the
-//    //   slope of the segment - the cross-section through the prism gets bigger
-//    //   when it is cut at an angle
-//    // we always choose to iterate along the axis with greatest change relative
-//    //   to the other two
-//
-//    double minX = Math.min(startPoint.xCoord, endPoint.xCoord);
-//    double maxX = Math.max(startPoint.xCoord, endPoint.xCoord);
-//    double minY = Math.min(startPoint.yCoord, endPoint.yCoord);
-//    double maxY = Math.max(startPoint.yCoord, endPoint.yCoord);
-//    double minZ = Math.min(startPoint.zCoord, endPoint.zCoord);
-//    double maxZ = Math.max(startPoint.zCoord, endPoint.zCoord);
-//    double deltaX = maxX - minX;
-//    double deltaY = maxY - minY;
-//    double deltaZ = maxZ - minZ;
-//    double length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-//
-//    final double BLOCK_STEP_SIZE = 0.5;
-//    final int MAX_NUMBER_OF_STEPS = 10;
-//    double stepSize = Math.min(radius, BLOCK_STEP_SIZE);
-//    int numberOfSteps = (int)Math.ceil(length / stepSize);
-//    numberOfSteps = Math.min(numberOfSteps, MAX_NUMBER_OF_STEPS);
-//
-//    int whichIsBiggest = 0;
-//    double biggestDelta = deltaX;
-//    if (deltaY > biggestDelta) {
-//      whichIsBiggest = 1;
-//      biggestDelta = deltaY;
-//    }
-//    if (deltaZ > biggestDelta) {
-//      whichIsBiggest = 2;
-//      biggestDelta = deltaZ;
-//    }
-//    final double ZERO_DELTA = 0.0001;
-//    if (biggestDelta < ZERO_DELTA) {
-//      whichIsBiggest = 3;
-//    }
-//
-//    double halfSliceX = radius;
-//    double halfSliceY = radius;
-//    double halfSliceZ = radius;
-//
-//    switch (whichIsBiggest) {
-//      case 0: {
-//        double halfSlice = radius * length / deltaX;
-//        double deltaYZ = Math.sqrt(deltaY*deltaY + deltaZ*deltaZ);
-//        halfSliceY = radius + (halfSlice - radius) * deltaY / deltaYZ;
-//        halfSliceZ = radius + (halfSlice - radius) * deltaZ / deltaYZ;
-//        break;
-//      }
-//      case 1: {
-//        double halfSlice = radius * length / deltaY;
-//        double deltaXZ = Math.sqrt(deltaX*deltaX + deltaZ*deltaZ);
-//        halfSliceX = radius + (halfSlice - radius) * deltaX / deltaXZ;
-//        halfSliceZ = radius + (halfSlice - radius) * deltaZ / deltaXZ;
-//        break;
-//      }
-//      case 2: {
-//        double halfSlice = radius * length / deltaZ;
-//        double deltaXY = Math.sqrt(deltaX*deltaX + deltaY*deltaY);
-//        halfSliceX = radius + (halfSlice - radius) * deltaX / deltaXY;
-//        halfSliceY = radius + (halfSlice - radius) * deltaY / deltaXY;
-//        break;
-//      }
-//      case 3: {
-//        break;
-//      }
-//    }
-//
-//    double x = minX;
-//    double y = minY;
-//    double z = minZ;
-//    for (int i = 0; i <= numberOfSteps; ++i) {
-//      switch (whichIsBiggest) {
-//        case 0: {
-//          addOverlappedAroundPointInXplane(overlappedCubes, x, y, z, halfSliceY, halfSliceZ);
-//          break;
-//        }
-//        case 1: {
-//          addOverlappedAroundPointInYplane(overlappedCubes, x, y, z, halfSliceX, halfSliceZ);
-//          break;
-//        }
-//        case 2: {
-//          addOverlappedAroundPointInZplane(overlappedCubes, x, y, z, halfSliceX, halfSliceY);
-//          break;
-//        }
-//        case 3: {  // no change at all -> point
-//          addOverlappedAroundPointInXplane(overlappedCubes, minX, minY, minZ, halfSliceY, halfSliceZ);
-//          addOverlappedAroundPointInYplane(overlappedCubes, minX, minY, minZ, halfSliceX, halfSliceZ);
-//          addOverlappedAroundPointInZplane(overlappedCubes, minX, minY, minZ, halfSliceX, halfSliceY);
-//          return;
-//        }
-//      }
-//
-//      x += deltaX / numberOfSteps;
-//      y += deltaY / numberOfSteps;
-//      z += deltaZ / numberOfSteps;
-//    }
-//  }
-//
-//  private void addOverlappedAroundPointInXplane(Set<Vec3i> overlappedPoints, double x, double y, double z,
-//                                               double halfSliceY, double halfSliceZ)
-//  {
-//    int minY = (int)(y - halfSliceY);
-//    int maxY = (int)(y + halfSliceY);
-//    int minZ = (int)(z - halfSliceZ);
-//    int maxZ = (int)(z + halfSliceZ);
-//    for (int iy = minY; iy <= maxY; ++iy) {
-//      for (int iz = minZ; iz <= maxZ; ++iz) {
-//         overlappedPoints.add(new Vec3i((int)x, iy, iz));
-//      }
-//    }
-//  }
-//
-//  private void addOverlappedAroundPointInYplane(Set<Vec3i> overlappedPoints, double x, double y, double z,
-//                                               double halfSliceX, double halfSliceZ)
-//  {
-//    int minX = (int)(x - halfSliceX);
-//    int maxX = (int)(x + halfSliceX);
-//    int minZ = (int)(z - halfSliceZ);
-//    int maxZ = (int)(z + halfSliceZ);
-//    for (int ix = minX; ix <= maxX; ++ix) {
-//      for (int iz = minZ; iz <= maxZ; ++iz) {
-//        overlappedPoints.add(new Vec3i(ix, (int)y, iz));
-//      }
-//    }
-//  }
-//
-//  private void addOverlappedAroundPointInZplane(Set<Vec3i> overlappedPoints, double x, double y, double z,
-//                                               double halfSliceX, double halfSliceY)
-//  {
-//    int minX = (int)(x - halfSliceX);
-//    int maxX = (int)(x + halfSliceX);
-//    int minY = (int)(y - halfSliceY);
-//    int maxY = (int)(y + halfSliceY);
-//    for (int ix = minX; ix <= maxX; ++ix) {
-//      for (int iy = minY; iy <= maxY; ++iy) {
-//        overlappedPoints.add(new Vec3i(ix, iy, (int)z));
-//      }
-//    }
-//  }
-//
-//  private static class SortByXLow implements Comparator<NodeLineSegment> {
-//    @Override
-//    public int compare(NodeLineSegment o1, NodeLineSegment o2) {
-//      return Double.compare(o1.startPoint.xCoord, o2.startPoint.xCoord);
-//    }
-//  }
-//
-//  private static class SortByXHigh implements Comparator<NodeLineSegment> {
-//    @Override
-//    public int compare(NodeLineSegment o1, NodeLineSegment o2) {
-//      return Double.compare(o1.endPoint.xCoord, o2.endPoint.xCoord);
-//    }
-//  }
-//
-//  private static class SortByYLow implements Comparator<NodeLineSegment> {
-//    @Override
-//    public int compare(NodeLineSegment o1, NodeLineSegment o2) {
-//      return Double.compare(o1.startPoint.yCoord, o2.startPoint.yCoord);
-//    }
-//  }
-//
-//  private static class SortByYHigh implements Comparator<NodeLineSegment> {
-//    @Override
-//    public int compare(NodeLineSegment o1, NodeLineSegment o2) {
-//      return Double.compare(o1.endPoint.yCoord, o2.endPoint.yCoord);
-//    }
-//  }
-//
-//  private static class SortByZLow implements Comparator<NodeLineSegment> {
-//    @Override
-//    public int compare(NodeLineSegment o1, NodeLineSegment o2) {
-//      return Double.compare(o1.startPoint.zCoord, o2.startPoint.zCoord);
-//    }
-//  }
-//
-//  private static class SortByZHigh implements Comparator<NodeLineSegment> {
-//    @Override
-//    public int compare(NodeLineSegment o1, NodeLineSegment o2) {
-//      return Double.compare(o1.endPoint.zCoord, o2.endPoint.zCoord);
-//    }
-//  }
-//
-//  private void swapPoints() {
-//    Vec3 temp = startPoint;
-//    startPoint = endPoint;
-//    endPoint = temp;
-//  }
 
   public Vec3 startPoint;
   public Vec3 endPoint;

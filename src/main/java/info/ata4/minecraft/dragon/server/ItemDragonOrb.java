@@ -13,6 +13,7 @@ import java.awt.*;
 
 /**
  * Created by TGG on 3/07/2015.
+ * The Dragon Orb.
  */
 public class ItemDragonOrb extends Item {
 

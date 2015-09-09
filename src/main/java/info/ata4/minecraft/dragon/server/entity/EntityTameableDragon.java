@@ -130,19 +130,7 @@ public class EntityTameableDragon extends EntityFlyingTameable
       addHelper(new DragonDebug(this));
     }
 
-    // don't use this on server side or you're asking for trouble!
-//        if (isClient()) {
     animator = new DragonAnimatorCommon(this);
-//        }
-
-//      dragonHeadPositionHelper = new DragonHeadPositionHelper(this, getBreed().getNumberOfNeckSegments());
-//      animator.animate();
-//      dragonHeadPositionHelper.calculateHeadAndNeckDefaults();
-//      DragonHeadPositionHelper headPositionHelper = getDragonHeadPositionHelper();
-//
-//      float bodyPitch = getModelPitch();
-//      headPositionHelper.calculateHeadAndNeck(animBase, flutter, sit, walk, speed, ground,
-//                                              lookYaw, lookPitch, bodyPitch, breath);
   }
 
   @Override
@@ -207,11 +195,6 @@ public class EntityTameableDragon extends EntityFlyingTameable
   @Override
   public void onUpdate()
   {
-//    System.out.format("%s- onUpdate rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",
-//            isClient() ? "C" : "S",
-//            getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
-//            renderYawOffset, MathX.normDeg(renderYawOffset),
-//            rotationYaw, MathX.normDeg(rotationYaw));
     super.onUpdate();
   }
 
@@ -219,17 +202,6 @@ public class EntityTameableDragon extends EntityFlyingTameable
   public void setRotationYawHead(float rotation)
   {
     super.setRotationYawHead(rotation);
-//    System.out.println("setRotationYawHead:" + rotation + "(" + MathX.normDeg(getRotationYawHead()) + ")");
-//    System.out.format(
-//            "%s- setRYH   rotationYawHead:%4.0f(%4.0f), renderYawOffset:%4.0f(%4.0f), rotationYaw:%4.0f(%4.0f)\n",
-//            isClient() ? "C" : "S",
-//            getRotationYawHead(), MathX.normDeg(getRotationYawHead()),
-//            renderYawOffset, MathX.normDeg(renderYawOffset),
-//            rotationYaw, MathX.normDeg(rotationYaw));
-//    String sidePreText = isClient() ? "Client" : "Server";
-//    DataLogger.logData(sidePreText + "-SetRotationYawHead", Float.toString(rotation));
-
-//    lastRotationYawHeadFromServer = rotation;
   }
 
 
@@ -242,12 +214,6 @@ public class EntityTameableDragon extends EntityFlyingTameable
   {
     return animator.getBodyPitch();
   }
-
-//  private float lastRotationYawHeadFromServer = 0;
-//  public float getLastRotationYawHeadFromServer() {return lastRotationYawHeadFromServer;}
-
-  private int tickForSoundDebug = 0;
-  private int pitchstep = 0;
 
   @Override
   public void onLivingUpdate()
@@ -616,14 +582,6 @@ public class EntityTameableDragon extends EntityFlyingTameable
     return getScale();
   }
 
-  /**
-   * Returns true if the newer Entity AI code should be run
-   */
-  // no longer required
-//    @Override
-//    protected boolean isAIEnabled() {
-//        return true;
-//    }
   @Override
   protected boolean isGroundAIEnabled()
   {

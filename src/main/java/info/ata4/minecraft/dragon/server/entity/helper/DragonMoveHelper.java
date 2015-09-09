@@ -40,9 +40,6 @@ public class DragonMoveHelper extends EntityMoveHelper
         float f = (float)(Math.atan2(d1, d0) * 180.0D / Math.PI) - 90.0F;
         float newRotationYaw = this.limitAngle(this.entity.rotationYaw, f, 30.0F);
         if (newRotationYaw != entity.rotationYaw) {
-//          String logName = ((EntityTameableDragon)entity).isClient() ? "Client-onUpdateMoveHelper" : "Server-onUpdateMoveHelper";
-//          String output = Float.toString(newRotationYaw);
-//          DataLogger.logData(logName, output);
         }
         this.entity.rotationYaw = newRotationYaw;
                 this.entity.setAIMoveSpeed((float) (this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue()));
