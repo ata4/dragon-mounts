@@ -20,6 +20,7 @@ import info.ata4.minecraft.dragon.server.network.DragonTargetMessageHandlerServe
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
@@ -76,6 +77,16 @@ public class CommonProxy {
 
     public void onPostInit(FMLPostInitializationEvent event)
     {
+      //  Shaped recipe for the DragonOrb ender eye at the end of two blaze rods
+      GameRegistry.addRecipe(new ItemStack(itemDragonOrb), new Object[]{
+              ".E.",
+              ".B.",
+              ".B.",
+              'E', Items.ender_eye,
+              'B', Items.blaze_rod
+      });
+
+
     }
     
     public void onServerStarted(FMLServerStartedEvent evt) {
