@@ -1,0 +1,25 @@
+entity.DragonMounts.DragonMount.air.name=Drago dell'Etere
+entity.DragonMounts.DragonMount.end.name=Drago dell'End
+entity.DragonMounts.DragonMount.fire.name=Drago del Fuoco
+entity.DragonMounts.DragonMount.ghost.name=Drago Fantasma
+entity.DragonMounts.DragonMount.ice.name=Drago del Ghiaccio
+entity.DragonMounts.DragonMount.name=Drago dell'End
+entity.DragonMounts.DragonMount.nether.name=Drago del Nether
+entity.DragonMounts.DragonMount.water.name=Drago Acquatico
+entity.DragonMounts.DragonMount.forest.name=Drago della Foresta
+
+commands.dragon.nodragons=Nessun drago nelle vicinanze
+commands.dragon.canttame=Non puoi addomesticare i draghi!
+
+dragon.lifeStage.egg=uovo
+dragon.lifeStage.hatchling=cucciolo
+dragon.lifeStage.juvenile=giovane
+dragon.lifeStage.adult=adulto
+dragon.owned=Questo drago non segue i tuoi comandi.
+dragon.mountNotice=Premi %s e %s per andare su e giù
+
+key.categories.dragonmount=Controlli dei Draghi
+key.dragon.flyUp=Vola in Alto
+key.dragon.flyDown=Vola in Basso
+
+attribute.name.generic.movementSpeedAir=Velocità (Aria)

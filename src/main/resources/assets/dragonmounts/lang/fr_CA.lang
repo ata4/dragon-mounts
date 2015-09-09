@@ -1,12 +1,12 @@
-entity.DragonMount.air.name=Dragon d'air
-entity.DragonMount.end.name=Ender Dragon
-entity.DragonMount.fire.name=Dragon de feu
-entity.DragonMount.ghost.name=Dragon fantôme
-entity.DragonMount.ice.name=Dragon de glace
-entity.DragonMount.name=Ender Dragon
-entity.DragonMount.nether.name=Dragon du Nether
-entity.DragonMount.water.name=Dragon d'eau
-entity.DragonMount.forest.name=Dragon de forêt
+entity.DragonMounts.DragonMount.air.name=Dragon d'air
+entity.DragonMounts.DragonMount.end.name=Ender Dragon
+entity.DragonMounts.DragonMount.fire.name=Dragon de feu
+entity.DragonMounts.DragonMount.ghost.name=Dragon fantôme
+entity.DragonMounts.DragonMount.ice.name=Dragon de glace
+entity.DragonMounts.DragonMount.name=Ender Dragon
+entity.DragonMounts.DragonMount.nether.name=Dragon du Nether
+entity.DragonMounts.DragonMount.water.name=Dragon d'eau
+entity.DragonMounts.DragonMount.forest.name=Dragon de forêt
 
 commands.dragon.nodragons=Il n'y a pas de dragons à proximité
 commands.dragon.canttame=Vous ne pouvez pas apprivoiser les dragons

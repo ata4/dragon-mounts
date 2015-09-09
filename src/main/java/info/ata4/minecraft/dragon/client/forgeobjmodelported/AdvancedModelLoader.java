@@ -2,7 +2,6 @@ package info.ata4.minecraft.dragon.client.forgeobjmodelported;
 
 import com.google.common.collect.Maps;
 import info.ata4.minecraft.dragon.client.forgeobjmodelported.obj.ObjModelLoader;
-import info.ata4.minecraft.dragon.client.forgeobjmodelported.techne.TechneModelLoader;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
@@ -68,10 +67,8 @@ public class AdvancedModelLoader {
     return instances.keySet();
   }
 
-
   static
   {
     registerModelHandler(new ObjModelLoader());
-    registerModelHandler(new TechneModelLoader());
   }
 }
