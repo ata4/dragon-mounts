@@ -289,10 +289,6 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         updateAITasks();
         worldObj.theProfiler.endSection();
 
-        worldObj.theProfiler.startSection("newAi");
-        updateAITasks();
-        worldObj.theProfiler.endSection();
-
         // apply collision
         List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
                 getEntityBoundingBox().expand(0.2, 0, 0));
