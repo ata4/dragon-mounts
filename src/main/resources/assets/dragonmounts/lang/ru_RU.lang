@@ -1,12 +1,12 @@
-entity.DragonMounts.DragonMount.air.name=Дракон Эфира
-entity.DragonMounts.DragonMount.end.name=Дракон Края
-entity.DragonMounts.DragonMount.fire.name=Огненный дракон
-entity.DragonMounts.DragonMount.ghost.name=Призрачный дракон
-entity.DragonMounts.DragonMount.ice.name=Ледяной дракон
-entity.DragonMounts.DragonMount.name=Дракон Края
-entity.DragonMounts.DragonMount.nether.name=Дракон Нижнего мира
-entity.DragonMounts.DragonMount.water.name=Водный дракон
-entity.DragonMounts.DragonMount.forest.name=Лесной дракон
+entity.DragonMount.air.name=Дракон Эфира
+entity.DragonMount.end.name=Дракон Края
+entity.DragonMount.fire.name=Огненный дракон
+entity.DragonMount.ghost.name=Призрачный дракон
+entity.DragonMount.ice.name=Ледяной дракон
+entity.DragonMount.name=Дракон Края
+entity.DragonMount.nether.name=Дракон Нижнего мира
+entity.DragonMount.water.name=Водный дракон
+entity.DragonMount.forest.name=Лесной дракон
 
 commands.dragon.nodragons=Рядом нет драконов
 commands.dragon.canttame=Вы не можете приручать драконов

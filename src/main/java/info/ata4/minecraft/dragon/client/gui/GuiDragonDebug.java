@@ -326,13 +326,13 @@ public class GuiDragonDebug extends Gui {
         text.setColor(WHITE);
         
         PathNavigate nav = dragonServer.getNavigator();
-        PathNavigateGround pathNavigateGround = null;
-        if (nav instanceof PathNavigateGround) {
-            pathNavigateGround = (PathNavigateGround) nav;
-        }
+      PathNavigateGround pathNavigateGround = null;
+      if (nav instanceof  PathNavigateGround) {
+        pathNavigateGround = (PathNavigateGround)nav;
+      }
         
         text.println("Search range: " + nav.getPathSearchRange());
-        //  guesses based on EntityAIDoorInteract
+//  guesses based on EntityAIDoorInteract
         text.println("Avoid water: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.func_179689_e()));
         text.println("Break doors: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.func_179686_g()));
         text.println("No path: " + nav.noPath());

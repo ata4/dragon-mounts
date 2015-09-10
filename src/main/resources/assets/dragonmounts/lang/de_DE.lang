@@ -1,12 +1,12 @@
-entity.DragonMounts.DragonMount.air.name=Aether-Drache
-entity.DragonMounts.DragonMount.end.name=Ender-Drache
-entity.DragonMounts.DragonMount.fire.name=Feuer-Drache
-entity.DragonMounts.DragonMount.ghost.name=Geist-Drache
-entity.DragonMounts.DragonMount.ice.name=Eis-Drache
-entity.DragonMounts.DragonMount.name=Ender-Drache
-entity.DragonMounts.DragonMount.nether.name=Nether-Drache
-entity.DragonMounts.DragonMount.water.name=Wasser-Drache
-entity.DragonMounts.DragonMount.forest.name=Wald-Drache
+entity.DragonMount.air.name=Aether-Drache
+entity.DragonMount.end.name=Ender-Drache
+entity.DragonMount.fire.name=Feuer-Drache
+entity.DragonMount.ghost.name=Geist-Drache
+entity.DragonMount.ice.name=Eis-Drache
+entity.DragonMount.name=Ender-Drache
+entity.DragonMount.nether.name=Nether-Drache
+entity.DragonMount.water.name=Wasser-Drache
+entity.DragonMount.forest.name=Wald-Drache
 
 commands.dragon.nodragons=Es sind keine Drachen in der Nähe
 commands.dragon.canttame=Du kannst keine Drachen zähmen

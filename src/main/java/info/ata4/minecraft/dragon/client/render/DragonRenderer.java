@@ -44,9 +44,9 @@ public class DragonRenderer extends RenderLiving {
     public static boolean updateModel;
     
     private final Map<DragonBreed, DragonModel> breedModels = new HashMap<DragonBreed, DragonModel>();
-    private final ResourceLocation dissolveTextureLoc = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
-    private final ResourceLocation eggModelLoc = new ResourceLocation(DragonMounts.AID, MDL_BASE + "dragon_egg.obj");
-    private final IModelCustom eggModel = AdvancedModelLoader.loadModel(eggModelLoc);
+    private final ResourceLocation dissolveTexture = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
+    private final ResourceLocation eggTexture = new ResourceLocation(DragonMounts.AID, MDL_BASE + "dragon_egg.obj");
+    private final IModelCustom eggModel = AdvancedModelLoader.loadModel(eggTexture);
     
     private DragonModel dragonModel;
 
@@ -112,7 +112,7 @@ public class DragonRenderer extends RenderLiving {
             glDepthFunc(GL_LEQUAL);
             glEnable(GL_ALPHA_TEST);
             glAlphaFunc(GL_GREATER, alpha);
-            bindTexture(dissolveTextureLoc);
+            bindTexture(dissolveTexture);
             dragonModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
             glAlphaFunc(GL_GREATER, 0.1f);
             glDepthFunc(GL_EQUAL);

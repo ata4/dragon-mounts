@@ -1,12 +1,12 @@
-﻿entity.DragonMounts.DragonMount.air.name=Smok powietrza
-entity.DragonMounts.DragonMount.end.name=Smok Końca
-entity.DragonMounts.DragonMount.fire.name=Smok ognia
-entity.DragonMounts.DragonMount.ghost.name=Smok duch
-entity.DragonMounts.DragonMount.ice.name=Smok lodu
-entity.DragonMounts.DragonMount.name=Smok Końca
-entity.DragonMounts.DragonMount.nether.name=Smok netheru
-entity.DragonMounts.DragonMount.water.name=Smok wody
-entity.DragonMounts.DragonMount.forest.name=Smok leśny
+﻿entity.DragonMount.air.name=Smok powietrza
+entity.DragonMount.end.name=Smok Końca
+entity.DragonMount.fire.name=Smok ognia
+entity.DragonMount.ghost.name=Smok duch
+entity.DragonMount.ice.name=Smok lodu
+entity.DragonMount.name=Smok Końca
+entity.DragonMount.nether.name=Smok netheru
+entity.DragonMount.water.name=Smok wody
+entity.DragonMount.forest.name=Smok leśny
 
 commands.dragon.nodragons=Nie ma smoków w pobliżu
 commands.dragon.canttame=Nie możesz oswoić smoka

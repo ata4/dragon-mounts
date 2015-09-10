@@ -20,8 +20,12 @@ import java.util.BitSet;
  */
 public class DragonControlMessage implements IMessage {
     
-    private final BitSet bits = new BitSet(Byte.SIZE);
+    private final BitSet bits;
     private int previous;
+    
+    public DragonControlMessage() {
+        bits = new BitSet(Byte.SIZE);
+    }
     
     public BitSet getFlags() {
         return bits;
@@ -38,11 +42,13 @@ public class DragonControlMessage implements IMessage {
     }
     
     public void fromInteger(int value) { // ? BitSet already has inbuilt to do this? leave as is...
-        bits.clear();
-        for (int i = 0; i < bits.size(); i++) {
-            if ((value & (1 << i)) != 0) {
-                bits.set(i);
+        int index = 0;
+        while (value != 0) {
+            if (value % 2 != 0) {
+                bits.set(index);
             }
+            index++;
+            value >>>= 1;
         }
     }
     

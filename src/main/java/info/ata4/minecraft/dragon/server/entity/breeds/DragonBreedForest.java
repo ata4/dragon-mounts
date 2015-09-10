@@ -48,43 +48,43 @@ public class DragonBreedForest extends DragonBreed {
         addHabitatBiome(BiomeGenBase.jungleHills);
     }
 
-    @Override
-    public void onUpdate(EntityTameableDragon dragon) {
-        // grow grass on dirt blocks as footprints
-        if (dragon.isAdult() && !dragon.isFlying()) {
-            World world = dragon.worldObj;
-            for (int i = 0; i < 4; i++) {
-                if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
-                    continue;
-                }
-
-                int bx = MathHelper.floor_double(dragon.posX + (i % 2 * 2 - 1) * 0.25);
-                int by = MathHelper.floor_double(dragon.posY) - 1;
-                int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
-                BlockPos blockPosUnderFoot = new BlockPos(bx, by, bz);
-                BlockPos blockPosOnSurface = blockPosUnderFoot.up();
-                IBlockState blockUnderFoot = world.getBlockState(blockPosUnderFoot);
-                IBlockState blockOneUp = world.getBlockState(blockPosOnSurface);
-
-                final int GRASS_LIGHT_THRESHOLD = 4;
-
-                if (blockUnderFoot.getBlock() == Blocks.dirt
-                        && blockUnderFoot.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
-                        && world.getLightFromNeighbors(blockPosOnSurface) >= GRASS_LIGHT_THRESHOLD
-                        && blockOneUp.getBlock().getLightOpacity(world, blockPosOnSurface) <= 2) {
-
-                    world.setBlockState(blockPosUnderFoot, FOOTPRINT.getDefaultState());
-                }
-
-                if (blockUnderFoot.getBlock() == Blocks.grass
-                        && Blocks.tallgrass.canPlaceBlockAt(world, blockPosOnSurface)) {
-                    world.setBlockState(blockPosOnSurface,
-                            Blocks.tallgrass.getDefaultState()
-                            .withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
-                }
-            }
+  @Override
+  public void onUpdate(EntityTameableDragon dragon) {
+    // grow grass on dirt blocks as footprints
+    if (dragon.isAdult() && !dragon.isFlying()) {
+      World world = dragon.worldObj;
+      for (int i = 0; i < 4; i++) {
+        if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
+          continue;
         }
+
+        int bx = MathHelper.floor_double(dragon.posX + (i % 2 * 2 - 1) * 0.25);
+        int by = MathHelper.floor_double(dragon.posY) - 1;
+        int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
+        BlockPos blockPosUnderFoot = new BlockPos(bx, by, bz);
+        BlockPos blockPosOnSurface = blockPosUnderFoot.up();
+        IBlockState blockUnderFoot = world.getBlockState(blockPosUnderFoot);
+        IBlockState blockOneUp = world.getBlockState(blockPosOnSurface);
+
+        final int GRASS_LIGHT_THRESHOLD = 4;
+
+        if (blockUnderFoot.getBlock() == Blocks.dirt
+                && blockUnderFoot.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
+                && world.getLightFromNeighbors(blockPosOnSurface) >= GRASS_LIGHT_THRESHOLD
+                && blockOneUp.getBlock().getLightOpacity(world, blockPosOnSurface) <= 2) {
+
+          world.setBlockState(blockPosUnderFoot, FOOTPRINT.getDefaultState());
+        }
+
+        if (blockUnderFoot.getBlock() == Blocks.grass
+          && Blocks.tallgrass.canPlaceBlockAt(world, blockPosOnSurface)) {
+          world.setBlockState(blockPosOnSurface,
+                              Blocks.tallgrass.getDefaultState()
+                                              .withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
+        }
+      }
     }
+  }
 
 //                if (world.getBlock(bx, by, bz) == Blocks.dirt
 //                        && world.canBlockSeeTheSky(bx, by, bz)

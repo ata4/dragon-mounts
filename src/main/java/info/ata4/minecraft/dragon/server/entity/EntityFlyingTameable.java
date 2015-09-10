@@ -47,10 +47,10 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private static final int INDEX_CAN_FLY = 19;
     
     // data NBT IDs
-    private static final String NBT_FLYING = "Flying";
-    private static final String NBT_CAN_FLY = "CanFly";
+    private static String NBT_FLYING = "Flying";
+    private static String NBT_CAN_FLY = "CanFly";
        
-    public final EntityAITasks airTasks;
+    public EntityAITasks airTasks;
     
     private DragonFlightWaypoint waypoint;
     private double airSpeedHorizontal = 1.5;
@@ -59,9 +59,9 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private int yawSpeed = 30;
     private int inAirTicks;
 
-    protected int ticksSinceLastAttack = -1;
+  protected int ticksSinceLastAttack = -1;
 
-    public EntityFlyingTameable(World world) {
+  public EntityFlyingTameable(World world) {
         super(world);
         waypoint = new DragonFlightWaypoint(this);
         airTasks = new EntityAITasks(world != null ? world.theProfiler : null);
@@ -107,16 +107,17 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      * Called when the mob is falling. Calculates and applies fall damage.
      */
     @Override
-    public void fall(float distance, float damageMultiplier) {
+    public void fall(float distance, float damageMultiplier)
+    {
         // ignore fall damage if the entity can fly
-        if (!isCanFly()) {
-            super.fall(distance, damageMultiplier);
-        }
+      if (!isCanFly()) {
+          super.fall(distance, damageMultiplier);
+      }
     }
 
-    public int getTicksSinceLastAttack() {
-        return ticksSinceLastAttack;
-    }
+  public int getTicksSinceLastAttack() {
+    return ticksSinceLastAttack;
+  }
 
   /**
      * Causes this entity to lift off.
@@ -194,12 +195,10 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             super.onLivingUpdate();
         }
 
-        if (ticksSinceLastAttack >= 0) {  // used for jaw animation
-            ++ticksSinceLastAttack;
-            if (ticksSinceLastAttack > 1000) {
-                ticksSinceLastAttack = -1;  //  reset at arbitrary large value
-            }
-        }
+      if (ticksSinceLastAttack >= 0) {  // used for jaw animation
+        ++ticksSinceLastAttack;
+        if (ticksSinceLastAttack > 1000) ticksSinceLastAttack = -1;  //  reset at arbitrary large value
+      }
     }
     
     private void onUpdateFlyingClient() {
@@ -285,9 +284,6 @@ public abstract class EntityFlyingTameable extends EntityTameable {
         moveEntity(motionX, motionY, motionZ);
  
         // update AI
-        worldObj.theProfiler.startSection("newAi");
-        updateAITasks();
-        worldObj.theProfiler.endSection();
 
         worldObj.theProfiler.startSection("newAi");
         updateAITasks();
@@ -295,8 +291,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
 
         // apply collision
         List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(this,
-                getEntityBoundingBox().expand(0.2, 0, 0));
-        
+                                                                              getEntityBoundingBox().expand(0.2, 0, 0));
         if (entities != null && !entities.isEmpty()) {
             for (Entity entity : entities) {
                 if (entity.canBePushed()) {

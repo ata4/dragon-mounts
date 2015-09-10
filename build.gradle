@@ -20,6 +20,7 @@ apply plugin: 'forge'
 /*
  * Gets the version name from the latest Git tag
  */
+/*
 def getGitTag = { ->
     def stdout = new ByteArrayOutputStream()
     exec {
@@ -28,9 +29,10 @@ def getGitTag = { ->
     }
     return stdout.toString().trim()
 }
+*/
 
 minecraft {
-    version = "1.8-11.14.3.1499"
+    version = "1.8-11.14.1.1334"
     runDir = "minecraft"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -41,7 +43,7 @@ minecraft {
     mappings = "snapshot_20141130"
 }
 
-version =  "${getGitTag()}-${minecraft.version}"
+version =  "na-${minecraft.version}"
 group = "info.ata4.minecraft.dragon"
 archivesBaseName = "DragonMounts"
 
