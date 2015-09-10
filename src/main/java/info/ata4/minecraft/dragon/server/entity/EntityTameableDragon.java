@@ -248,16 +248,31 @@ public class EntityTameableDragon extends EntityFlyingTameable
       }
       super.onLivingUpdate();
     }
-  }
-
-  /**
-   * Handles entity death timer, experience orb and particle creation
-   */
-  @Override
-  protected void onDeathUpdate()
-  {
-    for (DragonHelper helper : helpers.values()) {
-      helper.onDeathUpdate();
+    
+    @Override
+    public void onLivingUpdate() {
+        for (DragonHelper helper : helpers.values()) {
+            helper.onLivingUpdate();
+        }
+        
+        if (isClient()) {
+            if (!isEgg()) {
+                animator.setOnGround(!isFlying());
+                animator.update();
+            }
+        } else {
+            // set home position near owner when tamed
+            //  setHomeArea renamed to EntityCreature.func_175449_a()
+            if (isTamed()) {
+                Entity owner = getOwner();
+                if (owner != null) {
+                  BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
+                  func_175449_a(ownerPosition, HOME_RADIUS);
+                }
+            }
+        }
+        
+        super.onLivingUpdate();
     }
 
     // unmount any riding entity
@@ -931,7 +946,140 @@ public class EntityTameableDragon extends EntityFlyingTameable
       float volume = getSoundVolume() * 0.3f + (1 - speed) * 0.2f;
       worldObj.playSound(posX, posY, posZ, "mob.enderdragon.wings", volume, pitch, false);
     }
-  }
+    
+    public void setRidingPlayer(EntityPlayer player) {
+        L.trace("setRidingPlayer({})", player.getName());
+        player.rotationYaw = this.rotationYaw;
+        player.rotationPitch = this.rotationPitch;
+        player.mountEntity(this);
+    }
+    
+    public void setControlFlags(BitSet flags) {
+        controlFlags = flags;
+    }
+    
+    public BitSet getControlFlags() {
+        return controlFlags;
+    }
+    
+    @Override
+    public void updateRiderPosition() {
+        if (riddenByEntity != null) {
+            double px = posX;
+            double py = posY + getMountedYOffset() + riddenByEntity.getYOffset();
+            double pz = posZ;
+            
+            // dragon position is the middle of the model and the saddle is on
+            // the shoulders, so move player forwards on Z axis relative to the
+            // dragon's rotation to fix that
+            Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
+            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset)); // oops
+            px += pos.xCoord;
+            py += pos.yCoord;
+            pz += pos.zCoord;
+                    
+            riddenByEntity.setPosition(px, py, pz);
+            
+            // fix rider rotation
+            if (riddenByEntity instanceof EntityLiving) {
+                EntityLiving rider = ((EntityLiving) riddenByEntity);
+                rider.prevRotationPitch = rider.rotationPitch;
+                rider.prevRotationYaw = rider.rotationYaw;
+                rider.renderYawOffset = renderYawOffset;
+            }
+        }
+    }
+    
+    public boolean isInvulnerableTo(DamageSource src) {
+        Entity srcEnt = src.getEntity();
+        if (srcEnt != null) {
+            // ignore own damage
+            if (srcEnt == this) {
+                return true;
+            }
+            
+            // ignore damage from rider
+            if (srcEnt == riddenByEntity) {
+                return true;
+            }
+        }
+        
+        // don't drown as egg
+        if (src.damageType.equals("drown") && isEgg()) {
+            return true;
+        }
+        
+        return getBreed().isImmuneToDamage(src);
+    }
+    
+    /**
+     * Returns the entity's health relative to the maximum health.
+     * 
+     * @return health normalized between 0 and 1
+     */
+    public double getHealthRelative() {
+        return getHealth() / (double) getMaxHealth();
+    }
+    
+    public int getDeathTime() {
+        return deathTime;
+    }
+    
+    public int getMaxDeathTime() {
+        return 120;
+    }
+    
+    /**
+     * Client side method for wing animations. Plays wing flapping sounds.
+     * 
+     * @param speed wing animation playback speed
+     */
+    public void onWingsDown(float speed) {
+        if (!inWater) {
+            // play wing sounds
+            float pitch = getSoundPitch() + (1 - speed);
+            float volume = getSoundVolume() * 0.3f + (1 - speed) * 0.2f;
+            worldObj.playSound(posX, posY, posZ, "mob.enderdragon.wings", volume, pitch, false);
+        }
+    }
+    
+    public void setImmuneToFire(boolean isImmuneToFire) {
+        L.trace("setImmuneToFire({})", isImmuneToFire);
+        this.isImmuneToFire = isImmuneToFire;
+    }
+    
+    public void setAttackDamage(double damage) {
+        L.trace("setAttackDamage({})", damage);
+        getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(damage);
+    }
+    
+    public double getAttackDamage() {
+        return getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+    }
+    
+    /**
+     * Public wrapper for protected final setScale(), used by DragonLifeStageHelper.
+     * 
+     * @param scale 
+     */
+    public void setScalePublic(float scale) {
+        double posXTmp = posX;
+        double posYTmp = posY;
+        double posZTmp = posZ;
+        
+        setScale(scale);
+        
+        // workaround for a vanilla bug; the position is apparently not set correcty
+        // after changing the entity size, causing asynchronous server/client positioning
+        setPosition(posXTmp, posYTmp, posZTmp);
+    }
+    
+    @Override
+    public void setScaleForAge(boolean p_98054_1_) {
+        // SetGrowingAge calls this to switch between half and full scale based
+        // on isChild(), but the scale is managed in DragonLifeStageHelper, so
+        // this is no-op here
+    }
 
   public void setImmuneToFire(boolean isImmuneToFire)
   {
