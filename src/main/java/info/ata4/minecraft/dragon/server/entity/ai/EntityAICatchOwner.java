@@ -45,6 +45,11 @@ public class EntityAICatchOwner extends EntityAIBase {
             return false;
         }
         
+        // don't catch if leashed
+        if (dragon.getLeashed()) {
+            return false;
+        }
+        
         return owner.fallDistance > 4;
     }
 }
