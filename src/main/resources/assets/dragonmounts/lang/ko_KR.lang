@@ -1,14 +1,14 @@
 # author TeamMMKP(@puyo061 , editor @clayweb)
 
-entity.DrangonMount.air.name=에테르 드래곤
-entity.DrangonMount.end.name=엔더 드래곤
-entity.DrangonMount.fire.name=파이어 드래곤
-entity.DrangonMount.ghost.name=고스트 드래곤
-entity.DrangonMount.ice.name=아이스 드래곤
-entity.DrangonMount.name=엔더 드래곤
-entity.DrangonMount.nether.name=네더 드래곤
-entity.DrangonMount.water.name=워터 드래곤
-entity.DrangonMount.forest.name=포레스트 드래곤
+entity.DragonMounts.DragonMount.air.name=에테르 드래곤
+entity.DragonMounts.DragonMount.end.name=엔더 드래곤
+entity.DragonMounts.DragonMount.fire.name=파이어 드래곤
+entity.DragonMounts.DragonMount.ghost.name=고스트 드래곤
+entity.DragonMounts.DragonMount.ice.name=아이스 드래곤
+entity.DragonMounts.DragonMount.name=엔더 드래곤
+entity.DragonMounts.DragonMount.nether.name=네더 드래곤
+entity.DragonMounts.DragonMount.water.name=워터 드래곤
+entity.DragonMounts.DragonMount.forest.name=포레스트 드래곤
 
 commands.dragon.nodragons=인근에 드래곤이 더이상 없습니다
 commands.dragon.canttame=당신은 용을 길들일 수 없습니다
