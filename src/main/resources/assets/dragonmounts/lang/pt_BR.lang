@@ -7,15 +7,19 @@ entity.DragonMounts.DragonMount.name=Dragão do Ender
 entity.DragonMounts.DragonMount.nether.name=Dragão do Nether
 entity.DragonMounts.DragonMount.water.name=Dragão de Água
 entity.DragonMounts.DragonMount.forest.name=Dragão da Floresta
+
 commands.dragon.nodragons=Não há dragões nas proximidades
 commands.dragon.canttame=Você não pode domar dragões
+
 dragon.lifeStage.egg=ovo
 dragon.lifeStage.hatchling=filhote
 dragon.lifeStage.juvenile=jovem
 dragon.lifeStage.adult=adulto
 dragon.owned=Este dragão não segue seus comandos.
 dragon.mountNotice=Pressione %s e $s para voar para cima e para baixo
+
 key.categories.dragonmount=Controles do Dragão
 key.dragon.flyUp=Voar para Cima
 key.dragon.flyDown=Voar para Baixo
+
 attribute.name.generic.movementSpeedAir=Velocidade (Ar)
