@@ -1,0 +1,25 @@
+entity.DragonMounts.DragonMount.air.name=以太龍
+entity.DragonMounts.DragonMount.end.name=安德龍
+entity.DragonMounts.DragonMount.fire.name=火龍
+entity.DragonMounts.DragonMount.ghost.name=幽靈龍
+entity.DragonMounts.DragonMount.ice.name=冰龍
+entity.DragonMounts.DragonMount.name=安德龍
+entity.DragonMounts.DragonMount.nether.name=虛空龍
+entity.DragonMounts.DragonMount.water.name=水龍
+entity.DragonMounts.DragonMount.forest.name=森林龍
+
+commands.dragon.nodragons=附近沒有龍
+commands.dragon.canttame=你不能馴服龍
+
+dragon.lifeStage.egg=蛋
+dragon.lifeStage.hatchling=剛孵化的小動物
+dragon.lifeStage.juvenile=青少年
+dragon.lifeStage.adult=成年
+dragon.owned=這個龍不遵循你的命令
+dragon.mountNotice=按 %s 和 %s 上升或下降
+
+key.categories.dragonmount=龍的控制
+key.dragon.flyUp=上升
+key.dragon.flyDown=下降
+
+attribute.name.generic.movementSpeedAir=速度（空氣）
