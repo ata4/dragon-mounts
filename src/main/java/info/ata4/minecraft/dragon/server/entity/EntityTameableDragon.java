@@ -54,8 +54,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public static final double BASE_SPEED_AIR = 1.5;
     public static final double BASE_DAMAGE = 8;
     public static final double BASE_HEALTH = 60;
-    public static final float BASE_WIDTH = 4;
-    public static final float BASE_HEIGHT = 3f;
+    public static final float BASE_WIDTH = 2.75f;
+    public static final float BASE_HEIGHT = 2.75f;
     public static final int HOME_RADIUS = 256;
     public static final Item FAVORITE_FOOD = Items.fish;
     
