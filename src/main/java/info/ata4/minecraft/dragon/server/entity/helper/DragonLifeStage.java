@@ -78,7 +78,7 @@ public enum DragonLifeStage {
         return MathHelper.clamp_int(
                 ticksSinceCreation,
                 EGG.startTicks,
-                ADULT.durationTicks
+                ADULT.startTicks
         );
     }
 }
