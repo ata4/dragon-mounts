@@ -26,6 +26,7 @@ OK breath immunity for player holding orb? for rider
 - add flying motion vector to breath vector?
 - aiming is awkward when riding the dragon.
 
+** have to exclude test sources in order to build properly - tests won't execute during build.
 
 DataWatcher usage:
 see http://wiki.vg/Entities#Entity_Metadata_Format

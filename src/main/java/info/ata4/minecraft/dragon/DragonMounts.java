@@ -39,7 +39,7 @@ public class DragonMounts {
     public static final String GUIFACTORY = "info.ata4.minecraft.dragon.client.gui.ConfigGuiFactory";
 
   @SidedProxy(
-        serverSide = "info.ata4.minecraft.dragon.server.ServerProxy",
+        serverSide = "info.ata4.minecraft.dragon.server.CommonProxy",
         clientSide = "info.ata4.minecraft.dragon.client.ClientProxy"
     )
     public static CommonProxy proxy;
