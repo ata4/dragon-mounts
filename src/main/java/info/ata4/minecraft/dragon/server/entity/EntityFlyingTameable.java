@@ -13,6 +13,7 @@ import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -38,7 +39,9 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     private static final int IN_AIR_THRESH = 10;
     
     public static final IAttribute MOVE_SPEED_AIR = new RangedAttribute(null, "generic.movementSpeedAir", 1.5, 0.0, Double.MAX_VALUE).setDescription("Movement Speed Air").setShouldWatch(true);
-    
+
+    private static final float MAX_DRAGON_FOLLOW_RANGE = 40.0F;  // pathfinding max distance
+
     // data value IDs
     private static final int INDEX_FLYING = 18;
     private static final int INDEX_CAN_FLY = 19;
@@ -50,7 +53,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     public final EntityAITasks airTasks;
     
     private DragonFlightWaypoint waypoint;
-    private double airSpeedHorizonal = 1.5;
+    private double airSpeedHorizontal = 1.5;
     private double airSpeedVertical = 0;
     private float yawAdd;
     private int yawSpeed = 30;
@@ -75,6 +78,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         getAttributeMap().registerAttribute(MOVE_SPEED_AIR);
+        getAttributeMap().getAttributeInstance(SharedMonsterAttributes.followRange).setBaseValue(MAX_DRAGON_FOLLOW_RANGE);
     }
     
     /**
@@ -147,10 +151,14 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     @Override
     protected void updateAITasks() {
         setTasksEnabled(tasks, isGroundAIEnabled());
-        setTasksEnabled(airTasks, isAirAIEnabled());
+//        setTasksEnabled(airTasks, isAirAIEnabled());
         
         super.updateAITasks();
-        airTasks.onUpdateTasks();
+        if (isAirAIEnabled()) {
+          airTasks.onUpdateTasks();
+          targetTasks.onUpdateTasks();
+          getLookHelper().onUpdateLook();
+        }
     }
     
     @Override
@@ -172,8 +180,8 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             } else {
                 inAirTicks = 0;
             }
-            
-            setFlying(inAirTicks > IN_AIR_THRESH);
+
+          setFlying(inAirTicks > IN_AIR_THRESH);
         }
         
         if (isFlying()) {
@@ -221,7 +229,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
             double deltaZ = waypoint.posZ - posZ;
             
             double speedAir = getEntityAttribute(MOVE_SPEED_AIR).getAttributeValue();
-            double speedHoriz = airSpeedHorizonal * speedAir;
+            double speedHoriz = airSpeedHorizontal * speedAir;
             double speedVert = airSpeedVertical;
             
             deltaY /= Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
@@ -336,7 +344,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      * @return relative horizontal speed multiplier
      */
     public double getMoveSpeedAirHoriz() {
-        return this.airSpeedHorizonal;
+        return this.airSpeedHorizontal;
     }
     
     /**
@@ -346,7 +354,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      */
     public void setMoveSpeedAirHoriz(double airSpeedHorizonal) {
         L.trace("setMoveSpeedAirHoriz({})", airSpeedHorizonal);
-        this.airSpeedHorizonal = airSpeedHorizonal;
+        this.airSpeedHorizontal = airSpeedHorizonal;
     }
     
     /**

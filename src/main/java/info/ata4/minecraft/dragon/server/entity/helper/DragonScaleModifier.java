@@ -27,7 +27,7 @@ public class DragonScaleModifier extends AttributeModifier {
         setSaved(false);
     }
 
-//    @Override   todo was this dragon size modifier for health and damage ever implemented?
+//    @Override  was this dragon size modifier for health and damage ever implemented?
 //    public double getAmount()
 //    {
 //      return getScale();

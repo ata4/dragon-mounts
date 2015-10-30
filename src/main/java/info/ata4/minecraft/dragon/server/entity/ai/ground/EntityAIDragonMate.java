@@ -73,7 +73,7 @@ public class EntityAIDragonMate extends EntityAIBase {
      */
     @Override
     public void updateTask() {
-        dragon.getLookHelper().setLookPositionWithEntity(dragonMate, 10.0F, (float) dragon.getVerticalFaceSpeed());
+        dragon.getLookHelper().setLookPositionWithEntity(dragonMate, dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
         dragon.getNavigator().tryMoveToEntityLiving(dragonMate, speed);
         
         ++spawnBabyDelay;
@@ -120,7 +120,6 @@ public class EntityAIDragonMate extends EntityAIBase {
             
             theWorld.spawnEntityInWorld(dragonBaby);
 
-            // TODO: particles for the clients?
         }
     }
 }

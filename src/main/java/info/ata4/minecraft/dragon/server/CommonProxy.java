@@ -15,21 +15,26 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
+import info.ata4.minecraft.dragon.server.network.DragonTargetMessage;
+import info.ata4.minecraft.dragon.server.network.DragonTargetMessageHandlerServer;
 import net.minecraft.command.ServerCommandManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.server.FMLServerHandler;
+
+import java.io.File;
 
 /**
  *
@@ -39,12 +44,23 @@ public class CommonProxy {
     
     private SimpleNetworkWrapper network;  
     public final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
+    public final byte DOT_DISCRIMINATOR_ID = 73;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
 
     public SimpleNetworkWrapper getNetwork() {
         return network;
     }
-    
-    public void onInit(FMLInitializationEvent evt) {
+
+  public ItemDragonOrb itemDragonOrb;
+
+  public void onPreInit(FMLPreInitializationEvent evt)
+  {
+    itemDragonOrb = (ItemDragonOrb)(new ItemDragonOrb().setUnlocalizedName("dragonorb"));
+    GameRegistry.registerItem(itemDragonOrb, "dragonorb");
+//    MinecraftForge.EVENT_BUS.register(new EntitySpawnSuppressor());
+  }
+
+
+  public void onInit(FMLInitializationEvent evt) {
         registerEntities();
 
         if (DragonMounts.instance.getConfig().isEggsInChests()) {
@@ -53,11 +69,23 @@ public class CommonProxy {
         
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
         network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
-        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class, DCM_DISCRIMINATOR_ID, Side.SERVER);
+        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class,
+                DCM_DISCRIMINATOR_ID, Side.SERVER);
+        network.registerMessage(DragonTargetMessageHandlerServer.class, DragonTargetMessage.class,
+                DOT_DISCRIMINATOR_ID, Side.SERVER);
     }
 
     public void onPostInit(FMLPostInitializationEvent event)
     {
+      //  Shaped recipe for the DragonOrb ender eye at the end of two blaze rods
+      GameRegistry.addRecipe(new ItemStack(itemDragonOrb), new Object[]{
+              ".E.",
+              ".B.",
+              ".B.",
+              'E', Items.ender_eye,
+              'B', Items.blaze_rod
+      });
+
 
     }
     
@@ -70,15 +98,8 @@ public class CommonProxy {
     public void onServerStopped(FMLServerStoppedEvent evt) {
     }
     
-    private void registerEntities() {
-//        int dragonEntityID = DragonMounts.instance.getConfig().getDragonEntityID();
-//        if (dragonEntityID == -1) {
-//            dragonEntityID = EntityRegistry.findGlobalUniqueEntityId();
-//        }
-//
-//        EntityRegistry.registerGlobalEntityID(EntityTameableDragon.class, "DragonMount",
-//                dragonEntityID, 0, 0xcc00ff);
-
+    private void registerEntities()
+    {
         final int TRACKING_RANGE = 80;
         final int UPDATE_FREQUENCY = 3;
         final int DRAGON_ENTITY_ID = 26;
@@ -106,4 +127,18 @@ public class CommonProxy {
         // chance == iron ingot (10/76, ca. 13%, in 2-5 slots -> 39% at least 1 egg, 0.46 eggs per chest, 1.8 eggs per temple):
         // desert temples are so rare, it should be rewarded
     }
+
+  /**
+   * returns the EntityPlayerSP if this is the client, otherwise returns null.
+   * @return
+   */
+  public Entity getClientEntityPlayerSP()
+  {
+    return null;
+  }
+
+  public File getDataDirectory() {
+    return FMLServerHandler.instance().getSavesDirectory();
+  }
+
 }

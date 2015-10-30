@@ -10,11 +10,13 @@
 package info.ata4.minecraft.dragon.client.gui;
 
 import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.client.handler.DragonOrbControl;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
+import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -91,15 +93,17 @@ public class GuiDragonDebug extends Gui {
             try {
                 if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
                     renderNavigation();
+                    renderDragonOrbTargets();
                     renderAttributes();
                     renderBreedPoints();
+                } else if (Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
                 } else {
                     renderEntityInfo();
                     renderAITasks();
                     renderWatchedObjects();
                 }
 
-                renderProbe();
+              renderProbe();
             } catch (Exception ex) {
                 renderException(ex);
             }
@@ -280,7 +284,20 @@ public class GuiDragonDebug extends Gui {
         
         text.println();
     }
-    
+
+    private void renderDragonOrbTargets()
+    {
+      text.setColor(YELLOW);
+      text.println("Dragon Orb Target:");
+      text.setColor(WHITE);
+      BreathWeaponTarget target = DragonOrbControl.getInstance().getTarget();
+      if (target == null) {
+        text.printf("not targeting\n");
+      } else {
+        text.printf(target.toString());
+      }
+    }
+
     private void renderBreedPoints() {
         if (dragonServer == null) {
             return;

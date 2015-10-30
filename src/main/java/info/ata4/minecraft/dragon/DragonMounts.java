@@ -27,7 +27,8 @@ import net.minecraftforge.fml.common.event.*;
     modid = DragonMounts.ID,
     name = DragonMounts.NAME,
     version = DragonMounts.VERSION,
-    useMetadata = true
+    useMetadata = true,
+    guiFactory = DragonMounts.GUIFACTORY
 )
 public class DragonMounts {
     
@@ -35,8 +36,9 @@ public class DragonMounts {
     public static final String ID = "DragonMounts";
     public static final String AID = ID.toLowerCase();
     public static final String VERSION = "@VERSION@";
-    
-    @SidedProxy(
+    public static final String GUIFACTORY = "info.ata4.minecraft.dragon.client.gui.ConfigGuiFactory";
+
+  @SidedProxy(
         serverSide = "info.ata4.minecraft.dragon.server.CommonProxy",
         clientSide = "info.ata4.minecraft.dragon.client.ClientProxy"
     )
@@ -60,6 +62,7 @@ public class DragonMounts {
     public void onPreInit(FMLPreInitializationEvent evt) {
         config = new DragonMountsConfig(new Configuration(evt.getSuggestedConfigurationFile()));
         metadata = evt.getModMetadata();
+      proxy.onPreInit(evt);
     }
 
     @EventHandler
