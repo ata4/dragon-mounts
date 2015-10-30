@@ -18,11 +18,11 @@ import net.minecraft.util.Vec3;
 
 /**
  * AI for player-controlled ground movements.
- * 
+ *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class EntityAIRideGround extends EntityAIRide {
-    
+
     private static final float PLAYER_SPEED = 0.98f;
     private final double speed;
 
@@ -30,15 +30,14 @@ public class EntityAIRideGround extends EntityAIRide {
         super(dragon);
         this.speed = speed;
     }
-    
+
     @Override
     public void startExecuting() {
         dragon.getNavigator().clearPathEntity();
     }
-    
+
     @Override
-    public void updateTask()
-    {
+    public void updateTask() {
         super.updateTask();
 
         float speedX = rider.moveForward / PLAYER_SPEED;
@@ -66,7 +65,7 @@ public class EntityAIRideGround extends EntityAIRide {
         if (breathWeaponTarget != null) {
             Vec3 dragonEyePos = dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0);
             breathWeaponTarget.setEntityLook(dragon.worldObj, dragon.getLookHelper(), dragonEyePos,
-                                             dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
+                    dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
         }
         // lift off when pressing the fly-up key
         if (isFlyUp()) {

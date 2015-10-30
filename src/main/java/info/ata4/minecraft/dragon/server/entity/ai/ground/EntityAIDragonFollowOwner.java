@@ -40,10 +40,10 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
         this.speed = speed;
         this.minDist = minDist;
         this.maxDist = maxDist;
-        
+
         nav = dragon.getNavigator();
         world = dragon.worldObj;
-        
+
         setMutexBits(3);
     }
 
@@ -57,15 +57,15 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
         if (ownerCurrent == null) {
             return false;
         }
-        
+
         if (dragon.isSitting()) {
             return false;
         }
-        
+
         if (dragon.getDistanceSqToEntity(ownerCurrent) < minDist * minDist) {
             return false;
         }
-        
+
         owner = ownerCurrent;
         return true;
     }
@@ -78,11 +78,11 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
         if (nav.noPath()) {
             return false;
         }
-        
+
         if (dragon.isSitting()) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -91,17 +91,17 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
      */
     @Override
     public void startExecuting() {
-      updateTicks = 0;
+        updateTicks = 0;
 
-      //        avoidWater = dragon.getNavigator().getAvoidsWater();
-      //        dragon.getNavigator().setAvoidsWater(false);
-      // guess, based on vanilla EntityAIFollowOwner
-      PathNavigate pathNavigate = dragon.getNavigator();
-      if (pathNavigate instanceof PathNavigateGround) {
-        PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
-        this.avoidWater = pathNavigateGround.func_179689_e();
-        pathNavigateGround.func_179690_a(false);
-      }
+        //        avoidWater = dragon.getNavigator().getAvoidsWater();
+        //        dragon.getNavigator().setAvoidsWater(false);
+        // guess, based on vanilla EntityAIFollowOwner
+        PathNavigate pathNavigate = dragon.getNavigator();
+        if (pathNavigate instanceof PathNavigateGround) {
+            PathNavigateGround pathNavigateGround = (PathNavigateGround) pathNavigate;
+            this.avoidWater = pathNavigateGround.func_179689_e();
+            pathNavigateGround.func_179690_a(false);
+        }
 
     }
 
@@ -110,25 +110,25 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
      */
     @Override
     public void resetTask() {
-      owner = null;
-      nav.clearPathEntity();
-      PathNavigate pathNavigate = dragon.getNavigator();
-      if (pathNavigate instanceof PathNavigateGround) {
-        PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
-         pathNavigateGround.func_179690_a(avoidWater);  // best guess, based on vanilla EntityAIFollowOwner
-      }
+        owner = null;
+        nav.clearPathEntity();
+        PathNavigate pathNavigate = dragon.getNavigator();
+        if (pathNavigate instanceof PathNavigateGround) {
+            PathNavigateGround pathNavigateGround = (PathNavigateGround) pathNavigate;
+            pathNavigateGround.func_179690_a(avoidWater);  // best guess, based on vanilla EntityAIFollowOwner
+        }
     }
 
     /**
      * Updates the task
      */
     @Override
-    public void updateTask() {        
+    public void updateTask() {
         // don't move when sitting
         if (dragon.isSitting()) {
             return;
         }
-        
+
         // face towards owner
         dragon.getLookHelper().setLookPositionWithEntity(owner, dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
 
@@ -137,47 +137,47 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
             return;
         }
         updateTicks = 10;
-        
+
         // finish task if it can move to the owner
         if (nav.tryMoveToEntityLiving(owner, speed)) {
             return;
         }
-        
+
         // move only but don't teleport if leashed
         if (dragon.getLeashed()) {
             return;
         }
-        
+
         // teleport only the owner is far enough
         if (dragon.getDistanceSqToEntity(owner) < maxDist * maxDist) {
             return;
         }
-        
+
         // teleport dragon near owner
         int minX = MathHelper.floor_double(owner.posX) - 2;
         int minZ = MathHelper.floor_double(owner.posZ) - 2;
         int minY = MathHelper.floor_double(owner.getEntityBoundingBox().minY);
 
           // copied from vanilla EntityAIFollowOwner
-          // search for a position 2 blocks away from owner which is on a solid surface and has space above.
-          //  doesn't account for the dragon's size, but never mind
+        // search for a position 2 blocks away from owner which is on a solid surface and has space above.
+        //  doesn't account for the dragon's size, but never mind
         for (int bx = 0; bx <= 4; ++bx) {
-          for (int bz = 0; bz <= 4; ++bz) {
-            if (bx < 1 || bz < 1 || bx > 3 || bz > 3) {
-              if (World.doesBlockHaveSolidTopSurface(world, new BlockPos(minX + bx, minY - 1, minZ + bz))) {
-                BlockPos testPos = new BlockPos(minX + bx, minY, minZ + bz);
-                if (world.getBlockState(testPos).getBlock().isPassable(world, testPos)) {
-                  testPos = new BlockPos(minX + bx, minY + 1, minZ + bz);
-                  if (world.getBlockState(testPos).getBlock().isPassable(world, testPos)) {
-                    dragon.setLocationAndAngles(minX + bx + 0.5, minY, minZ + bz + 0.5,
-                                                dragon.rotationYaw, dragon.rotationPitch);
-                    nav.clearPathEntity();
-                    return;
-                  }
+            for (int bz = 0; bz <= 4; ++bz) {
+                if (bx < 1 || bz < 1 || bx > 3 || bz > 3) {
+                    if (World.doesBlockHaveSolidTopSurface(world, new BlockPos(minX + bx, minY - 1, minZ + bz))) {
+                        BlockPos testPos = new BlockPos(minX + bx, minY, minZ + bz);
+                        if (world.getBlockState(testPos).getBlock().isPassable(world, testPos)) {
+                            testPos = new BlockPos(minX + bx, minY + 1, minZ + bz);
+                            if (world.getBlockState(testPos).getBlock().isPassable(world, testPos)) {
+                                dragon.setLocationAndAngles(minX + bx + 0.5, minY, minZ + bz + 0.5,
+                                        dragon.rotationYaw, dragon.rotationPitch);
+                                nav.clearPathEntity();
+                                return;
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         }
     }
 }

@@ -23,19 +23,19 @@ import net.minecraft.world.biome.BiomeGenBase;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonBreedIce extends DragonBreed {
-    
+
     private static final Block FOOTPRINT = Blocks.snow_layer;
     private static final float FOOTPRINT_CHANCE = 0.2f;
 
     public DragonBreedIce() {
         super("ice", "ice", 0x6fc3ff);
-        
+
         addImmunity(DamageSource.magic);
-        
+
         addHabitatBlock(Blocks.snow);
         addHabitatBlock(Blocks.snow_layer);
         addHabitatBlock(Blocks.ice);
-        
+
         addHabitatBiome(BiomeGenBase.frozenOcean);
         addHabitatBiome(BiomeGenBase.frozenRiver);
         addHabitatBiome(BiomeGenBase.iceMountains);
@@ -51,9 +51,9 @@ public class DragonBreedIce extends DragonBreed {
                 if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
                     continue;
                 }
-                
+
                 double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
-          double by = dragon.posY + 0.5;
+                double by = dragon.posY + 0.5;
                 double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
                 BlockPos blockPos = new BlockPos(bx, by, bz);
                 // from EntitySnowman.onLivingUpdate, with slight tweaks
