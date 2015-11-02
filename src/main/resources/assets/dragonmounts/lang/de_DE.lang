@@ -1,12 +1,14 @@
-entity.DragonMounts.DragonMount.air.name=Aether-Drache
-entity.DragonMounts.DragonMount.end.name=Ender-Drache
-entity.DragonMounts.DragonMount.fire.name=Feuer-Drache
-entity.DragonMounts.DragonMount.ghost.name=Geist-Drache
-entity.DragonMounts.DragonMount.ice.name=Eis-Drache
-entity.DragonMounts.DragonMount.name=Ender-Drache
-entity.DragonMounts.DragonMount.nether.name=Nether-Drache
-entity.DragonMounts.DragonMount.water.name=Wasser-Drache
-entity.DragonMounts.DragonMount.forest.name=Wald-Drache
+entity.DragonMounts.DragonMount.air.name=Aetherdrache
+entity.DragonMounts.DragonMount.end.name=Enderdrache
+entity.DragonMounts.DragonMount.fire.name=Feuerdrache
+entity.DragonMounts.DragonMount.ghost.name=Geistdrache
+entity.DragonMounts.DragonMount.ice.name=Eisdrache
+entity.DragonMounts.DragonMount.name=Enderdrache
+entity.DragonMounts.DragonMount.nether.name=Netherdrache
+entity.DragonMounts.DragonMount.water.name=Wasserdrache
+entity.DragonMounts.DragonMount.forest.name=Walddrache
+
+item.dragonorb.name=Drachenkugel
 
 commands.dragon.nodragons=Es sind keine Drachen in der Nähe
 commands.dragon.canttame=Du kannst keine Drachen zähmen
@@ -23,3 +25,32 @@ key.dragon.flyUp=Nach oben fliegen
 key.dragon.flyDown=Nach unten fliegen
 
 attribute.name.generic.movementSpeedAir=Geschwindigkeit (Luft)
+
+gui.config.maintitle=DragonMounts Einstellungen
+
+gui.config.category.options=Optionen
+gui.config.category.options.tooltip=Optionen
+
+gui.config.category.debug=Debug Einstellungen
+gui.config.category.debug.tooltip=Debug Einstellungen
+
+gui.config.options.eggs_in_chest=Eier in Kisten
+gui.config.options.eggs_in_chest.tooltip=Zufällige Dracheneier in Kisten generieren?
+
+gui.config.options.orb_target_auto_lock=Zielanvisierung
+gui.config.options.orb_target_auto_lock.tooltip=Die Drachenkugel hält wärend der Benutzung das Ziel im Visier
+
+gui.config.options.orb_highlight_target=Zielhervorhebung
+gui.config.options.orb_highlight_target.tooltip=Die Drachenkugel hebt das Ziel hervor
+
+gui.config.options.orb_holder_immune=Immunität gegen Drachenfeuer
+gui.config.options.orb_holder_immune.tooltip=Ist der Besitzer der Drachenkugel immun gegen Drachenfeuer?
+
+gui.config.debug.dragon_entity_id=EntityID
+gui.config.debug.dragon_entity_id.tooltip=Overrides the entity ID for dragons to fix problems with manual IDs from other mods.  -1 = auto.
+gui.config.debug.dragon_entity_id.tooltip=Setzt eine eigene Entity-ID für die Drachen-Entities, um mögliche Konflikte mit anderen Mods zu beseitigen. -1 = Automatische Zuweisung.
+
+gui.config.debug.debug=Debugmodus
+gui.config.debug.debug.tooltip=Aktiviert den Debugmodus. Normalerweise nur für Programmierer interessant, lass es daher besser aus.
+
+
