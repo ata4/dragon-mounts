@@ -15,13 +15,23 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedRegistry;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
-
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.entity.RenderLiving;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.model.IBakedModel;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -33,14 +43,11 @@ import static org.lwjgl.opengl.GL11.*;
 public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
     public static final String TEX_BASE = "textures/entities/dragon/";
-    public static final String MDL_BASE = "models/entities/dragon/";
-
+    
     public static boolean updateModel;
 
     private final Map<DragonBreed, DragonModel> breedModels = new HashMap<DragonBreed, DragonModel>();
     private final ResourceLocation dissolveTextureLoc = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
-//    private final ResourceLocation eggModelLoc = new ResourceLocation(DragonMounts.AID, MDL_BASE + "dragon_egg.obj");
-//    private final IModelCustom eggModel = AdvancedModelLoader.loadModel(eggModelLoc);
 
     private DragonModel dragonModel;
 
@@ -71,7 +78,6 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     @Override
     public void doRender(EntityTameableDragon dragon, double x, double y, double z, float yaw, float partialTicks) {
         setModel(dragon.getBreed());
-//        passSpecialRender2(dragon, x, y, z);
 
         if (dragon.isEgg()) {
             renderEgg(dragon, x, y, z, yaw, partialTicks);
@@ -91,7 +97,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         if (dragon.getDeathTime() > 0) {
             float alpha = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();
             try {
-                GL11.glPushAttrib(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+                glPushAttrib(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
                 glDepthFunc(GL_LEQUAL);
                 glEnable(GL_ALPHA_TEST);
                 glAlphaFunc(GL_GREATER, alpha);
@@ -101,7 +107,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
                 glDepthFunc(GL_EQUAL);
                 super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
             } finally {
-                GL11.glPopAttrib();
+                glPopAttrib();
             }
         } else {
             super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
@@ -124,16 +130,42 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
             rotZ = (float) Math.sin(tickZ - partialTicks) * 8;
         }
 
-        // render block
-        glPushMatrix();
-        glTranslated(x, y, z);
-        glRotatef(rotX, 1, 0, 0);
-        glRotatef(rotZ, 0, 0, 1);
+        // prepare GL states
+        GlStateManager.pushMatrix();
+        GlStateManager.pushAttrib();
+        GlStateManager.translate(x, y, z);
+        GlStateManager.rotate(rotX, 1, 0, 0);
+        GlStateManager.rotate(rotZ, 0, 0, 1);
+        GlStateManager.disableLighting();
+        
+        bindTexture(TextureMap.locationBlocksTexture);
+        
+        // prepare egg rendering
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        worldRenderer.begin(7, DefaultVertexFormats.BLOCK);
 
-        bindTexture(dragonModel.getEggTexture());
-//        eggModel.renderAll();
+        Block block = Blocks.dragon_egg;
+        IBlockState iblockstate = block.getDefaultState();
+        BlockPos blockpos = new BlockPos(dragon);
+        
+        double tx = -blockpos.getX() - 0.5;
+        double ty = -blockpos.getY();
+        double tz = -blockpos.getZ() - 0.5;
+        worldRenderer.setTranslation(tx, ty, tz);
+        
+        BlockRendererDispatcher brd = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        IBakedModel ibakedmodel = brd.getModelFromBlockState(iblockstate, dragon.worldObj, null);
 
-        glPopMatrix();
+        // render egg
+        brd.getBlockModelRenderer().renderModel(dragon.worldObj, ibakedmodel, iblockstate, blockpos, worldRenderer, false);
+        worldRenderer.setTranslation(0, 0, 0);
+        tessellator.draw();
+        
+        // restore GL state
+        GlStateManager.enableLighting();
+        GlStateManager.popMatrix();
+        GlStateManager.popAttrib();
     }
 
     @Override
