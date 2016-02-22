@@ -315,9 +315,8 @@ public class GuiDragonDebug extends Gui {
         }
         
         text.println("Search range: " + nav.getPathSearchRange());
-        //  guesses based on EntityAIDoorInteract
-        text.println("Avoid water: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.func_179689_e()));
-        text.println("Break doors: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.func_179686_g()));
+        text.println("Avoid water: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.getAvoidsWater()));
+        text.println("Break doors: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.getEnterDoors()));
         text.println("No path: " + nav.noPath());
 
         PathEntity path = nav.getPath();

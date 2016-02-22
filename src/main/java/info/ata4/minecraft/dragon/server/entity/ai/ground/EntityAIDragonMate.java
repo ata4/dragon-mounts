@@ -89,11 +89,10 @@ public class EntityAIDragonMate extends EntityAIBase {
      */
     private EntityTameableDragon getNearbyMate() {
         double range = 12;
-        List<Entity> nearbyEntities = theWorld.getEntitiesWithinAABB(EntityTameableDragon.class,
+        List<EntityTameableDragon> nearbyDragons = theWorld.getEntitiesWithinAABB(EntityTameableDragon.class,
                 dragon.getEntityBoundingBox().expand(range, range, range));
         
-        for (Entity entity : nearbyEntities) {
-            EntityTameableDragon nearbyDragon = (EntityTameableDragon) entity;
+        for (EntityTameableDragon nearbyDragon : nearbyDragons) {
             if (dragon.canMateWith(nearbyDragon)) {
                 return nearbyDragon;
             }

@@ -322,7 +322,7 @@ public abstract class EntityFlyingTameable extends EntityTameable {
      */
     public double getAltitude() {
       BlockPos entityPos = new BlockPos(posX, posY, posZ);
-      BlockPos groundPos = worldObj.getHorizon(entityPos);
+      BlockPos groundPos = worldObj.getHeight(entityPos);
       return posY - groundPos.getY();
     }
     
