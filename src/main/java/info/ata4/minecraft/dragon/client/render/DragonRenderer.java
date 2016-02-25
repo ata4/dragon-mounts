@@ -47,27 +47,25 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     public static boolean updateModel;
 
     private final Map<DragonBreed, DragonModel> breedModels = new HashMap<DragonBreed, DragonModel>();
-    private final ResourceLocation dissolveTextureLoc = new ResourceLocation(DragonMounts.AID, TEX_BASE + "dissolve.png");
+    private final ResourceLocation dissolveTextureLoc = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + "dissolve.png");
 
     private DragonModel dragonModel;
 
     public DragonRenderer(RenderManager renderManager) {
         super(renderManager, null, 2);
+        
+        // create render layers
         addLayer(new LayerRendererDragonSaddle(this));
         addLayer(new LayerRendererDragonGlow(this));
 
         // create a separate model for each breed
-        initBreedModels();
-    }
-
-    private void initBreedModels() {
         breedModels.clear();
         for (DragonBreed breed : DragonBreedRegistry.getInstance().getBreeds()) {
             breedModels.put(breed, new DragonModel(breed));
         }
     }
 
-    private void setModel(DragonBreed breed) {
+    private void setModelForBreed(DragonBreed breed) {
         mainModel = dragonModel = breedModels.get(breed);
     }
 
@@ -77,7 +75,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
     @Override
     public void doRender(EntityTameableDragon dragon, double x, double y, double z, float yaw, float partialTicks) {
-        setModel(dragon.getBreed());
+        setModelForBreed(dragon.getBreed());
 
         if (dragon.isEgg()) {
             renderEgg(dragon, x, y, z, yaw, partialTicks);
@@ -92,25 +90,27 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     @Override
     protected void renderModel(EntityTameableDragon dragon, float moveTime, float moveSpeed,
             float ticksExisted, float lookYaw, float lookPitch, float scale) {
-        dragonModel.renderPass = DragonModel.RenderPass.MAIN;
+        
+        float death = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();
 
-        if (dragon.getDeathTime() > 0) {
-            float alpha = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();
-            try {
-                glPushAttrib(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-                glDepthFunc(GL_LEQUAL);
-                glEnable(GL_ALPHA_TEST);
-                glAlphaFunc(GL_GREATER, alpha);
-                bindTexture(dissolveTextureLoc);
-                dragonModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
-                glAlphaFunc(GL_GREATER, 0.1f);
-                glDepthFunc(GL_EQUAL);
-                super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
-            } finally {
-                glPopAttrib();
-            }
-        } else {
-            super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+        if (death > 0) {
+            glPushAttrib(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+            
+            GlStateManager.depthFunc(GL_LEQUAL);
+            GlStateManager.enableAlpha();
+            GlStateManager.alphaFunc(GL_GREATER, death);
+
+            bindTexture(dissolveTextureLoc);
+            mainModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+
+            GlStateManager.alphaFunc(GL_GREATER, 0.1f);
+            GlStateManager.depthFunc(GL_EQUAL);
+        }
+
+        super.renderModel(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+        
+        if (death > 0) {
+            GlStateManager.popAttrib();
         }
     }
 
@@ -170,7 +170,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
     @Override
     protected void rotateCorpse(EntityTameableDragon dragon, float par2, float par3, float par4) {
-        glRotatef(180 - par3, 0, 1, 0);
+        GlStateManager.rotate(180 - par3, 0, 1, 0);
     }
 
     /**
@@ -180,7 +180,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     @Override
     protected void preRenderCallback(EntityTameableDragon dragon, float partialTicks) {
         float scale = dragon.getScale() * 0.8f;
-        glScalef(scale, scale, scale);
+        GlStateManager.scale(scale, scale, scale);
     }
 
     @Override
