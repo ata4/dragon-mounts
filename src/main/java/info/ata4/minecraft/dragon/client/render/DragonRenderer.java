@@ -76,6 +76,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     @Override
     public void doRender(EntityTameableDragon dragon, double x, double y, double z, float yaw, float partialTicks) {
         setModelForBreed(dragon.getBreed());
+        renderName(dragon, x, y, z);
 
         if (dragon.isEgg()) {
             renderEgg(dragon, x, y, z, yaw, partialTicks);

@@ -25,12 +25,24 @@ public class LayerRendererDragonGlow extends LayerRendererDragon {
         GlStateManager.pushAttrib();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL_ONE, GL_ONE);
-        GlStateManager.disableLighting(); // use full lighting
+        GlStateManager.disableLighting();
 
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 65536, 0);
+        int b = 61680;
+        int u = b % 65536;
+        int v = b / 65536;
+        
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
+        GlStateManager.color(1, 1, 1, 1);
 
         dragonModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+        
+        b = dragon.getBrightnessForRender(partialTicks);
+        u = b % 65536;
+        v = b / 65536;
+        
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
 
+        GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GlStateManager.popAttrib();
     }
