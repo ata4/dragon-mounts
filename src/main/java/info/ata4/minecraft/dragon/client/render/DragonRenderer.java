@@ -63,6 +63,10 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         for (DragonBreed breed : DragonBreedRegistry.getInstance().getBreeds()) {
             breedModels.put(breed, new DragonModel(breed));
         }
+        
+        // workaround for mods that call getEntityTexture() before anything has
+        // been rendered
+        setModelForBreed(DragonBreedRegistry.getInstance().getBreedByName("end"));
     }
 
     private void setModelForBreed(DragonBreed breed) {
