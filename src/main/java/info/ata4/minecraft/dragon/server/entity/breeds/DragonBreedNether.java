@@ -22,11 +22,11 @@ public class DragonBreedNether extends DragonBreed {
 
     public DragonBreedNether() {
         super("nether", "nether", 0x793838);
-
+        
         addImmunity(DamageSource.inFire);
         addImmunity(DamageSource.onFire);
         addImmunity(DamageSource.lava);
-
+        
         addHabitatBlock(Blocks.netherrack);
         addHabitatBlock(Blocks.soul_sand);
         addHabitatBlock(Blocks.nether_brick);
@@ -35,17 +35,17 @@ public class DragonBreedNether extends DragonBreed {
         addHabitatBlock(Blocks.nether_wart);
         addHabitatBlock(Blocks.glowstone);
         addHabitatBlock(Blocks.quartz_ore);
-
+        
         addHabitatBiome(BiomeGenBase.hell);
     }
 
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-        dragon.setDragonAvoidWater(true);
+      dragon.setDragonAvoidWater(true);
     }
 
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-        dragon.setDragonAvoidWater(false);
+      dragon.setDragonAvoidWater(false);
     }
 }

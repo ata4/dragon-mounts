@@ -41,8 +41,8 @@ import java.io.File;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class CommonProxy {
-
-    private SimpleNetworkWrapper network;
+    
+    private SimpleNetworkWrapper network;  
     public final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
     public final byte DOT_DISCRIMINATOR_ID = 73;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
 
@@ -50,21 +50,23 @@ public class CommonProxy {
         return network;
     }
 
-    public ItemDragonOrb itemDragonOrb;
+  public ItemDragonOrb itemDragonOrb;
 
-    public void onPreInit(FMLPreInitializationEvent evt) {
-        itemDragonOrb = (ItemDragonOrb) (new ItemDragonOrb().setUnlocalizedName("dragonorb"));
-        GameRegistry.registerItem(itemDragonOrb, "dragonorb");
+  public void onPreInit(FMLPreInitializationEvent evt)
+  {
+    itemDragonOrb = (ItemDragonOrb)(new ItemDragonOrb().setUnlocalizedName("dragonorb"));
+    GameRegistry.registerItem(itemDragonOrb, "dragonorb");
 //    MinecraftForge.EVENT_BUS.register(new EntitySpawnSuppressor());
-    }
+  }
 
-    public void onInit(FMLInitializationEvent evt) {
+
+  public void onInit(FMLInitializationEvent evt) {
         registerEntities();
 
         if (DragonMounts.instance.getConfig().isEggsInChests()) {
             registerChestItems();
         }
-
+        
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
         network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
         network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class,
@@ -73,35 +75,38 @@ public class CommonProxy {
                 DOT_DISCRIMINATOR_ID, Side.SERVER);
     }
 
-    public void onPostInit(FMLPostInitializationEvent event) {
-        //  Shaped recipe for the DragonOrb ender eye at the end of two blaze rods
-        GameRegistry.addRecipe(new ItemStack(itemDragonOrb), new Object[]{
-            ".E.",
-            ".B.",
-            ".B.",
-            'E', Items.ender_eye,
-            'B', Items.blaze_rod
-        });
+    public void onPostInit(FMLPostInitializationEvent event)
+    {
+      //  Shaped recipe for the DragonOrb ender eye at the end of two blaze rods
+      GameRegistry.addRecipe(new ItemStack(itemDragonOrb), new Object[]{
+              ".E.",
+              ".B.",
+              ".B.",
+              'E', Items.ender_eye,
+              'B', Items.blaze_rod
+      });
+
 
     }
-
+    
     public void onServerStarted(FMLServerStartedEvent evt) {
         MinecraftServer server = MinecraftServer.getServer();
-        ServerCommandManager cmdman = (ServerCommandManager) server.getCommandManager();
+        ServerCommandManager cmdman = (ServerCommandManager) server.getCommandManager(); 
         cmdman.registerCommand(new CommandDragon());
     }
-
+    
     public void onServerStopped(FMLServerStoppedEvent evt) {
     }
-
-    private void registerEntities() {
+    
+    private void registerEntities()
+    {
         final int TRACKING_RANGE = 80;
         final int UPDATE_FREQUENCY = 3;
         final int DRAGON_ENTITY_ID = 26;
         EntityRegistry.registerModEntity(EntityTameableDragon.class, "DragonMount", DRAGON_ENTITY_ID,
-                DragonMounts.instance, TRACKING_RANGE, UPDATE_FREQUENCY, true);
+                                         DragonMounts.instance, TRACKING_RANGE, UPDATE_FREQUENCY, true);
     }
-
+    
     public void registerChestItems() {
         ChestGenHooks chestGenHooksDungeon = ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST);
         chestGenHooksDungeon.addItem(new WeightedRandomChestContent(new ItemStack(Blocks.dragon_egg), 1, 1, 70));
@@ -123,17 +128,17 @@ public class CommonProxy {
         // desert temples are so rare, it should be rewarded
     }
 
-    /**
-     * returns the EntityPlayerSP if this is the client, otherwise returns null.
-     *
-     * @return
-     */
-    public Entity getClientEntityPlayerSP() {
-        return null;
-    }
+  /**
+   * returns the EntityPlayerSP if this is the client, otherwise returns null.
+   * @return
+   */
+  public Entity getClientEntityPlayerSP()
+  {
+    return null;
+  }
 
-    public File getDataDirectory() {
-        return FMLServerHandler.instance().getSavesDirectory();
-    }
+  public File getDataDirectory() {
+    return FMLServerHandler.instance().getSavesDirectory();
+  }
 
 }

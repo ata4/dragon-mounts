@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.event.*;
 
 /**
  * Main control class for Forge.
- *
+ * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 @Mod(
@@ -31,38 +31,38 @@ import net.minecraftforge.fml.common.event.*;
     guiFactory = DragonMounts.GUIFACTORY
 )
 public class DragonMounts {
-
+    
     public static final String NAME = "Dragon Mounts";
     public static final String ID = "DragonMounts";
     public static final String AID = ID.toLowerCase();
     public static final String VERSION = "@VERSION@";
     public static final String GUIFACTORY = "info.ata4.minecraft.dragon.client.gui.ConfigGuiFactory";
 
-    @SidedProxy(
+  @SidedProxy(
         serverSide = "info.ata4.minecraft.dragon.server.CommonProxy",
         clientSide = "info.ata4.minecraft.dragon.client.ClientProxy"
     )
     public static CommonProxy proxy;
-
+    
     @Instance(ID)
     public static DragonMounts instance;
-
+    
     private ModMetadata metadata;
     private DragonMountsConfig config;
-
+    
     public DragonMountsConfig getConfig() {
         return config;
     }
-
+    
     public ModMetadata getMetadata() {
         return metadata;
     }
-
+    
     @EventHandler
     public void onPreInit(FMLPreInitializationEvent evt) {
         config = new DragonMountsConfig(new Configuration(evt.getSuggestedConfigurationFile()));
         metadata = evt.getModMetadata();
-        proxy.onPreInit(evt);
+      proxy.onPreInit(evt);
     }
 
     @EventHandler
@@ -71,15 +71,16 @@ public class DragonMounts {
     }
 
     @EventHandler
-    public void onPostInit(FMLPostInitializationEvent event) {
+    public void onPostInit(FMLPostInitializationEvent event)
+    {
         proxy.onPostInit(event);
     }
-
+    
     @EventHandler
     public void onServerStarted(FMLServerStartedEvent evt) {
         proxy.onServerStarted(evt);
     }
-
+    
     @EventHandler
     public void onServerStopped(FMLServerStoppedEvent evt) {
         proxy.onServerStopped(evt);
