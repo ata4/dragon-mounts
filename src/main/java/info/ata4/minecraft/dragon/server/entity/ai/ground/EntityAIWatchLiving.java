@@ -107,7 +107,7 @@ public class EntityAIWatchLiving extends EntityAIBase {
         double lx = watchedEntity.posX;
         double ly = watchedEntity.posY + watchedEntity.getEyeHeight();
         double lz = watchedEntity.posZ;
-        dragon.getLookHelper().setLookPosition(lx, ly, lz, dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
+        dragon.getLookHelper().setLookPosition(lx, ly, lz, 10, dragon.getVerticalFaceSpeed());
         watchTicks--;
     }
 }

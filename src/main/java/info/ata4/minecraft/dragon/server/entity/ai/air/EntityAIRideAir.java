@@ -11,7 +11,6 @@ package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIRide;
-import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.init.Items;
 import net.minecraft.util.Vec3;
@@ -39,20 +38,19 @@ public class EntityAIRideAir extends EntityAIRide {
             Vec3 wp = rider.getLookVec();
             
             x = wp.xCoord;
-//            y = wp.yCoord;
+            y = wp.yCoord;
             z = wp.zCoord;
             
             // scale with distance
             x *= dist;
-//            y *= dist;
+            y *= dist;
             z *= dist;
             
             // convert to absolute position
             x += dragon.posX;
+            y += dragon.posY;
             z += dragon.posZ;
-
-            y = dragon.posY;  // don't change altitude
-
+            
             dragon.getWaypoint().set(x, y, z);
             
             dragon.setMoveSpeedAirHoriz(1);
@@ -61,22 +59,20 @@ public class EntityAIRideAir extends EntityAIRide {
             Vec3 wp = dragon.getLookVec();
             
             x = wp.xCoord;
-//            y = wp.yCoord;
+            y = wp.yCoord;
             z = wp.zCoord;
 
             // scale with distance
             x *= dist;
-//            y *= dist;
+            y *= dist;
             z *= dist;
 
             // convert to absolute position
             x += dragon.posX;
-//            y += dragon.posY;
+            y += dragon.posY;
             z += dragon.posZ;
 
-          y = dragon.posY;  // don't change altitude
-
-          dragon.getWaypoint().set(x, y, z);
+            dragon.getWaypoint().set(x, y, z);
             
             double speedAir = 0; 
             
@@ -97,15 +93,7 @@ public class EntityAIRideAir extends EntityAIRide {
 
             // control rotation with strafing
             if (rider.moveStrafing != 0) {
-                dragon.rotationYaw -= rider.moveStrafing * 6;
-            }
-
-            // if we're breathing at a target, look at it
-            BreathWeaponTarget breathWeaponTarget = dragon.getBreathHelper().getPlayerSelectedTarget();
-            if (breathWeaponTarget != null) {
-                Vec3 dragonEyePos = dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0);
-                breathWeaponTarget.setEntityLook(dragon.worldObj, dragon.getLookHelper(), dragonEyePos,
-                        dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
+                dragon.rotationYawHead -= rider.moveStrafing * 6;  // used to be rotationYaw, this seems to work better
             }
 
             double verticalSpeed = 0;

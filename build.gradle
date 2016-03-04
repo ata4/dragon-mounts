@@ -70,4 +70,5 @@ processResources {
     }
 }
 
-idea { module { inheritOutputDirs = true } }
+// IntelliJ fix, may not work in other IDEs
+//sourceSets { main { output.resourcesDir = output.classesDir } }

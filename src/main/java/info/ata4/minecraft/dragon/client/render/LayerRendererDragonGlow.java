@@ -8,8 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import org.lwjgl.opengl.GL11;
 
 /**
- * Created by TGG on 14/06/2015.
- * Render the glowing parts of the dragon (eg. eyes)
+ * Created by EveryoneElse on 14/06/2015.
  */
 public class LayerRendererDragonGlow implements LayerRenderer {
   private final DragonRenderer dragonRenderer;

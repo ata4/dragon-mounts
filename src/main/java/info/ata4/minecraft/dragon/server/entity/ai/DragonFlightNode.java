@@ -217,7 +217,7 @@ public class DragonFlightNode {
     // NOTE: Doesn't work perfect. Can sometimes bring problems with landing
     //         
     private double simulateTunnelMovement(EntityCreature creature, Vec3 target) {
-        // simulates the dragon movement inside a straight virtual tunnel as if there would be repeated "moveAndResizeEntity" calls
+        // simulates the dragon movement inside a straight virtual tunnel as if there would be repeated "moveEntity" calls
         // It is better than ray collision, so the dragon keeps distance to surrounding blockers.
         /////
 

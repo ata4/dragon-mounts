@@ -10,9 +10,6 @@
 package info.ata4.minecraft.dragon.util.math;
 
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
-
-import java.util.Random;
 
 /**
  * Math helper class.
@@ -38,20 +35,6 @@ public class MathX {
         } else {
             return (float) Math.sin(a);
         }
-    }
-
-    /** return a random value from a truncated gaussian distribution with
-     *    mean and standard deviation = threeSigma/3
-     *  distribution is truncated to +/- threeSigma.
-     * @param mean the mean of the distribution
-     * @param threeSigma three times the standard deviation of the distribution
-     * @return
-     */
-    public static double getTruncatedGaussian(Random rand, double mean, double threeSigma)
-    {
-      double rawValue = rand.nextGaussian();
-      rawValue = MathHelper.clamp_double(rawValue, -3.0, +3.0);
-      return mean + rawValue * threeSigma / 3.0;
     }
 
     // float cosine function, may use LUT
@@ -210,41 +193,8 @@ public class MathX {
         double mu2 = (1 - Math.cos(x * PI_D)) / 2.0;
         return a * (1 - mu2) + b * mu2;
     }
-
-    /** clamp the target angle to within a given range of the centre angle
-     * @param targetAngle the desired angle (degrees)
-     * @param centreAngle the centre angle to clamp to (degrees)
-     * @param maximumDifference the maximum allowable difference between the target and the centre (degrees)
-     * @return the target angle, clamped to within +/-maximuDifference of the centreAngle.
-     */
-    public static float constrainAngle(float targetAngle, float centreAngle, float maximumDifference) {
-        return centreAngle + clamp(normDeg(targetAngle - centreAngle), -maximumDifference, maximumDifference);
+    
+    public static float updateRotation(float r1, float r2, float step) {
+        return r1 + clamp(normDeg(r2 - r1), -step, step);
     }
-
-    public static Vec3 multiply(Vec3 source, double multiplier)
-    {
-      return new Vec3(source.xCoord * multiplier, source.yCoord * multiplier, source.zCoord * multiplier);
-    }
-
-    public final static double MINIMUM_SIGNIFICANT_DIFFERENCE = 1e-3;
-
-    public static boolean isApproximatelyEqual(double x1, double x2) {
-
-      return Math.abs(x1 - x2) <= MINIMUM_SIGNIFICANT_DIFFERENCE;
-    }
-
-  public static boolean isSignificantlyDifferent(double x1, double x2)
-  {
-    return Math.abs(x1 - x2) > MINIMUM_SIGNIFICANT_DIFFERENCE;
-  }
-
-    /** return the modulus (always positive)
-     * @param numerator
-     * @param divisor
-     * @return calculates the numerator modulus by divisor, always positive
-     */
-  public static int modulus(int numerator, int divisor) {
-      return (numerator % divisor + divisor) % divisor;
-  }
-
 }

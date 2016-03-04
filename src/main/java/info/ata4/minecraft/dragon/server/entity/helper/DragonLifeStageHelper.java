@@ -14,8 +14,6 @@ import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.*;
-import info.ata4.minecraft.dragon.server.entity.ai.targeting.EntityAIRangedBreathAttack;
-import info.ata4.minecraft.dragon.server.entity.helper.breath.BreathNode;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.block.Block;
@@ -41,444 +39,393 @@ import static info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage.*;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonLifeStageHelper extends DragonHelper {
+    
+    private static final Logger L = LogManager.getLogger();
+    
+    private static final String NBT_TICKS_SINCE_CREATION = "TicksSinceCreation";
+    private static final int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
+    
+    private DragonLifeStage lifeStagePrev;
+    private final DragonScaleModifier scaleModifier = new DragonScaleModifier();
+    private int eggWiggleX;
+    private int eggWiggleZ;
+    
+    // the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
+    // the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
+    // when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
+    private final int dataIndexTicksSinceCreation;
+    private int ticksSinceCreationServer;
+    private final ClientServerSynchronisedTickCount ticksSinceCreationClient;
 
-  private static final Logger L = LogManager.getLogger();
+    public DragonLifeStageHelper(EntityTameableDragon dragon, int dataWatcherIndex) {
+        super(dragon);
+        dataIndexTicksSinceCreation = dataWatcherIndex;
 
-  private DragonLifeStage lifeStagePrev;
-  private DragonScaleModifier scaleModifier = new DragonScaleModifier();
-  private int eggWiggleX;
-  private int eggWiggleZ;
-  private final int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
-
-  private String NBT_TICKS_SINCE_CREATION = "TicksSinceCreation";
-
-  // the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
-  // the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
-  // when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
-
-  private final int DATA_WATCHER_TICKS_SINCE_CREATION;
-  private int ticksSinceCreationServer;
-  private ClientServerSynchronisedTickCount ticksSinceCreationClient;
-
-  public DragonLifeStageHelper(EntityTameableDragon dragon, int dataWatcherIndex) {
-    super(dragon);
-    DATA_WATCHER_TICKS_SINCE_CREATION = dataWatcherIndex;
-
-    ticksSinceCreationServer = 0;
-    dataWatcher.addObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
-    ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
-    ticksSinceCreationClient.reset(ticksSinceCreationServer);
-  }
-
-  @Override
-  public void applyEntityAttributes() {
-    scaleModifier.setScale(getScale());
-
-    dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(scaleModifier);
-    dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(scaleModifier);
-  }
-
-  /**
-   * Generates some egg shell particles and a breaking sound.
-   */
-  public void playEggCrackEffect() {
-    int bx = (int) Math.round(dragon.posX - 0.5);
-    int by = (int) Math.round(dragon.posY);
-    int bz = (int) Math.round(dragon.posZ - 0.5);
-    dragon.worldObj.playAuxSFX(2001, new BlockPos(bx, by, bz), Block.getIdFromBlock(Blocks.dragon_egg));
-  }
-
-  public int getEggWiggleX() {
-    return eggWiggleX;
-  }
-
-  public int getEggWiggleZ() {
-    return eggWiggleZ;
-  }
-
-  /**
-   * Returns the current life stage of the dragon.
-   *
-   * @return current life stage
-   */
-  public DragonLifeStage getLifeStage() {
-    int age = getTicksSinceCreation();
-    return DragonLifeStage.getLifeStageFromTickCount(age);
-  }
-
-  public int getTicksSinceCreation()
-  {
-    if (!dragon.worldObj.isRemote)  {
-      return ticksSinceCreationServer;
+        ticksSinceCreationServer = 0;
+        dataWatcher.addObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+        ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
+        ticksSinceCreationClient.reset(ticksSinceCreationServer);
     }
-    return ticksSinceCreationClient.getCurrentTickCount();
-  }
+    
+    @Override
+    public void applyEntityAttributes() {
+        scaleModifier.setScale(getScale());
 
-  @Override
-  public void writeToNBT(NBTTagCompound nbt)
-  {
-    nbt.setInteger(NBT_TICKS_SINCE_CREATION, getTicksSinceCreation());
-  }
-
-  @Override
-  public void readFromNBT(NBTTagCompound nbt)
-  {
-    int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
-    ticksRead = DragonLifeStage.clipTickCountToValid(ticksRead);
-    ticksSinceCreationServer = ticksRead;
-    dataWatcher.updateObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
-  }
-
-  /**
-   * Returns the size multiplier for the current age.
-   *
-   * @return size
-   */
-  public float getScale() {
-    DragonLifeStage lifeStage = getLifeStage();
-    int stageStartTicks = lifeStage.startTicks;
-    int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
-    float fractionOfStage = timeInThisStage / (float)lifeStage.durationTicks;
-    fractionOfStage = MathHelper.clamp_float(fractionOfStage, 0.0F, 1.0F);
-
-    final float EGG_SIZE = 0.9F / EntityTameableDragon.BASE_WIDTH;
-    final float HATCHLING_SIZE = 0.33F;
-    final float JUVENILE_SIZE = 0.66F;
-    final float ADULT_SIZE = 1.0F;
-
-    switch (getLifeStage()) {
-      case EGG: { // constant size for egg stage
-        return EGG_SIZE;
-      }
-      case HATCHLING: {
-        return HATCHLING_SIZE + fractionOfStage * (JUVENILE_SIZE - HATCHLING_SIZE);
-      }
-      case JUVENILE: {
-        return JUVENILE_SIZE + fractionOfStage * (ADULT_SIZE - JUVENILE_SIZE);
-      }
-      case ADULT: {
-        return ADULT_SIZE;
-      }
-      default: {
-        L.error("Illegal lifestage in getScale():" + getLifeStage());
-        return 1.0F;
-      }
+        dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(scaleModifier);
+        dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(scaleModifier);
     }
-  }
-
-  public BreathNode.Power getBreathPower() {
-    switch (getLifeStage()) {
-      case EGG: {
-        return BreathNode.Power.SMALL;  // dummy
-      }
-      case HATCHLING: {
-        return BreathNode.Power.SMALL;
-      }
-      case JUVENILE: {
-        return BreathNode.Power.MEDIUM;
-      }
-      case ADULT: {
-        return BreathNode.Power.LARGE;
-      }
-      default: {
-        L.error("Illegal lifestage in getScale():" + getLifeStage());
-        return BreathNode.Power.SMALL;
-      }
+    
+    /**
+     * Generates some egg shell particles and a breaking sound.
+     */
+    public void playEggCrackEffect() {
+        int bx = (int) Math.round(dragon.posX - 0.5);
+        int by = (int) Math.round(dragon.posY);
+        int bz = (int) Math.round(dragon.posZ - 0.5);
+        dragon.worldObj.playAuxSFX(2001, new BlockPos(bx, by, bz), Block.getIdFromBlock(Blocks.dragon_egg));
     }
-  }
-
-  /**
-   * Transforms the dragon to an egg (item form)
-   */
-  public void transformToEgg() {
-    if (dragon.getHealth() <= 0) {
-      // no can do
-      return;
+    
+    public int getEggWiggleX() {
+        return eggWiggleX;
     }
 
-    L.debug("transforming to egg");
+    public int getEggWiggleZ() {
+        return eggWiggleZ;
+    }
+    
+    /**
+     * Returns the current life stage of the dragon.
+     *
+     * @return current life stage
+     */
+    public DragonLifeStage getLifeStage() {
+        int age = getTicksSinceCreation();
+        return DragonLifeStage.getLifeStageFromTickCount(age);
+    }
+    
+    /**
+     * Returns the size multiplier for the current age.
+     * 
+     * @return size
+     */
+//    public float getScale() {
+//        int age = getTicksSinceCreation();
+//        return DragonLifeStage.getScaleFromTickCount(age);
+//    }
 
-    float volume = 1;
-    float pitch = 0.5f + (0.5f - rand.nextFloat()) * 0.1f;
-    dragon.worldObj.playSoundAtEntity(dragon, "mob.endermen.portal", volume, pitch);
-
-    if (dragon.isSaddled()) {
-      dragon.dropItem(Items.saddle, 1);
+    public int getTicksSinceCreation() {
+        if (!dragon.worldObj.isRemote) {
+            return ticksSinceCreationServer;
+        }
+        return ticksSinceCreationClient.getCurrentTickCount();
     }
 
-    dragon.entityDropItem(new ItemStack(Blocks.dragon_egg), 0);
-    dragon.setDead();
-  }
-
-  /**
-   * Sets a new life stage for the dragon.
-   *
-   * @param lifeStage
-   */
-  public final void setLifeStage(DragonLifeStage lifeStage) {
-    L.trace("setLifeStage({})", lifeStage);
-    if (!dragon.worldObj.isRemote) {
-      ticksSinceCreationServer = lifeStage.startTicks;
-      dataWatcher.updateObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
-    } else {
-      L.error("setLifeStage called on Client");
+    @Override
+    public void writeToNBT(NBTTagCompound nbt) {
+        nbt.setInteger(NBT_TICKS_SINCE_CREATION, getTicksSinceCreation());
     }
-    updateLifeStage();
-  }
 
-  /**
-   * Called when the dragon enters a new life stage.
-   */
-  private void onNewLifeStage(DragonLifeStage lifeStage, DragonLifeStage prevLifeStage) {
-    L.trace("onNewLifeStage({},{})", prevLifeStage, lifeStage);
+    @Override
+    public void readFromNBT(NBTTagCompound nbt) {
+        int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
+        ticksRead = DragonLifeStage.clipTickCountToValid(ticksRead);
+        ticksSinceCreationServer = ticksRead;
+        dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+    }
+    
+    /**
+     * Returns the size multiplier for the current age.
+     * 
+     * @return size
+     */
+    public float getScale() {
+        DragonLifeStage lifeStage = getLifeStage();
+        int stageStartTicks = lifeStage.startTicks;
+        int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
+        float fractionOfStage = timeInThisStage / (float) lifeStage.durationTicks;
+        fractionOfStage = MathHelper.clamp_float(fractionOfStage, 0.0F, 1.0F);
 
-    if (dragon.isClient()) {
-      if (prevLifeStage != null && prevLifeStage == EGG && lifeStage == HATCHLING) {
-        playEggCrackEffect();
-      }
-    } else {
-      // eggs and hatchlings can't fly
-      dragon.setCanFly(lifeStage != EGG && lifeStage != HATCHLING);
+        final float EGG_SIZE = 0.9F / EntityTameableDragon.BASE_WIDTH;
+        final float HATCHLING_SIZE = 0.33F;
+        final float JUVENILE_SIZE = 0.66F;
+        final float ADULT_SIZE = 1.0F;
+
+        switch (getLifeStage()) {
+            case EGG: { // constant size for egg stage
+                return EGG_SIZE;
+            }
+            case HATCHLING: {
+                return HATCHLING_SIZE + fractionOfStage * (JUVENILE_SIZE - HATCHLING_SIZE);
+            }
+            case JUVENILE: {
+                return JUVENILE_SIZE + fractionOfStage * (ADULT_SIZE - JUVENILE_SIZE);
+            }
+            case ADULT: {
+                return ADULT_SIZE;
+            }
+            default: {
+                L.error("Illegal lifestage in getScale():" + getLifeStage());
+                return 1;
+            }
+        }
+    }
+    
+    /**
+     * Transforms the dragon to an egg (item form)
+     */
+    public void transformToEgg() {
+        if (dragon.getHealth() <= 0) {
+            // no can do
+            return;
+        }
+        
+        L.debug("transforming to egg");
+
+        float volume = 1;
+        float pitch = 0.5f + (0.5f - rand.nextFloat()) * 0.1f;
+        dragon.worldObj.playSoundAtEntity(dragon, "mob.endermen.portal", volume, pitch);
+        
+        if (dragon.isSaddled()) {
+            dragon.dropItem(Items.saddle, 1);
+        }
+        
+        dragon.entityDropItem(new ItemStack(Blocks.dragon_egg), 0);
+        dragon.setDead();
+    }
+    
+    /**
+     * Sets a new life stage for the dragon.
+     * 
+     * @param lifeStage
+     */
+    public final void setLifeStage(DragonLifeStage lifeStage) {
+        L.trace("setLifeStage({})", lifeStage);
+        if (!dragon.worldObj.isRemote) {
+          ticksSinceCreationServer = lifeStage.startTicks;
+          dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+        } else {
+          L.error("setLifeStage called on Client");
+        }
+        updateLifeStage();
+    }
+    
+    /**
+     * Called when the dragon enters a new life stage.
+     */ 
+    private void onNewLifeStage(DragonLifeStage lifeStage, DragonLifeStage prevLifeStage) {
+        L.trace("onNewLifeStage({},{})", prevLifeStage, lifeStage);
+
+        if (dragon.isClient()) {
+            if (prevLifeStage != null && prevLifeStage == EGG && lifeStage == HATCHLING) {
+                playEggCrackEffect();
+            }
+        } else {
+            // eggs and hatchlings can't fly
+            dragon.setCanFly(lifeStage != EGG && lifeStage != HATCHLING);
 
 //            // only hatchlings are small enough for doors
 //            // (eggs don't move on their own anyway and are ignored)
 //            dragon.getNavigator().setEnterDoors(lifeStage == HATCHLING);
-      // guessed, based on EntityAIRestrictOpenDoor - break the door down, don't open it
-      if (dragon.getNavigator() instanceof PathNavigateGround) {
-        PathNavigateGround pathNavigateGround = (PathNavigateGround)dragon.getNavigator();
-        pathNavigateGround.func_179691_c(lifeStage == HATCHLING);
-      }
+            // guessed, based on EntityAIRestrictOpenDoor - break the door down, don't open it
+            if (dragon.getNavigator() instanceof PathNavigateGround) {
+                PathNavigateGround pathNavigateGround = (PathNavigateGround) dragon.getNavigator();
+                pathNavigateGround.func_179691_c(lifeStage == HATCHLING);
+            }
 
-      // update AI states so the egg won't move
+            // update AI states so the egg won't move
 //            dragon.setNoAI(lifeStage == EGG);  stops egg from sitting on the ground properly :(
-      changeAITasks(lifeStage, prevLifeStage);
+            changeAITasks(lifeStage, prevLifeStage);
 
-      // update attribute modifier
-      IAttributeInstance healthAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth);
-      IAttributeInstance damageAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage);
+            // update attribute modifier
+            IAttributeInstance healthAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth);
+            IAttributeInstance damageAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage);
 
-      // remove old size modifiers
-      healthAttrib.removeModifier(scaleModifier);
-      damageAttrib.removeModifier(scaleModifier);
+            // remove old size modifiers
+            healthAttrib.removeModifier(scaleModifier);
+            damageAttrib.removeModifier(scaleModifier);
 
-      // update modifier
-      scaleModifier.setScale(getScale());
+            // update modifier
+            scaleModifier.setScale(getScale());
 
-      // set new size modifiers
-      healthAttrib.applyModifier(scaleModifier);
-      damageAttrib.applyModifier(scaleModifier);
+            // set new size modifiers
+            healthAttrib.applyModifier(scaleModifier);
+            damageAttrib.applyModifier(scaleModifier);
 
-      // heal dragon to updated full health
-      dragon.setHealth(dragon.getMaxHealth());
-    }
-  }
-
-  @Override
-  public void onLivingUpdate() {
-
-    // if the dragon is not an adult, update its growth ticks
-    if (!dragon.worldObj.isRemote) {
-      if (getLifeStage() != ADULT) {
-        ++ticksSinceCreationServer;
-        if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
-          dataWatcher.updateObject(DATA_WATCHER_TICKS_SINCE_CREATION, ticksSinceCreationServer);
+            // heal dragon to updated full health
+            dragon.setHealth(dragon.getMaxHealth());
         }
-      }
-    } else {
-      ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(
-              DATA_WATCHER_TICKS_SINCE_CREATION));
-      if (getLifeStage() != ADULT) {
-        ticksSinceCreationClient.tick();
-      }
     }
 
-    updateLifeStage();
-    updateEgg();
-    updateScale();
-  }
+    @Override
+    public void onLivingUpdate() {
+        // testing code
+//        if (dragon.isServer()) {
+//            dragon.setGrowingAge((int) ((((Math.sin(Math.toRadians(dragon.ticksExisted))) + 1) * 0.5) * EGG.ageLimit));
+//        }
 
-  private void updateLifeStage() {
-    // trigger event when a new life stage was reached
-    DragonLifeStage lifeStage = getLifeStage();
-    if (lifeStagePrev != lifeStage) {
-      onNewLifeStage(lifeStage, lifeStagePrev);
-      lifeStagePrev = lifeStage;
+        // if the dragon is not an adult, update its growth ticks
+        if (!dragon.worldObj.isRemote) {
+          if (getLifeStage() != ADULT) {
+            ++ticksSinceCreationServer;
+            if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
+              dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+            }
+          }
+        } else {
+            ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(
+                    dataIndexTicksSinceCreation));
+            if (getLifeStage() != ADULT) {
+                ticksSinceCreationClient.tick();
+            }
+        }
+
+        updateLifeStage();
+        updateEgg();
+        updateScale();
     }
-  }
-
-  private void updateEgg() {
-    if (!isEgg()) {
-      return;
+    
+    private void updateLifeStage() {
+        // trigger event when a new life stage was reached
+        DragonLifeStage lifeStage = getLifeStage();
+        if (lifeStagePrev != lifeStage) {
+            onNewLifeStage(lifeStage, lifeStagePrev);
+            lifeStagePrev = lifeStage;
+        }
     }
+    
+    private void updateEgg() {
+        if (!isEgg()) {
+            return;
+        }
 
-    // updateFromAnimator egg wiggle based on the time the eggs take to hatch
-    int age = getTicksSinceCreation();
-    int hatchAge = DragonLifeStage.HATCHLING.durationTicks;
-    float fractionComplete = age / (float)hatchAge;
+        // animate egg wiggle based on the time the eggs take to hatch
+        int age = getTicksSinceCreation();
+        int hatchAge = DragonLifeStage.HATCHLING.durationTicks;
+        float fractionComplete = age / (float)hatchAge;
 
-    // wait until the egg is nearly hatched
-    if (fractionComplete > 0.66f) {
-      float wiggleChance = fractionComplete / 60;
+        // wait until the egg is nearly hatched
+        if (fractionComplete > 0.66f) {
+            float wiggleChance = fractionComplete / 60;
 
-      if (eggWiggleX > 0) {
-        eggWiggleX--;
-      } else if (rand.nextFloat() < wiggleChance) {
-        eggWiggleX = rand.nextBoolean() ? 10 : 20;
-        playEggCrackEffect();
-      }
+            if (eggWiggleX > 0) {
+                eggWiggleX--;
+            } else if (rand.nextFloat() < wiggleChance) {
+                eggWiggleX = rand.nextBoolean() ? 10 : 20;
+                playEggCrackEffect();
+            }
 
-      if (eggWiggleZ > 0) {
-        eggWiggleZ--;
-      } else if (rand.nextFloat() < wiggleChance) {
-        eggWiggleZ = rand.nextBoolean() ? 10 : 20;
-        playEggCrackEffect();
-      }
-    }
+            if (eggWiggleZ > 0) {
+                eggWiggleZ--;
+            } else if (rand.nextFloat() < wiggleChance) {
+                eggWiggleZ = rand.nextBoolean() ? 10 : 20;
+                playEggCrackEffect();
+            }
+        }
 
-    // spawn generic particles
-    double px = dragon.posX + (rand.nextDouble() - 0.5);
-    double py = dragon.posY + (rand.nextDouble() - 0.5);
-    double pz = dragon.posZ + (rand.nextDouble() - 0.5);
-    double ox = (rand.nextDouble() - 0.5) * 2;
-    double oy = (rand.nextDouble() - 0.5) * 2;
-    double oz = (rand.nextDouble() - 0.5) * 2;
-    dragon.worldObj.spawnParticle(EnumParticleTypes.PORTAL, px, py, pz, ox, oy, oz);
-  }
-
-  private void updateScale() {
-    boolean savedOnGround = dragon.onGround;  // otherwise, setScale stops the dragon from landing while it is growing
-    dragon.setScalePublic(getScale());
-    dragon.onGround = savedOnGround;
-  }
-
-  @Override
-  public void onDeath() {
-    if (dragon.isClient() && isEgg()) {
-      playEggCrackEffect();
-    }
-  }
-
-  public boolean isEgg() {
-    return getLifeStage() == EGG;
-  }
-
-  public boolean isHatchling() {
-    return getLifeStage() == HATCHLING;
-  }
-
-  public boolean isJuvenile() {
-    return getLifeStage() == JUVENILE;
-  }
-
-  public boolean isAdult() {
-    return getLifeStage() == ADULT;
-  }
-
-
-  private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage)
-  {
-    if (newLifeStage != null && previousLifeStage != null) {   // handle initialisation after load from NBT
-      if (newLifeStage == previousLifeStage) return;
-//        if (newLifeStage != EGG && previousLifeStage != EGG) return;
+        // spawn generic particles
+        double px = dragon.posX + (rand.nextDouble() - 0.5);
+        double py = dragon.posY + (rand.nextDouble() - 0.5);
+        double pz = dragon.posZ + (rand.nextDouble() - 0.5);
+        double ox = (rand.nextDouble() - 0.5) * 2;
+        double oy = (rand.nextDouble() - 0.5) * 2;
+        double oz = (rand.nextDouble() - 0.5) * 2;
+        dragon.worldObj.spawnParticle(EnumParticleTypes.PORTAL, px, py, pz, ox, oy, oz);
     }
 
-    EntityAITasks tasks = dragon.tasks;
-    EntityAITasks airTasks = dragon.airTasks;
-    EntityAITasks targetTasks = dragon.targetTasks;
-
-    while (!tasks.taskEntries.isEmpty()) {
-      EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)tasks.taskEntries.get(0)).action;
-      tasks.removeTask(entityAIBase);
+    private void updateScale() {
+        dragon.setScalePublic(getScale());
     }
-    while (!airTasks.taskEntries.isEmpty()) {
-      EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)airTasks.taskEntries.get(0)).action;
-      airTasks.removeTask(entityAIBase);
+    
+    @Override
+    public void onDeath() {
+        if (dragon.isClient() && isEgg()) {
+            playEggCrackEffect();
+        }
     }
-    while (!targetTasks.taskEntries.isEmpty()) {
-      EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry)targetTasks.taskEntries.get(0)).action;
-      targetTasks.removeTask(entityAIBase);
+    
+    public boolean isEgg() {
+        return getLifeStage() == EGG;
     }
-
-    if (newLifeStage == EGG) {
-      return;
+    
+    public boolean isHatchling() {
+        return getLifeStage() == HATCHLING;
     }
-
-    //--------------------------------------------------------
-
-    // mutex 1: movement
-    // mutex 2: looking
-    // mutex 4: special state
-    tasks.addTask(0, new EntityAICatchOwnerGround(dragon)); // mutex all
-    tasks.addTask(1, new EntityAIRideGround(dragon, 1)); // mutex all
-    tasks.addTask(2, new EntityAISwimming(dragon)); // mutex 4
-    tasks.addTask(4, dragon.getAISit()); // mutex 4+1
-    tasks.addTask(5, new EntityAIDragonMate(dragon, 0.6)); // mutex 2+1
-    tasks.addTask(6, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
-    tasks.addTask(7, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
-    tasks.addTask(8, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
-    tasks.addTask(9, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
-    tasks.addTask(9, new EntityAIPanicChild(dragon, 1)); // mutex 1
-    tasks.addTask(10, new EntityAIWander(dragon, 1)); // mutex 1
-    tasks.addTask(11, new EntityAIWatchIdle(dragon)); // mutex 2
-    tasks.addTask(11, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
-
-    float minAttackRange = 0;
-    float maxAttackRange = 0;
-    switch (getLifeStage()) {
-      case EGG: break;
-      case HATCHLING: {
-        minAttackRange = 2.0F;
-        maxAttackRange = 4.0F;
-        break;
-      }
-      case JUVENILE: {
-        minAttackRange = 3.0F;
-        maxAttackRange = 8.0F;
-        break;
-      }
-      case ADULT: {
-        minAttackRange = 5.0F;
-        maxAttackRange = 25.0F;
-        break;
-      }
-      default: {
-        System.err.println("Unknown lifestage:" + getLifeStage());
-        break;
-      }
+    
+    public boolean isJuvenile() {
+        return getLifeStage() == JUVENILE;
+    }
+    
+    public boolean isAdult() {
+        return getLifeStage() == ADULT;
     }
 
-    EntityAIMoveToOptimalDistance movementAI = new
-            EntityAIMoveToOptimalDistance(dragon, 1, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
-    tasks.addTask(3, movementAI); // mutex 1 + 2
+    private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage) {
+        // handle initialisation after load from NBT
+        if (newLifeStage != null && previousLifeStage != null) {
+            if (newLifeStage == previousLifeStage) {
+                return;
+            }
+            if (newLifeStage != EGG && previousLifeStage != EGG) {
+                return;
+            }
+        }
 
+        EntityAITasks tasks = dragon.tasks;
+        EntityAITasks airTasks = dragon.airTasks;
+        EntityAITasks targetTasks = dragon.targetTasks;
 
-    //--------------------------------------------------------
+        while (!tasks.taskEntries.isEmpty()) {
+            EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry) tasks.taskEntries.get(0)).action;
+            tasks.removeTask(entityAIBase);
+        }
+        while (!airTasks.taskEntries.isEmpty()) {
+            EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry) airTasks.taskEntries.get(0)).action;
+            airTasks.removeTask(entityAIBase);
+        }
+        while (!targetTasks.taskEntries.isEmpty()) {
+            EntityAIBase entityAIBase = ((EntityAITasks.EntityAITaskEntry) targetTasks.taskEntries.get(0)).action;
+            targetTasks.removeTask(entityAIBase);
+        }
 
-    // mutex 1: waypointing
-    // mutex 2: continuous waypointing
-    airTasks.addTask(0, new EntityAIRideAir(dragon)); // mutex all
-    airTasks.addTask(0, new EntityAILand(dragon)); // mutex 0
-    airTasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
+        if (newLifeStage == EGG) {
+            return;
+        }
 
-    //--------------------------------------------------------
+        // mutex 1: movement
+        // mutex 2: looking
+        // mutex 4: special state
+        tasks.addTask(0, new EntityAICatchOwnerGround(dragon)); // mutex all
+        tasks.addTask(1, new EntityAIRideGround(dragon, 1)); // mutex all
+        tasks.addTask(2, new EntityAISwimming(dragon)); // mutex 4
+        tasks.addTask(3, dragon.getAISit()); // mutex 4+1
+        tasks.addTask(4, new EntityAIDragonMate(dragon, 0.6)); // mutex 2+1
+        tasks.addTask(5, new EntityAITempt(dragon, 0.75, dragon.FAVORITE_FOOD, false)); // mutex 2+1
+        tasks.addTask(6, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
+        tasks.addTask(7, new EntityAIFollowParent(dragon, 0.8)); // mutex 2+1
+        tasks.addTask(8, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
+        tasks.addTask(8, new EntityAIPanicChild(dragon, 1)); // mutex 1
+        tasks.addTask(9, new EntityAIWander(dragon, 1)); // mutex 1
+        tasks.addTask(10, new EntityAIWatchIdle(dragon)); // mutex 2
+        tasks.addTask(10, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
 
-    // mutex 1: generic targeting
-    targetTasks.addTask(2, new EntityAIOwnerHurtByTarget(dragon)); // mutex 1
-    targetTasks.addTask(3, new EntityAIOwnerHurtTarget(dragon)); // mutex 1
-    targetTasks.addTask(4, new EntityAIHurtByTarget(dragon, false)); // mutex 1
-    targetTasks.addTask(5, new EntityAIHunt(dragon, EntityAnimal.class, false,
-                                            new EntityClassPredicate(
-                                                    EntitySheep.class,
-                                                    EntityPig.class,
-                                                    EntityChicken.class,
-                                                    EntityRabbit.class
-                                            )
-    )); // mutex 1
-    EntityAIRangedBreathAttack breathAttack = new
-            EntityAIRangedBreathAttack(dragon, minAttackRange, (minAttackRange + maxAttackRange)/2, maxAttackRange);
-    targetTasks.addTask(1, breathAttack); // mutex 1
+        // mutex 1: waypointing
+        // mutex 2: continuous waypointing
+        airTasks.addTask(0, new EntityAIRideAir(dragon)); // mutex all
+        airTasks.addTask(0, new EntityAILand(dragon)); // mutex 0
+        airTasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
 
-
-  }
+        // mutex 1: generic targeting
+        targetTasks.addTask(1, new EntityAIOwnerHurtByTarget(dragon)); // mutex 1
+        targetTasks.addTask(2, new EntityAIOwnerHurtTarget(dragon)); // mutex 1
+        targetTasks.addTask(3, new EntityAIHurtByTarget(dragon, false)); // mutex 1
+        targetTasks.addTask(4, new EntityAIHunt(dragon, EntityAnimal.class, false,
+                new EntityClassPredicate(
+                        EntitySheep.class,
+                        EntityPig.class,
+                        EntityChicken.class,
+                        EntityRabbit.class
+                )
+        )); // mutex 1
+    }
 
 }

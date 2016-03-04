@@ -11,7 +11,6 @@ package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIRide;
-import info.ata4.minecraft.dragon.server.network.BreathWeaponTarget;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.init.Items;
 import net.minecraft.util.Vec3;
@@ -37,37 +36,29 @@ public class EntityAIRideGround extends EntityAIRide {
     }
     
     @Override
-    public void updateTask()
-    {
+    public void updateTask() {
         super.updateTask();
-
+        
         float speedX = rider.moveForward / PLAYER_SPEED;
         float speedY = rider.moveStrafing / PLAYER_SPEED;
-
+        
         if (ItemUtils.hasEquipped(rider, Items.carrot_on_a_stick)) {
             speedX = 1;
         }
-
+        
         float speedPlayer = Math.max(Math.abs(speedX), Math.abs(speedY));
 
         Vec3 look = rider.getLookVec();
         float dir = Math.min(speedX, 0) * -1;
         dir += speedY / (speedX * 2 + (speedX < 0 ? -2 : 2));
         if (dir != 0) {
-            look = look.rotateYaw((float) Math.PI * dir);
+            look.rotateYaw((float) Math.PI * dir);
         }
 
         if (speedPlayer > 0) {
             dragon.getMoveHelper().setMoveTo(dragon.posX + look.xCoord, dragon.posY, dragon.posZ + look.zCoord, speed * speedPlayer);
         }
-
-        // if we're breathing at a target, look at it
-        BreathWeaponTarget breathWeaponTarget = dragon.getBreathHelper().getPlayerSelectedTarget();
-        if (breathWeaponTarget != null) {
-            Vec3 dragonEyePos = dragon.getPositionVector().addVector(0, dragon.getEyeHeight(), 0);
-            breathWeaponTarget.setEntityLook(dragon.worldObj, dragon.getLookHelper(), dragonEyePos,
-                                             dragon.getHeadYawSpeed(), dragon.getHeadPitchSpeed());
-        }
+        
         // lift off when pressing the fly-up key
         if (isFlyUp()) {
             dragon.liftOff();

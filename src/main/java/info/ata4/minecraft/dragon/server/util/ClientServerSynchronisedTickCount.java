@@ -2,15 +2,15 @@ package info.ata4.minecraft.dragon.server.util;
 
 /**
  * Created by TGG on 10/06/2015.
- * A client-side class to synchronise tick counts received by the client from the server
- * Will tick faster or slower to "catch up" any mismatch.
+ * A class to synchronise tick counts sent from the server to the client
+ * Ticks faster or slower to "catch up" any mismatch.
  *
  * Usage:
  * (1) Create an instance with the approximate expected update interval (affects speed of resynching)
  * (2) call tick() to increment the counter.  Ticks will occasionally be skipped or an extra added in order to
  *     catch up or slow down to the server.
- * (3) periodically call updateFromServer() to inform the most recent value that the client has received from the server.
- *     Has no effect unless the value has changed from the last call to updateFromServer()
+ * (3) periodically call updateFromServer() to inform the most recent value obtained from the server
+ *     has no effect unless the value has changed from the last call to updateFromServer()
  *     If the mismatch is too great, the tick count will jump immediately.
  * (4) reset() to force the client to start at the given value
  */
