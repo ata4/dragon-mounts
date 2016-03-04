@@ -184,12 +184,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             }
         } else {
             // set home position near owner when tamed
-            //  setHomeArea renamed to EntityCreature.func_175449_a()
             if (isTamed()) {
                 Entity owner = getOwner();
                 if (owner != null) {
                     BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
-                    func_175449_a(ownerPosition, HOME_RADIUS);
+                    setHomePosAndDistance(ownerPosition, HOME_RADIUS);
                 }
             }
         }
@@ -560,15 +559,14 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public boolean attackEntityAsMob(Entity victim) {
-      // code copied from EntityMob::attackEntityAsMob
+        // code copied from EntityMob::attackEntityAsMob
+        float attackDamage = (float) getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+        int knockback = 0;
 
-      float attackDamage = (float) getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-      int knockback = 0;
-
-      if (victim instanceof EntityLivingBase) {  // not actually required for a dragon?  leave in anyway
-        attackDamage += EnchantmentHelper.func_152377_a(this.getHeldItem(), ((EntityLivingBase)victim).getCreatureAttribute());
-        knockback += EnchantmentHelper.getKnockbackModifier(this);
-      }
+        if (victim instanceof EntityLivingBase) {  // not actually required for a dragon?  leave in anyway
+            attackDamage += EnchantmentHelper.func_152377_a(this.getHeldItem(), ((EntityLivingBase) victim).getCreatureAttribute());
+            knockback += EnchantmentHelper.getKnockbackModifier(this);
+        }
 
         boolean attacked = victim.attackEntityFrom(DamageSource.causeMobDamage(this), attackDamage);
 
@@ -578,7 +576,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 double vy = 0.1;
                 double vz = Math.cos(Math.toRadians(rotationYaw)) * knockback * 0.5;
                 victim.addVelocity(vx, vy, vz);
-                
+
                 motionX *= 0.6;
                 motionZ *= 0.6;
             }
@@ -589,21 +587,17 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                 victim.setFire(fireAspect * 4);
             }
 
-            if (victim instanceof EntityLivingBase) {
-                EnchantmentHelper.func_151384_a((EntityLivingBase) victim, this);
-            }
-            
-            EnchantmentHelper.func_151385_b(this, victim);
-            
+            applyEnchantments(this, victim);
+
             setLastAttacker(victim);
-            
+
             // play eating sound
             float volume = getSoundVolume() * 0.7f;
             float pitch = getSoundPitch();
             worldObj.playSoundAtEntity(this, "random.eat", volume, pitch);
 
             if (this.worldObj instanceof WorldServer) {
-              ((WorldServer)this.worldObj).getEntityTracker().sendToAllTrackingEntity(this, new S0BPacketAnimation(this, 0));
+                ((WorldServer) this.worldObj).getEntityTracker().sendToAllTrackingEntity(this, new S0BPacketAnimation(this, 0));
             }
 
         }
@@ -907,7 +901,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         PathNavigate pathNavigate = this.getNavigator();
         if (pathNavigate instanceof PathNavigateGround) {
             PathNavigateGround pathNavigateGround = (PathNavigateGround) pathNavigate;
-            pathNavigateGround.func_179690_a(avoidWater);
+            pathNavigateGround.setAvoidsWater(avoidWater);
         }
     }
 }

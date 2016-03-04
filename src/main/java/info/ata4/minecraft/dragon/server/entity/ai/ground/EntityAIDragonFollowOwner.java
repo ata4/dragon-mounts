@@ -99,8 +99,8 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
       PathNavigate pathNavigate = dragon.getNavigator();
       if (pathNavigate instanceof PathNavigateGround) {
         PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
-        this.avoidWater = pathNavigateGround.func_179689_e();
-        pathNavigateGround.func_179690_a(false);
+        this.avoidWater = pathNavigateGround.getAvoidsWater();
+        pathNavigateGround.setAvoidsWater(false);
       }
 
     }
@@ -115,7 +115,7 @@ public class EntityAIDragonFollowOwner extends EntityAIBase {
       PathNavigate pathNavigate = dragon.getNavigator();
       if (pathNavigate instanceof PathNavigateGround) {
         PathNavigateGround pathNavigateGround = (PathNavigateGround)pathNavigate;
-         pathNavigateGround.func_179690_a(avoidWater);  // best guess, based on vanilla EntityAIFollowOwner
+         pathNavigateGround.setAvoidsWater(avoidWater);  // best guess, based on vanilla EntityAIFollowOwner
       }
     }
 

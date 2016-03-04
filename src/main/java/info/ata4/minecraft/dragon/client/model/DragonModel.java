@@ -17,10 +17,10 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
-
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -29,10 +29,6 @@ import static org.lwjgl.opengl.GL11.*;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonModel extends ModelBase {
-
-    public enum RenderPass {
-      MAIN, SADDLE, GLOW
-    }
 
     // model constants
     public static final int NECK_SIZE = 10;
@@ -77,7 +73,6 @@ public class DragonModel extends ModelBase {
     public ModelPartProxy[] tailProxy = new ModelPartProxy[VERTS_TAIL];
     public ModelPartProxy[] thighProxy = new ModelPartProxy[4];
     
-    public RenderPass renderPass = RenderPass.MAIN;
     public float offsetX;
     public float offsetY;
     public float offsetZ;
@@ -431,31 +426,18 @@ public class DragonModel extends ModelBase {
      * Renders the model after all animations are applied.
      */
     public void renderModel(EntityTameableDragon dragon, float scale) {
-        glPushMatrix();
-        glTranslatef(offsetX, offsetY, offsetZ);
-        glRotatef(-pitch, 1, 0, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(offsetX, offsetY, offsetZ);
+        GlStateManager.rotate(-pitch, 1, 0, 0);
 
-        switch (renderPass) {
-          case SADDLE: {
-            renderBody(scale);
-            break;
-          }
-          case MAIN:
-          case GLOW: {
-            renderHead(scale);
-            renderNeck(scale);
-            renderBody(scale);
-            renderLegs(scale);
-            renderTail(scale);
-            renderWings(scale);
-            break;
-          }
-          default: {
-            System.err.println("illegal renderPass in renderModel:" + renderPass);
-          }
-        }
+        renderHead(scale);
+        renderNeck(scale);
+        renderBody(scale);
+        renderLegs(scale);
+        renderTail(scale);
+        renderWings(scale);
 
-        glPopMatrix();
+        GlStateManager.popMatrix();
     }
     
     protected void renderBody(float scale) {
@@ -482,42 +464,41 @@ public class DragonModel extends ModelBase {
     }
     
     protected void renderWings(float scale) {     
-        glPushMatrix();
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_FRONT);
-//        glScalef(1.1f, 1.1f, 1.1f);
-        
+        GlStateManager.pushMatrix();
+        GlStateManager.enableCull();
+        GlStateManager.cullFace(GL_FRONT);
+
         for (int i = 0; i < 2; i++) {
             wingArm.render(scale);
 
             if (i == 0) {
                 // mirror next wing
-                glScalef(-1, 1, 1);
+                GlStateManager.scale(-1, 1, 1);
                 // switch to back face culling
-                glCullFace(GL_BACK);
+                GlStateManager.cullFace(GL_BACK);
             }
         }
 
-        glDisable(GL_CULL_FACE);
-        glPopMatrix();
+        GlStateManager.disableCull();
+        GlStateManager.popMatrix();
     }
     
     protected void renderLegs(float scale) {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        GlStateManager.enableCull();
+        GlStateManager.cullFace(GL_BACK);
         
         for (int i = 0; i < thighProxy.length; i++) {
             thighProxy[i].render(scale);
             
             if (i == 1) {
                 // mirror next legs
-                glScalef(-1, 1, 1);
+                GlStateManager.scale(-1, 1, 1);
                 // switch to front face culling
-                glCullFace(GL_FRONT);
+                GlStateManager.cullFace(GL_FRONT);
             }
         }
         
-        glCullFace(GL_BACK);
-        glDisable(GL_CULL_FACE);
+        GlStateManager.cullFace(GL_BACK);
+        GlStateManager.disableCull();
     }
 }

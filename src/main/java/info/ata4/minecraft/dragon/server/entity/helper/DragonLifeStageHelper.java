@@ -229,7 +229,7 @@ public class DragonLifeStageHelper extends DragonHelper {
             // guessed, based on EntityAIRestrictOpenDoor - break the door down, don't open it
             if (dragon.getNavigator() instanceof PathNavigateGround) {
                 PathNavigateGround pathNavigateGround = (PathNavigateGround) dragon.getNavigator();
-                pathNavigateGround.func_179691_c(lifeStage == HATCHLING);
+                pathNavigateGround.setEnterDoors(lifeStage == HATCHLING);
             }
 
             // update AI states so the egg won't move

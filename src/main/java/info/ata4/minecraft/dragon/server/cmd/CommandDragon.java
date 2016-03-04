@@ -56,7 +56,7 @@ public class CommandDragon extends CommandBase {
     }
 
     @Override
-    public String getName() {
+    public String getCommandName() {
         return "dragon";
     }
     
@@ -69,12 +69,12 @@ public class CommandDragon extends CommandBase {
     @Override
     public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
-            return func_175762_a(args, commandNames);
+            return getListOfStringsMatchingLastWord(args, commandNames);
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("stage")) {
-                return func_175762_a(args, lifeStageNames);
+                return getListOfStringsMatchingLastWord(args, lifeStageNames);
             } else if (args[0].equalsIgnoreCase("breed")) {
-                return func_175762_a(args, breedNames);
+                return getListOfStringsMatchingLastWord(args, breedNames);
             }
         }
         
@@ -90,7 +90,7 @@ public class CommandDragon extends CommandBase {
     }
 
     @Override
-    public void execute(ICommandSender sender, String[] params) throws CommandException {
+    public void processCommand(ICommandSender sender, String[] params) throws CommandException {
         if (params.length < 1 || params[0].isEmpty()) {
             throw new WrongUsageException(getCommandUsage(sender));
         }
@@ -165,24 +165,24 @@ public class CommandDragon extends CommandBase {
                     player.posX - 1, player.posY - 1, player.posZ - 1,
                     player.posX + 1, player.posY + 1, player.posZ + 1);
             aabb = aabb.expand(range, range, range);
-            List<Entity> entities = player.worldObj.getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
+            List<EntityTameableDragon> dragons = player.worldObj.getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
 
-            Entity closestEntity = null;
+            EntityTameableDragon closestDragon = null;
             float minPlayerDist = Float.MAX_VALUE;
 
             // get closest dragon
-            for (Entity entity : entities) {
-                float playerDist = entity.getDistanceToEntity(player);
-                if (entity.getDistanceToEntity(player) < minPlayerDist) {
-                    closestEntity = entity;
+            for (EntityTameableDragon dragon : dragons) {
+                float playerDist = dragon.getDistanceToEntity(player);
+                if (dragon.getDistanceToEntity(player) < minPlayerDist) {
+                    closestDragon = dragon;
                     minPlayerDist = playerDist;
                 }
             }
 
-            if (closestEntity == null) {
+            if (closestDragon == null) {
                 throw new CommandException("commands.dragon.nodragons");
             } else {
-                modifier.modify((EntityTameableDragon) closestEntity);
+                modifier.modify(closestDragon);
             }
         } else {
             // scan all entities on all dimensions
