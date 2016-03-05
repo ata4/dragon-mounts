@@ -9,7 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
-import info.ata4.minecraft.dragon.util.math.MathX;
+import info.ata4.minecraft.dragon.util.math.Interpolation;
 import net.minecraft.util.MathHelper;
 
 /**
@@ -62,10 +62,10 @@ public enum DragonLifeStage {
             
             // interpolated size for hatchling and juvenile stages
             case HATCHLING:
-                return MathX.lerp(HATCHLING.scale, JUVENILE.scale, fractionOfStage);
+                return Interpolation.linear(HATCHLING.scale, JUVENILE.scale, fractionOfStage);
                 
             case JUVENILE:
-                return MathX.lerp(JUVENILE.scale, ADULT.scale, fractionOfStage);
+                return Interpolation.linear(JUVENILE.scale, ADULT.scale, fractionOfStage);
             
             // this should never happen unless more life stages have been added
             // without updating this method

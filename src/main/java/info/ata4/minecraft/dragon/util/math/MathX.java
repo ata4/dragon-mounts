@@ -9,8 +9,6 @@
  */
 package info.ata4.minecraft.dragon.util.math;
 
-import net.minecraft.util.MathHelper;
-
 /**
  * Math helper class.
  * 
@@ -20,8 +18,7 @@ public class MathX {
 
     public static final double PI_D = Math.PI;
     public static final float PI_F = (float) Math.PI;
-    public static boolean useLUT = true;
-    
+
     /**
      * You no take constructor!
      */
@@ -30,20 +27,12 @@ public class MathX {
 
     // float sine function, may use LUT
     public static float sin(float a) {
-        if (useLUT) {
-            return MathHelper.sin(a);
-        } else {
-            return (float) Math.sin(a);
-        }
+        return (float) Math.sin(a);
     }
 
     // float cosine function, may use LUT
     public static float cos(float a) {
-        if (useLUT) {
-            return MathHelper.cos(a);
-        } else {
-            return (float) Math.cos(a);
-        }
+        return (float) Math.cos(a);
     }
 
     // float tangent function
@@ -132,66 +121,6 @@ public class MathX {
     // numeric integer clamp
     public static int clamp(int value, int min, int max) {
         return (value < min ? min : (value > max ? max : value));
-    }
-    
-    // float linear interpolation
-    public static float lerp(float a, float b, float x) {
-        return a * (1 - x) + b * x;
-    }
-    
-    // double linear interpolation
-    public static double lerp(double a, double b, double x) {
-        return a * (1 - x) + b * x;
-    }
-    
-    // smoothed float linear interpolation, similar to terp() but faster
-    public static float slerp(float a, float b, float x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
-        
-        return lerp(a, b, x * x * (3 - 2 * x));
-    }
-    
-    // smoothed double linear interpolation, similar to terp() but faster
-    public static double slerp(double a, double b, double x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
-        
-        return lerp(a, b, x * x * (3 - 2 * x));
-    }
-    
-    // float trigonometric interpolation
-    public static float terp(float a, float b, float x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
-
-        float mu2 = (1 - cos(x * PI_F)) / 2.0f;
-        return a * (1 - mu2) + b * mu2;
-    }
-    
-    // double trigonometric interpolation
-    public static double terp(double a, double b, double x) {
-        if (x <= 0) {
-            return a;
-        }
-        if (x >= 1) {
-            return b;
-        }
-
-        double mu2 = (1 - Math.cos(x * PI_D)) / 2.0;
-        return a * (1 - mu2) + b * mu2;
     }
     
     public static float updateRotation(float r1, float r2, float step) {

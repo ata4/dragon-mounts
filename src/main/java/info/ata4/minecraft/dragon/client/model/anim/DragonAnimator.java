@@ -12,8 +12,8 @@ package info.ata4.minecraft.dragon.client.model.anim;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.model.ModelPart;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.util.math.Interpolation;
 import info.ata4.minecraft.dragon.util.math.MathX;
-import info.ata4.minecraft.dragon.util.math.Spline;
 
 /**
  * Animation control class to put useless reptiles in motion.
@@ -180,8 +180,8 @@ public class DragonAnimator {
         cycleOfs = (cycleOfs * cycleOfs + cycleOfs * 2) * 0.05f;
 
         // reduce up/down amplitude
-        cycleOfs *= MathX.lerp(0.5f, 1, flutter);
-        cycleOfs *= MathX.lerp(1, 0.5f, ground);
+        cycleOfs *= Interpolation.linear(0.5f, 1, flutter);
+        cycleOfs *= Interpolation.linear(1, 0.5f, ground);
         
         // update offsets
         model.offsetX = getModelOffsetX();
@@ -283,8 +283,8 @@ public class DragonAnimator {
 
         // TODO: where's yOffset?
         //yTrail.update(entity.posY - entity.yOffset);
-        yTrail.update(entity.posY);
-        yawTrail.update(yawAbs);
+        yTrail.update((float) entity.posY);
+        yawTrail.update((float) yawAbs);
         pitchTrail.update(getModelPitch());
     }
         
@@ -313,30 +313,30 @@ public class DragonAnimator {
         model.neck.rotateAngleY = 0;
         model.neck.rotateAngleZ = 0;
         
-        double health = entity.getHealthRelative();
+        float health = (float) entity.getHealthRelative();
         float neckSize;
 
         for (int i = 0; i < model.neckProxy.length; i++) {
             float vertMulti = (i + 1) / (float) model.neckProxy.length;
 
             float baseRotX = MathX.cos((float) i * 0.45f + animBase) * 0.15f;
-            baseRotX *= MathX.lerp(0.2f, 1, flutter);
-            baseRotX *= MathX.lerp(1, 0.2f, sit);
+            baseRotX *= Interpolation.linear(0.2f, 1, flutter);
+            baseRotX *= Interpolation.linear(1, 0.2f, sit);
             float ofsRotX = MathX.sin(vertMulti * MathX.PI_F * 0.9f) * 0.75f;
             
             // basic up/down movement
             model.neck.rotateAngleX = baseRotX;
             // reduce rotation when on ground
-            model.neck.rotateAngleX *= MathX.slerp(1, 0.5f, walk);
+            model.neck.rotateAngleX *= Interpolation.smoothStep(1, 0.5f, walk);
             // flex neck down when hovering
             model.neck.rotateAngleX += (1 - speed) * vertMulti;
             // lower neck on low health
-            model.neck.rotateAngleX -= MathX.lerp(0, ofsRotX, ground * health);
+            model.neck.rotateAngleX -= Interpolation.linear(0, ofsRotX, ground * health);
             // use looking yaw
             model.neck.rotateAngleY = MathX.toRadians(lookYaw) * vertMulti * speed;
             
             // update scale
-            model.neck.renderScaleX = model.neck.renderScaleY = MathX.lerp(1.6f, 1, vertMulti);
+            model.neck.renderScaleX = model.neck.renderScaleY = Interpolation.linear(1.6f, 1, vertMulti);
             model.neck.renderScaleZ = 0.6f;
             
             // hide the first and every second scale
@@ -436,7 +436,7 @@ public class DragonAnimator {
         
         for (int i = 0; i < model.wingFinger.length; i++) {
             model.wingFinger[i].rotateAngleX = rotX += 0.005f; // reduce Z-fighting
-            model.wingFinger[i].rotateAngleY = MathX.slerp(yUnfold[i],
+            model.wingFinger[i].rotateAngleY = Interpolation.smoothStep(yUnfold[i],
                     yFold[i] + rotYOfs * rotYMulti, ground);
             rotYMulti -= 0.2f;
         }
@@ -471,15 +471,15 @@ public class DragonAnimator {
             rotYStand = (rotYStand + MathX.sin(i * 0.45f + animBase * 0.5f)) * amp * 0.4f;
             rotYSit = MathX.sin(vertMulti * MathX.PI_F) * MathX.PI_F * 1.2f - 0.5f; // curl to the left
             
-            rotXAir -= MathX.sin(i * 0.45f + animBase) * 0.04f * MathX.lerp(0.3f, 1, flutter);
+            rotXAir -= MathX.sin(i * 0.45f + animBase) * 0.04f * Interpolation.linear(0.3f, 1, flutter);
             
             // interpolate between sitting and standing
-            model.tail.rotateAngleX = MathX.lerp(rotXStand, rotXSit, sit);
-            model.tail.rotateAngleY = MathX.lerp(rotYStand, rotYSit, sit);
+            model.tail.rotateAngleX = Interpolation.linear(rotXStand, rotXSit, sit);
+            model.tail.rotateAngleY = Interpolation.linear(rotYStand, rotYSit, sit);
             
             // interpolate between flying and grounded
-            model.tail.rotateAngleX = MathX.lerp(rotXAir, model.tail.rotateAngleX, ground);
-            model.tail.rotateAngleY = MathX.lerp(rotYAir, model.tail.rotateAngleY, ground);
+            model.tail.rotateAngleX = Interpolation.linear(rotXAir, model.tail.rotateAngleX, ground);
+            model.tail.rotateAngleY = Interpolation.linear(rotYAir, model.tail.rotateAngleY, ground);
             
             // body movement
             float angleLimit = 160 * vertMulti;
@@ -495,7 +495,7 @@ public class DragonAnimator {
             model.tailHornLeft.isHidden = model.tailHornRight.isHidden = !horn;
 
             // update scale
-            float neckScale = MathX.lerp(1.5f, 0.3f, vertMulti);
+            float neckScale = Interpolation.linear(1.5f, 0.3f, vertMulti);
             model.tail.setRenderScale(neckScale);
             
             // update proxy
@@ -572,17 +572,17 @@ public class DragonAnimator {
             float yGround;
             
             // interpolate between sitting and standing
-            yGround = MathX.slerp(yGroundStand[i % 2], yGroundSit[i % 2], sit);
+            yGround = Interpolation.smoothStep(yGroundStand[i % 2], yGroundSit[i % 2], sit);
             
             // interpolate between standing and walking
-            yGround = MathX.slerp(yGround, yGroundWalk[i % 2], walk);
+            yGround = Interpolation.smoothStep(yGround, yGroundWalk[i % 2], walk);
             
             // interpolate between flying and grounded
-            thigh.rotateAngleY = MathX.slerp(yAir, yGround, ground);
-            thigh.rotateAngleX = MathX.slerp(xAir[0], xGround[0], ground);
-            crus.rotateAngleX = MathX.slerp(xAir[1], xGround[1], ground);
-            foot.rotateAngleX = MathX.slerp(xAir[2], xGround[2], ground);
-            toe.rotateAngleX = MathX.slerp(xAir[3], xGround[3], ground);
+            thigh.rotateAngleY = Interpolation.smoothStep(yAir, yGround, ground);
+            thigh.rotateAngleX = Interpolation.smoothStep(xAir[0], xGround[0], ground);
+            crus.rotateAngleX = Interpolation.smoothStep(xAir[1], xGround[1], ground);
+            foot.rotateAngleX = Interpolation.smoothStep(xAir[2], xGround[2], ground);
+            toe.rotateAngleX = Interpolation.smoothStep(xAir[3], xGround[3], ground);
             
             // update proxy
             model.thighProxy[i].update();
@@ -611,9 +611,9 @@ public class DragonAnimator {
         float xn = x % nodes.length - i1;
         
         if (shift) {
-            Spline.interp(xn, result, a2, a3, a1, a2);
+            Interpolation.catmullRomSpline(xn, result, a2, a3, a1, a2);
         } else {
-            Spline.interp(xn, result, a1, a2, a3, a1);
+            Interpolation.catmullRomSpline(xn, result, a1, a2, a3, a1);
         }
     }
     
@@ -632,7 +632,7 @@ public class DragonAnimator {
         }
 
         for (int i = 0; i < c.length; i++) {
-            c[i] = MathX.slerp(a[i], b[i], x);
+            c[i] = Interpolation.smoothStep(a[i], b[i], x);
         }
     }
     
@@ -642,9 +642,9 @@ public class DragonAnimator {
     
     public float getModelPitch(float pt) {
         float pitchMovingMax = 90;
-        float pitchMoving = (float) MathX.clamp(yTrail.get(pt, 5, 0) * 10, -pitchMovingMax, pitchMovingMax);
+        float pitchMoving = MathX.clamp(yTrail.get(pt, 5, 0) * 10, -pitchMovingMax, pitchMovingMax);
         float pitchHover = 60;
-        return MathX.slerp(pitchHover, pitchMoving, speed);
+        return Interpolation.smoothStep(pitchHover, pitchMoving, speed);
     }
     
     public float getModelOffsetX() {
