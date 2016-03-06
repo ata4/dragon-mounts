@@ -190,7 +190,9 @@ public class CommandDragon extends CommandBase {
             for (WorldServer worldServer : server.worldServers) {
                 List<Entity> entities = worldServer.loadedEntityList;
 
-                for (Entity entity : entities) {
+                // note: don't use for-each here: ConcurrentModificationException!
+                for (int i = 0; i < entities.size(); i++) {
+                    Entity entity = entities.get(i);
                     if (!(entity instanceof EntityTameableDragon)) {
                         continue;
                     }
