@@ -37,8 +37,8 @@ public class DragonBodyHelper extends EntityBodyHelper {
         
         float yawSpeed = 90;
 
-        // rotate instantly if flying or moving
-        if (dragon.isFlying() || dist > 0.0001) {
+        // rotate instantly if flying, sitting or moving
+        if (dragon.isFlying() || dragon.isSitting() || dist > 0.0001) {
             dragon.renderYawOffset = dragon.rotationYaw;
             dragon.rotationYawHead = MathX.updateRotation(dragon.renderYawOffset, dragon.rotationYawHead, yawSpeed);
             prevRotationYawHead = dragon.rotationYawHead;
@@ -47,8 +47,7 @@ public class DragonBodyHelper extends EntityBodyHelper {
         }
         
         double yawDiff = Math.abs(dragon.rotationYawHead - prevRotationYawHead);
-
-        if (dragon.isSitting() || yawDiff > 15) {
+        if (yawDiff > 15) {
             turnTicks = 0;
             prevRotationYawHead = dragon.rotationYawHead;
         } else {
