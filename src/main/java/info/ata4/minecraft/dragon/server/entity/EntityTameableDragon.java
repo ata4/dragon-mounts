@@ -74,6 +74,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     // client-only delegates
     private DragonAnimator animator;
+    private DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
     
     // server-only flags
     private BitSet controlFlags;
@@ -81,19 +82,19 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public EntityTameableDragon(World world) {
         super(world);
         
-        // override EntityBodyHelper field, which is private and has no setter
-        // required to fixate body while sitting. also slows down rotation while standing.
-        try {
-            ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DragonBodyHelper(this), PrivateFields.ENTITYLIVING_BODYHELPER);
-        } catch (Exception ex) {
-            L.warn("Can't override EntityBodyHelper", ex);
-        }
-        
         // set base size
         setSize(BASE_WIDTH, BASE_HEIGHT);
         
         // enables walking over blocks
         stepHeight = 1;
+    }
+    
+    @Override
+    protected float func_110146_f(float p_110146_1_, float p_110146_2_) {
+        // required to fixate body while sitting. also slows down rotation while
+        // standing.
+        bodyHelper.updateRenderAngles();
+        return p_110146_2_;
     }
     
     @Override
