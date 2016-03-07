@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonEntityWatcher {
+public class DragonEntityWatcher implements PrivateFields {
     
     private final Minecraft mc = Minecraft.getMinecraft();
     private final float defaultThirdPersonDistance;
@@ -39,11 +39,13 @@ public class DragonEntityWatcher {
     }
     
     private float getThirdPersonDistance() {
-        return ReflectionHelper.getPrivateValue(EntityRenderer.class, mc.entityRenderer, PrivateFields.ENTITYRENDERER_THIRDPERSONDISTANCE);
+        return ReflectionHelper.getPrivateValue(EntityRenderer.class,
+                mc.entityRenderer, ENTITYRENDERER_THIRDPERSONDISTANCE);
     }
     
     private void setThirdPersonDistance(float thirdPersonDistance) {
-        ReflectionHelper.setPrivateValue(EntityRenderer.class, mc.entityRenderer, thirdPersonDistance, PrivateFields.ENTITYRENDERER_THIRDPERSONDISTANCE);
+        ReflectionHelper.setPrivateValue(EntityRenderer.class, mc.entityRenderer,
+                thirdPersonDistance, ENTITYRENDERER_THIRDPERSONDISTANCE);
     }
 
     @SubscribeEvent

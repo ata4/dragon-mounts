@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public abstract class EntityFlyingTameable extends EntityTameable {
+public abstract class EntityFlyingTameable extends EntityTameable implements PrivateFields {
     
     private static final Logger L = LogManager.getLogger();
     
@@ -133,7 +133,8 @@ public abstract class EntityFlyingTameable extends EntityTameable {
     
     private void setTasksEnabled(EntityAITasks tasks, boolean flag) {
         // disable task by increasing the tick rate to ridiculous extends
-        ReflectionHelper.setPrivateValue(EntityAITasks.class, tasks, flag ? 3 : Integer.MAX_VALUE, PrivateFields.ENTITYAITASKS_TICKRATE);
+        ReflectionHelper.setPrivateValue(EntityAITasks.class, tasks,
+                flag ? 3 : Integer.MAX_VALUE, ENTITYAITASKS_TICKRATE);
     }
     
     protected boolean isGroundAIEnabled() {
