@@ -301,14 +301,16 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         float v = getSoundVolume();
         float p = getSoundPitch();
-
-        // lower pitch and volume for breathing sounds
-        if (sound.endsWith("breathe")) {
-            v *= 0.5;
-            p *= 0.5;
-        }
-
+        
         playSound(sound, v, p);
+    }
+    
+    @Override
+    public void playSound(String name, float volume, float pitch) {
+        DragonBreed breed = getBreed(); 
+        volume *= breed.getSoundVolume(this, name);
+        pitch *= breed.getSoundPitch(this, name);
+        super.playSound(name, volume, pitch);
     }
     
     /**
