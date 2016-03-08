@@ -79,10 +79,8 @@ public class DragonLifeStageHelper extends DragonHelper {
      * Generates some egg shell particles and a breaking sound.
      */
     public void playEggCrackEffect() {
-        int bx = (int) Math.round(dragon.posX - 0.5);
-        int by = (int) Math.round(dragon.posY);
-        int bz = (int) Math.round(dragon.posZ - 0.5);
-        dragon.worldObj.playAuxSFX(2001, new BlockPos(bx, by, bz), Block.getIdFromBlock(Blocks.dragon_egg));
+        dragon.worldObj.playAuxSFX(2001, dragon.getPosition(),
+                Block.getIdFromBlock(Blocks.dragon_egg));
     }
     
     public int getEggWiggleX() {
@@ -301,11 +299,12 @@ public class DragonLifeStageHelper extends DragonHelper {
         // animate egg wiggle based on the time the eggs take to hatch
         int age = getTicksSinceCreation();
         int hatchAge = DragonLifeStage.HATCHLING.durationTicks;
-        float fractionComplete = age / (float)hatchAge;
+        int hatchTimeLeft = hatchAge - age;
+        int hatchThreshold = hatchAge / 10;
 
         // wait until the egg is nearly hatched
-        if (fractionComplete > 0.9f) {
-            float wiggleChance = fractionComplete / 60;
+        if (hatchTimeLeft < hatchThreshold) {
+            float wiggleChance = hatchTimeLeft / (float) (hatchThreshold * 60);
 
             if (eggWiggleX > 0) {
                 eggWiggleX--;
