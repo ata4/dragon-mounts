@@ -17,7 +17,7 @@ import net.minecraft.util.MathHelper;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public enum DragonLifeStage {
+public enum EnumDragonLifeStage {
     
     EGG(0, 24000, 0.25f),
     HATCHLING(24000, 24000, 0.33f),
@@ -28,13 +28,13 @@ public enum DragonLifeStage {
     public final int durationTicks; // -1 means infinite
     public final float scale;
     
-    DragonLifeStage(int startTicks, int durationTicks, float scale) {
+    EnumDragonLifeStage(int startTicks, int durationTicks, float scale) {
         this.startTicks = startTicks;
         this.durationTicks = durationTicks;
         this.scale = scale;
     }
 
-    public static DragonLifeStage getLifeStageFromTickCount(int ticksSinceCreation) {
+    public static EnumDragonLifeStage getLifeStageFromTickCount(int ticksSinceCreation) {
         if (ticksSinceCreation < HATCHLING.startTicks) {
             return EGG;
         }
@@ -48,7 +48,7 @@ public enum DragonLifeStage {
     }
     
     public static float getScaleFromTickCount(int ticksSinceCreation) {
-        DragonLifeStage lifeStage = getLifeStageFromTickCount(ticksSinceCreation);
+        EnumDragonLifeStage lifeStage = getLifeStageFromTickCount(ticksSinceCreation);
         int timeInThisStage = ticksSinceCreation - lifeStage.startTicks;
         float fractionOfStage = timeInThisStage / (float) lifeStage.durationTicks;
         

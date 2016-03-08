@@ -26,8 +26,8 @@ import java.util.List;
  */
 public class DragonBreedGhost extends DragonBreed {
 
-    public DragonBreedGhost() {
-        super("ghost", "undead", 0xbebebe);
+    DragonBreedGhost(EnumDragonBreed type) {
+        super(type, "undead", 0xbebebe);
         
         addImmunity(DamageSource.wither);
         
@@ -111,5 +111,13 @@ public class DragonBreedGhost extends DragonBreed {
     @Override
     public EnumCreatureAttribute getCreatureAttribute() {
         return EnumCreatureAttribute.UNDEAD;
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 }

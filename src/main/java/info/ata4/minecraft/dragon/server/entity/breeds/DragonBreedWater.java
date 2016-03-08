@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -19,8 +20,8 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public class DragonBreedWater extends DragonBreed {
 
-    public DragonBreedWater() {
-        super("water", "sylphid", 0x4f69a8);
+    DragonBreedWater(EnumDragonBreed type) {
+        super(type, "sylphid", 0x4f69a8);
         
         addImmunity(DamageSource.drown);
         
@@ -30,6 +31,22 @@ public class DragonBreedWater extends DragonBreed {
         addHabitatBiome(BiomeGenBase.ocean);
         addHabitatBiome(BiomeGenBase.river);
         addHabitatBiome(BiomeGenBase.swampland);
+    }
+
+    @Override
+    public void onEnable(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDisable(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 
 }

@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
+import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.world.World;
@@ -115,7 +115,7 @@ public class EntityAIDragonMate extends EntityAIBase {
             dragonMate.resetInLove();
             
             dragonBaby.setLocationAndAngles(dragon.posX, dragon.posY, dragon.posZ, 0, 0);
-            dragonBaby.getLifeStageHelper().setLifeStage(DragonLifeStage.EGG);
+            dragonBaby.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
             
             theWorld.spawnEntityInWorld(dragonBaby);
 

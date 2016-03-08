@@ -10,9 +10,8 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedRegistry;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
+import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;
+import scala.actors.threadpool.Arrays;
 
 /**
  *
@@ -42,15 +42,15 @@ public class CommandDragon extends CommandBase {
             commandNames.add(command.name().toLowerCase());
         }
         
-        List<DragonBreed> breeds = DragonBreedRegistry.getInstance().getBreeds();
+        List<EnumDragonBreed> breeds = Arrays.asList(EnumDragonBreed.values());
         breedNames = new ArrayList<String>(breeds.size());
-        for (DragonBreed breed : breeds) {
-            breedNames.add(breed.getName().toLowerCase());
+        for (EnumDragonBreed breed : breeds) {
+            breedNames.add(breed.getName());
         }
         
-        DragonLifeStage[] lifeStages = DragonLifeStage.values();
+        EnumDragonLifeStage[] lifeStages = EnumDragonLifeStage.values();
         lifeStageNames = new ArrayList<String>(lifeStages.length);
-        for (DragonLifeStage lifeStage : lifeStages) {
+        for (EnumDragonLifeStage lifeStage : lifeStages) {
             lifeStageNames.add(lifeStage.name().toLowerCase());
         }
     }
@@ -112,12 +112,12 @@ public class CommandDragon extends CommandBase {
                     throw new WrongUsageException(getCommandUsage(sender));
                 }
 
-                DragonLifeStage lifeStage = null;
+                EnumDragonLifeStage lifeStage = null;
                 String parameter = params[1].toUpperCase();
 
                 if (!parameter.equals("ITEM")) {
                     try {
-                        lifeStage = DragonLifeStage.valueOf(parameter);
+                        lifeStage = EnumDragonLifeStage.valueOf(parameter);
                     } catch (IllegalArgumentException ex) {
                         throw new SyntaxErrorException();
                     }
@@ -134,7 +134,7 @@ public class CommandDragon extends CommandBase {
                 }
 
                 String breedName = params[1].toLowerCase();
-                DragonBreed breed = DragonBreedRegistry.getInstance().getBreedByName(breedName);
+                EnumDragonBreed breed = EnumDragonBreed.fromName(breedName);
 
                 if (breed == null) {
                     throw new SyntaxErrorException();

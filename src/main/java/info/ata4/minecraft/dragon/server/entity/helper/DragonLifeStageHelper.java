@@ -26,13 +26,12 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNavigateGround;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage.*;
+import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage.*;
 
 /**
  *
@@ -45,7 +44,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     private static final String NBT_TICKS_SINCE_CREATION = "TicksSinceCreation";
     private static final int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
     
-    private DragonLifeStage lifeStagePrev;
+    private EnumDragonLifeStage lifeStagePrev;
     private final DragonScaleModifier scaleModifier = new DragonScaleModifier();
     private int eggWiggleX;
     private int eggWiggleZ;
@@ -96,9 +95,9 @@ public class DragonLifeStageHelper extends DragonHelper {
      *
      * @return current life stage
      */
-    public DragonLifeStage getLifeStage() {
+    public EnumDragonLifeStage getLifeStage() {
         int age = getTicksSinceCreation();
-        return DragonLifeStage.getLifeStageFromTickCount(age);
+        return EnumDragonLifeStage.getLifeStageFromTickCount(age);
     }
     
     /**
@@ -126,7 +125,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
-        ticksRead = DragonLifeStage.clipTickCountToValid(ticksRead);
+        ticksRead = EnumDragonLifeStage.clipTickCountToValid(ticksRead);
         ticksSinceCreationServer = ticksRead;
         dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
     }
@@ -137,7 +136,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      * @return size
      */
     public float getScale() {
-        DragonLifeStage lifeStage = getLifeStage();
+        EnumDragonLifeStage lifeStage = getLifeStage();
         int stageStartTicks = lifeStage.startTicks;
         int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
         float fractionOfStage = timeInThisStage / (float) lifeStage.durationTicks;
@@ -196,7 +195,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      * 
      * @param lifeStage
      */
-    public final void setLifeStage(DragonLifeStage lifeStage) {
+    public final void setLifeStage(EnumDragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
         if (!dragon.worldObj.isRemote) {
           ticksSinceCreationServer = lifeStage.startTicks;
@@ -210,7 +209,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     /**
      * Called when the dragon enters a new life stage.
      */ 
-    private void onNewLifeStage(DragonLifeStage lifeStage, DragonLifeStage prevLifeStage) {
+    private void onNewLifeStage(EnumDragonLifeStage lifeStage, EnumDragonLifeStage prevLifeStage) {
         L.trace("onNewLifeStage({},{})", prevLifeStage, lifeStage);
 
         if (dragon.isClient()) {
@@ -284,7 +283,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     
     private void updateLifeStage() {
         // trigger event when a new life stage was reached
-        DragonLifeStage lifeStage = getLifeStage();
+        EnumDragonLifeStage lifeStage = getLifeStage();
         if (lifeStagePrev != lifeStage) {
             onNewLifeStage(lifeStage, lifeStagePrev);
             lifeStagePrev = lifeStage;
@@ -298,7 +297,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 
         // animate egg wiggle based on the time the eggs take to hatch
         int age = getTicksSinceCreation();
-        int hatchAge = DragonLifeStage.HATCHLING.durationTicks;
+        int hatchAge = EnumDragonLifeStage.HATCHLING.durationTicks;
         int hatchTimeLeft = hatchAge - age;
         int hatchThreshold = hatchAge / 10;
 
@@ -358,7 +357,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         return getLifeStage() == ADULT;
     }
 
-    private void changeAITasks(DragonLifeStage newLifeStage, DragonLifeStage previousLifeStage) {
+    private void changeAITasks(EnumDragonLifeStage newLifeStage, EnumDragonLifeStage previousLifeStage) {
         // handle initialisation after load from NBT
         if (newLifeStage != null && previousLifeStage != null) {
             if (newLifeStage == previousLifeStage) {

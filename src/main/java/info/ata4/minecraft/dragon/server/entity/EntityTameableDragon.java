@@ -13,6 +13,7 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.block.Block;
@@ -626,7 +627,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     public boolean canRenderOnFire() {
-        return super.canRenderOnFire() && !getBreedHelper().getBreed().isImmuneToDamage(DamageSource.inFire);
+        return super.canRenderOnFire() && !getBreed().isImmuneToDamage(DamageSource.inFire);
     }
     
     /**
@@ -705,17 +706,21 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      * 
      * @return breed
      */
-    public DragonBreed getBreed() {
-        return getBreedHelper().getBreed();
+    public EnumDragonBreed getBreedType() {
+        return getBreedHelper().getBreedType();
     }
     
     /**
      * Sets the new breed for this dragon.
      * 
-     * @param breed new breed
+     * @param type new breed
      */
-    public void setBreed(DragonBreed breed) {
-        getBreedHelper().setBreed(breed);
+    public void setBreedType(EnumDragonBreed type) {
+        getBreedHelper().setBreedType(type);
+    }
+    
+    public DragonBreed getBreed() {
+        return getBreedHelper().getBreedType().getBreed();
     }
 
     public EntityPlayer getRidingPlayer() {

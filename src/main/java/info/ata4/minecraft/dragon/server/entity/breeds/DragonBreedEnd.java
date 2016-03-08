@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -19,14 +20,30 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public class DragonBreedEnd extends DragonBreed {
 
-    public DragonBreedEnd() {
-        super("end", "ender", 0xab39be);
+    DragonBreedEnd(EnumDragonBreed type) {
+        super(type, "ender", 0xab39be);
         
         addImmunity(DamageSource.magic);
         
         addHabitatBlock(Blocks.end_stone);
         addHabitatBlock(Blocks.obsidian);
         addHabitatBiome(BiomeGenBase.sky);
+    }
+
+    @Override
+    public void onEnable(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDisable(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 
 }

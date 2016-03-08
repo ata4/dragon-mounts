@@ -20,8 +20,8 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public class DragonBreedNether extends DragonBreed {
 
-    public DragonBreedNether() {
-        super("nether", "nether", 0x793838);
+    DragonBreedNether(EnumDragonBreed type) {
+        super(type, "nether", 0x793838);
         
         addImmunity(DamageSource.inFire);
         addImmunity(DamageSource.onFire);
@@ -41,11 +41,19 @@ public class DragonBreedNether extends DragonBreed {
 
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-      dragon.setDragonAvoidWater(true);
+        dragon.setDragonAvoidWater(true);
     }
 
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-      dragon.setDragonAvoidWater(false);
+        dragon.setDragonAvoidWater(false);
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 }

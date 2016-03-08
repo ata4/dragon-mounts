@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 
 /**
  *
@@ -18,14 +18,14 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
  */
 class BreedModifier implements EntityModifier {
     
-    private final DragonBreed breed;
+    private final EnumDragonBreed type;
 
-    BreedModifier(DragonBreed breed) {
-        this.breed = breed;
+    BreedModifier(EnumDragonBreed type) {
+        this.type = type;
     }
 
     @Override
     public void modify(EntityTameableDragon dragon) {
-        dragon.setBreed(breed);
+        dragon.setBreedType(type);
     }
 }

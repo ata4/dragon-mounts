@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.client.gui;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
@@ -291,13 +292,13 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.setColor(WHITE);
         
         DragonBreedHelper breedHelper = dragonServer.getBreedHelper();
-        Map<DragonBreed, AtomicInteger> breedPoints = breedHelper.getBreedPoints();
+        Map<EnumDragonBreed, AtomicInteger> breedPoints = breedHelper.getBreedPoints();
         
-        for (Map.Entry<DragonBreed, AtomicInteger> breedPoint : breedPoints.entrySet()) {
-            DragonBreed breed = breedPoint.getKey();
+        for (Map.Entry<EnumDragonBreed, AtomicInteger> breedPoint : breedPoints.entrySet()) {
+            EnumDragonBreed breedType = breedPoint.getKey();
             int points = breedPoint.getValue().get();
-            text.setColor(breed.getColor());
-            text.printf("%s: %d\n", breed.getName(), points);
+            text.setColor(breedType.getBreed().getColor());
+            text.printf("%s: %d\n", breedType, points);
         }
     }
 

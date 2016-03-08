@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
+import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 
 /**
  *
@@ -18,9 +18,9 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
  */
 class LifeStageModifier implements EntityModifier {
     
-    private final DragonLifeStage lifeStage;
+    private final EnumDragonLifeStage lifeStage;
 
-    LifeStageModifier(DragonLifeStage lifeStage) {
+    LifeStageModifier(EnumDragonLifeStage lifeStage) {
         this.lifeStage = lifeStage;
     }
 

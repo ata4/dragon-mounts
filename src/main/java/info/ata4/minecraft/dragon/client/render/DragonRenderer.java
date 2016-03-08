@@ -11,8 +11,7 @@ package info.ata4.minecraft.dragon.client.render;
 
 import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedRegistry;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +32,6 @@ import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
-
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -45,13 +43,13 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
     public static final String TEX_BASE = "textures/entities/dragon/";
     
-    private final Map<DragonBreed, DefaultDragonBreedRenderer> breedRenderers = new HashMap<DragonBreed, DefaultDragonBreedRenderer>();
+    private final Map<EnumDragonBreed, DefaultDragonBreedRenderer> breedRenderers = new HashMap<EnumDragonBreed, DefaultDragonBreedRenderer>();
 
     public DragonRenderer(RenderManager renderManager) {
         super(renderManager, null, 2);
 
         // create default breed renderers
-        for (DragonBreed breed : DragonBreedRegistry.getInstance().getBreeds()) {
+        for (EnumDragonBreed breed : EnumDragonBreed.values()) {
             if (!breedRenderers.containsKey(breed)) {
                 breedRenderers.put(breed, new DefaultDragonBreedRenderer(this, breed));
             }
@@ -59,7 +57,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     }
     
     public DefaultDragonBreedRenderer getBreedRenderer(EntityTameableDragon dragon) {
-        return breedRenderers.get(dragon.getBreed());
+        return breedRenderers.get(dragon.getBreedType());
     }
 
     @Override
