@@ -304,7 +304,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         float fractionComplete = age / (float)hatchAge;
 
         // wait until the egg is nearly hatched
-        if (fractionComplete > 0.66f) {
+        if (fractionComplete > 0.9f) {
             float wiggleChance = fractionComplete / 60;
 
             if (eggWiggleX > 0) {
