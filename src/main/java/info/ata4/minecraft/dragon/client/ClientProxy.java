@@ -28,22 +28,21 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class ClientProxy extends CommonProxy {
-    
+
     @Override
     public void onInit(FMLInitializationEvent evt) {
         super.onInit(evt);
     }
 
     @Override
-    public void onPostInit(FMLPostInitializationEvent event)
-    {
-      if (DragonMounts.instance.getConfig().isDebug()) {
-        MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
-      }
+    public void onPostInit(FMLPostInitializationEvent event) {
+        if (DragonMounts.instance.getConfig().isDebug()) {
+            MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
+        }
 
-      RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-      RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
+        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+        RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
 
-        FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
+        MinecraftForge.EVENT_BUS.register(new DragonControl(getNetwork()));
     }
 }
