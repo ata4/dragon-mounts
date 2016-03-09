@@ -888,6 +888,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public boolean isAdult() {
         return getLifeStageHelper().isAdult();
     }
+    
+    @Override
+    public boolean isChild() {
+        return !isAdult();
+    }
 
     public void setDragonAvoidWater(boolean avoidWater) {
         PathNavigate pathNavigate = this.getNavigator();
