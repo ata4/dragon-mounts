@@ -56,7 +56,12 @@ public class EntityAIRideGround extends EntityAIRide {
         }
 
         if (speedPlayer > 0) {
-            dragon.getMoveHelper().setMoveTo(dragon.posX + look.xCoord, dragon.posY, dragon.posZ + look.zCoord, speed * speedPlayer);
+            dragon.getMoveHelper().setMoveTo(
+                dragon.posX + look.xCoord,
+                dragon.posY,
+                dragon.posZ + look.zCoord,
+                speed * speedPlayer
+            );
         }
         
         // lift off when pressing the fly-up key

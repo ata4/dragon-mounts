@@ -21,11 +21,11 @@ import net.minecraft.util.AxisAlignedBB;
  */
 public class EntityAIWatchLiving extends EntityAIBase {
 
-    private EntityTameableDragon dragon;
+    private final EntityTameableDragon dragon;
+    private final float maxDist;
+    private final float watchChance;
     private Entity watchedEntity;
-    private float maxDist;
     private int watchTicks;
-    private float watchChance;
 
     public EntityAIWatchLiving(EntityTameableDragon dragon, float maxDist, float watchChance) {
         this.dragon = dragon;

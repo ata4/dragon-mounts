@@ -19,7 +19,7 @@ import net.minecraft.entity.ai.EntityAIFollowOwner;
  */
 public class EntityAIDragonFollowOwner extends EntityAIFollowOwner {
 
-    private EntityTameableDragon dragon;
+    private final EntityTameableDragon dragon;
 
     public EntityAIDragonFollowOwner(EntityTameableDragon dragon, double followSpeedIn, float minDistIn, float maxDistIn) {
         super(dragon, followSpeedIn, minDistIn, maxDistIn);

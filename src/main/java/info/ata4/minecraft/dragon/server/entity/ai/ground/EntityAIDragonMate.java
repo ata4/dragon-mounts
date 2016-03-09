@@ -11,9 +11,7 @@ package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -25,16 +23,14 @@ import java.util.List;
  */
 public class EntityAIDragonMate extends EntityAIBase {
 
-    private EntityTameableDragon dragon;
+    private final EntityTameableDragon dragon;
     private EntityTameableDragon dragonMate;
-    private World theWorld;
     private int spawnBabyDelay = 0;
     private double speed;
 
     public EntityAIDragonMate(EntityTameableDragon dragon, double speed) {
         this.dragon = dragon;
         this.speed = speed;
-        theWorld = dragon.worldObj;
         setMutexBits(3);
     }
 
@@ -89,8 +85,10 @@ public class EntityAIDragonMate extends EntityAIBase {
      */
     private EntityTameableDragon getNearbyMate() {
         double range = 12;
-        List<EntityTameableDragon> nearbyDragons = theWorld.getEntitiesWithinAABB(EntityTameableDragon.class,
-                dragon.getEntityBoundingBox().expand(range, range, range));
+        List<EntityTameableDragon> nearbyDragons = dragon.worldObj.getEntitiesWithinAABB(
+                EntityTameableDragon.class,
+                dragon.getEntityBoundingBox().expand(range, range, range)
+        );
         
         for (EntityTameableDragon nearbyDragon : nearbyDragons) {
             if (dragon.canMateWith(nearbyDragon)) {
@@ -117,7 +115,7 @@ public class EntityAIDragonMate extends EntityAIBase {
             dragonBaby.setLocationAndAngles(dragon.posX, dragon.posY, dragon.posZ, 0, 0);
             dragonBaby.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
             
-            theWorld.spawnEntityInWorld(dragonBaby);
+            dragon.worldObj.spawnEntityInWorld(dragonBaby);
 
             // TODO: particles for the clients?
         }

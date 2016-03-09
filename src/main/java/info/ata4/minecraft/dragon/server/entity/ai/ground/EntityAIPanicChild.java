@@ -13,7 +13,8 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.EntityAIPanic;
 
 /**
- *
+ * Modified EntityAIPanicChild that only runs if the dragon is a hatchling.
+ * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class EntityAIPanicChild extends EntityAIPanic {
