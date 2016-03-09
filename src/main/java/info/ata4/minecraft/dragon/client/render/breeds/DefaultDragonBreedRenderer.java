@@ -28,7 +28,7 @@ import net.minecraft.util.ResourceLocation;
  */
 public class DefaultDragonBreedRenderer implements DragonBreedRenderer {
     
-    protected final List<LayerRenderer<EntityTameableDragon>> layers = new ArrayList<LayerRenderer<EntityTameableDragon>>();
+    protected final List<LayerRenderer<EntityTameableDragon>> layers = new ArrayList<>();
     
     private final DragonRenderer renderer;
     private final DragonModel model;

@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
+import java.lang.reflect.InvocationTargetException;
 import net.minecraft.util.IStringSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,23 +37,15 @@ public enum EnumDragonBreed implements IStringSerializable {
     private EnumDragonBreed(Class<? extends DragonBreed> factory) {
         try {
             this.breed = factory.getDeclaredConstructor(EnumDragonBreed.class).newInstance(this);
-        } catch (InstantiationException ex) {
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalArgumentException ex) {
             throw new RuntimeException("Incompatible breed factory " + factory, ex);
-        } catch (Exception ex) {
+        } catch (SecurityException | IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
     }
     
     public DragonBreed getBreed() {
         return breed;
-    }
-    
-    public static EnumDragonBreed fromName(String name) {
-        try {
-            return valueOf(name.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
     }
 
     @Override

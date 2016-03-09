@@ -23,7 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.ArrayList;
-import scala.actors.threadpool.Arrays;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Consumer;
+import org.apache.commons.lang3.EnumUtils;
 
 /**
  *
@@ -36,20 +39,20 @@ public class CommandDragon extends CommandBase {
     private final List<String> lifeStageNames;
     
     public CommandDragon() {
-        Command[] commands = Command.values();
-        commandNames = new ArrayList<String>(commands.length);
-        for (Command command : commands) {
+        EnumCommandDragon[] commands = EnumCommandDragon.values();
+        commandNames = new ArrayList<>(commands.length);
+        for (EnumCommandDragon command : commands) {
             commandNames.add(command.name().toLowerCase());
         }
         
         List<EnumDragonBreed> breeds = Arrays.asList(EnumDragonBreed.values());
-        breedNames = new ArrayList<String>(breeds.size());
-        for (EnumDragonBreed breed : breeds) {
+        breedNames = new ArrayList<>(breeds.size());
+        breeds.stream().forEach((breed) -> {
             breedNames.add(breed.getName());
-        }
+        });
         
         EnumDragonLifeStage[] lifeStages = EnumDragonLifeStage.values();
-        lifeStageNames = new ArrayList<String>(lifeStages.length);
+        lifeStageNames = new ArrayList<>(lifeStages.length);
         for (EnumDragonLifeStage lifeStage : lifeStages) {
             lifeStageNames.add(lifeStage.name().toLowerCase());
         }
@@ -98,11 +101,8 @@ public class CommandDragon extends CommandBase {
         // last parameter, optional
         boolean global = params[params.length - 1].equalsIgnoreCase("global");
 
-        Command cmd;
-        
-        try {
-            cmd = Command.valueOf(params[0].toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        EnumCommandDragon cmd = EnumUtils.getEnum(EnumCommandDragon.class, params[0].toUpperCase());
+        if (cmd == null) {
             throw new WrongUsageException(getCommandUsage(sender));
         }
         
@@ -112,19 +112,19 @@ public class CommandDragon extends CommandBase {
                     throw new WrongUsageException(getCommandUsage(sender));
                 }
 
-                EnumDragonLifeStage lifeStage = null;
                 String parameter = params[1].toUpperCase();
 
-                if (!parameter.equals("ITEM")) {
-                    try {
-                        lifeStage = EnumDragonLifeStage.valueOf(parameter);
-                    } catch (IllegalArgumentException ex) {
-                        throw new SyntaxErrorException();
+                if (parameter.equals("ITEM")) {
+                    applyModifier(sender, dragon -> dragon.getLifeStageHelper().transformToEgg(), global);
+                } else {
+                    EnumDragonLifeStage lifeStage = EnumUtils.getEnum(EnumDragonLifeStage.class, parameter);
+                    if (lifeStage == null) {
+                        // default constructor uses "snytax"...
+                        throw new SyntaxErrorException("commands.generic.syntax");
                     }
+                    applyModifier(sender, dragon -> dragon.getLifeStageHelper().setLifeStage(lifeStage), global);
                 }
 
-                EntityModifier modifier = new LifeStageModifier(lifeStage);
-                applyModifier(sender, modifier, global);
                 break;
             }
             
@@ -134,20 +134,20 @@ public class CommandDragon extends CommandBase {
                 }
 
                 String breedName = params[1].toLowerCase();
-                EnumDragonBreed breed = EnumDragonBreed.fromName(breedName);
-
+                EnumDragonBreed breed = EnumUtils.getEnum(EnumDragonBreed.class, breedName);
                 if (breed == null) {
-                    throw new SyntaxErrorException();
+                    // default constructor uses "snytax"...
+                    throw new SyntaxErrorException("commands.generic.syntax");
                 }
 
-                applyModifier(sender, new BreedModifier(breed), global);
+                applyModifier(sender, dragon -> dragon.setBreedType(breed), global);
                 break;
             }
             
             case TAME: {
                 if (sender instanceof EntityPlayerMP) {
                     EntityPlayerMP player = (EntityPlayerMP) sender;
-                    applyModifier(sender, new TameModifier(player), global);
+                    applyModifier(sender, dragon -> dragon.tamedFor(player, true), global);
                 } else {
                     // console can't tame dragons
                     throw new CommandException("commands.dragon.canttame");
@@ -157,7 +157,7 @@ public class CommandDragon extends CommandBase {
         }
     }
     
-    private void applyModifier(ICommandSender sender, EntityModifier modifier, boolean global) throws CommandException {
+    private void applyModifier(ICommandSender sender, Consumer<EntityTameableDragon> modifier, boolean global) throws CommandException {
         if (!global && sender instanceof EntityPlayerMP) {
             EntityPlayerMP player = getCommandSenderAsPlayer(sender);
             double range = 64;
@@ -167,23 +167,18 @@ public class CommandDragon extends CommandBase {
             aabb = aabb.expand(range, range, range);
             List<EntityTameableDragon> dragons = player.worldObj.getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
 
-            EntityTameableDragon closestDragon = null;
-            float minPlayerDist = Float.MAX_VALUE;
-
             // get closest dragon
-            for (EntityTameableDragon dragon : dragons) {
-                float playerDist = dragon.getDistanceToEntity(player);
-                if (dragon.getDistanceToEntity(player) < minPlayerDist) {
-                    closestDragon = dragon;
-                    minPlayerDist = playerDist;
-                }
-            }
+            Optional<EntityTameableDragon> closestDragon = dragons.stream()
+                .max((dragon1, dragon2) -> Float.compare(
+                    dragon1.getDistanceToEntity(player),
+                    dragon2.getDistanceToEntity(player))
+                );
 
-            if (closestDragon == null) {
+            if (!closestDragon.isPresent()) {
                 throw new CommandException("commands.dragon.nodragons");
-            } else {
-                modifier.modify(closestDragon);
             }
+            
+            modifier.accept(closestDragon.get());
         } else {
             // scan all entities on all dimensions
             MinecraftServer server = MinecraftServer.getServer();
@@ -197,13 +192,9 @@ public class CommandDragon extends CommandBase {
                         continue;
                     }
 
-                    modifier.modify((EntityTameableDragon) entity);
+                    modifier.accept((EntityTameableDragon) entity);
                 }
             }
         }
-    }
-    
-    private enum Command {
-        STAGE, BREED, TAME;
     }
 }

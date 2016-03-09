@@ -197,11 +197,11 @@ public class DragonLifeStageHelper extends DragonHelper {
      */
     public final void setLifeStage(EnumDragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
-        if (!dragon.worldObj.isRemote) {
-          ticksSinceCreationServer = lifeStage.startTicks;
-          dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+        if (dragon.isServer()) {
+            ticksSinceCreationServer = lifeStage.startTicks;
+            dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
         } else {
-          L.error("setLifeStage called on Client");
+            L.error("setLifeStage called on Client");
         }
         updateLifeStage();
     }

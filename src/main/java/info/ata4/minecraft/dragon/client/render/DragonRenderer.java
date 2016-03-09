@@ -13,6 +13,7 @@ import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRendere
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
     public static final String TEX_BASE = "textures/entities/dragon/";
     
-    private final Map<EnumDragonBreed, DefaultDragonBreedRenderer> breedRenderers = new HashMap<EnumDragonBreed, DefaultDragonBreedRenderer>();
+    private final Map<EnumDragonBreed, DefaultDragonBreedRenderer> breedRenderers = new EnumMap<>(EnumDragonBreed.class);
 
     public DragonRenderer(RenderManager renderManager) {
         super(renderManager, null, 2);
