@@ -854,15 +854,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // on isChild(), but the scale is managed in DragonLifeStageHelper, so
         // this is no-op here
     }
-
-//    Comparison of 1.7.10 and 1.8 Render::renderShadow shows that this isn't needed any more
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public float getShadowSize() {
-//        // must be 0 or the shadows will be rendered incorrectly
-//        // (misleading method name, should be getShadowYOffset())
-//        return 0;
-//    }
     
     /**
      * Returns the size multiplier for the current age.
