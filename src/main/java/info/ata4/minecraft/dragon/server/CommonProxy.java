@@ -24,6 +24,7 @@ import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -38,27 +39,31 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CommonProxy {
     
     private SimpleNetworkWrapper network;  
-    public final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
+    private final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
+    private final int ENTITY_TRACKING_RANGE = 80;
+    private final int ENTITY_UPDATE_FREQ = 3;
+    private final int ENTITY_ID = 0;
+    private final boolean ENTITY_SEND_VELO_UPDATES = true;
 
     public SimpleNetworkWrapper getNetwork() {
         return network;
     }
     
+    public void onPreInit(FMLPreInitializationEvent event) {
+    }
+    
     public void onInit(FMLInitializationEvent evt) {
         registerEntities();
+        registerNetworkProtocol();
 
         if (DragonMounts.instance.getConfig().isEggsInChests()) {
             registerChestItems();
         }
         
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
-        network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
-        network.registerMessage(DragonControlMessageHandler.class, DragonControlMessage.class, DCM_DISCRIMINATOR_ID, Side.SERVER);
     }
 
-    public void onPostInit(FMLPostInitializationEvent event)
-    {
-
+    public void onPostInit(FMLPostInitializationEvent event) {
     }
     
     public void onServerStarted(FMLServerStartedEvent evt) {
@@ -71,22 +76,12 @@ public class CommonProxy {
     }
     
     private void registerEntities() {
-//        int dragonEntityID = DragonMounts.instance.getConfig().getDragonEntityID();
-//        if (dragonEntityID == -1) {
-//            dragonEntityID = EntityRegistry.findGlobalUniqueEntityId();
-//        }
-//
-//        EntityRegistry.registerGlobalEntityID(EntityTameableDragon.class, "DragonMount",
-//                dragonEntityID, 0, 0xcc00ff);
-
-        final int TRACKING_RANGE = 80;
-        final int UPDATE_FREQUENCY = 3;
-        final int DRAGON_ENTITY_ID = 26;
-        EntityRegistry.registerModEntity(EntityTameableDragon.class, "DragonMount", DRAGON_ENTITY_ID,
-                                         DragonMounts.instance, TRACKING_RANGE, UPDATE_FREQUENCY, true);
+        EntityRegistry.registerModEntity(EntityTameableDragon.class, "DragonMount",
+                ENTITY_ID, DragonMounts.instance, ENTITY_TRACKING_RANGE, ENTITY_UPDATE_FREQ,
+                ENTITY_SEND_VELO_UPDATES);
     }
     
-    public void registerChestItems() {
+    private void registerChestItems() {
         ChestGenHooks chestGenHooksDungeon = ChestGenHooks.getInfo(ChestGenHooks.DUNGEON_CHEST);
         chestGenHooksDungeon.addItem(new WeightedRandomChestContent(new ItemStack(Blocks.dragon_egg), 1, 1, 70));
         // chance < saddle (1/16, ca. 6%, in max 8 slots -> 40% at least 1 egg, 0.48 eggs per chest): I think that's okay
@@ -105,5 +100,11 @@ public class CommonProxy {
         chestGenHooksDesertChest.addItem(new WeightedRandomChestContent(new ItemStack(Blocks.dragon_egg), 1, 1, 10));
         // chance == iron ingot (10/76, ca. 13%, in 2-5 slots -> 39% at least 1 egg, 0.46 eggs per chest, 1.8 eggs per temple):
         // desert temples are so rare, it should be rewarded
+    }
+    
+    private void registerNetworkProtocol() {
+        network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
+        network.registerMessage(DragonControlMessageHandler.class,
+                DragonControlMessage.class, DCM_DISCRIMINATOR_ID, Side.SERVER);
     }
 }

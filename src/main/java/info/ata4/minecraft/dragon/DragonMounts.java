@@ -60,6 +60,7 @@ public class DragonMounts {
     public void onPreInit(FMLPreInitializationEvent evt) {
         config = new DragonMountsConfig(new Configuration(evt.getSuggestedConfigurationFile()));
         metadata = evt.getModMetadata();
+        proxy.onPreInit(evt);
     }
 
     @EventHandler
@@ -68,8 +69,7 @@ public class DragonMounts {
     }
 
     @EventHandler
-    public void onPostInit(FMLPostInitializationEvent event)
-    {
+    public void onPostInit(FMLPostInitializationEvent event) {
         proxy.onPostInit(event);
     }
     
