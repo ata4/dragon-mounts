@@ -73,7 +73,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     // client-only delegates
     private DragonAnimator animator;
-    private DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
+    private final DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
     
     // server-only flags
     private BitSet controlFlags;
@@ -123,9 +123,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
         setAttributes();
         
-        for (DragonHelper helper : helpers.values()) {
-            helper.applyEntityAttributes();
-        }
+        helpers.values().forEach(helper -> helper.applyEntityAttributes());
     }
     
     private void setAttributes() {
@@ -143,15 +141,12 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         super.writeEntityToNBT(nbt);
         nbt.setBoolean(NBT_SADDLED, isSaddled());
         
-        for (DragonHelper helper : helpers.values()) {
-            helper.writeToNBT(nbt);
-        }
+        helpers.values().forEach(helper -> helper.writeToNBT(nbt));
     }
 
     @Override
-    public void setNoAI(boolean disableAI)
-    {
-      super.setNoAI(disableAI);
+    public void setNoAI(boolean disableAI) {
+        super.setNoAI(disableAI);
     }
 
     /**
@@ -162,9 +157,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         super.readEntityFromNBT(nbt);
         setSaddled(nbt.getBoolean(NBT_SADDLED));
         
-        for (DragonHelper helper : helpers.values()) {
-            helper.readFromNBT(nbt);
-        }
+        helpers.values().forEach(helper -> helper.readFromNBT(nbt));
         
         // override attributes loaded from NBT, they were set and handled
         // incorrectly in older versions
@@ -173,9 +166,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public void onLivingUpdate() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onLivingUpdate();
-        }
+        helpers.values().forEach(helper -> helper.onLivingUpdate());
         
         if (isClient()) {
             if (!isEgg()) {
@@ -187,8 +178,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             if (isTamed()) {
                 Entity owner = getOwner();
                 if (owner != null) {
-                    BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
-                    setHomePosAndDistance(ownerPosition, HOME_RADIUS);
+                    setHomePosAndDistance(owner.getPosition(), HOME_RADIUS);
                 }
             }
         }
@@ -201,9 +191,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected void onDeathUpdate() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onDeathUpdate();
-        }
+        helpers.values().forEach(helper -> helper.onDeathUpdate());
         
         // unmount any riding entity
         if (riddenByEntity != null) {
@@ -228,9 +216,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public void setDead() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onDeath();
-        }
+        helpers.values().forEach(helper -> helper.onDeath());
         super.setDead();
     }
 
@@ -658,7 +644,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         helpers.put(helper.getClass(), helper);
     }
     
-    public <T extends DragonHelper> T getHelper(Class<T> clazz) {
+    private <T extends DragonHelper> T getHelper(Class<T> clazz) {
         return (T) helpers.get(clazz);
     }
 
