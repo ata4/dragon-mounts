@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.client.render;
 
 import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
+import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
@@ -145,7 +146,6 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         GlStateManager.rotate(rotZ, 0, 0, 1);
         GlStateManager.disableLighting();
         
-//        bindTexture(getBreedRenderer(dragon).getEggTexture());
         bindTexture(TextureMap.locationBlocksTexture);
 
         // prepare egg rendering
@@ -153,8 +153,9 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
         worldRenderer.begin(GL_QUADS, DefaultVertexFormats.BLOCK);
 
-        Block block = Blocks.dragon_egg;
-        IBlockState iblockstate = block.getDefaultState();
+        Block block = BlockDragonBreedEgg.INSTANCE;
+        IBlockState iblockstate = block.getDefaultState().withProperty(
+                BlockDragonBreedEgg.BREED, dragon.getBreedType());
         BlockPos blockpos = dragon.getPosition();
         
         double tx = -blockpos.getX() - 0.5;

@@ -10,11 +10,14 @@
 package info.ata4.minecraft.dragon.server;
 
 import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
+import info.ata4.minecraft.dragon.server.item.ItemDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -30,6 +33,7 @@ import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 /**
@@ -50,6 +54,7 @@ public class CommonProxy {
     }
     
     public void onPreInit(FMLPreInitializationEvent event) {
+        GameRegistry.registerBlock(BlockDragonBreedEgg.INSTANCE, ItemDragonBreedEgg.class, "dragon_egg");
     }
     
     public void onInit(FMLInitializationEvent evt) {

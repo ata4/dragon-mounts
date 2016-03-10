@@ -9,10 +9,13 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.stream.Collectors;
 import net.minecraft.util.IStringSerializable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -20,32 +23,44 @@ import org.apache.logging.log4j.Logger;
  */
 public enum EnumDragonBreed implements IStringSerializable {
     
-    AIR(DragonBreedAir.class),
-    END(DragonBreedEnd.class),
-    FIRE(DragonBreedFire.class),
-    FOREST(DragonBreedForest.class),
-    GHOST(DragonBreedGhost.class),
-    ICE(DragonBreedIce.class),
-    NETHER(DragonBreedNether.class),
-    WATER(DragonBreedWater.class);
+    AIR(0, DragonBreedAir.class),
+    END(1, DragonBreedEnd.class),
+    FIRE(2, DragonBreedFire.class),
+    FOREST(3, DragonBreedForest.class),
+    GHOST(4, DragonBreedGhost.class),
+    ICE(5, DragonBreedIce.class),
+    NETHER(6, DragonBreedNether.class),
+    WATER(7, DragonBreedWater.class);
     
-    private static final Logger L = LogManager.getLogger();
-    public static EnumDragonBreed DEFAULT = END;
+    public static final EnumDragonBreed DEFAULT = END;
+    public static final BiMap<EnumDragonBreed, Integer> META_MAPPING;
+    
+    static {
+        META_MAPPING = ImmutableBiMap.copyOf(Arrays.asList(values()).stream()
+            .collect(Collectors.toMap(breed -> breed, breed -> breed.getMeta())));
+    }
     
     private final DragonBreed breed;
+    private final int meta;
     
-    private EnumDragonBreed(Class<? extends DragonBreed> factory) {
+    private EnumDragonBreed(int meta, Class<? extends DragonBreed> factory) {
         try {
-            this.breed = factory.getDeclaredConstructor(EnumDragonBreed.class).newInstance(this);
+            breed = factory.getDeclaredConstructor(EnumDragonBreed.class).newInstance(this);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalArgumentException ex) {
             throw new RuntimeException("Incompatible breed factory " + factory, ex);
         } catch (SecurityException | IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
+        
+        this.meta = meta;
     }
     
     public DragonBreed getBreed() {
         return breed;
+    }
+    
+    public int getMeta() {
+        return meta;
     }
 
     @Override
