@@ -22,10 +22,10 @@ import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.EnumUtils;
 
 /**
@@ -39,23 +39,19 @@ public class CommandDragon extends CommandBase {
     private final List<String> lifeStageNames;
     
     public CommandDragon() {
-        EnumCommandDragon[] commands = EnumCommandDragon.values();
-        commandNames = new ArrayList<>(commands.length);
-        for (EnumCommandDragon command : commands) {
-            commandNames.add(command.name().toLowerCase());
-        }
+        Function<Enum, String> enumLowerCaseName = e -> e.name().toLowerCase();
         
-        List<EnumDragonBreed> breeds = Arrays.asList(EnumDragonBreed.values());
-        breedNames = new ArrayList<>(breeds.size());
-        breeds.stream().forEach((breed) -> {
-            breedNames.add(breed.getName());
-        });
+        commandNames= EnumUtils.getEnumList(EnumCommandDragon.class).stream()
+            .map(enumLowerCaseName)
+            .collect(Collectors.toList());
         
-        EnumDragonLifeStage[] lifeStages = EnumDragonLifeStage.values();
-        lifeStageNames = new ArrayList<>(lifeStages.length);
-        for (EnumDragonLifeStage lifeStage : lifeStages) {
-            lifeStageNames.add(lifeStage.name().toLowerCase());
-        }
+        breedNames = EnumUtils.getEnumList(EnumDragonBreed.class).stream()
+            .map(enumLowerCaseName)
+            .collect(Collectors.toList());
+        
+        lifeStageNames = EnumUtils.getEnumList(EnumDragonLifeStage.class).stream()
+            .map(enumLowerCaseName)
+            .collect(Collectors.toList());
     }
 
     @Override
