@@ -15,7 +15,6 @@ import info.ata4.minecraft.dragon.client.handler.DragonControl;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -30,8 +29,8 @@ public class ClientProxy extends CommonProxy {
     
     @Override
     public void onPreInit(FMLPreInitializationEvent event) {
-        RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class,
-                (RenderManager manager) -> new DragonRenderer(manager));
+        RenderingRegistry.registerEntityRenderingHandler(
+                EntityTameableDragon.class, DragonRenderer::new);
     }
 
     @Override
