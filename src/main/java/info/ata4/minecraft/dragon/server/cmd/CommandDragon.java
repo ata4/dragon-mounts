@@ -129,7 +129,7 @@ public class CommandDragon extends CommandBase {
                     throw new WrongUsageException(getCommandUsage(sender));
                 }
 
-                String breedName = params[1].toLowerCase();
+                String breedName = params[1].toUpperCase();
                 EnumDragonBreed breed = EnumUtils.getEnum(EnumDragonBreed.class, breedName);
                 if (breed == null) {
                     // default constructor uses "snytax"...
