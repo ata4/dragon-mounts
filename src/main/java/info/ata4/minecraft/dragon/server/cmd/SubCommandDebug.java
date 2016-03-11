@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
+import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -36,11 +37,11 @@ public class SubCommandDebug extends SubCommand {
     public SubCommandDebug(CommandDragon parent) {
         super(parent);
         
-        subCommands.put("transform", new SubCommandSimple(parent, dragon -> {
+        subCommands.put("toItem", new SubCommandSimple(parent, dragon -> {
             dragon.getLifeStageHelper().transformToEgg();
         }));
         
-        subCommands.put("dumpnbt", new SubCommandSimple(parent, dragon -> {
+        subCommands.put("dumpNBT", new SubCommandSimple(parent, dragon -> {
             File dumpFile = new File(Minecraft.getMinecraft().mcDataDir,
                     String.format("dragon_%08x.nbt", dragon.getEntityId()));
 
@@ -52,8 +53,19 @@ public class SubCommandDebug extends SubCommand {
             }
         }));
         
-        subCommands.put("toggleoverlay", new SubCommandSimple(parent, () -> {
+        subCommands.put("toggleOverlay", new SubCommandSimple(parent, (sender, args) -> {
             GuiDragonDebug.enabled = !GuiDragonDebug.enabled;
+        }));
+        
+        subCommands.put("setAge", new SubCommandSimple(parent, (sender, args) -> {
+            if (args.length < 3) {
+                throw new WrongUsageException("setAge <age>");
+            }
+            
+            int ticks = CommandBase.parseInt(args[2], 0, EnumDragonLifeStage.ADULT.startTicks());
+            parent.applyModifier(sender, dragon -> {
+                dragon.getLifeStageHelper().setTicksSinceCreation(ticks);
+            }, parent.isGlobal(args));
         }));
     }
 

@@ -18,7 +18,7 @@ import net.minecraft.util.BlockPos;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public abstract class SubCommand {
+public abstract class SubCommand implements ICommandProcessor {
     
     protected final CommandDragon parent;
     
@@ -26,6 +26,7 @@ public abstract class SubCommand {
         this.parent = parent;
     }
     
+    @Override
     public abstract void processCommand(ICommandSender sender, String[] args) throws CommandException;
     
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {

@@ -22,24 +22,24 @@ import net.minecraft.command.ICommandSender;
 public class SubCommandSimple extends SubCommand {
     
     private final Optional<Consumer<EntityTameableDragon>> consumer;
-    private final Optional<Runnable> action;
+    private final Optional<ICommandProcessor> processor;
 
     public SubCommandSimple(CommandDragon parent, Consumer<EntityTameableDragon> consumer) {
         super(parent);
         this.consumer = Optional.of(consumer);
-        this.action = Optional.empty();
+        this.processor = Optional.empty();
     }
     
-    public SubCommandSimple(CommandDragon parent, Runnable action) {
+    public SubCommandSimple(CommandDragon parent, ICommandProcessor processor) {
         super(parent);
         this.consumer = Optional.empty();
-        this.action = Optional.of(action);
+        this.processor = Optional.of(processor);
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (action.isPresent()) {
-            action.get().run();
+        if (processor.isPresent()) {
+            processor.get().processCommand(sender, args);
         }
         
         if (consumer.isPresent()) {

@@ -192,8 +192,10 @@ public class DragonLifeStageHelper extends DragonHelper {
         L.trace("onNewLifeStage({},{})", prevLifeStage, lifeStage);
 
         if (dragon.isClient()) {
+            // play particle and sound effects when the dragon hatches
             if (prevLifeStage != null && prevLifeStage == EGG && lifeStage == HATCHLING) {
                 playEggCrackEffect();
+                dragon.playSound("mob.zombie.woodbreak", 1, 1);
             }
         } else {
             // eggs and hatchlings can't fly
