@@ -105,11 +105,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonParticleHelper(this));
-        
-        if (DragonMounts.instance.getConfig().isDebug()) {
-            addHelper(new DragonDebug(this));
-        }
-        
+
         // don't use this on server side or you're asking for trouble!
         if (isClient()) {
             animator = new DragonAnimator(this);

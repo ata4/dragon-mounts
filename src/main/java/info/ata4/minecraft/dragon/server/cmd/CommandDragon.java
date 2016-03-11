@@ -12,6 +12,12 @@ package info.ata4.minecraft.dragon.server.cmd;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,37 +27,29 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import org.apache.commons.lang3.EnumUtils;
-
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class CommandDragon extends CommandBase {
     
-    private final List<String> commandNames;
-    private final List<String> breedNames;
-    private final List<String> lifeStageNames;
+    private static final double ENTITY_RANGE = 64;
+    
+    private final Map<String, SubCommand> subCommands = new LinkedHashMap<>();
     
     public CommandDragon() {
-        Function<Enum, String> enumLowerCaseName = e -> e.name().toLowerCase();
+        BiConsumer<EntityTameableDragon, EnumDragonBreed> breedConsumer =
+            (dragon, enumValue) -> dragon.setBreedType(enumValue);
+        subCommands.put("breed", new SubCommandEnumSetter(this,
+            EnumDragonBreed.class, breedConsumer));
         
-        commandNames= EnumUtils.getEnumList(EnumCommandDragon.class).stream()
-            .map(enumLowerCaseName)
-            .collect(Collectors.toList());
+        BiConsumer<EntityTameableDragon, EnumDragonLifeStage> lifeStageConsumer =
+            (dragon, enumValue) -> dragon.getLifeStageHelper().setLifeStage(enumValue);
+        subCommands.put("stage", new SubCommandEnumSetter(this,
+            EnumDragonLifeStage.class, lifeStageConsumer));
         
-        breedNames = EnumUtils.getEnumList(EnumDragonBreed.class).stream()
-            .map(enumLowerCaseName)
-            .collect(Collectors.toList());
-        
-        lifeStageNames = EnumUtils.getEnumList(EnumDragonLifeStage.class).stream()
-            .map(enumLowerCaseName)
-            .collect(Collectors.toList());
+        subCommands.put("tame", new SubCommandTame(this));
+        subCommands.put("debug", new SubCommandDebug(this));
     }
 
     @Override
@@ -61,19 +59,18 @@ public class CommandDragon extends CommandBase {
     
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        String commands = StringUtils.join(commandNames, '|');
+        String commands = StringUtils.join(subCommands.keySet(), '|');
         return String.format("/dragon <%s> [global]", commands);
     }
     
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, commandNames);
+            return getListOfStringsMatchingLastWord(args, subCommands.keySet());
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("stage")) {
-                return getListOfStringsMatchingLastWord(args, lifeStageNames);
-            } else if (args[0].equalsIgnoreCase("breed")) {
-                return getListOfStringsMatchingLastWord(args, breedNames);
+            String cmd = args[0].toLowerCase();
+            if (subCommands.containsKey(cmd)) {
+                return subCommands.get(cmd).addTabCompletionOptions(sender, args, pos);
             }
         }
         
@@ -89,79 +86,33 @@ public class CommandDragon extends CommandBase {
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] params) throws CommandException {
-        if (params.length < 1 || params[0].isEmpty()) {
+    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+        if (args.length < 1 || args[0].isEmpty()) {
             throw new WrongUsageException(getCommandUsage(sender));
         }
         
-        // last parameter, optional
-        boolean global = params[params.length - 1].equalsIgnoreCase("global");
-
-        EnumCommandDragon cmd = EnumUtils.getEnum(EnumCommandDragon.class, params[0].toUpperCase());
-        if (cmd == null) {
+        String cmd = args[0].toLowerCase();
+        
+        if (!subCommands.containsKey(cmd)) {
             throw new WrongUsageException(getCommandUsage(sender));
         }
         
-        switch (cmd) {
-            case STAGE: {
-                if (params.length < 2) {
-                    throw new WrongUsageException(getCommandUsage(sender));
-                }
-
-                String parameter = params[1].toUpperCase();
-
-                if (parameter.equals("ITEM")) {
-                    applyModifier(sender, dragon -> dragon.getLifeStageHelper().transformToEgg(), global);
-                } else {
-                    EnumDragonLifeStage lifeStage = EnumUtils.getEnum(EnumDragonLifeStage.class, parameter);
-                    if (lifeStage == null) {
-                        // default constructor uses "snytax"...
-                        throw new SyntaxErrorException("commands.generic.syntax");
-                    }
-                    applyModifier(sender, dragon -> dragon.getLifeStageHelper().setLifeStage(lifeStage), global);
-                }
-
-                break;
-            }
-            
-            case BREED: {
-                if (params.length < 2) {
-                    throw new WrongUsageException(getCommandUsage(sender));
-                }
-
-                String breedName = params[1].toUpperCase();
-                EnumDragonBreed breed = EnumUtils.getEnum(EnumDragonBreed.class, breedName);
-                if (breed == null) {
-                    // default constructor uses "snytax"...
-                    throw new SyntaxErrorException("commands.generic.syntax");
-                }
-
-                applyModifier(sender, dragon -> dragon.setBreedType(breed), global);
-                break;
-            }
-            
-            case TAME: {
-                if (sender instanceof EntityPlayerMP) {
-                    EntityPlayerMP player = (EntityPlayerMP) sender;
-                    applyModifier(sender, dragon -> dragon.tamedFor(player, true), global);
-                } else {
-                    // console can't tame dragons
-                    throw new CommandException("commands.dragon.canttame");
-                }
-                break;
-            }
-        }
+        subCommands.get(cmd).processCommand(sender, args);
     }
     
-    private void applyModifier(ICommandSender sender, Consumer<EntityTameableDragon> modifier, boolean global) throws CommandException {
+    boolean isGlobal(String[] args) {
+        return args[args.length - 1].equalsIgnoreCase("global");
+    }
+    
+    void applyModifier(ICommandSender sender, Consumer<EntityTameableDragon> modifier, boolean global) throws CommandException {
         if (!global && sender instanceof EntityPlayerMP) {
             EntityPlayerMP player = getCommandSenderAsPlayer(sender);
-            double range = 64;
-            AxisAlignedBB aabb = new AxisAlignedBB(
-                    player.posX - 1, player.posY - 1, player.posZ - 1,
-                    player.posX + 1, player.posY + 1, player.posZ + 1);
-            aabb = aabb.expand(range, range, range);
-            List<EntityTameableDragon> dragons = player.worldObj.getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
+            
+            AxisAlignedBB aabb = player.getEntityBoundingBox()
+                .expand(ENTITY_RANGE, ENTITY_RANGE, ENTITY_RANGE);
+            
+            List<EntityTameableDragon> dragons = player.worldObj
+                .getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
 
             // get closest dragon
             Optional<EntityTameableDragon> closestDragon = dragons.stream()
