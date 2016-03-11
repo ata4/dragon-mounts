@@ -11,6 +11,8 @@ entity.DragonMounts.DragonMount.forest.name=Wald-Drache
 commands.dragon.nodragons=Es sind keine Drachen in der Nähe
 commands.dragon.canttame=Du kannst keine Drachen zähmen
 
+item.dragonEgg.name=%snei
+
 dragon.lifeStage.egg=Ei
 dragon.lifeStage.hatchling=Baby
 dragon.lifeStage.juvenile=Jugendlich
