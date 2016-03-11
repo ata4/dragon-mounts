@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
+import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
@@ -186,7 +187,9 @@ public class DragonLifeStageHelper extends DragonHelper {
             dragon.dropItem(Items.saddle, 1);
         }
         
-        dragon.entityDropItem(new ItemStack(Blocks.dragon_egg), 0);
+        dragon.entityDropItem(new ItemStack(BlockDragonBreedEgg.INSTANCE),
+            dragon.getBreedType().getMeta());
+        
         dragon.setDead();
     }
     
