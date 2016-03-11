@@ -13,7 +13,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.stream.Collectors;
 import net.minecraft.util.IStringSerializable;
 
@@ -36,11 +35,17 @@ public enum EnumDragonBreed implements IStringSerializable {
     public static final BiMap<EnumDragonBreed, Integer> META_MAPPING;
     
     static {
+        // create static bimap between enums and meta data for faster and easier
+        // lookups
         META_MAPPING = ImmutableBiMap.copyOf(Arrays.asList(values()).stream()
             .collect(Collectors.toMap(breed -> breed, breed -> breed.getMeta())));
     }
     
     private final DragonBreed breed;
+    
+    // this field is used for block metadata and is technically the same as
+    // ordinal(), but it is saved separately to make sure the values stay
+    // constant after adding more breeds in unexpected orders
     private final int meta;
     
     private EnumDragonBreed(int meta, Class<? extends DragonBreed> factory) {
