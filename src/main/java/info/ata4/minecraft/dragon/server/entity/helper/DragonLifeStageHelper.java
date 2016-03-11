@@ -15,6 +15,7 @@ import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.*;
+import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage.*;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.block.Block;
@@ -28,11 +29,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage.*;
 
 /**
  *
@@ -44,6 +42,9 @@ public class DragonLifeStageHelper extends DragonHelper {
     
     private static final String NBT_TICKS_SINCE_CREATION = "TicksSinceCreation";
     private static final int TICKS_SINCE_CREATION_UPDATE_INTERVAL = 100;
+    private static final float EGG_CRACK_THRESHOLD = 0.9f;
+    private static final float EGG_WIGGLE_THRESHOLD = 0.75f;
+    private static final float EGG_WIGGLE_BASE_CHANCE = 20;
     
     private EnumDragonLifeStage lifeStagePrev;
     private final DragonScaleModifier scaleModifier = new DragonScaleModifier();
@@ -59,12 +60,16 @@ public class DragonLifeStageHelper extends DragonHelper {
 
     public DragonLifeStageHelper(EntityTameableDragon dragon, int dataWatcherIndex) {
         super(dragon);
+        
         dataIndexTicksSinceCreation = dataWatcherIndex;
-
-        ticksSinceCreationServer = 0;
         dataWatcher.addObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
-        ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
-        ticksSinceCreationClient.reset(ticksSinceCreationServer);
+        
+        if (dragon.isClient()) {
+            ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
+            ticksSinceCreationClient.reset(ticksSinceCreationServer);
+        } else {
+            ticksSinceCreationClient = null;
+        }
     }
     
     @Override
@@ -80,7 +85,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      */
     public void playEggCrackEffect() {
         dragon.worldObj.playAuxSFX(2001, dragon.getPosition(),
-                Block.getIdFromBlock(Blocks.dragon_egg));
+                Block.getIdFromBlock(BlockDragonBreedEgg.INSTANCE));
     }
     
     public int getEggWiggleX() {
@@ -98,26 +103,25 @@ public class DragonLifeStageHelper extends DragonHelper {
      */
     public EnumDragonLifeStage getLifeStage() {
         int age = getTicksSinceCreation();
-        return EnumDragonLifeStage.getLifeStageFromTickCount(age);
+        return EnumDragonLifeStage.fromTickCount(age);
     }
-    
-    /**
-     * Returns the size multiplier for the current age.
-     * 
-     * @return size
-     */
-//    public float getScale() {
-//        int age = getTicksSinceCreation();
-//        return DragonLifeStage.getScaleFromTickCount(age);
-//    }
 
     public int getTicksSinceCreation() {
-        if (!dragon.worldObj.isRemote) {
+        if (dragon.isServer()) {
             return ticksSinceCreationServer;
+        } else {
+            return ticksSinceCreationClient.getCurrentTickCount();
         }
-        return ticksSinceCreationClient.getCurrentTickCount();
     }
-
+    
+    public void setTicksSinceCreation(int ticksSinceCreation) {
+        if (dragon.isServer()) {
+            ticksSinceCreationServer = ticksSinceCreation;
+        } else {
+            ticksSinceCreationClient.updateFromServer(ticksSinceCreationServer);
+        }
+    }
+    
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         nbt.setInteger(NBT_TICKS_SINCE_CREATION, getTicksSinceCreation());
@@ -126,7 +130,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
-        ticksRead = EnumDragonLifeStage.clipTickCountToValid(ticksRead);
+        ticksRead = EnumDragonLifeStage.clampTickCount(ticksRead);
         ticksSinceCreationServer = ticksRead;
         dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
     }
@@ -137,35 +141,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      * @return size
      */
     public float getScale() {
-        EnumDragonLifeStage lifeStage = getLifeStage();
-        int stageStartTicks = lifeStage.startTicks;
-        int timeInThisStage = getTicksSinceCreation() - stageStartTicks;
-        float fractionOfStage = timeInThisStage / (float) lifeStage.durationTicks;
-        fractionOfStage = MathHelper.clamp_float(fractionOfStage, 0.0F, 1.0F);
-
-        final float EGG_SIZE = 0.9F / EntityTameableDragon.BASE_WIDTH;
-        final float HATCHLING_SIZE = 0.33F;
-        final float JUVENILE_SIZE = 0.66F;
-        final float ADULT_SIZE = 1.0F;
-
-        switch (getLifeStage()) {
-            case EGG: { // constant size for egg stage
-                return EGG_SIZE;
-            }
-            case HATCHLING: {
-                return HATCHLING_SIZE + fractionOfStage * (JUVENILE_SIZE - HATCHLING_SIZE);
-            }
-            case JUVENILE: {
-                return JUVENILE_SIZE + fractionOfStage * (ADULT_SIZE - JUVENILE_SIZE);
-            }
-            case ADULT: {
-                return ADULT_SIZE;
-            }
-            default: {
-                L.error("Illegal lifestage in getScale():" + getLifeStage());
-                return 1;
-            }
-        }
+        return EnumDragonLifeStage.scaleFromTickCount(getTicksSinceCreation());
     }
     
     /**
@@ -201,7 +177,7 @@ public class DragonLifeStageHelper extends DragonHelper {
     public final void setLifeStage(EnumDragonLifeStage lifeStage) {
         L.trace("setLifeStage({})", lifeStage);
         if (dragon.isServer()) {
-            ticksSinceCreationServer = lifeStage.startTicks;
+            ticksSinceCreationServer = lifeStage.startTicks();
             dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
         } else {
             L.error("setLifeStage called on Client");
@@ -258,23 +234,18 @@ public class DragonLifeStageHelper extends DragonHelper {
 
     @Override
     public void onLivingUpdate() {
-        // testing code
-//        if (dragon.isServer()) {
-//            dragon.setGrowingAge((int) ((((Math.sin(Math.toRadians(dragon.ticksExisted))) + 1) * 0.5) * EGG.ageLimit));
-//        }
-
         // if the dragon is not an adult, update its growth ticks
-        if (!dragon.worldObj.isRemote) {
-          if (getLifeStage() != ADULT) {
-            ++ticksSinceCreationServer;
-            if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
-              dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+        if (dragon.isServer()) {
+            if (!isAdult()) {
+                ticksSinceCreationServer++;
+                if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
+                    dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+                }
             }
-          }
         } else {
             ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(
                     dataIndexTicksSinceCreation));
-            if (getLifeStage() != ADULT) {
+            if (!isAdult()) {
                 ticksSinceCreationClient.tick();
             }
         }
@@ -299,27 +270,28 @@ public class DragonLifeStageHelper extends DragonHelper {
         }
 
         // animate egg wiggle based on the time the eggs take to hatch
-        int age = getTicksSinceCreation();
-        int hatchAge = EnumDragonLifeStage.HATCHLING.durationTicks;
-        int hatchTimeLeft = hatchAge - age;
-        int hatchThreshold = hatchAge / 10;
+        float progress = EnumDragonLifeStage.progressFromTickCount(getTicksSinceCreation());
 
         // wait until the egg is nearly hatched
-        if (hatchTimeLeft < hatchThreshold) {
-            float wiggleChance = hatchTimeLeft / (float) (hatchThreshold * 60);
+        if (progress > EGG_WIGGLE_THRESHOLD) {
+            float wiggleChance = (progress - EGG_WIGGLE_THRESHOLD) / EGG_WIGGLE_BASE_CHANCE * (1 - EGG_WIGGLE_THRESHOLD);
 
             if (eggWiggleX > 0) {
                 eggWiggleX--;
             } else if (rand.nextFloat() < wiggleChance) {
                 eggWiggleX = rand.nextBoolean() ? 10 : 20;
-                playEggCrackEffect();
+                if (progress > EGG_CRACK_THRESHOLD) {
+                    playEggCrackEffect();
+                }
             }
 
             if (eggWiggleZ > 0) {
                 eggWiggleZ--;
             } else if (rand.nextFloat() < wiggleChance) {
                 eggWiggleZ = rand.nextBoolean() ? 10 : 20;
-                playEggCrackEffect();
+                if (progress > EGG_CRACK_THRESHOLD) {
+                    playEggCrackEffect();
+                }
             }
         }
 
