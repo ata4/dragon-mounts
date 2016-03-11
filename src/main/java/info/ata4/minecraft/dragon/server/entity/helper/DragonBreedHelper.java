@@ -50,10 +50,11 @@ public class DragonBreedHelper extends DragonHelper {
         if (dragon.isServer()) {
             // initialize map to avoid future checkings
             for (EnumDragonBreed type : EnumDragonBreed.values()) {
-                // default breed has initial points
-                int startPoints = type == EnumDragonBreed.DEFAULT ? 100 : 0;
-                breedPoints.put(type, new AtomicInteger(startPoints));
+                breedPoints.put(type, new AtomicInteger());
             }
+            
+            // default breed has initial points
+            breedPoints.get(EnumDragonBreed.DEFAULT).set(1000);
         }
         
         dataWatcher.addObject(dataIndex, EnumDragonBreed.DEFAULT.getName());
@@ -131,6 +132,12 @@ public class DragonBreedHelper extends DragonHelper {
         
         // update breed name
         dataWatcher.updateObject(dataIndex, newType.getName());
+        
+        // reset breed points
+        if (dragon.isEgg()) {
+            breedPoints.values().forEach(points -> points.set(0));
+            breedPoints.get(newType).set(1000);
+        }
     }
     
     @Override
