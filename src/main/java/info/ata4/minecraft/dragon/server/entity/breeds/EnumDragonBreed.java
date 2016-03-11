@@ -13,6 +13,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.util.IStringSerializable;
 
@@ -32,14 +33,12 @@ public enum EnumDragonBreed implements IStringSerializable {
     WATER(7, DragonBreedWater.class);
     
     public static final EnumDragonBreed DEFAULT = END;
-    public static final BiMap<EnumDragonBreed, Integer> META_MAPPING;
     
-    static {
-        // create static bimap between enums and meta data for faster and easier
-        // lookups
-        META_MAPPING = ImmutableBiMap.copyOf(Arrays.asList(values()).stream()
-            .collect(Collectors.toMap(breed -> breed, breed -> breed.getMeta())));
-    }
+    // create static bimap between enums and meta data for faster and easier
+    // lookups
+    public static final BiMap<EnumDragonBreed, Integer> META_MAPPING =
+        ImmutableBiMap.copyOf(Arrays.asList(values()).stream()
+            .collect(Collectors.toMap(Function.identity(), EnumDragonBreed::getMeta)));
     
     private final DragonBreed breed;
     
