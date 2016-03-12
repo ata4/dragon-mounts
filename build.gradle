@@ -13,6 +13,10 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
+// ensure Java 8 compatibility
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
 /*
  * Gets the version name from the latest Git tag
  */
@@ -69,4 +73,4 @@ processResources {
 // IntelliJ fix, may not work in other IDEs
 //sourceSets { main { output.resourcesDir = output.classesDir } }
 
-//runClient.debug = true
+runClient.debug = true

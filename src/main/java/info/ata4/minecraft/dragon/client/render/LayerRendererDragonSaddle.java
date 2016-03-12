@@ -1,5 +1,6 @@
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 
@@ -7,9 +8,10 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
  * Created by EveryoneElse on 14/06/2015.
  */
 public class LayerRendererDragonSaddle extends LayerRendererDragon {
-
-    public LayerRendererDragonSaddle(DragonRenderer dragonRenderer) {
-        super(dragonRenderer);
+    
+    public LayerRendererDragonSaddle(DragonRenderer renderer,
+            DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+        super(renderer, breedRenderer, model);
     }
     
     @Override
@@ -20,9 +22,8 @@ public class LayerRendererDragonSaddle extends LayerRendererDragon {
             return;
         }
         
-        DragonModel dragonModel = dragonRenderer.getModel();
-        dragonRenderer.bindTexture(dragonModel.saddleTexture);
-        dragonModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+        renderer.bindTexture(breedRenderer.getSaddleTexture());
+        model.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
     }
 
     @Override

@@ -16,7 +16,6 @@ import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
 
 import java.util.Iterator;
 import java.util.List;
@@ -27,8 +26,8 @@ import java.util.List;
  */
 public class DragonBreedGhost extends DragonBreed {
 
-    public DragonBreedGhost() {
-        super("ghost", "undead", 0xbebebe);
+    DragonBreedGhost(EnumDragonBreed type) {
+        super(type, "undead", 0xbebebe);
         
         addImmunity(DamageSource.wither);
         
@@ -78,27 +77,18 @@ public class DragonBreedGhost extends DragonBreed {
             // woah dude, too high!
             return false;
         }
-        
-        int bx = MathHelper.floor_double(dragon.posX);
-        int by = MathHelper.floor_double(dragon.posY);
-        int bz = MathHelper.floor_double(dragon.posZ);
 
-      BlockPos blockPos = new BlockPos(bx, by, bz);
-      if (dragon.worldObj.canBlockSeeSky(blockPos)) { // sun is shining!
-        return false;
-      }
-      if (dragon.worldObj.getLight(blockPos) > 4) { // too bright!
-        return false;
-      }
-//        if (dragon.worldObj.canBlockSeeTheSky(bx, by, bz)) {
-//            // sun is shining!
-//            return false;
-//        }
-//        
-//        if (dragon.worldObj.getBlockLightValue(bx, by, bz) > 4) {
-//            // too bright!
-//            return false;
-//        }
+        BlockPos pos = dragon.getPosition();
+        
+        if (dragon.worldObj.canBlockSeeSky(pos)) {
+             // sun is shining!
+            return false;
+        }
+        
+        if (dragon.worldObj.getLight(pos) > 4) {
+            // too bright!
+            return false;
+        }
 
         return true;
     }
@@ -107,9 +97,27 @@ public class DragonBreedGhost extends DragonBreed {
     public String getLivingSound(EntityTameableDragon dragon) {
         return "mob.skeleton.say";
     }
+    
+    @Override
+    public float getSoundPitch(EntityTameableDragon dragon, String sound) {
+        // bony sounds need lower pitches, these are large bones!
+        if (sound.equals(getLivingSound(dragon))) {
+            return 0.5f;
+        }
+        
+        return super.getSoundPitch(dragon, sound);
+    }
 
     @Override
     public EnumCreatureAttribute getCreatureAttribute() {
         return EnumCreatureAttribute.UNDEAD;
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 }

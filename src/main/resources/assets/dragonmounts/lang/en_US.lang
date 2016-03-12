@@ -11,6 +11,8 @@ entity.DragonMounts.DragonMount.forest.name=Forest Dragon
 commands.dragon.nodragons=There are no dragons nearby
 commands.dragon.canttame=You cannot tame dragons
 
+item.dragonEgg.name=%s Egg
+
 dragon.lifeStage.egg=egg
 dragon.lifeStage.hatchling=hatchling
 dragon.lifeStage.juvenile=juvenile

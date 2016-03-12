@@ -13,6 +13,8 @@ item.dragonorb.name=Drachenkugel
 commands.dragon.nodragons=Es sind keine Drachen in der Nähe
 commands.dragon.canttame=Du kannst keine Drachen zähmen
 
+item.dragonEgg.name=%snei
+
 dragon.lifeStage.egg=Ei
 dragon.lifeStage.hatchling=Baby
 dragon.lifeStage.juvenile=Jugendlich

@@ -9,8 +9,7 @@
  */
 package info.ata4.minecraft.dragon.client.model.anim;
 
-import info.ata4.minecraft.dragon.util.math.MathX;
-
+import info.ata4.minecraft.dragon.util.math.Interpolation;
 import java.util.Arrays;
 
 /**
@@ -20,18 +19,18 @@ import java.util.Arrays;
  */
 public class CircularBuffer {
 
-    private double buffer[];
+    private float buffer[];
     private int index = 0;
 
     public CircularBuffer(int size) {
-        buffer = new double[size];
+        buffer = new float[size];
     }
     
-    public void fill(double value) {
+    public void fill(float value) {
         Arrays.fill(buffer, value);
     }
     
-    public void update(double value) {
+    public void update(float value) {
         // move forward
         index++;
         
@@ -41,13 +40,13 @@ public class CircularBuffer {
         buffer[index] = value;
     }
     
-    public double get(float x, int offset) {
+    public float get(float x, int offset) {
         int i = index - offset;
         int len = buffer.length - 1;
-        return MathX.lerp(buffer[i - 1 & len], buffer[i & len], x);
+        return Interpolation.linear(buffer[i - 1 & len], buffer[i & len], x);
     }
     
-    public double get(float x, int offset1, int offset2) {
+    public float get(float x, int offset1, int offset2) {
         return get(x, offset2) - get(x, offset1);
     }
 }

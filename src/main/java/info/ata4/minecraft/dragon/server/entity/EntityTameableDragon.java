@@ -13,9 +13,9 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.DragonBodyHelper;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -32,7 +32,6 @@ import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,6 +73,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     // client-only delegates
     private DragonAnimator animator;
+    private final DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
     
     // server-only flags
     private BitSet controlFlags;
@@ -81,19 +81,19 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public EntityTameableDragon(World world) {
         super(world);
         
-        // override EntityBodyHelper field, which is private and has no setter
-        // required to fixate body while sitting. also slows down rotation while standing.
-        try {
-            ReflectionHelper.setPrivateValue(EntityLiving.class, this, new DragonBodyHelper(this), PrivateFields.ENTITYLIVING_BODYHELPER);
-        } catch (Exception ex) {
-            L.warn("Can't override EntityBodyHelper", ex);
-        }
-        
         // set base size
         setSize(BASE_WIDTH, BASE_HEIGHT);
         
         // enables walking over blocks
         stepHeight = 1;
+    }
+    
+    @Override
+    protected float func_110146_f(float p_110146_1_, float p_110146_2_) {
+        // required to fixate body while sitting. also slows down rotation while
+        // standing.
+        bodyHelper.updateRenderAngles();
+        return p_110146_2_;
     }
     
     @Override
@@ -105,11 +105,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonParticleHelper(this));
-        
-        if (DragonMounts.instance.getConfig().isDebug()) {
-            addHelper(new DragonDebug(this));
-        }
-        
+
         // don't use this on server side or you're asking for trouble!
         if (isClient()) {
             animator = new DragonAnimator(this);
@@ -123,9 +119,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         getAttributeMap().registerAttribute(SharedMonsterAttributes.attackDamage);
         setAttributes();
         
-        for (DragonHelper helper : helpers.values()) {
-            helper.applyEntityAttributes();
-        }
+        helpers.values().forEach(helper -> helper.applyEntityAttributes());
     }
     
     private void setAttributes() {
@@ -143,15 +137,12 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         super.writeEntityToNBT(nbt);
         nbt.setBoolean(NBT_SADDLED, isSaddled());
         
-        for (DragonHelper helper : helpers.values()) {
-            helper.writeToNBT(nbt);
-        }
+        helpers.values().forEach(helper -> helper.writeToNBT(nbt));
     }
 
     @Override
-    public void setNoAI(boolean disableAI)
-    {
-      super.setNoAI(disableAI);
+    public void setNoAI(boolean disableAI) {
+        super.setNoAI(disableAI);
     }
 
     /**
@@ -162,9 +153,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         super.readEntityFromNBT(nbt);
         setSaddled(nbt.getBoolean(NBT_SADDLED));
         
-        for (DragonHelper helper : helpers.values()) {
-            helper.readFromNBT(nbt);
-        }
+        helpers.values().forEach(helper -> helper.readFromNBT(nbt));
         
         // override attributes loaded from NBT, they were set and handled
         // incorrectly in older versions
@@ -173,9 +162,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public void onLivingUpdate() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onLivingUpdate();
-        }
+        helpers.values().forEach(helper -> helper.onLivingUpdate());
         
         if (isClient()) {
             if (!isEgg()) {
@@ -187,8 +174,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             if (isTamed()) {
                 Entity owner = getOwner();
                 if (owner != null) {
-                    BlockPos ownerPosition = new BlockPos(owner.posX, owner.posY, owner.posZ);
-                    setHomePosAndDistance(ownerPosition, HOME_RADIUS);
+                    setHomePosAndDistance(owner.getPosition(), HOME_RADIUS);
                 }
             }
         }
@@ -201,9 +187,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     protected void onDeathUpdate() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onDeathUpdate();
-        }
+        helpers.values().forEach(helper -> helper.onDeathUpdate());
         
         // unmount any riding entity
         if (riddenByEntity != null) {
@@ -228,9 +212,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     @Override
     public void setDead() {
-        for (DragonHelper helper : helpers.values()) {
-            helper.onDeath();
-        }
+        helpers.values().forEach(helper -> helper.onDeath());
         super.setDead();
     }
 
@@ -302,14 +284,16 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         float v = getSoundVolume();
         float p = getSoundPitch();
-
-        // lower pitch and volume for breathing sounds
-        if (sound.endsWith("breathe")) {
-            v *= 0.5;
-            p *= 0.5;
-        }
-
+        
         playSound(sound, v, p);
+    }
+    
+    @Override
+    public void playSound(String name, float volume, float pitch) {
+        DragonBreed breed = getBreed(); 
+        volume *= breed.getSoundVolume(this, name);
+        pitch *= breed.getSoundPitch(this, name);
+        super.playSound(name, volume, pitch);
     }
     
     /**
@@ -625,7 +609,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      */
     @Override
     public boolean canRenderOnFire() {
-        return super.canRenderOnFire() && !getBreedHelper().getBreed().isImmuneToDamage(DamageSource.inFire);
+        return super.canRenderOnFire() && !getBreed().isImmuneToDamage(DamageSource.inFire);
     }
     
     /**
@@ -656,7 +640,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         helpers.put(helper.getClass(), helper);
     }
     
-    public <T extends DragonHelper> T getHelper(Class<T> clazz) {
+    private <T extends DragonHelper> T getHelper(Class<T> clazz) {
         return (T) helpers.get(clazz);
     }
 
@@ -704,17 +688,21 @@ public class EntityTameableDragon extends EntityFlyingTameable {
      * 
      * @return breed
      */
-    public DragonBreed getBreed() {
-        return getBreedHelper().getBreed();
+    public EnumDragonBreed getBreedType() {
+        return getBreedHelper().getBreedType();
     }
     
     /**
      * Sets the new breed for this dragon.
      * 
-     * @param breed new breed
+     * @param type new breed
      */
-    public void setBreed(DragonBreed breed) {
-        getBreedHelper().setBreed(breed);
+    public void setBreedType(EnumDragonBreed type) {
+        getBreedHelper().setBreedType(type);
+    }
+    
+    public DragonBreed getBreed() {
+        return getBreedHelper().getBreedType().getBreed();
     }
 
     public EntityPlayer getRidingPlayer() {
@@ -862,15 +850,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         // on isChild(), but the scale is managed in DragonLifeStageHelper, so
         // this is no-op here
     }
-
-//    Comparison of 1.7.10 and 1.8 Render::renderShadow shows that this isn't needed any more
-//    @SideOnly(Side.CLIENT)
-//    @Override
-//    public float getShadowSize() {
-//        // must be 0 or the shadows will be rendered incorrectly
-//        // (misleading method name, should be getShadowYOffset())
-//        return 0;
-//    }
     
     /**
      * Returns the size multiplier for the current age.
@@ -895,6 +874,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     
     public boolean isAdult() {
         return getLifeStageHelper().isAdult();
+    }
+    
+    @Override
+    public boolean isChild() {
+        return !isAdult();
     }
 
     public void setDragonAvoidWater(boolean avoidWater) {

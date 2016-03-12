@@ -26,8 +26,8 @@ public class DragonBreedAir extends DragonBreed {
     public static final UUID MODIFIER_ID = UUID.fromString("60be8770-29f2-4bbe-bb8c-7a41143c9974");
     public static final AttributeModifier MODIFIER = new AttributeModifier(MODIFIER_ID, "Air dragon speed bonus", 0.2, 2).setSaved(false);
 
-    public DragonBreedAir() {
-        super("air", "aether", 0x1dc4f3);
+    DragonBreedAir(EnumDragonBreed type) {
+        super(type, "aether", 0x1dc4f3);
         
         addImmunity(DamageSource.magic);
         
@@ -48,5 +48,13 @@ public class DragonBreedAir extends DragonBreed {
     @Override
     public void onDisable(EntityTameableDragon dragon) {
         dragon.getAttributeMap().getAttributeInstance(EntityFlyingTameable.MOVE_SPEED_AIR).removeModifier(MODIFIER);
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 }

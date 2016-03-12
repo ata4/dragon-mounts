@@ -9,6 +9,8 @@
  */
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
+import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 
@@ -18,10 +20,15 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
  */
 public abstract class LayerRendererDragon implements LayerRenderer<EntityTameableDragon> {
     
-    protected final DragonRenderer dragonRenderer;
+    protected final DragonRenderer renderer;
+    protected final DefaultDragonBreedRenderer breedRenderer;
+    protected final DragonModel model;
 
-    public LayerRendererDragon(DragonRenderer dragonRenderer) {
-        this.dragonRenderer = dragonRenderer;
+    public LayerRendererDragon(DragonRenderer renderer,
+            DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+        this.renderer = renderer;
+        this.breedRenderer = breedRenderer;
+        this.model = model;
     }
     
 }

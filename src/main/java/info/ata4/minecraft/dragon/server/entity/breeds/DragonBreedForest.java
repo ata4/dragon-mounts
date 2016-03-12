@@ -29,8 +29,8 @@ public class DragonBreedForest extends DragonBreed {
     private static final Block FOOTPRINT = Blocks.grass;
     private static final float FOOTPRINT_CHANCE = 0.2f;
     
-    public DragonBreedForest() {
-        super("forest", "forest", 0x2d6e00);
+    DragonBreedForest(EnumDragonBreed type) {
+        super(type, "forest", 0x2d6e00);
         
         addHabitatBlock(Blocks.log);
         addHabitatBlock(Blocks.log2);
@@ -91,5 +91,17 @@ public class DragonBreedForest extends DragonBreed {
 //                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
 //                    world.setBlock(bx, by, bz, FOOTPRINT);
 //                }
+
+    @Override
+    public void onEnable(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDisable(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
+    }
 }
 

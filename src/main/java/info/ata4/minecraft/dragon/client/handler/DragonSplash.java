@@ -30,7 +30,7 @@ import java.util.Random;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonSplash {
+public class DragonSplash implements PrivateFields {
     
     private static final Logger L = LogManager.getLogger();
     private static final ResourceLocation RESOURCE_SPLASHES = new ResourceLocation(DragonMounts.AID, "splashes.txt");
@@ -72,10 +72,12 @@ public class DragonSplash {
     }
     
     private String getSplashText(GuiMainMenu menu) {
-        return ReflectionHelper.getPrivateValue(GuiMainMenu.class, menu, PrivateFields.GUIMAINMENU_SPLASHTEXT);
+        return ReflectionHelper.getPrivateValue(GuiMainMenu.class, menu,
+                GUIMAINMENU_SPLASHTEXT);
     }
     
     private void setSplashText(GuiMainMenu menu, String splash) {
-        ReflectionHelper.setPrivateValue(GuiMainMenu.class, menu, splash, PrivateFields.GUIMAINMENU_SPLASHTEXT);
+        ReflectionHelper.setPrivateValue(GuiMainMenu.class, menu, splash,
+                GUIMAINMENU_SPLASHTEXT);
     }
 }

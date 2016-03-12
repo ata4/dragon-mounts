@@ -1,5 +1,6 @@
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.renderer.GlStateManager;
@@ -11,16 +12,16 @@ import static org.lwjgl.opengl.GL11.*;
  */
 public class LayerRendererDragonGlow extends LayerRendererDragon {
 
-    public LayerRendererDragonGlow(DragonRenderer dragonRenderer) {
-        super(dragonRenderer);
+    public LayerRendererDragonGlow(DragonRenderer renderer,
+            DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+        super(renderer, breedRenderer, model);
     }
 
     @Override
     public void doRenderLayer(EntityTameableDragon dragon, float moveTime,
             float moveSpeed, float partialTicks, float ticksExisted, float lookYaw,
             float lookPitch, float scale) {
-        DragonModel dragonModel = dragonRenderer.getModel();
-        dragonRenderer.bindTexture(dragonModel.glowTexture);
+        renderer.bindTexture(breedRenderer.getGlowTexture());
         
         GlStateManager.pushAttrib();
         GlStateManager.enableBlend();
@@ -34,7 +35,7 @@ public class LayerRendererDragonGlow extends LayerRendererDragon {
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
         GlStateManager.color(1, 1, 1, 1);
 
-        dragonModel.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+        model.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
         
         b = dragon.getBrightnessForRender(partialTicks);
         u = b % 65536;

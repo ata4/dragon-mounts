@@ -21,8 +21,9 @@ public class EntityAIHunt extends EntityAITargetNonTamed {
     
     private final EntityTameableDragon dragon;
 
-    public EntityAIHunt(EntityTameableDragon dragon, Class clazz, boolean p_i45876_3_, Predicate p_i45876_4_) {
-        super(dragon, clazz, p_i45876_3_, p_i45876_4_);
+    public EntityAIHunt(EntityTameableDragon dragon, Class classTarget,
+            boolean checkSight, Predicate targetSelector) {
+        super(dragon, classTarget, checkSight, targetSelector);
         this.dragon = dragon;
     }
 

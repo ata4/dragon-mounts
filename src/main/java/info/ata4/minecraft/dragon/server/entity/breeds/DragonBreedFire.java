@@ -20,8 +20,8 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public class DragonBreedFire extends DragonBreed {
 
-    public DragonBreedFire() {
-        super("fire", "fire", 0x960b0f);
+    DragonBreedFire(EnumDragonBreed type) {
+        super(type, "fire", 0x960b0f);
         
         addImmunity(DamageSource.inFire);
         addImmunity(DamageSource.onFire);
@@ -44,5 +44,13 @@ public class DragonBreedFire extends DragonBreed {
     @Override
     public void onDisable(EntityTameableDragon dragon) {
       dragon.setDragonAvoidWater(false);
+    }
+
+    @Override
+    public void onUpdate(EntityTameableDragon dragon) {
+    }
+
+    @Override
+    public void onDeath(EntityTameableDragon dragon) {
     }
 }

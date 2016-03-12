@@ -10,17 +10,14 @@
 
 package info.ata4.minecraft.dragon.client.model;
 
-import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
-import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.ResourceLocation;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -36,12 +33,6 @@ public class DragonModel extends ModelBase {
     public static final int VERTS_NECK = 7;
     public static final int VERTS_TAIL = 12;
     public static final int HEAD_OFS = -16;
-    
-    // model textures
-    public final ResourceLocation bodyTexture;
-    public final ResourceLocation glowTexture;
-    public final ResourceLocation saddleTexture;
-    public final ResourceLocation eggTexture;
     
     // model parts
     public ModelPart head;
@@ -78,17 +69,12 @@ public class DragonModel extends ModelBase {
     public float offsetZ;
     public float pitch;
     public float size;
-    private DragonBreed breed;
+    private EnumDragonBreed breed;
     
-    public DragonModel(DragonBreed breed) {
+    public DragonModel(EnumDragonBreed breed) {
         textureWidth = 256;
         textureHeight = 256;
         
-        bodyTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/body.png");
-        glowTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/glow.png");
-        saddleTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/saddle.png");
-        eggTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + breed.getSkin() + "/egg.png");
-
         this.breed = breed;
 
         setTextureOffset("body.body", 0, 0);
@@ -124,10 +110,6 @@ public class DragonModel extends ModelBase {
         buildTail();
         buildWing();
         buildLegs();
-    }
-    
-    public ResourceLocation getEggTexture() {
-        return eggTexture;
     }
     
     private void buildHead() {
@@ -189,7 +171,7 @@ public class DragonModel extends ModelBase {
         tailScaleMiddle = tail.addChildBox("scale", -1, -8, -3, 2, 4, 6).setAngles(0, 0, 0);
         tailScaleRight = tail.addChildBox("scale", -1, -8, -3, 2, 4, 6).setAngles(0, 0, -scaleRotZ);
         
-        boolean fire = breed.getName().equals("fire");
+        boolean fire = breed == EnumDragonBreed.FIRE;
         
         tailScaleMiddle.showModel = !fire;
         tailScaleLeft.showModel = fire;
@@ -228,7 +210,7 @@ public class DragonModel extends ModelBase {
         horn.setRotationPoint(hornPosX, hornPosY, hornPosZ);
         horn.setAngles(hornRotX, hornRotY, hornRotZ);
         horn.isHidden = true;
-        horn.showModel = breed.getName().equals("water");
+        horn.showModel = breed == EnumDragonBreed.WATER;
         
         if (mirror) {
             tailHornLeft = horn;
@@ -295,7 +277,7 @@ public class DragonModel extends ModelBase {
     
     private void buildLeg(boolean hind) {
         // thinner legs for skeletons
-        boolean skeleton = breed.getName().equals("ghost");
+        boolean skeleton = breed == EnumDragonBreed.GHOST;
         
         float baseLength = 26;
         String baseName = hind ? "hind" : "fore";

@@ -9,9 +9,8 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-
 import java.util.UUID;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 
 /**
  *
@@ -27,11 +26,10 @@ public class DragonScaleModifier extends AttributeModifier {
         setSaved(false);
     }
 
-//    @Override   todo was this dragon size modifier for health and damage ever implemented?
-//    public double getAmount()
-//    {
-//      return getScale();
-//    }
+    @Override
+    public double getAmount() {
+        return super.getAmount() * getScale();
+    }
 
     public double getScale() {
         return size;

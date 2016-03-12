@@ -24,17 +24,17 @@ import java.util.Set;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonBreed {
+public abstract class DragonBreed {
     
-    private final String name;
+    private final EnumDragonBreed type;
     private final String skin;
     private final int color;
-    private Set<String> immunities = new HashSet<String>();
-    private Set<Block> breedBlocks = new HashSet<Block>();
-    private Set<BiomeGenBase> biomes = new HashSet<BiomeGenBase>();
+    private final Set<String> immunities = new HashSet<String>();
+    private final Set<Block> breedBlocks = new HashSet<Block>();
+    private final Set<BiomeGenBase> biomes = new HashSet<BiomeGenBase>();
     
-    public DragonBreed(String name, String skin, int color) {
-        this.name = name;
+    DragonBreed(EnumDragonBreed type, String skin, int color) {
+        this.type = type;
         this.skin = skin;
         this.color = color;
         
@@ -47,7 +47,7 @@ public class DragonBreed {
     }
     
     public String getName() {
-        return name;
+        return type.getName();
     }
 
     public String getSkin() {
@@ -106,17 +106,13 @@ public class DragonBreed {
         return false;
     }
     
-    public void onEnable(EntityTameableDragon dragon) {
-    }
+    public abstract void onEnable(EntityTameableDragon dragon);
     
-    public void onDisable(EntityTameableDragon dragon) {
-    }
+    public abstract void onDisable(EntityTameableDragon dragon);
     
-    public void onUpdate(EntityTameableDragon dragon) {
-    }
+    public abstract void onUpdate(EntityTameableDragon dragon);
     
-    public void onDeath(EntityTameableDragon dragon) {
-    }
+    public abstract void onDeath(EntityTameableDragon dragon);
     
     public String getLivingSound(EntityTameableDragon dragon) {
         if (dragon.getRNG().nextInt(3) == 0) {
@@ -131,11 +127,30 @@ public class DragonBreed {
     }
     
     public String getDeathSound(EntityTameableDragon dragon) {
-        return DragonMounts.AID + ":mob.enderdragon.death";
+//        return DragonMounts.AID + ":mob.enderdragon.death";
+        return "";
+    }
+    
+    public float getSoundPitch(EntityTameableDragon dragon, String sound) {
+        // lower pitch for default breathing sounds
+        if (sound.endsWith("mob.enderdragon.breathe")) {
+            return 0.5f;
+        }
+        
+        return 1;
+    }
+    
+    public float getSoundVolume(EntityTameableDragon dragon, String sound) {
+        // lower volume for default breathing sounds
+        if (sound.endsWith("mob.enderdragon.breathe")) {
+            return 0.5f;
+        }
+        
+        return 1.0f;
     }
     
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 }

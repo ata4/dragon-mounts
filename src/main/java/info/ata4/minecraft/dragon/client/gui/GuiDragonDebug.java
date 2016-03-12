@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.client.gui;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
@@ -50,7 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class GuiDragonDebug extends Gui {
+public class GuiDragonDebug extends Gui implements PrivateFields {
     
     private static final int WHITE = 0xFFFFFF;
     private static final int GREY = 0xAAAAAA;
@@ -58,6 +59,7 @@ public class GuiDragonDebug extends Gui {
     private static final int RED = 0xFF8888;
     
     public static Object probe;
+    public static boolean enabled;
     
     private final Minecraft mc = Minecraft.getMinecraft();
     private final FontRenderer fr;
@@ -75,7 +77,7 @@ public class GuiDragonDebug extends Gui {
     
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.isCancelable() || event.type != ElementType.TEXT) {
+        if (!enabled || event.isCancelable() || event.type != ElementType.TEXT) {
             return;
         }
 
@@ -291,13 +293,13 @@ public class GuiDragonDebug extends Gui {
         text.setColor(WHITE);
         
         DragonBreedHelper breedHelper = dragonServer.getBreedHelper();
-        Map<DragonBreed, AtomicInteger> breedPoints = breedHelper.getBreedPoints();
+        Map<EnumDragonBreed, AtomicInteger> breedPoints = breedHelper.getBreedPoints();
         
-        for (Map.Entry<DragonBreed, AtomicInteger> breedPoint : breedPoints.entrySet()) {
-            DragonBreed breed = breedPoint.getKey();
+        for (Map.Entry<EnumDragonBreed, AtomicInteger> breedPoint : breedPoints.entrySet()) {
+            EnumDragonBreed breedType = breedPoint.getKey();
             int points = breedPoint.getValue().get();
-            text.setColor(breed.getColor());
-            text.printf("%s: %d\n", breed.getName(), points);
+            text.setColor(breedType.getBreed().getColor());
+            text.printf("%s: %d\n", breedType, points);
         }
     }
 
@@ -363,7 +365,8 @@ public class GuiDragonDebug extends Gui {
         text.println(label + ":");
         text.setColor(WHITE);
 
-        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(EntityAITasks.class, tasks, PrivateFields.ENTITYAITASKS_EXECUTINGTASKENTRIES);
+        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(
+                EntityAITasks.class, tasks, ENTITYAITASKS_EXECUTINGTASKENTRIES);
         
         // create copy to avoid ConcurrentModificationException
         currentTasks = new ArrayList<EntityAITaskEntry>(currentTasks);
@@ -395,7 +398,8 @@ public class GuiDragonDebug extends Gui {
         Map<Integer, WatchableObject> watchedObjects;
         
         try {
-            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class, dragon.getDataWatcher(), PrivateFields.DATAWATCHER_WATCHEDOBJECTS);
+            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class,
+                    dragon.getDataWatcher(), DATAWATCHER_WATCHEDOBJECTS);
         } catch (Exception ex) {
             return;
         }

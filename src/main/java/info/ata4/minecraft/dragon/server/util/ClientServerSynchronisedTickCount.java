@@ -14,64 +14,66 @@ package info.ata4.minecraft.dragon.server.util;
  *     If the mismatch is too great, the tick count will jump immediately.
  * (4) reset() to force the client to start at the given value
  */
-public class ClientServerSynchronisedTickCount
-{
+public class ClientServerSynchronisedTickCount {
+    
+    private int cachedRemoteTickCount;
+    private int ticksToInsert;
+    private double localTickCount;
+    private double localTickRate;
+
+    private final double MAXIMUM_MISMATCH = 100;
+    private final double expectedUpdateInterval;
+
     /**
      * Creates a new synchronised tick count.
-     * @param i_expectedUpdateIntervalTicks roughly how often a server update is expected.  Affects the 'catchup' speed.
+     *
+     * @param i_expectedUpdateIntervalTicks roughly how often a server update is
+     * expected. Affects the 'catchup' speed.
      */
     public ClientServerSynchronisedTickCount(int i_expectedUpdateIntervalTicks) {
         expectedUpdateInterval = i_expectedUpdateIntervalTicks;
         reset(0);
     }
 
-  public void reset(int newValue)
-  {
-      ticksToInsert = 0;
-      localTickRate = 1.0;
-      cachedRemoteTickCount = newValue;
-      localTickCount = newValue;
-  }
-
-  // tick the client once; may drop ticks or add extra ticks to resynch with server
-  public int tick()
-  {
-    int beforeTick = getCurrentTickCount();
-    localTickCount += localTickRate;
-    int afterTick = getCurrentTickCount();
-    int extraTicksInserted = afterTick - beforeTick - 1;
-    ticksToInsert -= extraTicksInserted;
-    return afterTick;
-  }
-
-  // update with the most recent value sent from the server
-  // if it is the same as the most recent value, ignore it
-  public void updateFromServer(int remoteTickCount)
-  {
-    if (remoteTickCount == cachedRemoteTickCount) return;
-    double mismatch = remoteTickCount - localTickCount;
-    if (mismatch < -MAXIMUM_MISMATCH || mismatch > MAXIMUM_MISMATCH) {
+    public void reset(int newValue) {
         ticksToInsert = 0;
-        localTickCount = remoteTickCount;
-    } else {
-        ticksToInsert = (int)mismatch;
+        localTickRate = 1.0;
+        cachedRemoteTickCount = newValue;
+        localTickCount = newValue;
     }
-      localTickRate = 1.0 + ticksToInsert / expectedUpdateInterval;
 
-    cachedRemoteTickCount = remoteTickCount;
-  }
+    // tick the client once; may drop ticks or add extra ticks to resynch with server
+    public int tick() {
+        int beforeTick = getCurrentTickCount();
+        localTickCount += localTickRate;
+        int afterTick = getCurrentTickCount();
+        int extraTicksInserted = afterTick - beforeTick - 1;
+        ticksToInsert -= extraTicksInserted;
+        return afterTick;
+    }
 
-  public int getCurrentTickCount()
-  {
-    if (localTickRate < Integer.MIN_VALUE || localTickRate > Integer.MAX_VALUE) return 0;
-    return (int)localTickCount;
-  }
+    // update with the most recent value sent from the server
+    // if it is the same as the most recent value, ignore it
+    public void updateFromServer(int remoteTickCount) {
+        if (remoteTickCount == cachedRemoteTickCount) {
+            return;
+        }
+        double mismatch = remoteTickCount - localTickCount;
+        if (mismatch < -MAXIMUM_MISMATCH || mismatch > MAXIMUM_MISMATCH) {
+            ticksToInsert = 0;
+            localTickCount = remoteTickCount;
+        } else {
+            ticksToInsert = (int) mismatch;
+        }
+        localTickRate = 1.0 + ticksToInsert / expectedUpdateInterval;
 
-  private int cachedRemoteTickCount;
-  private int ticksToInsert;
-  private double localTickCount;
-  private double localTickRate;
+        cachedRemoteTickCount = remoteTickCount;
+    }
 
-  private final double MAXIMUM_MISMATCH = 100;
-  private final double expectedUpdateInterval;
+    public int getCurrentTickCount() {
+        if (localTickRate < Integer.MIN_VALUE || localTickRate > Integer.MAX_VALUE) {
+            return 0;
+        }
+        return (int) localTickCount;
+    }
 }

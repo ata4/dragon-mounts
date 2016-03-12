@@ -10,9 +10,12 @@
 
 package info.ata4.minecraft.dragon.server.handler;
 
+import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStage;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
+import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -35,10 +38,11 @@ public class DragonEggBlockHandler {
         
         BlockPos pos = evt.pos;
         World world = evt.entity.worldObj;
-        Block block = world.getBlockState(evt.pos).getBlock();
+        IBlockState state = world.getBlockState(pos);
+        Block block = world.getBlockState(pos).getBlock();
         
         // ignore non-egg blocks
-        if (block != Blocks.dragon_egg) {
+        if (block != Blocks.dragon_egg && block != BlockDragonBreedEgg.INSTANCE) {
             return;
         }
         
@@ -54,7 +58,14 @@ public class DragonEggBlockHandler {
             EntityTameableDragon dragon = new EntityTameableDragon(world);
             dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
             dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getName());
-            dragon.getLifeStageHelper().setLifeStage(DragonLifeStage.EGG);
+            dragon.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
+            
+            // set breed type (custom dragon egg only, otherwise use default breed)
+            if (block == BlockDragonBreedEgg.INSTANCE) {
+                EnumDragonBreed breed = state.getValue(BlockDragonBreedEgg.BREED);
+                dragon.getBreedHelper().setBreedType(breed);
+            }
+            
             world.spawnEntityInWorld(dragon);
         }
     }

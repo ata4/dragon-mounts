@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.client.model.anim;
 
+import info.ata4.minecraft.dragon.util.math.Interpolation;
 import info.ata4.minecraft.dragon.util.math.MathX;
 
 /**
@@ -42,7 +43,7 @@ public class TickFloat {
     }
     
     public float get(float x) {
-        return MathX.lerp(previous, current, x);
+        return Interpolation.linear(previous, current, x);
     }
     
     public float get() {

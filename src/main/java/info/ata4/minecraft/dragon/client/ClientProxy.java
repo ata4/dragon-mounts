@@ -15,13 +15,16 @@ import info.ata4.minecraft.dragon.client.handler.DragonControl;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderManager;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  *
@@ -29,21 +32,35 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
  */
 public class ClientProxy extends CommonProxy {
     
+
+    @Override
+    public void onPreInit(FMLPreInitializationEvent event) {
+        super.onPreInit(event);
+        
+        // register dragon entity renderer
+        RenderingRegistry.registerEntityRenderingHandler(
+                EntityTameableDragon.class, DragonRenderer::new);
+        
+        // register item renderer for dragon egg block variants
+        Item itemBlockDragonEgg = GameRegistry.findItem(DragonMounts.AID, "dragon_egg");
+        EnumDragonBreed.META_MAPPING.forEach((breed, meta) -> {
+            ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.AID + ":dragon_egg", "breed=" + breed.getName());
+            ModelLoader.setCustomModelResourceLocation(itemBlockDragonEgg, meta, eggModelLoc);
+        });
+    }
+
     @Override
     public void onInit(FMLInitializationEvent evt) {
         super.onInit(evt);
     }
 
     @Override
-    public void onPostInit(FMLPostInitializationEvent event)
-    {
-      if (DragonMounts.instance.getConfig().isDebug()) {
-        MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
-      }
-
-      RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-      RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, new DragonRenderer(renderManager));
-
-        FMLCommonHandler.instance().bus().register(new DragonControl(getNetwork()));
+    public void onPostInit(FMLPostInitializationEvent event) {
+        super.onPostInit(event);
+        
+        if (DragonMounts.instance.getConfig().isDebug()) {
+            MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
+        }
+        MinecraftForge.EVENT_BUS.register(new DragonControl(getNetwork()));
     }
 }
