@@ -12,7 +12,6 @@ package info.ata4.minecraft.dragon.client.gui;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
-import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
@@ -45,7 +44,6 @@ import org.lwjgl.input.Keyboard;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -64,9 +62,9 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
     private final Minecraft mc = Minecraft.getMinecraft();
     private final FontRenderer fr;
     private final GuiTextPrinter text;
+    private final DecimalFormat dfShort = new DecimalFormat("0.00");
+    private final DecimalFormat dfLong = new DecimalFormat("0.0000");
     private ScaledResolution res;
-    private DecimalFormat dfShort = new DecimalFormat("0.00");
-    private DecimalFormat dfLong = new DecimalFormat("0.0000");
     private EntityTameableDragon dragonClient;
     private EntityTameableDragon dragonServer;
     
@@ -273,12 +271,12 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         
         Collection<IAttributeInstance> attribs = dragon.getAttributeMap().getAllAttributes();
         
-        for (IAttributeInstance attrib : attribs) {
+        attribs.forEach(attrib -> {
             String attribName = StatCollector.translateToLocal("attribute.name." + attrib.getAttribute().getAttributeUnlocalizedName());
             String attribValue = dfShort.format(attrib.getAttributeValue());
             String attribBase = dfShort.format(attrib.getBaseValue());
             text.println(attribName + " = " + attribValue + " (" + attribBase + ")");
-        }
+        });
         
         text.println();
     }
@@ -293,14 +291,10 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.setColor(WHITE);
         
         DragonBreedHelper breedHelper = dragonServer.getBreedHelper();
-        Map<EnumDragonBreed, AtomicInteger> breedPoints = breedHelper.getBreedPoints();
-        
-        for (Map.Entry<EnumDragonBreed, AtomicInteger> breedPoint : breedPoints.entrySet()) {
-            EnumDragonBreed breedType = breedPoint.getKey();
-            int points = breedPoint.getValue().get();
+        breedHelper.getBreedPoints().forEach((breedType, points) -> {
             text.setColor(breedType.getBreed().getColor());
-            text.printf("%s: %d\n", breedType, points);
-        }
+            text.printf("%s: %d\n", breedType, points.get());
+        });
     }
 
     private void renderNavigation() {
@@ -369,18 +363,18 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
                 EntityAITasks.class, tasks, ENTITYAITASKS_EXECUTINGTASKENTRIES);
         
         // create copy to avoid ConcurrentModificationException
-        currentTasks = new ArrayList<EntityAITaskEntry>(currentTasks);
+        currentTasks = new ArrayList<>(currentTasks);
         
         if (currentTasks.isEmpty()) {
             text.println("---");
             return;
         }
         
-        for (EntityAITaskEntry entry : currentTasks) {
+        currentTasks.forEach(entry -> {
             String actionName = entry.action.getClass().getSimpleName();
             int priority = entry.priority;
             text.printf("%d - %s\n", priority, actionName);
-        }
+        });
     }
     
     private void renderWatchedObjects() {
