@@ -487,15 +487,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public float getRenderSizeModifier() {
         return getScale();
     }
-    
-    /**
-     * Returns true if the newer Entity AI code should be run
-     */
-    // no longer required
-//    @Override
-//    protected boolean isAIEnabled() {
-//        return true;
-//    }
 
     @Override
     protected boolean isGroundAIEnabled() {
