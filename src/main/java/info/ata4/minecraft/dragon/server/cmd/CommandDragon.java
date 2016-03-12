@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.cmd;
 
+import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
@@ -49,7 +50,10 @@ public class CommandDragon extends CommandBase {
             EnumDragonLifeStage.class, lifeStageConsumer));
         
         subCommands.put("tame", new SubCommandTame(this));
-        subCommands.put("debug", new SubCommandDebug(this));
+        
+        if (DragonMounts.instance.getConfig().isDebug()) {
+            subCommands.put("debug", new SubCommandDebug(this));
+        }
     }
 
     @Override

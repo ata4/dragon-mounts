@@ -57,15 +57,20 @@ public class SubCommandDebug extends SubCommand {
             GuiDragonDebug.enabled = !GuiDragonDebug.enabled;
         }));
         
-        subCommands.put("setAge", new SubCommandSimple(parent, (sender, args) -> {
-            if (args.length < 3) {
-                throw new WrongUsageException("setAge <age>");
-            }
-            
-            int ticks = CommandBase.parseInt(args[2], 0, EnumDragonLifeStage.ADULT.startTicks());
-            parent.applyModifier(sender, dragon -> {
-                dragon.getLifeStageHelper().setTicksSinceCreation(ticks);
-            }, parent.isGlobal(args));
+        subCommands.put("testAge", new SubCommandSimple(parent, dragon -> {
+            dragon.getLifeStageHelper().setTicksSinceCreation(18000);
+        }));
+        
+        subCommands.put("testName", new SubCommandSimple(parent, dragon -> {
+            dragon.setCustomNameTag("Puff");
+        }));
+        
+        subCommands.put("testSaddle", new SubCommandSimple(parent, dragon -> {
+            dragon.setSaddled(true);
+        }));
+        
+        subCommands.put("kill", new SubCommandSimple(parent, dragon -> {
+            dragon.setHealth(0);
         }));
     }
 

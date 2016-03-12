@@ -127,7 +127,8 @@ public abstract class DragonBreed {
     }
     
     public String getDeathSound(EntityTameableDragon dragon) {
-        return DragonMounts.AID + ":mob.enderdragon.death";
+//        return DragonMounts.AID + ":mob.enderdragon.death";
+        return "";
     }
     
     public float getSoundPitch(EntityTameableDragon dragon, String sound) {

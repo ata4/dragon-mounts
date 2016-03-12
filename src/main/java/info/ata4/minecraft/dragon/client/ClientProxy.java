@@ -58,7 +58,9 @@ public class ClientProxy extends CommonProxy {
     public void onPostInit(FMLPostInitializationEvent event) {
         super.onPostInit(event);
         
-        MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
+        if (DragonMounts.instance.getConfig().isDebug()) {
+            MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
+        }
         MinecraftForge.EVENT_BUS.register(new DragonControl(getNetwork()));
     }
 }
