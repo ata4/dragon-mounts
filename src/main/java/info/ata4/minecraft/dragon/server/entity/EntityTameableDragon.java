@@ -22,13 +22,10 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S0BPacketAnimation;
-import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -56,8 +53,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public static final float BASE_WIDTH = 2.75f;
     public static final float BASE_HEIGHT = 2.75f;
     public static final int HOME_RADIUS = 256;
-    public static final Item FAVORITE_FOOD = Items.fish;
-    
+
     // data value IDs
     private static final int INDEX_SADDLED = 20;
     private static final int INDEX_BREEDER = 21;
@@ -72,7 +68,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     private Map<Class, DragonHelper> helpers;
     
     // client-only delegates
-    private DragonAnimator animator;
     private final DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
     
     // server-only flags
@@ -86,6 +81,12 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         
         // enables walking over blocks
         stepHeight = 1;
+        
+        // DragonBrain needs to be initialized here, since the EntityAITasks
+        // fields aren't initalized yet when entityInit() is called
+        if (isServer()) {
+            addHelper(new DragonBrain(this));
+        }
     }
     
     @Override
@@ -104,11 +105,11 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         addHelper(new DragonBreedHelper(this, INDEX_BREED));
         addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
-        addHelper(new DragonParticleHelper(this));
-
-        // don't use this on server side or you're asking for trouble!
+        
+        // client-only helpers
         if (isClient()) {
-            animator = new DragonAnimator(this);
+            addHelper(new DragonParticleHelper(this));
+            addHelper(new DragonAnimator(this));
         }
     }
 
@@ -164,12 +165,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     public void onLivingUpdate() {
         helpers.values().forEach(helper -> helper.onLivingUpdate());
         
-        if (isClient()) {
-            if (!isEgg()) {
-                animator.setOnGround(!isFlying());
-                animator.update();
-            }
-        } else {
+        if (isServer()) {
             // set home position near owner when tamed
             if (isTamed()) {
                 Entity owner = getOwner();
@@ -367,8 +363,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             
             // eat only if hurt
             if (getHealthRelative() < 1) {
-                food = (ItemFood) ItemUtils.consumeEquipped(player, FAVORITE_FOOD,
-                        Items.porkchop, Items.beef, Items.chicken);
+                food = (ItemFood) ItemUtils.consumeEquipped(player,
+                        getBreed().getAcceptedFood());
             }
             
             // heal only if the food was actually consumed
@@ -398,7 +394,8 @@ public class EntityTameableDragon extends EntityFlyingTameable {
                         isJumping = false;
                         navigator.clearPathEntity();  // replacement for setPathToEntity(null);
                     }
-                } else if (getReproductionHelper().canReproduce() && ItemUtils.consumeEquipped(player, FAVORITE_FOOD)) {
+                } else if (getReproductionHelper().canReproduce() &&
+                        ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
                     // activate love mode with favorite food if it hasn't reproduced yet
                     if (isClient()) {
                         getParticleHelper().spawnBodyParticles(EnumParticleTypes.HEART);
@@ -414,7 +411,7 @@ public class EntityTameableDragon extends EntityFlyingTameable {
             }
         } else {
             if (isServer()) {
-                if (ItemUtils.consumeEquipped(player, FAVORITE_FOOD)) {
+                if (ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
                     // tame dragon with favorite food and a random chance
                     tamedFor(player, rand.nextInt(3) == 0);
                 }
@@ -619,10 +616,6 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         return getReproductionHelper().createChild(mate);
     }
     
-    public DragonAnimator getAnimator() {
-        return animator;
-    }
-    
     private void addHelper(DragonHelper helper) {
         L.trace("addHelper({})", helper.getClass().getName());
         if (helpers == null) {
@@ -647,8 +640,16 @@ public class EntityTameableDragon extends EntityFlyingTameable {
         return getHelper(DragonReproductionHelper.class);
     }
     
-    private DragonParticleHelper getParticleHelper() {
+    public DragonParticleHelper getParticleHelper() {
         return getHelper(DragonParticleHelper.class);
+    }
+    
+    public DragonAnimator getAnimator() {
+        return getHelper(DragonAnimator.class);
+    }
+    
+    public DragonBrain getBrain() {
+        return getHelper(DragonBrain.class);
     }
     
     public boolean getBooleanData(int index) {
@@ -870,13 +871,5 @@ public class EntityTameableDragon extends EntityFlyingTameable {
     @Override
     public boolean isChild() {
         return !isAdult();
-    }
-
-    public void setDragonAvoidWater(boolean avoidWater) {
-        PathNavigate pathNavigate = this.getNavigator();
-        if (pathNavigate instanceof PathNavigateGround) {
-            PathNavigateGround pathNavigateGround = (PathNavigateGround) pathNavigate;
-            pathNavigateGround.setAvoidsWater(avoidWater);
-        }
     }
 }

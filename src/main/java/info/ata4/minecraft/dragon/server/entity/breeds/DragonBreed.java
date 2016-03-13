@@ -18,6 +18,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 
 /**
  * Base class for dragon breeds.
@@ -104,6 +106,14 @@ public abstract class DragonBreed {
     
     public boolean isHabitatEnvironment(EntityTameableDragon dragon) {
         return false;
+    }
+    
+    public Item[] getAcceptedFood() {
+        return new Item[] { getFavoriteFood(), Items.porkchop, Items.beef, Items.chicken };
+    }
+    
+    public Item getFavoriteFood() {
+        return Items.fish;
     }
     
     public abstract void onEnable(EntityTameableDragon dragon);

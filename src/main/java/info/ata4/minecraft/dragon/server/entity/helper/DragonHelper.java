@@ -19,7 +19,7 @@ import java.util.Random;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonHelper {
+public abstract class DragonHelper {
 
     protected final EntityTameableDragon dragon;
     protected final DataWatcher dataWatcher;
