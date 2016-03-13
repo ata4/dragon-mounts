@@ -76,7 +76,7 @@ public class SubCommandDebug extends SubCommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        String cmd = args[1].toLowerCase();
+        String cmd = args[1];
         
         if (!subCommands.containsKey(cmd)) {
             throw new WrongUsageException(parent.getCommandUsage(sender));

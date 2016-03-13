@@ -72,7 +72,7 @@ public class CommandDragon extends CommandBase {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args, subCommands.keySet());
         } else if (args.length == 2) {
-            String cmd = args[0].toLowerCase();
+            String cmd = args[0];
             if (subCommands.containsKey(cmd)) {
                 return subCommands.get(cmd).addTabCompletionOptions(sender, args, pos);
             }
