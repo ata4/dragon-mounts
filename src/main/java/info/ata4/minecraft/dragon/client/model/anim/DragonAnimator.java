@@ -165,7 +165,7 @@ public class DragonAnimator extends DragonHelper {
         // check if the wings are moving down and trigger the event
         boolean newWingsDown = cycleOfs > 1;
         if (newWingsDown && !wingsDown && flutter != 0) {
-            dragon.onWingsDown(speed);
+            dragon.getSoundManager().onWingsDown(speed);
         }
         wingsDown = newWingsDown;
         
