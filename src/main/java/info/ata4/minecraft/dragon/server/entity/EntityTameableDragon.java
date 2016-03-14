@@ -9,9 +9,8 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
-import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
-import info.ata4.minecraft.dragon.server.entity.helper.DragonBodyHelper;
+import info.ata4.minecraft.dragon.server.entity.ai.path.PathNavigateFlying;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
@@ -30,6 +29,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S0BPacketAnimation;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -253,6 +253,13 @@ public class EntityTameableDragon extends EntityTameable {
             if (flying != isFlying()) {
                 // notify client
                 setFlying(flying);
+                
+                // update pathfinding method
+                if (flying) {
+                    navigator = new PathNavigateFlying(this, worldObj);
+                } else {
+                    navigator = new PathNavigateGround(this, worldObj);
+                }
                 
                 // tasks need to be updated after switching modes
                 getBrain().updateAITasks();
