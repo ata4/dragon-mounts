@@ -331,8 +331,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.println("Navigation (Air)");
         text.setColor(WHITE);
         
-        text.println("Waypoint: " + dragonServer.getWaypoint());
-        text.println("Can fly: " + dragonClient.isCanFly());
+        text.println("Can fly: " + dragonClient.canFly());
         text.println("Flying: " + dragonClient.isFlying());
         text.println("Altitude: " + dfLong.format(dragonClient.getAltitude()));
     }
@@ -349,9 +348,8 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.println("AI tasks");
         text.setColor(WHITE);
         
-        renderAITasks(dragonServer.tasks, "Ground");
-        renderAITasks(dragonServer.airTasks, "Air");
-        renderAITasks(dragonServer.targetTasks, "Target");
+        renderAITasks(dragonServer.tasks, "Tasks");
+        renderAITasks(dragonServer.targetTasks, "Target Tasks");
     }
     
     private void renderAITasks(EntityAITasks tasks, String label) {

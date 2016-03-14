@@ -10,9 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.DragonFlightWaypoint;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAICatchOwner;
-import info.ata4.minecraft.dragon.util.math.MathX;
 
 /**
  *
@@ -26,18 +24,18 @@ public class EntityAICatchOwnerAir extends EntityAICatchOwner {
 
     @Override
     public void updateTask() {
-        DragonFlightWaypoint wp = dragon.getWaypoint();
-        wp.setEntity(owner);
-        
-        double dist = wp.getDistance();
-        double yOfs = MathX.clamp(dist, 0, 64);
-        
-        wp.posY -= (int) yOfs;
-        
-        if (wp.isNear()) {
-            owner.mountEntity(dragon);
-        }
-        
-        dragon.setMoveSpeedAirHoriz(1);
+//        DragonFlightWaypoint wp = dragon.getWaypoint();
+//        wp.setEntity(owner);
+//        
+//        double dist = wp.getDistance();
+//        double yOfs = MathX.clamp(dist, 0, 64);
+//        
+//        wp.posY -= (int) yOfs;
+//        
+//        if (wp.isNear()) {
+//            owner.mountEntity(dragon);
+//        }
+//        
+//        dragon.setMoveSpeedAirHoriz(1);
     }
 }

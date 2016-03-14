@@ -9,7 +9,6 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
-import info.ata4.minecraft.dragon.server.entity.EntityFlyingTameable;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.util.DamageSource;
@@ -42,12 +41,12 @@ public class DragonBreedAir extends DragonBreed {
 
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-        dragon.getAttributeMap().getAttributeInstance(EntityFlyingTameable.MOVE_SPEED_AIR).applyModifier(MODIFIER);
+        dragon.getAttributeMap().getAttributeInstance(EntityTameableDragon.MOVE_SPEED_AIR).applyModifier(MODIFIER);
     }
 
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-        dragon.getAttributeMap().getAttributeInstance(EntityFlyingTameable.MOVE_SPEED_AIR).removeModifier(MODIFIER);
+        dragon.getAttributeMap().getAttributeInstance(EntityTameableDragon.MOVE_SPEED_AIR).removeModifier(MODIFIER);
     }
 
     @Override

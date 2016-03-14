@@ -261,7 +261,10 @@ public class DragonAnimator extends DragonHelper {
         sitTimer.set(sitVal);
         
         // update jaw opening transition
-        int ticksSinceLastAttack = dragon.getTicksSinceLastAttack();
+        //int ticksSinceLastAttack = dragon.getTicksSinceLastAttack();
+        
+        // TODO: find better attack animation method
+        int ticksSinceLastAttack = -1;
         
         boolean jawFlag = (ticksSinceLastAttack >= 0 && ticksSinceLastAttack < JAW_OPENING_TIME_FOR_ATTACK);
         jawTimer.add(jawFlag ? 0.2f : -0.2f);
