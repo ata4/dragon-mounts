@@ -10,15 +10,15 @@
 package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.EntityAICatchOwner;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonCatchOwner;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAICatchOwnerAir extends EntityAICatchOwner {
+public class EntityAIDragonCatchOwnerAir extends EntityAIDragonCatchOwner {
 
-    public EntityAICatchOwnerAir(EntityTameableDragon dragon) {
+    public EntityAIDragonCatchOwnerAir(EntityTameableDragon dragon) {
         super(dragon);
     }
 

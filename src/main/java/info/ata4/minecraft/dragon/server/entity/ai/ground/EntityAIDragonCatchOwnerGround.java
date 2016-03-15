@@ -10,15 +10,15 @@
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.EntityAICatchOwner;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonCatchOwner;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAICatchOwnerGround extends EntityAICatchOwner  {
+public class EntityAIDragonCatchOwnerGround extends EntityAIDragonCatchOwner  {
 
-    public EntityAICatchOwnerGround(EntityTameableDragon dragon) {
+    public EntityAIDragonCatchOwnerGround(EntityTameableDragon dragon) {
         super(dragon);
         setMutexBits(0xffffffff);
     }

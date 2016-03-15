@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.ai.EntityAIBase;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.BlockPos;
 
@@ -19,13 +19,12 @@ import net.minecraft.util.BlockPos;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAILand extends EntityAIBase {
+public class EntityAIDragonLand extends EntityAIDragonBase {
     
-    private final EntityTameableDragon dragon;
     private BlockPos landingBlock;
 
-    public EntityAILand(EntityTameableDragon dragon) {
-        this.dragon = dragon;
+    public EntityAIDragonLand(EntityTameableDragon dragon) {
+        super(dragon);
     }
 
     @Override
@@ -34,9 +33,9 @@ public class EntityAILand extends EntityAIBase {
             return false;
         }
         
-        BlockPos pos = dragon.worldObj.getHeight(new BlockPos(RandomPositionGenerator.findRandomTarget(dragon, 16, 1)));
+        BlockPos pos = world.getHeight(new BlockPos(RandomPositionGenerator.findRandomTarget(dragon, 16, 1)));
 
-        if (!dragon.worldObj.getBlockState(pos.down()).getBlock().getMaterial().isSolid()) {
+        if (!world.getBlockState(pos.down()).getBlock().getMaterial().isSolid()) {
             return false;
         }
         

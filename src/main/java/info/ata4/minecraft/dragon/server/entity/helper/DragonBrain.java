@@ -10,16 +10,16 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAICatchOwnerAir;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAILand;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIRideAir;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAICatchOwnerGround;
+import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonCatchOwnerAir;
+import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonLand;
+import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonRideAir;
+import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonCatchOwnerGround;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonFollowOwner;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIHunt;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIRideGround;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIWatchIdle;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIWatchLiving;
+import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonHunt;
+import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonRideGround;
+import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchIdle;
+import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchLiving;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -103,13 +103,13 @@ public class DragonBrain extends DragonHelper {
         }
         
         if (dragon.isFlying()) {
-            tasks.addTask(0, new EntityAIRideAir(dragon)); // mutex all
+            tasks.addTask(0, new EntityAIDragonRideAir(dragon)); // mutex all
             tasks.addTask(0, new EntityAIMoveTowardsRestriction(dragon, 1)); // mutex 1
-            tasks.addTask(0, new EntityAILand(dragon)); // mutex 0
+            tasks.addTask(0, new EntityAIDragonLand(dragon)); // mutex 0
 //            tasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
         } else {
-            tasks.addTask(0, new EntityAICatchOwnerGround(dragon)); // mutex all
-            tasks.addTask(1, new EntityAIRideGround(dragon, 1)); // mutex all
+            tasks.addTask(0, new EntityAIDragonCatchOwnerGround(dragon)); // mutex all
+            tasks.addTask(1, new EntityAIDragonRideGround(dragon, 1)); // mutex all
             tasks.addTask(2, new EntityAISwimming(dragon)); // mutex 4
             tasks.addTask(4, dragon.getAISit()); // mutex 4+1
 
@@ -118,10 +118,10 @@ public class DragonBrain extends DragonHelper {
 
             tasks.addTask(9, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
             tasks.addTask(10, new EntityAIWander(dragon, 1)); // mutex 1
-            tasks.addTask(11, new EntityAIWatchIdle(dragon)); // mutex 2
-            tasks.addTask(11, new EntityAIWatchLiving(dragon, 16, 0.05f)); // mutex 2
+            tasks.addTask(11, new EntityAIDragonWatchIdle(dragon)); // mutex 2
+            tasks.addTask(11, new EntityAIDragonWatchLiving(dragon, 16, 0.05f)); // mutex 2
 
-            targetTasks.addTask(5, new EntityAIHunt(dragon, EntityAnimal.class, false,
+            targetTasks.addTask(5, new EntityAIDragonHunt(dragon, EntityAnimal.class, false,
                 new EntityClassPredicate(
                         EntitySheep.class,
                         EntityPig.class,

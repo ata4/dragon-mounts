@@ -9,15 +9,15 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
-import net.minecraft.entity.EntityLiving;
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.EntityAILookIdle;
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIWatchIdle extends EntityAILookIdle {
+public class EntityAIDragonWatchIdle extends EntityAILookIdle {
 
-    public EntityAIWatchIdle(EntityLiving par1EntityLiving) {
+    public EntityAIDragonWatchIdle(EntityTameableDragon par1EntityLiving) {
         super(par1EntityLiving);
         this.setMutexBits(2);
     }

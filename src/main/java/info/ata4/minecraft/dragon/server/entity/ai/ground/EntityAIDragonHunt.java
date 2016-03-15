@@ -17,11 +17,11 @@ import net.minecraft.entity.ai.EntityAITargetNonTamed;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIHunt extends EntityAITargetNonTamed {
+public class EntityAIDragonHunt extends EntityAITargetNonTamed {
     
     private final EntityTameableDragon dragon;
 
-    public EntityAIHunt(EntityTameableDragon dragon, Class classTarget,
+    public EntityAIDragonHunt(EntityTameableDragon dragon, Class classTarget,
             boolean checkSight, Predicate targetSelector) {
         super(dragon, classTarget, checkSight, targetSelector);
         this.dragon = dragon;

@@ -10,20 +10,18 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAICatchOwner extends EntityAIBase {
+public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
     
-    protected final EntityTameableDragon dragon;
     protected EntityPlayer owner;
     
-    public EntityAICatchOwner(EntityTameableDragon dragon) {
-        this.dragon = dragon;
+    public EntityAIDragonCatchOwner(EntityTameableDragon dragon) {
+        super(dragon);
     }
 
     @Override

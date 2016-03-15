@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.EntityAIRide;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonRide;
 import net.minecraft.util.Vec3;
 
 /**
@@ -18,9 +18,9 @@ import net.minecraft.util.Vec3;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIRideAir extends EntityAIRide {
+public class EntityAIDragonRideAir extends EntityAIDragonRide {
         
-    public EntityAIRideAir(EntityTameableDragon dragon) {
+    public EntityAIDragonRideAir(EntityTameableDragon dragon) {
         super(dragon);
     }
     

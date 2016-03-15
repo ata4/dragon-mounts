@@ -10,7 +10,6 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.BitSet;
@@ -20,13 +19,12 @@ import java.util.BitSet;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public abstract class EntityAIRide extends EntityAIBase {
+public abstract class EntityAIDragonRide extends EntityAIDragonBase {
 
-    protected final EntityTameableDragon dragon;
     protected EntityPlayer rider;
 
-    public EntityAIRide(EntityTameableDragon dragon) {
-        this.dragon = dragon;
+    public EntityAIDragonRide(EntityTameableDragon dragon) {
+        super(dragon);
         setMutexBits(0xffffffff);
     }
     

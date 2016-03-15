@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import info.ata4.minecraft.dragon.server.entity.ai.EntityAIRide;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonRide;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import net.minecraft.init.Items;
 import net.minecraft.util.Vec3;
@@ -20,12 +20,12 @@ import net.minecraft.util.Vec3;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIRideGround extends EntityAIRide {
+public class EntityAIDragonRideGround extends EntityAIDragonRide {
     
     private static final float PLAYER_SPEED = 0.98f;
     private final double speed;
 
-    public EntityAIRideGround(EntityTameableDragon dragon, double speed) {
+    public EntityAIDragonRideGround(EntityTameableDragon dragon, double speed) {
         super(dragon);
         this.speed = speed;
     }

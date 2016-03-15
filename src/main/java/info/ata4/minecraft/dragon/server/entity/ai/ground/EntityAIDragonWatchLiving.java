@@ -9,26 +9,25 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.AxisAlignedBB;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIWatchLiving extends EntityAIBase {
+public class EntityAIDragonWatchLiving extends EntityAIDragonBase {
 
-    private final EntityTameableDragon dragon;
     private final float maxDist;
     private final float watchChance;
     private Entity watchedEntity;
     private int watchTicks;
 
-    public EntityAIWatchLiving(EntityTameableDragon dragon, float maxDist, float watchChance) {
-        this.dragon = dragon;
+    public EntityAIDragonWatchLiving(EntityTameableDragon dragon, float maxDist, float watchChance) {
+        super(dragon);
         this.maxDist = maxDist;
         this.watchChance = watchChance;
         setMutexBits(2);
@@ -39,7 +38,7 @@ public class EntityAIWatchLiving extends EntityAIBase {
      */
     @Override
     public boolean shouldExecute() {
-        if (dragon.getRNG().nextFloat() >= watchChance) {
+        if (random.nextFloat() >= watchChance) {
             return false;
         }
         
@@ -48,7 +47,7 @@ public class EntityAIWatchLiving extends EntityAIBase {
         if (watchedEntity == null) {
             AxisAlignedBB aabb = dragon.getEntityBoundingBox().expand(maxDist, dragon.height, maxDist);
             Class clazz = EntityLiving.class;
-            watchedEntity = dragon.worldObj.findNearestEntityWithinAABB(clazz, aabb, dragon);
+            watchedEntity = world.findNearestEntityWithinAABB(clazz, aabb, dragon);
         }
 
         if (watchedEntity != null) {
@@ -87,7 +86,7 @@ public class EntityAIWatchLiving extends EntityAIBase {
      */
     @Override
     public void startExecuting() {
-        watchTicks = 40 + dragon.getRNG().nextInt(40);
+        watchTicks = 40 + random.nextInt(40);
     }
 
     /**
