@@ -62,7 +62,7 @@ public class EntityTameableDragon extends EntityTameable {
     public static final double BASE_HEALTH = 60;
     public static final float BASE_WIDTH = 2.75f;
     public static final float BASE_HEIGHT = 2.75f;
-    public static final double BASE_FOLLOW_RANGE = 32;
+    public static final double BASE_FOLLOW_RANGE = 16;
     public static final double BASE_FOLLOW_RANGE_FLYING = BASE_FOLLOW_RANGE * 2;
     public static final int HOME_RADIUS = 64;
     public static final double ALTITUDE_FLYING_THRESHOLD = 2;
