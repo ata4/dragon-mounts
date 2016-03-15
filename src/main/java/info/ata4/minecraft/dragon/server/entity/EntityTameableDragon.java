@@ -64,6 +64,8 @@ public class EntityTameableDragon extends EntityTameable {
     public static final double BASE_HEALTH = 60;
     public static final float BASE_WIDTH = 2.75f;
     public static final float BASE_HEIGHT = 2.75f;
+    public static final double BASE_FOLLOW_RANGE = 32;
+    public static final double BASE_FOLLOW_RANGE_FLYING = BASE_FOLLOW_RANGE * 2;
     public static final int HOME_RADIUS = 64;
     public static final double ALTITUDE_FLYING_THRESHOLD = 2;
 
@@ -142,6 +144,7 @@ public class EntityTameableDragon extends EntityTameable {
         getEntityAttribute(MOVE_SPEED_AIR).setBaseValue(BASE_SPEED_AIR);
         getEntityAttribute(maxHealth).setBaseValue(BASE_HEALTH);
         getEntityAttribute(attackDamage).setBaseValue(BASE_DAMAGE);
+        getEntityAttribute(followRange).setBaseValue(BASE_FOLLOW_RANGE);
     }
     
     /**
@@ -257,6 +260,11 @@ public class EntityTameableDragon extends EntityTameable {
                 
                 // clear tasks (needs to be done before switching the navigator!)
                 getBrain().clearTasks();
+                
+                // update AI follow range (needs to be updated before creating 
+                // new PathNavigate!)
+                getEntityAttribute(SharedMonsterAttributes.followRange)
+                    .setBaseValue(flying ? BASE_FOLLOW_RANGE_FLYING : BASE_FOLLOW_RANGE);
                 
                 // update pathfinding method
                 if (flying) {

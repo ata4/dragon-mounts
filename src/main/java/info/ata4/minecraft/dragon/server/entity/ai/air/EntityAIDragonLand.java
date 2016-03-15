@@ -11,7 +11,6 @@ package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
-import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.util.BlockPos;
 
 /**
@@ -21,26 +20,35 @@ import net.minecraft.util.BlockPos;
  */
 public class EntityAIDragonLand extends EntityAIDragonBase {
     
-    private BlockPos landingBlock;
+    private static final int SEARCH_RANGE = 32;
+    private final double speed;
+    private BlockPos landingPos;
 
-    public EntityAIDragonLand(EntityTameableDragon dragon) {
+    public EntityAIDragonLand(EntityTameableDragon dragon, double speed) {
         super(dragon);
+        this.speed = speed;
+        setMutexBits(1);
+    }
+    
+    private boolean findLandingBlock() {
+        // get current entity position
+        landingPos = dragon.getPosition();
+        
+        // add some variance
+        int ox = SEARCH_RANGE - random.nextInt(SEARCH_RANGE) * 2;
+        int oz = SEARCH_RANGE - random.nextInt(SEARCH_RANGE) * 2;
+        landingPos = landingPos.add(ox, 0, oz);
+        
+        // get ground block
+        landingPos = world.getHeight(landingPos);
+        
+        // make sure the block below is solid
+        return world.getBlockState(landingPos.down()).getBlock().getMaterial().isSolid();
     }
 
     @Override
     public boolean shouldExecute() {
-        if (!dragon.isFlying() || !dragon.isTamed() || dragon.getRidingPlayer() != null) {
-            return false;
-        }
-        
-        BlockPos pos = world.getHeight(new BlockPos(RandomPositionGenerator.findRandomTarget(dragon, 16, 1)));
-
-        if (!world.getBlockState(pos.down()).getBlock().getMaterial().isSolid()) {
-            return false;
-        }
-        
-        landingBlock = pos;
-        return true;
+        return dragon.isFlying() && dragon.isTamed() && dragon.getRidingPlayer() == null && findLandingBlock();
     }
     
     @Override
@@ -50,6 +58,6 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
 
     @Override
     public void startExecuting() {
-        dragon.getNavigator().tryMoveToXYZ(landingBlock.getX(), landingBlock.getY(), landingBlock.getZ(), 1);
+        dragon.getNavigator().tryMoveToXYZ(landingPos.getX(), landingPos.getY(), landingPos.getZ(), speed);
     }
 }

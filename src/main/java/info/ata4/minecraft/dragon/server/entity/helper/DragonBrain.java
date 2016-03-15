@@ -105,8 +105,8 @@ public class DragonBrain extends DragonHelper {
         if (dragon.isFlying()) {
             tasks.addTask(0, new EntityAIDragonRideAir(dragon)); // mutex all
             tasks.addTask(0, new EntityAIMoveTowardsRestriction(dragon, 1)); // mutex 1
-            tasks.addTask(0, new EntityAIDragonLand(dragon)); // mutex 0
-//            tasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
+            tasks.addTask(0, new EntityAIDragonLand(dragon, 1)); // mutex 1
+            tasks.addTask(0, new EntityAIDragonCatchOwnerAir(dragon)); // mutex all
         } else {
             tasks.addTask(0, new EntityAIDragonCatchOwnerGround(dragon)); // mutex all
             tasks.addTask(1, new EntityAIDragonRideGround(dragon, 1)); // mutex all
@@ -116,7 +116,7 @@ public class DragonBrain extends DragonHelper {
             tasks.addTask(6, new EntityAITempt(dragon, 0.75, dragon.getBreed().getFavoriteFood(), false)); // mutex 2+1
             tasks.addTask(7, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
 
-            tasks.addTask(9, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
+//            tasks.addTask(9, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
             tasks.addTask(10, new EntityAIWander(dragon, 1)); // mutex 1
             tasks.addTask(11, new EntityAIDragonWatchIdle(dragon)); // mutex 2
             tasks.addTask(11, new EntityAIDragonWatchLiving(dragon, 16, 0.05f)); // mutex 2
