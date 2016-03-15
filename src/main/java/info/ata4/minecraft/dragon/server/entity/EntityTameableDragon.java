@@ -19,7 +19,9 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import static net.minecraft.entity.SharedMonsterAttributes.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
@@ -62,7 +64,7 @@ public class EntityTameableDragon extends EntityTameable {
     public static final double BASE_HEALTH = 60;
     public static final float BASE_WIDTH = 2.75f;
     public static final float BASE_HEIGHT = 2.75f;
-    public static final int HOME_RADIUS = 256;
+    public static final int HOME_RADIUS = 64;
     public static final double ALTITUDE_FLYING_THRESHOLD = 2;
 
     // data value IDs
@@ -181,8 +183,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns the distance to the ground while the entity is flying.
      */
     public double getAltitude() {
-        BlockPos entityPos = new BlockPos(posX, posY, posZ);
-        BlockPos groundPos = worldObj.getHeight(entityPos);
+        BlockPos groundPos = worldObj.getHeight(getPosition());
         return posY - groundPos.getY();
     }
     
@@ -253,6 +254,9 @@ public class EntityTameableDragon extends EntityTameable {
             if (flying != isFlying()) {
                 // notify client
                 setFlying(flying);
+                
+                // clear tasks (needs to be done before switching the navigator!)
+                getBrain().clearTasks();
                 
                 // update pathfinding method
                 if (flying) {

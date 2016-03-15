@@ -11,9 +11,7 @@ package info.ata4.minecraft.dragon.server.entity.ai.path;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.world.World;
 
 /**
@@ -21,7 +19,7 @@ import net.minecraft.world.World;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class PathNavigateFlying extends PathNavigate {
+public class PathNavigateFlying extends PathNavigateSwimmer {
 
     public PathNavigateFlying(EntityLiving entitylivingIn, World worldIn) {
         super(entitylivingIn, worldIn);
@@ -33,42 +31,7 @@ public class PathNavigateFlying extends PathNavigate {
     }
 
     @Override
-    protected Vec3 getEntityPosition() {
-        return new Vec3(theEntity.posX, theEntity.posY + theEntity.height * 0.5, theEntity.posZ);
-    }
-
-    @Override
     protected boolean canNavigate() {
         return !isInLiquid();
-    }
-
-    @Override
-    protected boolean isDirectPathBetweenPoints(Vec3 posVec31, Vec3 posVec32, int sizeX, int sizeY, int sizeZ) {
-        MovingObjectPosition pos = worldObj.rayTraceBlocks(posVec31, getEntityPosition(), false, true, false);
-        return pos == null || pos.typeOfHit == MovingObjectPosition.MovingObjectType.MISS;
-    }
-    
-    @Override
-    protected void pathFollow() {
-        Vec3 pos = getEntityPosition();
-        double entityWidthSq = theEntity.width * theEntity.width;
-
-        if (pos.squareDistanceTo(currentPath.getVectorFromIndex(theEntity,
-                currentPath.getCurrentPathIndex())) < entityWidthSq) {
-            currentPath.incrementPathIndex();
-        }
-
-        int startPos = Math.min(currentPath.getCurrentPathIndex() + 6,
-                currentPath.getCurrentPathLength() - 1);
-        for (int i = startPos; i > currentPath.getCurrentPathIndex(); i--) {
-            Vec3 posPoint = currentPath.getVectorFromIndex(theEntity, i);
-
-            if (posPoint.squareDistanceTo(pos) <= 36 && isDirectPathBetweenPoints(pos, posPoint, 0, 0, 0)) {
-                currentPath.setCurrentPathIndex(i);
-                break;
-            }
-        }
-
-        checkForStuck(pos);
     }
 }

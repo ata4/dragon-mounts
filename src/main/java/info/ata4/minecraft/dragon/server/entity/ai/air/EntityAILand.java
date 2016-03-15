@@ -12,7 +12,7 @@ package info.ata4.minecraft.dragon.server.entity.ai.air;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.BlockPos;
 
 /**
  * Dragon AI for instant landing, if left unmounted in air.
@@ -22,7 +22,7 @@ import net.minecraft.util.Vec3;
 public class EntityAILand extends EntityAIBase {
     
     private final EntityTameableDragon dragon;
-    private Vec3 landTarget;
+    private BlockPos landingBlock;
 
     public EntityAILand(EntityTameableDragon dragon) {
         this.dragon = dragon;
@@ -30,18 +30,27 @@ public class EntityAILand extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-//        if (dragon.isFlying() && dragon.isTamed() && dragon.getRidingPlayer() == null) {
-//            return true;
-//        }
-        return false;
+        if (!dragon.isFlying() || !dragon.isTamed() || dragon.getRidingPlayer() != null) {
+            return false;
+        }
+        
+        BlockPos pos = dragon.worldObj.getHeight(new BlockPos(RandomPositionGenerator.findRandomTarget(dragon, 16, 1)));
+
+        if (!dragon.worldObj.getBlockState(pos.down()).getBlock().getMaterial().isSolid()) {
+            return false;
+        }
+        
+        landingBlock = pos;
+        return true;
+    }
+    
+    @Override
+    public boolean continueExecuting() {
+        return !dragon.getNavigator().noPath();
     }
 
     @Override
     public void startExecuting() {
-//        landTarget = RandomPositionGenerator.findRandomTarget(dragon, 16, 256);
-//        landTarget = new Vec3(landTarget.xCoord, 0, landTarget.zCoord);
-//        dragon.getWaypoint().setVector(landTarget);
-//        dragon.setMoveSpeedAirHoriz(1);
-//        dragon.setMoveSpeedAirVert(0);
+        dragon.getNavigator().tryMoveToXYZ(landingBlock.getX(), landingBlock.getY(), landingBlock.getZ(), 1);
     }
 }

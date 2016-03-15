@@ -18,42 +18,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.pathfinder.NodeProcessor;
+import net.minecraft.world.pathfinder.SwimNodeProcessor;
 
 /**
  * Based on SwimNodeProcessor but for air blocks.
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class NodeProcessorFlying extends NodeProcessor {
-
-    @Override
-    public void initProcessor(IBlockAccess iblockaccessIn, Entity entityIn) {
-        super.initProcessor(iblockaccessIn, entityIn);
-    }
-
-    /**
-     * This method is called when all nodes have been processed and PathEntity
-     * is created.
-     * {@link net.minecraft.world.pathfinder.WalkNodeProcessor WalkNodeProcessor}
-     * uses this to change its field {@link
-     * net.minecraft.world.pathfinder.WalkNodeProcessor#avoidsWater avoidsWater}
-     */
-    @Override
-    public void postProcess() {
-        super.postProcess();
-    }
-
-    /**
-     * Returns given entity's position as PathPoint
-     */
-    @Override
-    public PathPoint getPathPointTo(Entity entityIn) {
-        return openPoint(
-            MathHelper.floor_double(entityIn.getEntityBoundingBox().minX),
-            MathHelper.floor_double(entityIn.getEntityBoundingBox().minY + 0.5D),
-            MathHelper.floor_double(entityIn.getEntityBoundingBox().minZ)
-        );
-    }
+public class NodeProcessorFlying extends SwimNodeProcessor {
 
     /**
      * Returns PathPoint for given coordinates
@@ -70,7 +42,7 @@ public class NodeProcessorFlying extends NodeProcessor {
     @Override
     public int findPathOptions(PathPoint[] pathOptions, Entity entityIn, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
         int i = 0;
-
+        
         for (EnumFacing facing : EnumFacing.values()) {
             PathPoint point = getSafePoint(entityIn,
                 currentPoint.xCoord + facing.getFrontOffsetX(),
@@ -90,25 +62,23 @@ public class NodeProcessorFlying extends NodeProcessor {
      * Returns a point that the entity can safely move to
      */
     private PathPoint getSafePoint(Entity entityIn, int x, int y, int z) {
-        int i = findSafePoint(entityIn, x, y, z);
-        return i == -1 ? openPoint(x, y, z) : null;
-    }
+        BlockPos pos = new BlockPos(x, y, z);
+        
+        entitySizeX = MathHelper.floor_float(entityIn.width + 1);
+        entitySizeY = MathHelper.floor_float(entityIn.height + 1);
+        entitySizeZ = MathHelper.floor_float(entityIn.width + 1);
 
-    private int findSafePoint(Entity entityIn, int x, int y, int z) {
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-
-        for (int ix = x; ix < x + entitySizeX; ++ix) {
-            for (int iy = y; iy < y + entitySizeY; ++iy) {
-                for (int iz = z; iz < z + entitySizeZ; ++iz) {
-                    Block block = blockaccess.getBlockState(pos.set(ix, iy, iz)).getBlock();
-
+        for (int ix = 0; ix < entitySizeX; ++ix) {
+            for (int iy = 0; iy < entitySizeY; ++iy) {
+                for (int iz = 0; iz < entitySizeZ; ++iz) {
+                    Block block = blockaccess.getBlockState(pos.add(ix, iy, iz)).getBlock();
                     if (block.getMaterial() != Material.air) {
-                        return 0;
+                        return null;
                     }
                 }
             }
         }
 
-        return -1;
+        return openPoint(x, y, z);
     }
 }

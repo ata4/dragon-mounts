@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
 import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityAIPanic;
@@ -71,6 +72,11 @@ public class DragonBrain extends DragonHelper {
         }
     }
     
+    public void clearTasks() {
+        clearTasks(tasks);
+        clearTasks(targetTasks);
+    }
+    
     public void clearTasks(EntityAITasks tasks) {
         while (!tasks.taskEntries.isEmpty()) {
             EntityAIBase entityAIBase = tasks.taskEntries.get(0).action;
@@ -98,8 +104,9 @@ public class DragonBrain extends DragonHelper {
         
         if (dragon.isFlying()) {
             tasks.addTask(0, new EntityAIRideAir(dragon)); // mutex all
+            tasks.addTask(0, new EntityAIMoveTowardsRestriction(dragon, 1)); // mutex 1
             tasks.addTask(0, new EntityAILand(dragon)); // mutex 0
-            tasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
+//            tasks.addTask(0, new EntityAICatchOwnerAir(dragon)); // mutex all
         } else {
             tasks.addTask(0, new EntityAICatchOwnerGround(dragon)); // mutex all
             tasks.addTask(1, new EntityAIRideGround(dragon, 1)); // mutex all
