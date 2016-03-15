@@ -11,11 +11,10 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonCatchOwner;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonRide;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonLand;
-import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonRideAir;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonHunt;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
-import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonRideGround;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchIdle;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchLiving;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
@@ -100,14 +99,14 @@ public class DragonBrain extends DragonHelper {
             return;
         }
         
+        tasks.addTask(1, new EntityAIDragonRide(dragon)); // mutex all
+        
         if (dragon.isFlying()) {
             tasks.addTask(0, new EntityAIDragonCatchOwner(dragon)); // mutex all
-            tasks.addTask(1, new EntityAIDragonRideAir(dragon)); // mutex all
             tasks.addTask(2, new EntityAIMoveTowardsRestriction(dragon, 1)); // mutex 1
             tasks.addTask(3, new EntityAIDragonLand(dragon, 1)); // mutex 1
         } else {
             tasks.addTask(0, new EntityAIDragonCatchOwner(dragon)); // mutex all
-            tasks.addTask(1, new EntityAIDragonRideGround(dragon, 1)); // mutex all
             tasks.addTask(2, new EntityAISwimming(dragon)); // mutex 4
             tasks.addTask(4, dragon.getAISit()); // mutex 4+1
 
