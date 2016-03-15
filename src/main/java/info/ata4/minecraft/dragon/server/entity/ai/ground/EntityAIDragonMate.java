@@ -83,10 +83,10 @@ public class EntityAIDragonMate extends EntityAIDragonBase {
      * that can be mated with. Returns the first valid mate found.
      */
     private EntityTameableDragon getNearbyMate() {
-        double range = 12;
+        double followRange = getFollowRange();
         List<EntityTameableDragon> nearbyDragons = world.getEntitiesWithinAABB(
-                EntityTameableDragon.class,
-                dragon.getEntityBoundingBox().expand(range, range, range)
+            EntityTameableDragon.class,
+            dragon.getEntityBoundingBox().expand(followRange, followRange, followRange)
         );
         
         for (EntityTameableDragon nearbyDragon : nearbyDragons) {

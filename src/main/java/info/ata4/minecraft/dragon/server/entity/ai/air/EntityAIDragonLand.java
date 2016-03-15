@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.server.entity.ai.air;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.MathHelper;
 
 /**
  * Dragon AI for instant landing, if left unmounted in air.
@@ -20,7 +21,6 @@ import net.minecraft.util.BlockPos;
  */
 public class EntityAIDragonLand extends EntityAIDragonBase {
     
-    private static final int SEARCH_RANGE = 32;
     private final double speed;
     private BlockPos landingPos;
 
@@ -35,8 +35,9 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
         landingPos = dragon.getPosition();
         
         // add some variance
-        int ox = SEARCH_RANGE - random.nextInt(SEARCH_RANGE) * 2;
-        int oz = SEARCH_RANGE - random.nextInt(SEARCH_RANGE) * 2;
+        int followRange = MathHelper.floor_double(getFollowRange());
+        int ox = followRange - random.nextInt(followRange) * 2;
+        int oz = followRange - random.nextInt(followRange) * 2;
         landingPos = landingPos.add(ox, 0, oz);
         
         // get ground block
@@ -58,6 +59,10 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
 
     @Override
     public void startExecuting() {
-        dragon.getNavigator().tryMoveToXYZ(landingPos.getX(), landingPos.getY(), landingPos.getZ(), speed);
+        // try to fly to ground block position
+        if (!tryMoveToBlockPos(landingPos, speed)) {
+            // probably too high, so simply descend vertically
+            tryMoveToBlockPos(dragon.getPosition().down(4), speed);
+        }
     }
 }

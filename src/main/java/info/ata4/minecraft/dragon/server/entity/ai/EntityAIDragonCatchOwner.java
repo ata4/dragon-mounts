@@ -10,7 +10,6 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
@@ -45,9 +44,7 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
         }
         
         // don't catch if owner is too far away
-        double followRange = dragon.getEntityAttribute(
-                SharedMonsterAttributes.followRange).getAttributeValue();
-        
+        double followRange = getFollowRange();
         if (dragon.getDistanceToEntity(owner) > followRange) {
             return false;
         }
