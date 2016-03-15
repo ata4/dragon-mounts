@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
@@ -26,18 +27,6 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
 
     @Override
     public boolean shouldExecute() {
-        owner = (EntityPlayer) dragon.getOwner();
-        
-        // don't catch if ownerless 
-        if (owner == null) {
-            return false;
-        }
-
-        // no point in catching players in creative mode
-        if (owner.capabilities.isCreativeMode) {
-            return false;
-        }
-        
         // don't catch if already being ridden
         if (dragon.riddenByEntity != null) {
             return false;
@@ -48,6 +37,46 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
             return false;
         }
         
+        owner = (EntityPlayer) dragon.getOwner();
+        
+        // don't catch if ownerless 
+        if (owner == null) {
+            return false;
+        }
+        
+        // don't catch if owner is too far away
+        double followRange = dragon.getEntityAttribute(
+                SharedMonsterAttributes.followRange).getAttributeValue();
+        
+        if (dragon.getDistanceToEntity(owner) > followRange) {
+            return false;
+        }
+
+        // no point in catching players in creative mode
+        if (owner.capabilities.isCreativeMode) {
+            return false;
+        }
+                
         return owner.fallDistance > 4;
+    }
+
+    @Override
+    public boolean continueExecuting() {
+        return shouldExecute() && !dragon.getNavigator().noPath();
+    }
+    
+    @Override
+    public void updateTask() {
+        // catch owner in flight if possible
+        if (!dragon.isFlying()) {
+            dragon.liftOff();
+        }
+        
+        // mount owner if close enough, otherwise move to owner
+        if (dragon.getDistanceToEntity(owner) < dragon.width) {
+            owner.mountEntity(dragon);
+        } else {
+            dragon.getNavigator().tryMoveToEntityLiving(owner, 1);
+        }
     }
 }

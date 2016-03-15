@@ -53,7 +53,7 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
     
     @Override
     public boolean continueExecuting() {
-        return !dragon.getNavigator().noPath();
+        return shouldExecute() && !dragon.getNavigator().noPath();
     }
 
     @Override

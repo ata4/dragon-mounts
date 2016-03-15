@@ -46,4 +46,9 @@ public abstract class EntityAIDragonRide extends EntityAIDragonBase {
         rider = dragon.getRidingPlayer();
         return rider != null;
     }
+
+    @Override
+    public void startExecuting() {
+        dragon.getNavigator().clearPathEntity();
+    }
 }
