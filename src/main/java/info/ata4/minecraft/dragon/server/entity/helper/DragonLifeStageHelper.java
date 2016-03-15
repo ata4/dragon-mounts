@@ -15,6 +15,8 @@ import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStag
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import net.minecraft.block.Block;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -38,7 +40,6 @@ public class DragonLifeStageHelper extends DragonHelper {
     private static final float EGG_WIGGLE_BASE_CHANCE = 20;
     
     private EnumDragonLifeStage lifeStagePrev;
-    private final DragonScaleModifier scaleModifier = new DragonScaleModifier();
     private int eggWiggleX;
     private int eggWiggleZ;
     
@@ -65,10 +66,17 @@ public class DragonLifeStageHelper extends DragonHelper {
     
     @Override
     public void applyEntityAttributes() {
-        scaleModifier.setScale(getScale());
-
-        dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(scaleModifier);
-        dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(scaleModifier);
+        applyScaleModifier(SharedMonsterAttributes.maxHealth);
+        applyScaleModifier(SharedMonsterAttributes.attackDamage);
+    }
+    
+    private void applyScaleModifier(IAttribute attribute) {
+        IAttributeInstance instance = dragon.getEntityAttribute(attribute);
+        AttributeModifier oldModifier = instance.getModifier(DragonScaleModifier.ID);
+        if (oldModifier != null) {
+            instance.removeModifier(oldModifier);
+        }
+        instance.applyModifier(new DragonScaleModifier(getScale()));
     }
     
     /**
@@ -193,19 +201,7 @@ public class DragonLifeStageHelper extends DragonHelper {
             dragon.getBrain().updateAITasks();
             
             // update attribute modifier
-            IAttributeInstance healthAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.maxHealth);
-            IAttributeInstance damageAttrib = dragon.getEntityAttribute(SharedMonsterAttributes.attackDamage);
-
-            // remove old size modifiers
-            healthAttrib.removeModifier(scaleModifier);
-            damageAttrib.removeModifier(scaleModifier);
-
-            // update modifier
-            scaleModifier.setScale(getScale());
-
-            // set new size modifiers
-            healthAttrib.applyModifier(scaleModifier);
-            damageAttrib.applyModifier(scaleModifier);
+            applyEntityAttributes();
 
             // heal dragon to updated full health
             dragon.setHealth(dragon.getMaxHealth());

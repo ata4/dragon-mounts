@@ -19,23 +19,9 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 public class DragonScaleModifier extends AttributeModifier {
     
     public static final UUID ID = UUID.fromString("856d4ba4-9ffe-4a52-8606-890bb9be538b");
-    private double size;
 
-    public DragonScaleModifier() {
-        super(ID, "Dragon size modifier", 0, 1);
+    public DragonScaleModifier(double amount) {
+        super(ID, "Dragon size modifier", amount, 1);
         setSaved(false);
-    }
-
-    @Override
-    public double getAmount() {
-        return super.getAmount() * getScale();
-    }
-
-    public double getScale() {
-        return size;
-    }
-
-    public void setScale(double size) {
-        this.size = size;
     }
 }
