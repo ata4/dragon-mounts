@@ -49,7 +49,15 @@ public class CommandDragon extends CommandBase {
         subCommands.put("stage", new SubCommandEnumSetter(this,
             EnumDragonLifeStage.class, lifeStageConsumer));
         
-        subCommands.put("tame", new SubCommandTame(this));
+        subCommands.put("tame", new SubCommandSimple(this, (sender, args) -> {
+            if (sender instanceof EntityPlayerMP) {
+                EntityPlayerMP player = (EntityPlayerMP) sender;
+                applyModifier(sender, args, dragon -> dragon.tamedFor(player, true));
+            } else {
+                // console can't tame dragons
+                throw new CommandException("commands.dragon.canttame");
+            }
+        }));
         
         if (DragonMounts.instance.getConfig().isDebug()) {
             subCommands.put("debug", new SubCommandDebug(this));
@@ -104,11 +112,9 @@ public class CommandDragon extends CommandBase {
         subCommands.get(cmd).processCommand(sender, args);
     }
     
-    boolean isGlobal(String[] args) {
-        return args[args.length - 1].equalsIgnoreCase("global");
-    }
-    
-    void applyModifier(ICommandSender sender, Consumer<EntityTameableDragon> modifier, boolean global) throws CommandException {
+    void applyModifier(ICommandSender sender, String[] args, Consumer<EntityTameableDragon> modifier) throws CommandException {
+        boolean global = args[args.length - 1].equalsIgnoreCase("global");
+        
         if (!global && sender instanceof EntityPlayerMP) {
             EntityPlayerMP player = getCommandSenderAsPlayer(sender);
             

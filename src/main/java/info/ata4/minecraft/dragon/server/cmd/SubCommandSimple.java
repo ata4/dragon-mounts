@@ -43,7 +43,7 @@ public class SubCommandSimple extends SubCommand {
         }
         
         if (consumer.isPresent()) {
-            parent.applyModifier(sender, consumer.get(), parent.isGlobal(args));
+            parent.applyModifier(sender, args, consumer.get());
         }
     }
     
