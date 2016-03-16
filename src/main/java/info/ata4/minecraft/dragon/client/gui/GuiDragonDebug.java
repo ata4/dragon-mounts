@@ -57,7 +57,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
     private static final int RED = 0xFF8888;
     
     public static Object probe;
-    public static boolean enabled;
+    public static boolean enabled = true;
     
     private final Minecraft mc = Minecraft.getMinecraft();
     private final FontRenderer fr;
