@@ -75,14 +75,13 @@ public class DragonBreedHelper extends DragonHelper {
     public void readFromNBT(NBTTagCompound nbt) {
         // read breed name and convert it to the corresponding breed object
         String breedName = nbt.getString(NBT_BREED);
-        //setBreedType(EnumDragonBreed.fromName(breedName));
-        
-        EnumDragonBreed newBreed = EnumUtils.getEnum(EnumDragonBreed.class, breedName.toUpperCase());
-        if (newBreed == null) {
-            newBreed = EnumDragonBreed.DEFAULT;
+        EnumDragonBreed breed = EnumUtils.getEnum(EnumDragonBreed.class, breedName.toUpperCase());
+        if (breed == null) {
+            breed = EnumDragonBreed.DEFAULT;
             L.warn("Dragon {} loaded with invalid breed type {}, using {} instead",
-                    dragon.getEntityId(), breedName, newBreed);
+                    dragon.getEntityId(), breedName, breed);
         }
+        setBreedType(breed);
         
         // read breed points
         NBTTagCompound breedPointTag = nbt.getCompoundTag(NBT_BREED_POINTS);
