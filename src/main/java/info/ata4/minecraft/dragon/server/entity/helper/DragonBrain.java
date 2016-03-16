@@ -90,9 +90,11 @@ public class DragonBrain extends DragonHelper {
             pathNavigateGround.setEnterDoors(dragon.isHatchling());
         }
         
+        // clear current navigation target
+        dragon.getNavigator().clearPathEntity();
+        
         // clear existing tasks
-        clearTasks(tasks);
-        clearTasks(targetTasks);
+        clearTasks();
         
         // eggs don't have any tasks
         if (dragon.isEgg()) {
