@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.util.Vec3;
 
@@ -66,6 +67,7 @@ public class DragonMoveHelper extends EntityMoveHelper {
         if (dist > 2.5E-7) {
             float newYaw = (float) Math.toDegrees(Math.PI * 2 - Math.atan2(dir.xCoord, dir.zCoord));
             dragon.rotationYaw = limitAngle(dragon.rotationYaw, newYaw, YAW_SPEED);
+            entity.setAIMoveSpeed((float)(speed * entity.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getAttributeValue()));
         }
         
         // apply movement
