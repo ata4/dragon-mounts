@@ -33,7 +33,7 @@ public abstract class EntityAIDragonBase extends EntityAIBase {
     }
     
     protected boolean tryMoveToBlockPos(BlockPos pos, double speed) {
-        return dragon.getNavigator().tryMoveToXYZ(pos.getX(), pos.getY(), pos.getZ(), speed);
+        return dragon.getNavigator().tryMoveToXYZ(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, speed);
     }
     
     protected double getFollowRange() {
