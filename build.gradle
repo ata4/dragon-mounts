@@ -78,4 +78,6 @@ processResources {
 // IntelliJ fix, may not work in other IDEs
 //sourceSets { main { output.resourcesDir = output.classesDir } }
 
-runClient.debug = true
+// Netbeans workaround for debugging: debugClient doesn't exist anymore and for
+// some reason, it's impossible to pass debug parameters with the Gradle plugin
+// runClient.debug = true
