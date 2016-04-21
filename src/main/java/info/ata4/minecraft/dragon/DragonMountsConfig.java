@@ -20,11 +20,9 @@ public class DragonMountsConfig {
     private final Configuration config;
     
     // config properties
-    private boolean eggsInChests = false;
     private boolean debug = false;
     
     public DragonMountsConfig(Configuration config) {
-        eggsInChests = config.getBoolean("eggsInChests", "server", eggsInChests, "Spawns dragon eggs in generated chests when enabled");
         debug = config.getBoolean("debug", "client", debug, "Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.");
         
         if (config.hasChanged()) {
@@ -36,10 +34,6 @@ public class DragonMountsConfig {
     
     public Configuration getParent() {
         return config;
-    }
-
-    public boolean isEggsInChests() {
-        return eggsInChests;
     }
 
     public boolean isDebug() {
