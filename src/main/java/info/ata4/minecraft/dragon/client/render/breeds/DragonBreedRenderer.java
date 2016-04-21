@@ -29,6 +29,8 @@ public interface DragonBreedRenderer {
     public ResourceLocation getEggTexture();
 
     public ResourceLocation getGlowTexture();
+    
+    public ResourceLocation getGlowAnimTexture();
 
     public List<LayerRenderer<EntityTameableDragon>> getLayers();
 

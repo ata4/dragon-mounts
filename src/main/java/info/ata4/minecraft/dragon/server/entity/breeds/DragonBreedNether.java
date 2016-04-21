@@ -41,12 +41,12 @@ public class DragonBreedNether extends DragonBreed {
 
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-        dragon.setDragonAvoidWater(true);
+        dragon.getBrain().setAvoidsWater(true);
     }
 
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-        dragon.setDragonAvoidWater(false);
+        dragon.getBrain().setAvoidsWater(false);
     }
 
     @Override

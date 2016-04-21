@@ -7,7 +7,7 @@
     "variants": {
         "breed": {
             "air":    { "textures": { "all": "dragonmounts:entities/dragon/aether/egg"  } },
-            "end":    { "textures": { "all": "dragonmounts:entities/dragon/ender/egg"     } },
+            "end":    { "textures": { "all": "dragonmounts:entities/dragon/ender/egg"   } },
             "fire":   { "textures": { "all": "dragonmounts:entities/dragon/fire/egg"    } },
             "forest": { "textures": { "all": "dragonmounts:entities/dragon/forest/egg"  } },
             "ghost":  { "textures": { "all": "dragonmounts:entities/dragon/undead/egg"  } },

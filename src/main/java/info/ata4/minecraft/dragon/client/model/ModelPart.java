@@ -119,9 +119,7 @@ public class ModelPart extends ModelRenderer {
         
         // render child models
         if (childModels != null) {
-            for (Object obj : childModels) {
-                ((ModelRenderer) obj).render(scale);
-            }
+            childModels.forEach(obj -> obj.render(scale));
         }
         
         GlStateManager.popMatrix();

@@ -18,6 +18,8 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 
 /**
  * Base class for dragon breeds.
@@ -106,6 +108,14 @@ public abstract class DragonBreed {
         return false;
     }
     
+    public Item[] getAcceptedFood() {
+        return new Item[] { getFavoriteFood(), Items.porkchop, Items.beef, Items.chicken };
+    }
+    
+    public Item getFavoriteFood() {
+        return Items.fish;
+    }
+    
     public abstract void onEnable(EntityTameableDragon dragon);
     
     public abstract void onDisable(EntityTameableDragon dragon);
@@ -127,8 +137,7 @@ public abstract class DragonBreed {
     }
     
     public String getDeathSound(EntityTameableDragon dragon) {
-//        return DragonMounts.AID + ":mob.enderdragon.death";
-        return "";
+        return DragonMounts.AID + ":mob.enderdragon.death";
     }
     
     public float getSoundPitch(EntityTameableDragon dragon, String sound) {

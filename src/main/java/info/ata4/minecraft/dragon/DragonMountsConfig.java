@@ -17,6 +17,8 @@ import net.minecraftforge.common.config.Configuration;
  */
 public class DragonMountsConfig {
     
+    private final Configuration config;
+    
     // config properties
     private boolean eggsInChests = false;
     private boolean debug = false;
@@ -28,6 +30,12 @@ public class DragonMountsConfig {
         if (config.hasChanged()) {
             config.save();
         }
+        
+        this.config = config;
+    }
+    
+    public Configuration getParent() {
+        return config;
     }
 
     public boolean isEggsInChests() {

@@ -49,7 +49,7 @@ public class SubCommandEnumSetter<E extends Enum<E>> extends SubCommand {
             throw new SyntaxErrorException("commands.generic.syntax");
         }
 
-        parent.applyModifier(sender, dragon -> enumConsumer.accept(dragon, enumValue), parent.isGlobal(args));
+        parent.applyModifier(sender, args, dragon -> enumConsumer.accept(dragon, enumValue));
     }
     
     @Override

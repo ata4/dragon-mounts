@@ -1,5 +1,5 @@
 /*
- ** 2012 August 24
+ ** 2013 July 20
  **
  ** The author disclaims copyright to this source code.  In place of
  ** a legal notice, here is a blessing:
@@ -9,25 +9,26 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
+import com.google.common.base.Predicate;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.ai.EntityAIPanic;
+import net.minecraft.entity.ai.EntityAITargetNonTamed;
 
 /**
- * Modified EntityAIPanicChild that only runs if the dragon is a hatchling.
- * 
+ *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIPanicChild extends EntityAIPanic {
+public class EntityAIDragonHunt extends EntityAITargetNonTamed {
     
-    private EntityTameableDragon dragon;
+    private final EntityTameableDragon dragon;
 
-    public EntityAIPanicChild(EntityTameableDragon dragon, double speed) {
-        super(dragon, speed);
+    public EntityAIDragonHunt(EntityTameableDragon dragon, Class classTarget,
+            boolean checkSight, Predicate targetSelector) {
+        super(dragon, classTarget, checkSight, targetSelector);
         this.dragon = dragon;
     }
 
     @Override
     public boolean shouldExecute() {
-        return super.shouldExecute() && dragon.isHatchling();
+        return dragon.isAdult() && super.shouldExecute();
     }
 }

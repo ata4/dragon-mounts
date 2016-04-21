@@ -9,9 +9,9 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
-import net.minecraft.entity.ai.EntityAIBase;
 
 import java.util.List;
 
@@ -21,15 +21,14 @@ import java.util.List;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIDragonMate extends EntityAIBase {
+public class EntityAIDragonMate extends EntityAIDragonBase {
 
-    private final EntityTameableDragon dragon;
     private EntityTameableDragon dragonMate;
     private int spawnBabyDelay = 0;
     private double speed;
 
     public EntityAIDragonMate(EntityTameableDragon dragon, double speed) {
-        this.dragon = dragon;
+        super(dragon);
         this.speed = speed;
         setMutexBits(3);
     }
@@ -84,10 +83,10 @@ public class EntityAIDragonMate extends EntityAIBase {
      * that can be mated with. Returns the first valid mate found.
      */
     private EntityTameableDragon getNearbyMate() {
-        double range = 12;
-        List<EntityTameableDragon> nearbyDragons = dragon.worldObj.getEntitiesWithinAABB(
-                EntityTameableDragon.class,
-                dragon.getEntityBoundingBox().expand(range, range, range)
+        double followRange = getFollowRange();
+        List<EntityTameableDragon> nearbyDragons = world.getEntitiesWithinAABB(
+            EntityTameableDragon.class,
+            dragon.getEntityBoundingBox().expand(followRange, followRange, followRange)
         );
         
         for (EntityTameableDragon nearbyDragon : nearbyDragons) {
@@ -115,7 +114,7 @@ public class EntityAIDragonMate extends EntityAIBase {
             dragonBaby.setLocationAndAngles(dragon.posX, dragon.posY, dragon.posZ, 0, 0);
             dragonBaby.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
             
-            dragon.worldObj.spawnEntityInWorld(dragonBaby);
+            world.spawnEntityInWorld(dragonBaby);
 
             // TODO: particles for the clients?
         }

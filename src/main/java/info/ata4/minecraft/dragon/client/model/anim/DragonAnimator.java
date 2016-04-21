@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.client.model.anim;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.model.ModelPart;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.helper.DragonHelper;
 import info.ata4.minecraft.dragon.util.math.Interpolation;
 import info.ata4.minecraft.dragon.util.math.MathX;
 
@@ -20,15 +21,13 @@ import info.ata4.minecraft.dragon.util.math.MathX;
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonAnimator {
+public class DragonAnimator extends DragonHelper {
     
     // constants
     private static final int JAW_OPENING_TIME_FOR_ATTACK = 5;
 
     // entity parameters
-    private final EntityTameableDragon entity;
     private float partialTicks;
-    private float ticksExisted;
     private float moveTime;
     private float moveSpeed;
     private float lookYaw;
@@ -127,15 +126,11 @@ public class DragonAnimator {
     private float[] yAirAll = {-0.1f, 0.1f};
     
     public DragonAnimator(EntityTameableDragon dragon) {
-        this.entity = dragon;
+        super(dragon);
     }
     
     public void setPartialTicks(float partialTicks) {
         this.partialTicks = partialTicks;
-    }
-    
-    public void setTicksExisted(float ticksExisted) {
-        this.ticksExisted = ticksExisted;
     }
 
     public void setMovement(float moveTime, float moveSpeed) {
@@ -170,12 +165,12 @@ public class DragonAnimator {
         // check if the wings are moving down and trigger the event
         boolean newWingsDown = cycleOfs > 1;
         if (newWingsDown && !wingsDown && flutter != 0) {
-            entity.onWingsDown(speed);
+            dragon.getSoundManager().onWingsDown(speed);
         }
         wingsDown = newWingsDown;
         
         // update flags
-        model.back.isHidden = entity.isSaddled();
+        model.back.isHidden = dragon.isSaddled();
         
         cycleOfs = (cycleOfs * cycleOfs + cycleOfs * 2) * 0.05f;
 
@@ -201,17 +196,22 @@ public class DragonAnimator {
     /**
      * Updates the animation state. Called on every tick.
      */
-    public void update() {
+    @Override
+    public void onLivingUpdate() {
+        if (!dragon.isEgg()) {
+            setOnGround(!dragon.isFlying());
+        }
+    
         // init trails
         if (initTrails) {
-            yTrail.fill((float) entity.posY);
-            yawTrail.fill(entity.renderYawOffset);
+            yTrail.fill((float) dragon.posY);
+            yawTrail.fill(dragon.renderYawOffset);
             pitchTrail.fill(getModelPitch());
             initTrails = false;
         }
          
         // don't move anything during death sequence
-        if (entity.getHealth() <= 0) {
+        if (dragon.getHealth() <= 0) {
             animTimer.sync();
             groundTimer.sync();
             flutterTimer.sync();
@@ -222,7 +222,7 @@ public class DragonAnimator {
         }
         
         float speedMax = 0.05f;
-        float speedEnt = (float) (entity.motionX * entity.motionX + entity.motionZ * entity.motionZ);
+        float speedEnt = (float) (dragon.motionX * dragon.motionX + dragon.motionZ * dragon.motionZ);
         float speedMulti = MathX.clamp(speedEnt / speedMax, 0, 1);
          
         // update main animation timer
@@ -246,35 +246,38 @@ public class DragonAnimator {
         groundTimer.set(groundVal);
 
         // update flutter transition
-        boolean flutterFlag = !onGround && (entity.isCollided || entity.motionY > -0.1 || speedEnt < speedMax);
+        boolean flutterFlag = !onGround && (dragon.isCollided || dragon.motionY > -0.1 || speedEnt < speedMax);
         flutterTimer.add(flutterFlag ? 0.1f : -0.1f);
 
         // update walking transition
-        boolean walkFlag = moveSpeed > 0.1 && !entity.isSitting();
+        boolean walkFlag = moveSpeed > 0.1 && !dragon.isSitting();
         float walkVal = 0.1f;
         walkTimer.add(walkFlag ? walkVal : -walkVal);
         
         // update sitting transisiton
         float sitVal = sitTimer.get();
-        sitVal += entity.isSitting() ? 0.1f : -0.1f;
+        sitVal += dragon.isSitting() ? 0.1f : -0.1f;
         sitVal *= 0.95f;
         sitTimer.set(sitVal);
         
         // update jaw opening transition
-        int ticksSinceLastAttack = entity.getTicksSinceLastAttack();
+        //int ticksSinceLastAttack = dragon.getTicksSinceLastAttack();
+        
+        // TODO: find better attack animation method
+        int ticksSinceLastAttack = -1;
         
         boolean jawFlag = (ticksSinceLastAttack >= 0 && ticksSinceLastAttack < JAW_OPENING_TIME_FOR_ATTACK);
         jawTimer.add(jawFlag ? 0.2f : -0.2f);
 
         // update speed transition
-        boolean nearGround = entity.getAltitude() < entity.height * 2;
+        boolean nearGround = dragon.getAltitude() < dragon.height * 2;
         boolean speedFlag = speedEnt > speedMax || onGround || nearGround;
         float speedValue = 0.05f;
         speedTimer.add(speedFlag ? speedValue : -speedValue);
            
         // update trailers
-        double yawDiff = entity.renderYawOffset - prevRenderYawOffset;
-        prevRenderYawOffset = entity.renderYawOffset;
+        double yawDiff = dragon.renderYawOffset - prevRenderYawOffset;
+        prevRenderYawOffset = dragon.renderYawOffset;
         
         // filter out 360 degrees wrapping
         if (yawDiff < 180 && yawDiff > -180) {
@@ -283,7 +286,7 @@ public class DragonAnimator {
 
         // TODO: where's yOffset?
         //yTrail.update(entity.posY - entity.yOffset);
-        yTrail.update((float) entity.posY);
+        yTrail.update((float) dragon.posY);
         yawTrail.update((float) yawAbs);
         pitchTrail.update(getModelPitch());
     }
@@ -313,7 +316,7 @@ public class DragonAnimator {
         model.neck.rotateAngleY = 0;
         model.neck.rotateAngleZ = 0;
         
-        float health = (float) entity.getHealthRelative();
+        float health = (float) dragon.getHealthRelative();
         float neckSize;
 
         for (int i = 0; i < model.neckProxy.length; i++) {

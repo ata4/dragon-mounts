@@ -10,7 +10,6 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
-import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,6 +21,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
@@ -61,22 +61,28 @@ public class SubCommandDebug extends SubCommand {
             dragon.getLifeStageHelper().setTicksSinceCreation(18000);
         }));
         
-        subCommands.put("testName", new SubCommandSimple(parent, dragon -> {
-            dragon.setCustomNameTag("Puff");
-        }));
-        
-        subCommands.put("testSaddle", new SubCommandSimple(parent, dragon -> {
-            dragon.setSaddled(true);
-        }));
-        
         subCommands.put("kill", new SubCommandSimple(parent, dragon -> {
             dragon.setHealth(0);
+        }));
+        
+        subCommands.put("tameSaddleAndMount", new SubCommandSimple(parent, (sender, args) -> {
+            parent.applyModifier(sender, args, dragon -> {
+                if (!(sender instanceof EntityPlayerMP)) {
+                    return;
+                }
+
+                EntityPlayerMP player = (EntityPlayerMP) sender;
+                dragon.tamedFor(player, true);
+                dragon.setSaddled(true);
+                dragon.setCustomNameTag("Puff");
+                player.mountEntity(dragon);
+            });
         }));
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        String cmd = args[1].toLowerCase();
+        String cmd = args[1];
         
         if (!subCommands.containsKey(cmd)) {
             throw new WrongUsageException(parent.getCommandUsage(sender));
