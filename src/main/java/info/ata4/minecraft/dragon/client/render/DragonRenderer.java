@@ -9,13 +9,14 @@
  */
 package info.ata4.minecraft.dragon.client.render;
 
+import info.ata4.minecraft.dragon.client.model.DragonModel;
+import info.ata4.minecraft.dragon.client.model.DragonModelMode;
 import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
@@ -31,7 +32,6 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import static org.lwjgl.opengl.GL11.*;
@@ -64,7 +64,9 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
     @Override
     public void doRender(EntityTameableDragon dragon, double x, double y, double z, float yaw, float partialTicks) {
-        mainModel = getBreedRenderer(dragon).getModel();
+        DragonModel breedModel = getBreedRenderer(dragon).getModel();
+        breedModel.setMode(DragonModelMode.FULL);
+        mainModel = breedModel;
         renderName(dragon, x, y, z);
 
         if (dragon.isEgg()) {

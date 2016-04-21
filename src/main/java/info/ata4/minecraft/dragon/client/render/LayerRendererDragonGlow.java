@@ -1,10 +1,10 @@
 package info.ata4.minecraft.dragon.client.render;
 
-import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
+import info.ata4.minecraft.dragon.client.model.DragonModelMode;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
+import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
@@ -26,24 +26,13 @@ public class LayerRendererDragonGlow extends LayerRendererDragon {
         GlStateManager.pushAttrib();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GL_ONE, GL_ONE);
-        GlStateManager.disableLighting();
-
-        int b = 61680;
-        int u = b % 65536;
-        int v = b / 65536;
-        
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
         GlStateManager.color(1, 1, 1, 1);
 
+        disableLighting();
+        model.setMode(DragonModelMode.FULL);
         model.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
+        enableLighting(dragon.getBrightnessForRender(partialTicks));
         
-        b = dragon.getBrightnessForRender(partialTicks);
-        u = b % 65536;
-        v = b / 65536;
-        
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
-
-        GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GlStateManager.popAttrib();
     }

@@ -70,6 +70,7 @@ public class DragonModel extends ModelBase {
     public float pitch;
     public float size;
     private EnumDragonBreed breed;
+    private DragonModelMode mode;
     
     public DragonModel(EnumDragonBreed breed) {
         textureWidth = 256;
@@ -110,6 +111,10 @@ public class DragonModel extends ModelBase {
         buildTail();
         buildWing();
         buildLegs();
+    }
+    
+    public void setMode(DragonModelMode mode) {
+        this.mode = mode;
     }
     
     private void buildHead() {
@@ -411,12 +416,20 @@ public class DragonModel extends ModelBase {
         GlStateManager.translate(offsetX, offsetY, offsetZ);
         GlStateManager.rotate(-pitch, 1, 0, 0);
 
-        renderHead(scale);
-        renderNeck(scale);
-        renderBody(scale);
-        renderLegs(scale);
-        renderTail(scale);
-        renderWings(scale);
+        if (mode == DragonModelMode.BODY_ONLY) {
+            renderBody(scale);
+        } else if (mode == DragonModelMode.WINGS_ONLY) {
+            renderWings(scale);
+        } else {
+            renderHead(scale);
+            renderNeck(scale);
+            renderBody(scale);
+            renderLegs(scale);
+            renderTail(scale);
+            if (mode != DragonModelMode.NO_WINGS) {
+                renderWings(scale);
+            }
+        }
 
         GlStateManager.popMatrix();
     }

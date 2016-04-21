@@ -13,6 +13,7 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.client.render.LayerRendererDragonGlow;
+import info.ata4.minecraft.dragon.client.render.LayerRendererDragonGlowAnim;
 import info.ata4.minecraft.dragon.client.render.LayerRendererDragonSaddle;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
@@ -35,6 +36,7 @@ public class DefaultDragonBreedRenderer implements DragonBreedRenderer {
     
     private final ResourceLocation bodyTexture;
     private final ResourceLocation glowTexture;
+    private final ResourceLocation glowAnimTexture;
     private final ResourceLocation saddleTexture;
     private final ResourceLocation eggTexture;
     private final ResourceLocation dissolveTexture;
@@ -44,13 +46,15 @@ public class DefaultDragonBreedRenderer implements DragonBreedRenderer {
         model = new DragonModel(breed);
         
         // standard layers
-        layers.add(new LayerRendererDragonSaddle(parent, this, model));
         layers.add(new LayerRendererDragonGlow(parent, this, model));
+        layers.add(new LayerRendererDragonGlowAnim(parent, this, model));
+        layers.add(new LayerRendererDragonSaddle(parent, this, model));
         
         // textures
         String skin = breed.getBreed().getSkin();
         bodyTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/body.png");
         glowTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/glow.png");
+        glowAnimTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/glow_anim.png");
         saddleTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/saddle.png");
         eggTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/egg.png");
         dissolveTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + "dissolve.png");
@@ -79,6 +83,11 @@ public class DefaultDragonBreedRenderer implements DragonBreedRenderer {
     @Override
     public ResourceLocation getGlowTexture() {
         return glowTexture;
+    }
+    
+    @Override
+    public ResourceLocation getGlowAnimTexture() {
+        return glowAnimTexture;
     }
 
     @Override
