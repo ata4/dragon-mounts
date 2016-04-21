@@ -16,25 +16,28 @@ import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.model.IBakedModel;
-import net.minecraft.util.BlockPos;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
+
 import static org.lwjgl.opengl.GL11.*;
+
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Generic renderer for all dragons.
@@ -84,10 +87,10 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         for (LayerRenderer<EntityTameableDragon> layer : layers) {
             boolean brighnessSet = setBrightness(dragon, partialTicks,
                     layer.shouldCombineTextures());
-            
+
             layer.doRenderLayer(dragon, moveTime, moveSpeed, partialTicks,
                     ticksExisted, lookYaw, lookPitch, scale);
-            
+
             if (brighnessSet) {
                 unsetBrightness();
             }
@@ -152,8 +155,8 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 
         // prepare egg rendering
         Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.BLOCK);
+        VertexBuffer vb = tessellator.getBuffer();
+        vb.begin(GL_QUADS, DefaultVertexFormats.BLOCK);
 
         Block block = BlockDragonBreedEgg.INSTANCE;
         IBlockState iblockstate = block.getDefaultState().withProperty(
@@ -163,14 +166,15 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         double tx = -blockpos.getX() - 0.5;
         double ty = -blockpos.getY();
         double tz = -blockpos.getZ() - 0.5;
-        worldRenderer.setTranslation(tx, ty, tz);
+        vb.setTranslation(tx, ty, tz);
         
         BlockRendererDispatcher brd = Minecraft.getMinecraft().getBlockRendererDispatcher();
-        IBakedModel bakedModel = brd.getModelFromBlockState(iblockstate, dragon.worldObj, null);
+        IBakedModel bakedModel = brd.getModelForState(iblockstate);
         
         // render egg
-        brd.getBlockModelRenderer().renderModel(dragon.worldObj, bakedModel, iblockstate, blockpos, worldRenderer, false);
-        worldRenderer.setTranslation(0, 0, 0);
+        brd.getBlockModelRenderer().renderModel(dragon.worldObj, bakedModel,
+                iblockstate, blockpos, vb, false);
+        vb.setTranslation(0, 0, 0);
         
         tessellator.draw();
         

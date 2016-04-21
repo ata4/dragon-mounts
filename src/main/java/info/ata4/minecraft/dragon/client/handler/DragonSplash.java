@@ -11,12 +11,16 @@ package info.ata4.minecraft.dragon.client.handler;
 
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.GuiScreen;
+
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,9 +58,10 @@ public class DragonSplash implements PrivateFields {
     
     @SubscribeEvent
     public void onOpenGui(GuiOpenEvent evt) {
-        if (evt.gui instanceof GuiMainMenu) {
+        GuiScreen gui = evt.getGui();
+        if (gui instanceof GuiMainMenu) {
             try {
-                GuiMainMenu menu = (GuiMainMenu) evt.gui;
+                GuiMainMenu menu = (GuiMainMenu) gui;
                 String splash = getSplashText(menu);
                 if (splash.equals("Kind of dragon free!")) {
                     splash = "Not really dragon free!";

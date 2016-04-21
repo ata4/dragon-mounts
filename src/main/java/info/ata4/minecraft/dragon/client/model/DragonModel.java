@@ -460,7 +460,7 @@ public class DragonModel extends ModelBase {
     protected void renderWings(float scale) {     
         GlStateManager.pushMatrix();
         GlStateManager.enableCull();
-        GlStateManager.cullFace(GL_FRONT);
+        GlStateManager.cullFace(GlStateManager.CullFace.FRONT);
 
         for (int i = 0; i < 2; i++) {
             wingArm.render(scale);
@@ -469,7 +469,7 @@ public class DragonModel extends ModelBase {
                 // mirror next wing
                 GlStateManager.scale(-1, 1, 1);
                 // switch to back face culling
-                GlStateManager.cullFace(GL_BACK);
+                GlStateManager.cullFace(GlStateManager.CullFace.BACK);
             }
         }
 
@@ -479,7 +479,7 @@ public class DragonModel extends ModelBase {
     
     protected void renderLegs(float scale) {
         GlStateManager.enableCull();
-        GlStateManager.cullFace(GL_BACK);
+        GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         
         for (int i = 0; i < thighProxy.length; i++) {
             thighProxy[i].render(scale);
@@ -488,11 +488,11 @@ public class DragonModel extends ModelBase {
                 // mirror next legs
                 GlStateManager.scale(-1, 1, 1);
                 // switch to front face culling
-                GlStateManager.cullFace(GL_FRONT);
+                GlStateManager.cullFace(GlStateManager.CullFace.FRONT);
             }
         }
         
-        GlStateManager.cullFace(GL_BACK);
+        GlStateManager.cullFace(GlStateManager.CullFace.BACK);
         GlStateManager.disableCull();
     }
 }

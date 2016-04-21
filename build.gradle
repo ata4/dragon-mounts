@@ -30,7 +30,7 @@ def getGitTag = { ->
 }
 
 minecraft {
-    version = "1.8.9-11.15.1.1722"
+    version = "1.9-12.16.0.1865-1.9"
     runDir = "minecraft"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -38,7 +38,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "stable_20"
+    mappings = "snapshot_20160312"
 }
 
 version =  "${getGitTag()}-${minecraft.version}"
