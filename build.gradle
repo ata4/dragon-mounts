@@ -21,12 +21,17 @@ targetCompatibility = "1.8"
  * Gets the version name from the latest Git tag
  */
 def getGitTag = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags'
-        standardOutput = stdout
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    } catch (Exception e) {
+        // git is probably not installed, return placeholder
+        return "snapshot"
     }
-    return stdout.toString().trim()
 }
 
 minecraft {
@@ -73,4 +78,6 @@ processResources {
 // IntelliJ fix, may not work in other IDEs
 //sourceSets { main { output.resourcesDir = output.classesDir } }
 
-runClient.debug = true
+// Netbeans workaround for debugging: debugClient doesn't exist anymore and for
+// some reason, it's impossible to pass debug parameters with the Gradle plugin
+// runClient.debug = true

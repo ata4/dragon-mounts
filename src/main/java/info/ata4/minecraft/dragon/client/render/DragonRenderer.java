@@ -84,17 +84,15 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
             float moveSpeed, float partialTicks, float ticksExisted, float lookYaw,
             float lookPitch, float scale) {
         List<LayerRenderer<EntityTameableDragon>> layers = getBreedRenderer(dragon).getLayers();
-        for (LayerRenderer<EntityTameableDragon> layer : layers) {
+        layers.forEach(layer -> {
             boolean brighnessSet = setBrightness(dragon, partialTicks,
                     layer.shouldCombineTextures());
-
             layer.doRenderLayer(dragon, moveTime, moveSpeed, partialTicks,
                     ticksExisted, lookYaw, lookPitch, scale);
-
             if (brighnessSet) {
                 unsetBrightness();
             }
-        }
+        });
     }
 
     /**
