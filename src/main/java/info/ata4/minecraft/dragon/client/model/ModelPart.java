@@ -11,11 +11,11 @@ package info.ata4.minecraft.dragon.client.model;
 
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -84,11 +84,10 @@ public class ModelPart extends ModelRenderer {
     }
     
     private void compileDisplayList(float scale) {
+        WorldRenderer vb = Tessellator.getInstance().getWorldRenderer();
         displayList = GLAllocation.generateDisplayLists(1);
         glNewList(displayList, GL_COMPILE);
-        for (Object obj : cubeList) {
-            ((ModelBox) obj).render(Tessellator.getInstance().getWorldRenderer(), scale);
-        }
+        cubeList.forEach(cube -> cube.render(vb, scale));
         glEndList();
         compiled = true;
     }

@@ -412,23 +412,30 @@ public class DragonModel extends ModelBase {
      * Renders the model after all animations are applied.
      */
     public void renderModel(EntityTameableDragon dragon, float scale) {
+        if (mode == null) {
+            return;
+        }
+        
         GlStateManager.pushMatrix();
         GlStateManager.translate(offsetX, offsetY, offsetZ);
         GlStateManager.rotate(-pitch, 1, 0, 0);
 
-        if (mode == DragonModelMode.BODY_ONLY) {
-            renderBody(scale);
-        } else if (mode == DragonModelMode.WINGS_ONLY) {
-            renderWings(scale);
-        } else {
-            renderHead(scale);
-            renderNeck(scale);
-            renderBody(scale);
-            renderLegs(scale);
-            renderTail(scale);
-            if (mode != DragonModelMode.NO_WINGS) {
+        switch (mode) {
+            case BODY_ONLY:
+                renderBody(scale);
+                break;
+            case WINGS_ONLY:
                 renderWings(scale);
-            }
+                break;
+            default:
+                renderHead(scale);
+                renderNeck(scale);
+                renderBody(scale);
+                renderLegs(scale);
+                renderTail(scale);
+                if (mode != DragonModelMode.NO_WINGS) {
+                    renderWings(scale);
+                }
         }
 
         GlStateManager.popMatrix();
