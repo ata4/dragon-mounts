@@ -28,6 +28,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import static net.minecraft.entity.SharedMonsterAttributes.*;
+import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -127,6 +128,7 @@ public class EntityTameableDragon extends EntityTameable {
         }
         
         moveHelper = new DragonMoveHelper(this);
+        aiSit = new EntityAISit(this);
         
         // init helpers
         helpers.values().forEach(DragonHelper::applyEntityAttributes);
