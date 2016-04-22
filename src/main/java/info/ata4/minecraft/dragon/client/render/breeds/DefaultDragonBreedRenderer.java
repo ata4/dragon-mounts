@@ -47,7 +47,7 @@ public class DefaultDragonBreedRenderer implements DragonBreedRenderer {
         
         // standard layers
         layers.add(new LayerRendererDragonGlow(parent, this, model));
-        layers.add(new LayerRendererDragonGlowAnim(parent, this, model));
+//        layers.add(new LayerRendererDragonGlowAnim(parent, this, model));
         layers.add(new LayerRendererDragonSaddle(parent, this, model));
         
         // textures
