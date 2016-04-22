@@ -21,7 +21,7 @@ public class DragonMountsSoundEvents {
     
     public static final SoundEvent entity_dragon_mount_step = registerSound("mob.enderdragon.step");
     public static final SoundEvent entity_dragon_mount_breathe = registerSound("mob.enderdragon.breathe");
-    public static final SoundEvent entity_dragon_mount_death = registerSound("mob.enderdragon.step");
+    public static final SoundEvent entity_dragon_mount_death = registerSound("mob.enderdragon.death");
 
     private static SoundEvent registerSound(String soundName) {
         ResourceLocation soundID = new ResourceLocation(DragonMounts.AID, soundName);
