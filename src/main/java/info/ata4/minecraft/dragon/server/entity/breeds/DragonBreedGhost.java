@@ -10,15 +10,16 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import java.util.Iterator;
+import java.util.List;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.EntityAIRestrictSun;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
-
-import java.util.Iterator;
-import java.util.List;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 
 /**
  *
@@ -94,18 +95,18 @@ public class DragonBreedGhost extends DragonBreed {
     }
 
     @Override
-    public String getLivingSound(EntityTameableDragon dragon) {
-        return "mob.skeleton.say";
+    public SoundEvent getLivingSound() {
+        return SoundEvents.entity_skeleton_ambient;
     }
     
     @Override
-    public float getSoundPitch(EntityTameableDragon dragon, String sound) {
+    public float getSoundPitch(SoundEvent sound) {
         // bony sounds need lower pitches, these are large bones!
-        if (sound.equals(getLivingSound(dragon))) {
+        if (sound.equals(getLivingSound())) {
             return 0.5f;
         }
         
-        return super.getSoundPitch(dragon, sound);
+        return super.getSoundPitch(sound);
     }
 
     @Override

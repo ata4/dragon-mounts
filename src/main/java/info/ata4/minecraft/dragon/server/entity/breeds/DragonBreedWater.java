@@ -10,9 +10,9 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.biome.BiomeGenBase;
 
 /**
  *
@@ -28,9 +28,9 @@ public class DragonBreedWater extends DragonBreed {
         addHabitatBlock(Blocks.water);
         addHabitatBlock(Blocks.flowing_water);
         
-        addHabitatBiome(BiomeGenBase.ocean);
-        addHabitatBiome(BiomeGenBase.river);
-        addHabitatBiome(BiomeGenBase.swampland);
+        addHabitatBiome(Biomes.ocean);
+        addHabitatBiome(Biomes.river);
+        addHabitatBiome(Biomes.swampland);
     }
 
     @Override

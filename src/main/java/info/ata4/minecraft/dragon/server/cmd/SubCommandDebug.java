@@ -24,7 +24,8 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 /**
  *
@@ -53,7 +54,7 @@ public class SubCommandDebug extends SubCommand {
             }
         }));
         
-        subCommands.put("toggleOverlay", new SubCommandSimple(parent, (sender, args) -> {
+        subCommands.put("toggleOverlay", new SubCommandSimple(parent, (server, sender, args) -> {
             GuiDragonDebug.enabled = !GuiDragonDebug.enabled;
         }));
         
@@ -65,8 +66,8 @@ public class SubCommandDebug extends SubCommand {
             dragon.setHealth(0);
         }));
         
-        subCommands.put("tameSaddleAndMount", new SubCommandSimple(parent, (sender, args) -> {
-            parent.applyModifier(sender, args, dragon -> {
+        subCommands.put("tameSaddleAndMount", new SubCommandSimple(parent, (server, sender, args) -> {
+            parent.applyModifier(server, sender, args, dragon -> {
                 if (!(sender instanceof EntityPlayerMP)) {
                     return;
                 }
@@ -75,24 +76,24 @@ public class SubCommandDebug extends SubCommand {
                 dragon.tamedFor(player, true);
                 dragon.setSaddled(true);
                 dragon.setCustomNameTag("Puff");
-                player.mountEntity(dragon);
+                player.startRiding(dragon);
             });
         }));
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         String cmd = args[1];
         
         if (!subCommands.containsKey(cmd)) {
             throw new WrongUsageException(parent.getCommandUsage(sender));
         }
         
-        subCommands.get(cmd).processCommand(sender, args);
+        subCommands.get(cmd).execute(server, sender, args);
     }
 
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
         return CommandBase.getListOfStringsMatchingLastWord(args, subCommands.keySet());
     }
     

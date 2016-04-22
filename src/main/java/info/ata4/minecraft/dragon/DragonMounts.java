@@ -75,8 +75,8 @@ public class DragonMounts {
     }
     
     @EventHandler
-    public void onServerStarted(FMLServerStartedEvent evt) {
-        proxy.onServerStarted(evt);
+    public void onServerStarting(FMLServerStartingEvent evt) {
+        proxy.onServerStarting(evt);
     }
     
     @EventHandler

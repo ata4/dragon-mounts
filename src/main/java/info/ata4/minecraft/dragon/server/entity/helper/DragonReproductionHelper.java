@@ -9,11 +9,14 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
+import com.google.common.base.Optional;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import java.util.UUID;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,55 +27,70 @@ import org.apache.logging.log4j.Logger;
 public class DragonReproductionHelper extends DragonHelper  {
     
     private static final Logger L = LogManager.getLogger();
-    public static final String NBT_BREEDER = "HatchedBy";
-    public static final String NBT_REPRODUCED = "HasReproduced";
+    
+    public static final String NBT_BREEDER = "HatchedByUUID";
     public static final String NBT_REPRO_COUNT = "ReproductionCount";
+    
+    // old NBT keys
+    public static final String NBT_REPRODUCED = "HasReproduced";
+    public static final String NBT_BREEDER_OLD = "HatchedBy";
     
     public static final byte REPRO_LIMIT = 2;
     
-    private final int dataIndexBreeder;
-    private final int dataIndexReproduced;
+    private final DataParameter<Optional<UUID>> dataParamBreeder;
+    private final DataParameter<Integer> dataParamReproduced;
     
-    public DragonReproductionHelper(EntityTameableDragon dragon, int dataIndexBreeder, int dataIndexReproCount) {
+    public DragonReproductionHelper(EntityTameableDragon dragon,
+            DataParameter<Optional<UUID>> dataParamBreeder,
+            DataParameter<Integer> dataIndexReproCount) {
         super(dragon);
         
-        this.dataIndexBreeder = dataIndexBreeder;
-        this.dataIndexReproduced = dataIndexReproCount;
+        this.dataParamBreeder = dataParamBreeder;
+        this.dataParamReproduced = dataIndexReproCount;
         
-        dataWatcher.addObject(dataIndexBreeder, "");
-        dataWatcher.addObject(dataIndexReproCount, 0);
+        dataWatcher.register(dataParamBreeder, Optional.absent());
+        dataWatcher.register(dataIndexReproCount, 0);
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
-        nbt.setString(NBT_BREEDER, getBreederName() == null ? "" : getBreederName());
+        nbt.setUniqueId(NBT_BREEDER, getBreederID().orNull());
         nbt.setInteger(NBT_REPRO_COUNT, getReproCount());
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
-        setBreederName(nbt.getString(NBT_BREEDER));
-                
-        // convert old NBT format
         int reproCount = 0;
-        if (!nbt.hasKey(NBT_REPRO_COUNT)) {
+        if (nbt.hasKey(NBT_REPRO_COUNT)) {
+            reproCount = nbt.getInteger(NBT_REPRO_COUNT);
+        } else if (nbt.hasKey(NBT_REPRODUCED)) {
+            // convert old boolean value
             if (nbt.getBoolean(NBT_REPRODUCED)) {
                 reproCount++;
             }
-        } else {
-            reproCount = nbt.getInteger(NBT_REPRO_COUNT);
+        }
+        
+        if (nbt.hasKey(NBT_BREEDER)) {
+            setBreederID(nbt.getUniqueId(NBT_BREEDER));
+        } else if (nbt.hasKey(NBT_BREEDER_OLD)) {
+            // lookup breeder name on server and convert to UUID
+            // if we're lucky, it'll work. if not... well, it's not really being
+            // used right now anyway...
+            String breederName = nbt.getString(NBT_BREEDER_OLD);
+            EntityPlayer breeder = dragon.worldObj.getPlayerEntityByName(breederName);
+            setBreeder(breeder);
         }
         
         setReproCount(reproCount);
     }
     
     public int getReproCount() {
-        return dataWatcher.getWatchableObjectInt(dataIndexReproduced);
+        return dataWatcher.get(dataParamReproduced);
     }
     
     public void setReproCount(int reproCount) {
         L.trace("setReproCount({})", reproCount);
-        dataWatcher.updateObject(dataIndexReproduced, reproCount);
+        dataWatcher.set(dataParamReproduced, reproCount);
     }
     
     public void addReproduced() {
@@ -80,28 +98,34 @@ public class DragonReproductionHelper extends DragonHelper  {
     }
     
     public boolean canReproduce() {
-        return getReproCount() < REPRO_LIMIT;
+        return dragon.isTamed() && getReproCount() < REPRO_LIMIT;
     }
     
-    public String getBreederName() {
-        return dataWatcher.getWatchableObjectString(dataIndexBreeder);
+    public Optional<UUID> getBreederID() {
+        return dataWatcher.get(dataParamBreeder);
+    }
+    
+    public void setBreederID(UUID breederID) {
+        L.trace("setBreederUUID({})", breederID);
+        dataWatcher.set(dataParamBreeder, Optional.fromNullable(breederID));
     }
     
     public EntityPlayer getBreeder() {
-        String breederName = getBreederName();
-        return dragon.worldObj.getPlayerEntityByName(breederName);
+        Optional<UUID> breederID = getBreederID();
+        if (breederID.isPresent()) {
+            return dragon.worldObj.getPlayerEntityByUUID(breederID.get());
+        } else {
+            return null;
+        }
     }
     
-    public void setBreederName(String breederName) {
-        L.trace("setBreederName({})", breederName);
-        dataWatcher.updateObject(dataIndexBreeder, breederName);
+    public void setBreeder(EntityPlayer breeder) {
+        setBreederID(breeder != null ? breeder.getUniqueID() : null);
     }
     
     public boolean canMateWith(EntityAnimal mate) {
         if (mate == dragon) {
             // No. Just... no.
-            return false;
-        } else if (!dragon.isTamed()) {
             return false;
         } else if (!(mate instanceof EntityTameableDragon)) {
             return false;

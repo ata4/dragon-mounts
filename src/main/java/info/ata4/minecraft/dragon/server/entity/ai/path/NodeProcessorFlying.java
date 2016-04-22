@@ -9,16 +9,14 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.path;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.pathfinding.PathPoint;
-import net.minecraft.util.BlockPos;
+import net.minecraft.pathfinding.SwimNodeProcessor;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.pathfinder.NodeProcessor;
-import net.minecraft.world.pathfinder.SwimNodeProcessor;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Based on SwimNodeProcessor but for air blocks.
@@ -31,20 +29,22 @@ public class NodeProcessorFlying extends SwimNodeProcessor {
      * Returns PathPoint for given coordinates
      */
     @Override
-    public PathPoint getPathPointToCoords(Entity entityIn, double x, double y, double target) {
+    //public PathPoint getPathPointToCoords(Entity entityIn, double x, double y, double target) {
+    public PathPoint func_186325_a(double x, double y, double target) {
         return openPoint(
-            MathHelper.floor_double(x - (entityIn.width / 2.0)),
+            MathHelper.floor_double(x - (field_186326_b.width / 2.0)),
             MathHelper.floor_double(y + 0.5),
-            MathHelper.floor_double(target - (entityIn.width / 2.0))
+            MathHelper.floor_double(target - (field_186326_b.width / 2.0))
         );
     }
 
     @Override
-    public int findPathOptions(PathPoint[] pathOptions, Entity entityIn, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
+    //public int findPathOptions(PathPoint[] pathOptions, Entity entityIn, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
+    public int func_186320_a(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
         int i = 0;
         
         for (EnumFacing facing : EnumFacing.values()) {
-            PathPoint point = getSafePoint(entityIn,
+            PathPoint point = getSafePoint(field_186326_b,
                 currentPoint.xCoord + facing.getFrontOffsetX(),
                 currentPoint.yCoord + facing.getFrontOffsetY(),
                 currentPoint.zCoord + facing.getFrontOffsetZ()
@@ -71,8 +71,8 @@ public class NodeProcessorFlying extends SwimNodeProcessor {
         for (int ix = 0; ix < entitySizeX; ++ix) {
             for (int iy = 0; iy < entitySizeY; ++iy) {
                 for (int iz = 0; iz < entitySizeZ; ++iz) {
-                    Block block = blockaccess.getBlockState(pos.add(ix, iy, iz)).getBlock();
-                    if (block.getMaterial() != Material.air) {
+                    IBlockState blockState = blockaccess.getBlockState(pos.add(ix, iy, iz));
+                    if (blockState.getMaterial() != Material.air) {
                         return null;
                     }
                 }

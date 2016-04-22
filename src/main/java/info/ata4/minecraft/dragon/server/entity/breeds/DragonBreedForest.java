@@ -14,11 +14,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 
 /**
  *
@@ -42,10 +42,10 @@ public class DragonBreedForest extends DragonBreed {
         addHabitatBlock(Blocks.vine);
         addHabitatBlock(Blocks.sapling);
         
-        addHabitatBiome(BiomeGenBase.forest);
-        addHabitatBiome(BiomeGenBase.forestHills);
-        addHabitatBiome(BiomeGenBase.jungle);
-        addHabitatBiome(BiomeGenBase.jungleHills);
+        addHabitatBiome(Biomes.forest);
+        addHabitatBiome(Biomes.forestHills);
+        addHabitatBiome(Biomes.jungle);
+        addHabitatBiome(Biomes.jungleHills);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class DragonBreedForest extends DragonBreed {
                 if (blockUnderFoot.getBlock() == Blocks.dirt
                         && blockUnderFoot.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
                         && world.getLightFromNeighbors(blockPosOnSurface) >= GRASS_LIGHT_THRESHOLD
-                        && blockOneUp.getBlock().getLightOpacity(world, blockPosOnSurface) <= 2) {
+                        && blockOneUp.getLightOpacity(world, blockPosOnSurface) <= 2) {
 
                     world.setBlockState(blockPosUnderFoot, FOOTPRINT.getDefaultState());
                 }

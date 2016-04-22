@@ -16,22 +16,23 @@ import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
 import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
+import java.text.DecimalFormat;
+import java.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.DataWatcher;
-import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -41,9 +42,6 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.lwjgl.input.Keyboard;
-
-import java.text.DecimalFormat;
-import java.util.*;
 
 /**
  *
@@ -75,7 +73,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
     
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (!enabled || event.isCancelable() || event.type != ElementType.TEXT) {
+        if (!enabled || event.isCancelable() || event.getType() != ElementType.TEXT) {
             return;
         }
 
@@ -96,7 +94,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
                 } else {
                     renderEntityInfo();
                     renderAITasks();
-                    renderWatchedObjects();
+//                    renderWatchedObjects();
                 }
 
                 renderProbe();
@@ -113,8 +111,9 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
     }
     
     private void getClientDragon() {
-        if (mc.thePlayer.ridingEntity instanceof EntityTameableDragon) {
-            dragonClient = (EntityTameableDragon) mc.thePlayer.ridingEntity;
+        // always return currently ridden dragon first
+        if (mc.thePlayer.getRidingEntity() instanceof EntityTameableDragon) {
+            dragonClient = (EntityTameableDragon) mc.thePlayer.getRidingEntity();
             return;
         }
         
@@ -150,7 +149,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
             return;
         }
         
-        MinecraftServer mcs = MinecraftServer.getServer();
+        MinecraftServer mcs = mc.getIntegratedServer();
         
         for (WorldServer ws : mcs.worldServers) {
             Entity ent = ws.getEntityByID(dragonClient.getEntityId());
@@ -238,8 +237,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
             if (player != null) {
                 tamedString = "yes (" + player.getName()+ ")";
             } else {
-//                tamedString = "yes (" + StringUtils.abbreviate(dragon.func_152113_b(), 22) + ")";
-                tamedString = "yes (" + StringUtils.abbreviate(dragon.getOwnerId(), 22) + ")";
+                tamedString = "yes (" + StringUtils.abbreviate(dragon.getOwnerId().toString(), 22) + ")";
             }
         } else {
             tamedString = "no";
@@ -248,9 +246,12 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         
         // breeder name
         DragonReproductionHelper reproduction = dragon.getReproductionHelper();
-        String breederName = reproduction.getBreederName();
-        if (breederName.isEmpty()) {
+        EntityPlayer breeder = reproduction.getBreeder();
+        String breederName;
+        if (breeder == null) {
             breederName = "none";
+        } else {
+            breederName = breeder.getName();
         }
         text.println("Breeder: " + breederName);
         text.println("Reproduced: " + reproduction.getReproCount());
@@ -272,7 +273,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         Collection<IAttributeInstance> attribs = dragon.getAttributeMap().getAllAttributes();
         
         attribs.forEach(attrib -> {
-            String attribName = StatCollector.translateToLocal("attribute.name." + attrib.getAttribute().getAttributeUnlocalizedName());
+            String attribName = I18n.translateToLocal("attribute.name." + attrib.getAttribute().getAttributeUnlocalizedName());
             String attribValue = dfShort.format(attrib.getAttributeValue());
             String attribBase = dfShort.format(attrib.getBaseValue());
             text.println(attribName + " = " + attribValue + " (" + attribBase + ")");
@@ -311,7 +312,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         }
         
         text.println("Search range: " + nav.getPathSearchRange());
-        text.println("Avoid water: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.getAvoidsWater()));
+        text.println("Can swim: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.getCanSwim()));
         text.println("Break doors: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.getEnterDoors()));
         text.println("No path: " + nav.noPath());
 
@@ -375,35 +376,35 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         });
     }
     
-    private void renderWatchedObjects() {
-        EntityTameableDragon dragon = getSelectedDragon();
-        if (dragon == null) {
-            return;
-        }
-        
-        text.setOrigin(text.getX() + 140, 8);
-        
-        text.setColor(YELLOW);
-        text.println("Watched objects");
-        text.setColor(WHITE);
-        
-        Map<Integer, WatchableObject> watchedObjects;
-        
-        try {
-            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class,
-                    dragon.getDataWatcher(), DATAWATCHER_WATCHEDOBJECTS);
-        } catch (Exception ex) {
-            return;
-        }
-        
-        Iterator<Map.Entry<Integer, WatchableObject>> it = watchedObjects.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Integer, WatchableObject> pairs = it.next();
-            Object object = pairs.getValue().getObject();
-            Integer index = pairs.getKey();
-            text.printf("%d = %s:%s\n", index, object.getClass().getSimpleName(), object);
-        }
-    }
+//    private void renderWatchedObjects() {
+//        EntityTameableDragon dragon = getSelectedDragon();
+//        if (dragon == null) {
+//            return;
+//        }
+//        
+//        text.setOrigin(text.getX() + 140, 8);
+//        
+//        text.setColor(YELLOW);
+//        text.println("Watched objects");
+//        text.setColor(WHITE);
+//        
+//        Map<Integer, WatchableObject> watchedObjects;
+//        
+//        try {
+//            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class,
+//                    dragon.getDataWatcher(), DATAWATCHER_WATCHEDOBJECTS);
+//        } catch (Exception ex) {
+//            return;
+//        }
+//        
+//        Iterator<Map.Entry<Integer, WatchableObject>> it = watchedObjects.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry<Integer, WatchableObject> pairs = it.next();
+//            Object object = pairs.getValue().getObject();
+//            Integer index = pairs.getKey();
+//            text.printf("%d = %s:%s\n", index, object.getClass().getSimpleName(), object);
+//        }
+//    }
     
     private void renderProbe() {
         if (probe == null) {

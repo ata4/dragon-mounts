@@ -12,18 +12,18 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.world.biome.BiomeGenBase;
-
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.BiomeGenBase;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,13 +47,13 @@ public class DragonBreedHelper extends DragonHelper {
     private static final String NBT_BREED = "Breed";
     private static final String NBT_BREED_POINTS = "breedPoints";
 
-    private final int dataIndex;
+    private final DataParameter<String> dataParam;
     private final Map<EnumDragonBreed, AtomicInteger> breedPoints = new EnumMap<>(EnumDragonBreed.class);
     
-    public DragonBreedHelper(EntityTameableDragon dragon, int dataIndex) {
+    public DragonBreedHelper(EntityTameableDragon dragon, DataParameter<String> dataParam) {
         super(dragon);
         
-        this.dataIndex = dataIndex;
+        this.dataParam = dataParam;
 
         if (dragon.isServer()) {
             // initialize map to avoid future checkings
@@ -65,7 +65,7 @@ public class DragonBreedHelper extends DragonHelper {
             breedPoints.get(EnumDragonBreed.DEFAULT).set(POINTS_INITIAL);
         }
         
-        dataWatcher.addObject(dataIndex, EnumDragonBreed.DEFAULT.getName());
+        dataWatcher.register(dataParam, EnumDragonBreed.DEFAULT.getName());
     }
 
     @Override
@@ -103,7 +103,7 @@ public class DragonBreedHelper extends DragonHelper {
     }
     
     public EnumDragonBreed getBreedType() {
-        String breedName = dataWatcher.getWatchableObjectString(dataIndex);
+        String breedName = dataWatcher.get(dataParam);
         return EnumUtils.getEnum(EnumDragonBreed.class, breedName.toUpperCase());
     }
     
@@ -136,7 +136,7 @@ public class DragonBreedHelper extends DragonHelper {
                 || newBreed.isImmuneToDamage(DamageSource.lava));
         
         // update breed name
-        dataWatcher.updateObject(dataIndex, newType.getName());
+        dataWatcher.set(dataParam, newType.getName());
         
         // reset breed points
         if (dragon.isEgg()) {

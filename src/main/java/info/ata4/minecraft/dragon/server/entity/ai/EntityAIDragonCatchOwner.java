@@ -27,7 +27,7 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
     @Override
     public boolean shouldExecute() {
         // don't catch if already being ridden
-        if (dragon.riddenByEntity != null) {
+        if (!dragon.isPassenger(owner)) {
             return false;
         }
         
@@ -71,7 +71,7 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
         
         // mount owner if close enough, otherwise move to owner
         if (dragon.getDistanceToEntity(owner) < dragon.width) {
-            owner.mountEntity(dragon);
+            owner.startRiding(dragon);
         } else {
             dragon.getNavigator().tryMoveToEntityLiving(owner, 1);
         }

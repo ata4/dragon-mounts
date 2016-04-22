@@ -18,7 +18,7 @@ import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchIdle;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchLiving;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
@@ -65,7 +65,7 @@ public class DragonBrain extends DragonHelper {
         PathNavigate pathNavigate = dragon.getNavigator();
         if (pathNavigate instanceof PathNavigateGround) {
             PathNavigateGround pathNavigateGround = (PathNavigateGround) pathNavigate;
-            pathNavigateGround.setAvoidsWater(avoidWater);
+            pathNavigateGround.setCanSwim(!avoidWater); // originally setAvoidsWater()
         }
     }
     
@@ -76,7 +76,7 @@ public class DragonBrain extends DragonHelper {
     
     public void clearTasks(EntityAITasks tasks) {
         while (!tasks.taskEntries.isEmpty()) {
-            EntityAIBase entityAIBase = tasks.taskEntries.get(0).action;
+            EntityAIBase entityAIBase = tasks.taskEntries.iterator().next().action;
             tasks.removeTask(entityAIBase);
         }
     }
@@ -112,7 +112,7 @@ public class DragonBrain extends DragonHelper {
             tasks.addTask(4, dragon.getAISit()); // mutex 4+1
 
             tasks.addTask(6, new EntityAITempt(dragon, 0.75, dragon.getBreed().getFavoriteFood(), false)); // mutex 2+1
-            tasks.addTask(7, new EntityAIAttackOnCollide(dragon, 1, true)); // mutex 2+1
+            tasks.addTask(7, new EntityAIAttackMelee(dragon, 1, true)); // mutex 2+1
 
 //            tasks.addTask(9, new EntityAIDragonFollowOwner(dragon, 1, 12, 128)); // mutex 2+1
             tasks.addTask(10, new EntityAIWander(dragon, 1)); // mutex 1

@@ -39,7 +39,7 @@ public class ItemUtils {
      * @return the consumed item type or null if no matching item was equipped.
      */
     public static Item consumeEquipped(EntityPlayer player, Item... items) {
-        ItemStack itemStack = player.getCurrentEquippedItem();
+        ItemStack itemStack = player.getHeldItemMainhand();
         
         if (itemStack == null) {
             return null;
@@ -77,7 +77,7 @@ public class ItemUtils {
      * @return true if the player has a food item selected
      */
     public static boolean hasEquippedFood(EntityPlayer player) {
-        ItemStack itemStack = player.getCurrentEquippedItem();
+        ItemStack itemStack = player.getHeldItemMainhand();
         
         if (itemStack == null) {
             return false;
@@ -94,7 +94,7 @@ public class ItemUtils {
      * @return true if the player has an usable item equipped
      */
     public static boolean hasEquippedUsable(EntityPlayer player) {
-        ItemStack itemStack = player.getCurrentEquippedItem();
+        ItemStack itemStack = player.getHeldItemMainhand();
         
         if (itemStack == null) {
             return false;
@@ -111,7 +111,7 @@ public class ItemUtils {
      * @return true if the player has the given item equipped
      */
     public static boolean hasEquipped(EntityPlayer player, Item item) {
-        ItemStack itemStack = player.getCurrentEquippedItem();
+        ItemStack itemStack = player.getHeldItemMainhand();
         
         if (itemStack == null) {
             return false;

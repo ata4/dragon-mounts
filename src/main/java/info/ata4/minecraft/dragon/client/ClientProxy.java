@@ -16,15 +16,15 @@ import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.CommonProxy;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  *
@@ -42,7 +42,8 @@ public class ClientProxy extends CommonProxy {
                 EntityTameableDragon.class, DragonRenderer::new);
         
         // register item renderer for dragon egg block variants
-        Item itemBlockDragonEgg = GameRegistry.findItem(DragonMounts.AID, "dragon_egg");
+        ResourceLocation eggModelItemLoc = new ResourceLocation(DragonMounts.AID, "dragon_egg");
+        Item itemBlockDragonEgg = Item.itemRegistry.getObject(eggModelItemLoc);
         EnumDragonBreed.META_MAPPING.forEach((breed, meta) -> {
             ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.AID + ":dragon_egg", "breed=" + breed.getName());
             ModelLoader.setCustomModelResourceLocation(itemBlockDragonEgg, meta, eggModelLoc);

@@ -9,15 +9,24 @@
  */
 package info.ata4.minecraft.dragon.server.entity;
 
+import com.google.common.base.Optional;
 import info.ata4.minecraft.dragon.client.model.anim.DragonAnimator;
 import info.ata4.minecraft.dragon.server.entity.ai.path.PathNavigateFlying;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import static net.minecraft.entity.SharedMonsterAttributes.*;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -28,17 +37,19 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.S0BPacketAnimation;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SPacketAnimation;
 import net.minecraft.pathfinding.PathNavigateGround;
-import net.minecraft.util.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Here be dragons.
@@ -49,7 +60,7 @@ public class EntityTameableDragon extends EntityTameable {
     
     private static final Logger L = LogManager.getLogger();
     
-    public static final IAttribute MOVE_SPEED_AIR = new RangedAttribute(null,
+    public static final IAttribute MOVEMENT_SPEED_AIR = new RangedAttribute(null,
         "generic.movementSpeedAir", 1.5, 0.0, Double.MAX_VALUE)
             .setDescription("Movement Speed Air")
             .setShouldWatch(true);
@@ -68,12 +79,18 @@ public class EntityTameableDragon extends EntityTameable {
     public static final double ALTITUDE_FLYING_THRESHOLD = 2;
 
     // data value IDs
-    private static final int INDEX_FLYING = 18;
-    private static final int INDEX_SADDLED = 20;
-    private static final int INDEX_BREEDER = 21;
-    private static final int INDEX_BREED = 22;
-    private static final int INDEX_REPRO_COUNT = 23;
-    private static final int INDEX_TICKS_SINCE_CREATION = 24;
+    private static final DataParameter<Boolean> DATA_FLYING =
+            EntityDataManager.<Boolean>createKey(EntityTameableDragon.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> DATA_SADDLED =
+            EntityDataManager.<Boolean>createKey(EntityTameableDragon.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Optional<UUID>> DATA_BREEDER =
+            EntityDataManager.<Optional<UUID>>createKey(EntityTameableDragon.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    private static final DataParameter<String> DATA_BREED =
+            EntityDataManager.<String>createKey(EntityTameableDragon.class, DataSerializers.STRING);
+    private static final DataParameter<Integer> DATA_REPRO_COUNT =
+            EntityDataManager.<Integer>createKey(EntityTameableDragon.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> DATA_TICKS_SINCE_CREATION =
+            EntityDataManager.<Integer>createKey(EntityTameableDragon.class, DataSerializers.VARINT);
     
     // data NBT IDs
     private static final String NBT_SADDLED = "Saddle";
@@ -97,9 +114,9 @@ public class EntityTameableDragon extends EntityTameable {
         stepHeight = 1;
         
         // create entity delegates
-        addHelper(new DragonBreedHelper(this, INDEX_BREED));
-        addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
-        addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
+        addHelper(new DragonBreedHelper(this, DATA_BREED));
+        addHelper(new DragonLifeStageHelper(this, DATA_TICKS_SINCE_CREATION));
+        addHelper(new DragonReproductionHelper(this, DATA_BREEDER, DATA_REPRO_COUNT));
         addHelper(new DragonSoundManager(this));
         
         if (isClient()) {
@@ -116,7 +133,7 @@ public class EntityTameableDragon extends EntityTameable {
     }
     
     @Override
-    protected float func_110146_f(float p_110146_1_, float p_110146_2_) {
+    protected float updateDistance(float p_110146_1_, float p_110146_2_) {
         // required to fixate body while sitting. also slows down rotation while
         // standing.
         bodyHelper.updateRenderAngles();
@@ -127,29 +144,29 @@ public class EntityTameableDragon extends EntityTameable {
     protected void entityInit() {
         super.entityInit();
         
-        dataWatcher.addObject(INDEX_FLYING, (byte) 0);
-        dataWatcher.addObject(INDEX_SADDLED, (byte) 0);
+        dataWatcher.register(DATA_FLYING, false);
+        dataWatcher.register(DATA_SADDLED, false);
     }
 
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         
-        getAttributeMap().registerAttribute(attackDamage);
-        getAttributeMap().registerAttribute(MOVE_SPEED_AIR);
+        getAttributeMap().registerAttribute(ATTACK_DAMAGE);
+        getAttributeMap().registerAttribute(MOVEMENT_SPEED_AIR);
         
-        getEntityAttribute(movementSpeed).setBaseValue(BASE_SPEED_GROUND);
-        getEntityAttribute(MOVE_SPEED_AIR).setBaseValue(BASE_SPEED_AIR);
-        getEntityAttribute(maxHealth).setBaseValue(BASE_HEALTH);
-        getEntityAttribute(attackDamage).setBaseValue(BASE_DAMAGE);
-        getEntityAttribute(followRange).setBaseValue(BASE_FOLLOW_RANGE);
+        getEntityAttribute(MOVEMENT_SPEED).setBaseValue(BASE_SPEED_GROUND);
+        getEntityAttribute(MOVEMENT_SPEED_AIR).setBaseValue(BASE_SPEED_AIR);
+        getEntityAttribute(MAX_HEALTH).setBaseValue(BASE_HEALTH);
+        getEntityAttribute(ATTACK_DAMAGE).setBaseValue(BASE_DAMAGE);
+        getEntityAttribute(FOLLOW_RANGE).setBaseValue(BASE_FOLLOW_RANGE);
     }
     
     /**
      * Returns true if the dragon is saddled.
      */
     public boolean isSaddled() {
-        return getBooleanData(INDEX_SADDLED);
+        return dataWatcher.get(DATA_SADDLED);
     }
 
     /**
@@ -157,7 +174,7 @@ public class EntityTameableDragon extends EntityTameable {
      */
     public void setSaddled(boolean saddled) {
         L.trace("setSaddled({})", saddled);
-        setBooleanData(INDEX_SADDLED, saddled);
+        dataWatcher.set(DATA_SADDLED, saddled);
     }
     
     public boolean canFly() {
@@ -169,7 +186,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns true if the entity is flying.
      */
     public boolean isFlying() {
-        return getBooleanData(INDEX_FLYING);
+        return dataWatcher.get(DATA_FLYING);
     }
     
     /**
@@ -177,7 +194,7 @@ public class EntityTameableDragon extends EntityTameable {
      */
     public void setFlying(boolean flying) {
         L.trace("setFlying({})", flying);
-        setBooleanData(INDEX_FLYING, flying);
+        dataWatcher.set(DATA_FLYING, flying);
     }
     
     /**
@@ -261,8 +278,8 @@ public class EntityTameableDragon extends EntityTameable {
                 
                 // update AI follow range (needs to be updated before creating 
                 // new PathNavigate!)
-                getEntityAttribute(SharedMonsterAttributes.followRange)
-                    .setBaseValue(flying ? BASE_FOLLOW_RANGE_FLYING : BASE_FOLLOW_RANGE);
+                getEntityAttribute(FOLLOW_RANGE).setBaseValue(
+                        flying ? BASE_FOLLOW_RANGE_FLYING : BASE_FOLLOW_RANGE);
                 
                 // update pathfinding method
                 if (flying) {
@@ -296,10 +313,8 @@ public class EntityTameableDragon extends EntityTameable {
     protected void onDeathUpdate() {
         helpers.values().forEach(DragonHelper::onDeathUpdate);
         
-        // unmount any riding entity
-        if (riddenByEntity != null) {
-            riddenByEntity.mountEntity(null);
-        }
+        // unmount any riding entities
+        removePassengers();
                 
         // freeze at place
         motionX = motionY = motionZ = 0;
@@ -334,14 +349,14 @@ public class EntityTameableDragon extends EntityTameable {
         // return default breed name otherwise
         String entName = EntityList.getEntityString(this);
         String breedName = getBreed().getName().toLowerCase();
-        return StatCollector.translateToLocal("entity." + entName + "." + breedName + ".name");
+        return I18n.translateToLocal("entity." + entName + "." + breedName + ".name");
     }
     
     /**
      * Returns the sound this mob makes while it's alive.
      */
     @Override
-    protected String getLivingSound() {
+    protected SoundEvent getAmbientSound() {
         return getSoundManager().getLivingSound();
     }
 
@@ -349,7 +364,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns the sound this mob makes when it is hurt.
      */
     @Override
-    protected String getHurtSound() {
+    protected SoundEvent getHurtSound() {
         return getSoundManager().getHurtSound();
     }
     
@@ -357,7 +372,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns the sound this mob makes on death.
      */
     @Override
-    protected String getDeathSound() {
+    protected SoundEvent getDeathSound() {
         return getSoundManager().getDeathSound();
     }
     
@@ -370,8 +385,8 @@ public class EntityTameableDragon extends EntityTameable {
     }
     
     @Override
-    public void playSound(String name, float volume, float pitch) {
-        getSoundManager().playSound(name, volume, pitch);
+    public void playSound(SoundEvent soundIn, float volume, float pitch) {
+        getSoundManager().playSound(soundIn, volume, pitch);
     }
     
     /**
@@ -419,90 +434,90 @@ public class EntityTameableDragon extends EntityTameable {
     /**
      * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
      */
-    @Override
-    public boolean interact(EntityPlayer player) {
-        ItemStack playerItem = player.inventory.getCurrentItem();
-        
-        // duplicate dragon with entity egg
-        if (playerItem != null && playerItem.getItem() == Items.spawn_egg) {
-            return super.interact(player);
-        }
-        
-        // don't interact with eggs!
-        if (isEgg()) {
-            return false;
-        }
-        
-        if (isTamed() || isChild()) {
-            // heal dragon with food
-            ItemFood food = null;
-            
-            // eat only if hurt
-            if (getHealthRelative() < 1) {
-                food = (ItemFood) ItemUtils.consumeEquipped(player,
-                        getBreed().getAcceptedFood());
-            }
-            
-            // heal only if the food was actually consumed
-            if (food != null) {
-                heal(food.getHealAmount(playerItem));
-                playSound(getSoundManager().getEatSound(), 0.7f, 1);
-                return true;
-            }
-            
-            if (!isOwner(player)) {
-                if (isServer()) {
-                    // that's not your dragon!
-                    player.addChatMessage(new ChatComponentTranslation("dragon.owned"));
-                }
-            } else if (!isChild() && riddenByEntity == null) {
-                if (!isSaddled() && ItemUtils.consumeEquipped(player, Items.saddle)) {
-                    if (isServer()) {
-                        // put on a saddle
-                        setSaddled(true);
-                    }
-                } else if (ItemUtils.hasEquipped(player, Items.bone)) {
-                    if (isServer()) {
-                        // toggle sitting state with the bone item
-                        aiSit.setSitting(!isSitting());
-                        isJumping = false;
-                        navigator.clearPathEntity();  // replacement for setPathToEntity(null);
-                    }
-                } else if (getReproductionHelper().canReproduce() &&
-                        ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
-                    // activate love mode with favorite food if it hasn't reproduced yet
-                    if (isClient()) {
-                        getParticleHelper().spawnBodyParticles(EnumParticleTypes.HEART);
-                    }
-
-                    setInLove(player);
-                } else if (isSaddled() && !ItemUtils.hasEquippedUsable(player)) {
-                    if (isServer()) {
-                        // mount dragon when saddled and not already mounted
-                        setRidingPlayer(player);
-                    }
-                }
-            }
-        } else {
-            if (isServer()) {
-                if (ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
-                    // tame dragon with favorite food and a random chance
-                    tamedFor(player, rand.nextInt(3) == 0);
-                }
-            }
-            
-            return true;
-        }
-        
-        return false;
-    }
+//    @Override
+//    public boolean interact(EntityPlayer player) {
+//        ItemStack playerItem = player.inventory.getCurrentItem();
+//        
+//        // duplicate dragon with entity egg
+//        if (playerItem != null && playerItem.getItem() == Items.spawn_egg) {
+//            return super.interact(player);
+//        }
+//        
+//        // don't interact with eggs!
+//        if (isEgg()) {
+//            return false;
+//        }
+//        
+//        if (isTamed() || isChild()) {
+//            // heal dragon with food
+//            ItemFood food = null;
+//            
+//            // eat only if hurt
+//            if (getHealthRelative() < 1) {
+//                food = (ItemFood) ItemUtils.consumeEquipped(player,
+//                        getBreed().getAcceptedFood());
+//            }
+//            
+//            // heal only if the food was actually consumed
+//            if (food != null) {
+//                heal(food.getHealAmount(playerItem));
+//                playSound(getSoundManager().getEatSound(), 0.7f, 1);
+//                return true;
+//            }
+//            
+//            if (!isOwner(player)) {
+//                if (isServer()) {
+//                    // that's not your dragon!
+//                    player.addChatMessage(new ChatComponentTranslation("dragon.owned"));
+//                }
+//            } else if (!isChild() && riddenByEntity == null) {
+//                if (!isSaddled() && ItemUtils.consumeEquipped(player, Items.saddle)) {
+//                    if (isServer()) {
+//                        // put on a saddle
+//                        setSaddled(true);
+//                    }
+//                } else if (ItemUtils.hasEquipped(player, Items.bone)) {
+//                    if (isServer()) {
+//                        // toggle sitting state with the bone item
+//                        aiSit.setSitting(!isSitting());
+//                        isJumping = false;
+//                        navigator.clearPathEntity();  // replacement for setPathToEntity(null);
+//                    }
+//                } else if (getReproductionHelper().canReproduce() &&
+//                        ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
+//                    // activate love mode with favorite food if it hasn't reproduced yet
+//                    if (isClient()) {
+//                        getParticleHelper().spawnBodyParticles(EnumParticleTypes.HEART);
+//                    }
+//
+//                    setInLove(player);
+//                } else if (isSaddled() && !ItemUtils.hasEquippedUsable(player)) {
+//                    if (isServer()) {
+//                        // mount dragon when saddled and not already mounted
+//                        setRidingPlayer(player);
+//                    }
+//                }
+//            }
+//        } else {
+//            if (isServer()) {
+//                if (ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
+//                    // tame dragon with favorite food and a random chance
+//                    tamedFor(player, rand.nextInt(3) == 0);
+//                }
+//            }
+//            
+//            return true;
+//        }
+//        
+//        return false;
+//    }
     
     public void tamedFor(EntityPlayer player, boolean successful) {
         if (successful) {
             setTamed(true);
             navigator.clearPathEntity();  // replacement for setPathToEntity(null);
             setAttackTarget(null);
-            setOwnerId(player.getUniqueID().toString());
+            setOwnerId(player.getUniqueID());
             playTameEffect(true);
             worldObj.setEntityState(this, (byte) 7);
         } else {
@@ -594,17 +609,16 @@ public class EntityTameableDragon extends EntityTameable {
     @Override
     public boolean attackEntityAsMob(Entity victim) {
         // code copied from EntityMob::attackEntityAsMob
-        float attackDamageValue = (float) getEntityAttribute(attackDamage).getAttributeValue();
+        float damage = (float) getEntityAttribute(ATTACK_DAMAGE).getAttributeValue();
         int knockback = 0;
 
         if (victim instanceof EntityLivingBase) {
-            attackDamageValue += EnchantmentHelper.func_152377_a(getHeldItem(),
-                    ((EntityLivingBase) victim).getCreatureAttribute());
+            damage += EnchantmentHelper.getModifierForCreature(getHeldItemMainhand(),
+                    ((EntityLivingBase)victim).getCreatureAttribute());
             knockback += EnchantmentHelper.getKnockbackModifier(this);
         }
 
-        boolean attacked = victim.attackEntityFrom(DamageSource.causeMobDamage(this),
-                attackDamageValue);
+        boolean attacked = victim.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
 
         if (attacked) {
             if (knockback > 0) {
@@ -632,7 +646,7 @@ public class EntityTameableDragon extends EntityTameable {
 
             if (worldObj instanceof WorldServer) {
                 ((WorldServer) worldObj).getEntityTracker().sendToAllTrackingEntity(
-                        this, new S0BPacketAnimation(this, 0));
+                        this, new SPacketAnimation(this, 0));
             }
 
         }
@@ -716,14 +730,6 @@ public class EntityTameableDragon extends EntityTameable {
         return getHelper(DragonBrain.class);
     }
     
-    public boolean getBooleanData(int index) {
-        return (dataWatcher.getWatchableObjectByte(index) & 1) != 0;
-    }
-    
-    public void setBooleanData(int index, boolean value) {
-        dataWatcher.updateObject(index, value ? (byte) 1 : (byte) 0);
-    }
-    
     /**
      * Returns the breed for this dragon.
      * 
@@ -746,19 +752,21 @@ public class EntityTameableDragon extends EntityTameable {
         return getBreedHelper().getBreedType().getBreed();
     }
 
+    @Deprecated
     public EntityPlayer getRidingPlayer() {
-        if (riddenByEntity instanceof EntityPlayer) {
-            return (EntityPlayer) riddenByEntity;
-        } else {
-            return null;
-        }
+        java.util.Optional<EntityPlayer> player = getPassengers().stream()
+            .filter(entity -> entity instanceof EntityPlayer)
+            .map(entity -> (EntityPlayer) entity)
+            .findAny();
+        
+        return player.orElse(null);
     }
     
     public void setRidingPlayer(EntityPlayer player) {
         L.trace("setRidingPlayer({})", player.getName());
         player.rotationYaw = rotationYaw;
         player.rotationPitch = rotationPitch;
-        player.mountEntity(this);
+        player.startRiding(this);
     }
     
     public void setControlFlags(BitSet flags) {
@@ -769,33 +777,33 @@ public class EntityTameableDragon extends EntityTameable {
         return controlFlags;
     }
     
-    @Override
-    public void updateRiderPosition() {
-        if (riddenByEntity != null) {
-            double px = posX;
-            double py = posY + getMountedYOffset() + riddenByEntity.getYOffset();
-            double pz = posZ;
-            
-            // dragon position is the middle of the model and the saddle is on
-            // the shoulders, so move player forwards on Z axis relative to the
-            // dragon's rotation to fix that
-            Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
-            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset)); // oops
-            px += pos.xCoord;
-            py += pos.yCoord;
-            pz += pos.zCoord;
-                    
-            riddenByEntity.setPosition(px, py, pz);
-            
-            // fix rider rotation
-            if (riddenByEntity instanceof EntityLiving) {
-                EntityLiving rider = ((EntityLiving) riddenByEntity);
-                rider.prevRotationPitch = rider.rotationPitch;
-                rider.prevRotationYaw = rider.rotationYaw;
-                rider.renderYawOffset = renderYawOffset;
-            }
-        }
-    }
+//    @Override
+//    public void updateRiderPosition() {
+//        if (riddenByEntity != null) {
+//            double px = posX;
+//            double py = posY + getMountedYOffset() + riddenByEntity.getYOffset();
+//            double pz = posZ;
+//            
+//            // dragon position is the middle of the model and the saddle is on
+//            // the shoulders, so move player forwards on Z axis relative to the
+//            // dragon's rotation to fix that
+//            Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
+//            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset)); // oops
+//            px += pos.xCoord;
+//            py += pos.yCoord;
+//            pz += pos.zCoord;
+//                    
+//            riddenByEntity.setPosition(px, py, pz);
+//            
+//            // fix rider rotation
+//            if (riddenByEntity instanceof EntityLiving) {
+//                EntityLiving rider = ((EntityLiving) riddenByEntity);
+//                rider.prevRotationPitch = rider.rotationPitch;
+//                rider.prevRotationYaw = rider.rotationYaw;
+//                rider.renderYawOffset = renderYawOffset;
+//            }
+//        }
+//    }
     
     public boolean isInvulnerableTo(DamageSource src) {
         Entity srcEnt = src.getEntity();
@@ -805,8 +813,8 @@ public class EntityTameableDragon extends EntityTameable {
                 return true;
             }
             
-            // ignore damage from rider
-            if (srcEnt == riddenByEntity) {
+            // ignore damage from riders
+            if (isPassenger(srcEnt)) {
                 return true;
             }
         }
@@ -843,11 +851,7 @@ public class EntityTameableDragon extends EntityTameable {
     
     public void setAttackDamage(double damage) {
         L.trace("setAttackDamage({})", damage);
-        getEntityAttribute(attackDamage).setBaseValue(damage);
-    }
-    
-    public double getAttackDamage() {
-        return getEntityAttribute(attackDamage).getAttributeValue();
+        getEntityAttribute(ATTACK_DAMAGE).setBaseValue(damage);
     }
     
     /**

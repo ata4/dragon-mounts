@@ -9,12 +9,13 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
-import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
+import net.minecraft.block.SoundType;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 
 /**
  *
@@ -29,57 +30,57 @@ public class DragonSoundManager extends DragonHelper {
     /**
      * Returns the sound this mob makes while it's alive.
      */
-    public String getLivingSound() {
+    public SoundEvent getLivingSound() {
         if (dragon.isEgg() || dragon.isFlying()) {
             return null;
         } else {
-            return dragon.getBreed().getLivingSound(dragon);
+            return dragon.getBreed().getLivingSound();
         }
     }
 
     /**
      * Returns the sound this mob makes when it is hurt.
      */
-    public String getHurtSound() {
+    public SoundEvent getHurtSound() {
         if (dragon.isEgg()) {
-            return "mob.zombie.wood";
+            return SoundEvents.entity_zombie_attack_door_wood;
         } else {
-            return dragon.getBreed().getHurtSound(dragon);
+            return dragon.getBreed().getHurtSound();
         }
     }
     
     /**
      * Returns the sound this mob makes on death.
      */
-    public String getDeathSound() {
+    public SoundEvent getDeathSound() {
         if (dragon.isEgg()) {
-            return "mob.zombie.woodbreak";
+            return SoundEvents.entity_zombie_break_door_wood;
         } else {
-            return dragon.getBreed().getDeathSound(dragon);
+            return dragon.getBreed().getDeathSound();
         }
     }
     
-    public String getWingsSound() {
-        return "mob.enderdragon.wings";
+    public SoundEvent getWingsSound() {
+        return dragon.getBreed().getWingsSound();
     }
     
-    public String getStepSound() {
-        return DragonMounts.AID + ":mob.enderdragon.step";
+    public SoundEvent getStepSound() {
+        return dragon.getBreed().getStepSound();
     }
     
-    public String getEatSound() {
-        return "random.eat";
+    public SoundEvent getEatSound() {
+        return dragon.getBreed().getEatSound();
     }
     
-    public String getAttackSound() {
-        return "random.eat";
+    public SoundEvent getAttackSound() {
+        return dragon.getBreed().getAttackSound();
     }
     
     /**
      * Plays living's sound at its position
      */
     public void playLivingSound() {
-        String sound = getLivingSound();
+        SoundEvent sound = getLivingSound();
         if (sound == null) {
             return;
         }
@@ -118,55 +119,56 @@ public class DragonSoundManager extends DragonHelper {
         }
         
         // override sound type if the top block is snowy
-        Block.SoundType soundType;
+        SoundType soundType;
         if (dragon.worldObj.getBlockState(entityPos.up()).getBlock() == Blocks.snow_layer) {
-            soundType = Blocks.snow_layer.stepSound;
+            soundType = Blocks.snow_layer.getStepSound();
         } else {
-            soundType = block.stepSound;
+            soundType = block.getStepSound();
         }
         
         // play stomping for bigger dragons
-        String stepSound;
+        SoundEvent stepSound;
         if (dragon.isHatchling()) {
             stepSound = soundType.getStepSound();
         } else {
             stepSound = getStepSound();
         }
         
-        playSound(stepSound, soundType.getVolume(), soundType.getFrequency());
+        playSound(stepSound, soundType.getVolume(), soundType.getPitch());
     }
     
-    public void playSound(String name, float volume, float pitch, boolean local) {
-        if (name == null || dragon.isSilent()) {
+    public void playSound(SoundEvent sound, float volume, float pitch, boolean local) {
+        if (sound == null || dragon.isSilent()) {
             return;
         }
         
-        volume *= getVolume(name);
-        pitch *= getPitch(name);
+        volume *= getVolume(sound);
+        pitch *= getPitch(sound);
 
         if (local) {
             dragon.worldObj.playSound(dragon.posX, dragon.posY, dragon.posZ,
-                    name, volume, pitch, false);
+                    sound, dragon.getSoundCategory(), volume, pitch, false);
         } else {
-            dragon.worldObj.playSoundAtEntity(dragon, name, volume, pitch);
+            dragon.worldObj.playSound(null, dragon.posX, dragon.posY, dragon.posZ,
+                    sound, dragon.getSoundCategory(), volume, pitch);
         }
     }
     
-    public void playSound(String name, float volume, float pitch) {
-        playSound(name, volume, pitch, false);
+    public void playSound(SoundEvent sound, float volume, float pitch) {
+        playSound(sound, volume, pitch, false);
     }
     
     /**
      * Returns the volume for a sound to play.
      */
-    public float getVolume(String name) {
-        return dragon.getScale() * dragon.getBreed().getSoundVolume(dragon, name);
+    public float getVolume(SoundEvent sound) {
+        return dragon.getScale() * dragon.getBreed().getSoundVolume(sound);
     }
     
     /**
      * Returns the pitch for a sound to play.
      */
-    public float getPitch(String name) {
-        return (2.0f - dragon.getScale()) * dragon.getBreed().getSoundPitch(dragon, name);
+    public float getPitch(SoundEvent sound) {
+        return (2.0f - dragon.getScale()) * dragon.getBreed().getSoundPitch(sound);
     }
 }

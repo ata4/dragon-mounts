@@ -10,11 +10,10 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.biome.BiomeGenBase;
-
 import java.util.UUID;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.init.Biomes;
+import net.minecraft.util.DamageSource;
 
 /**
  *
@@ -30,7 +29,7 @@ public class DragonBreedAir extends DragonBreed {
         
         addImmunity(DamageSource.magic);
         
-        addHabitatBiome(BiomeGenBase.extremeHills);
+        addHabitatBiome(Biomes.extremeHills);
     }
 
     @Override
@@ -41,12 +40,12 @@ public class DragonBreedAir extends DragonBreed {
 
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-        dragon.getAttributeMap().getAttributeInstance(EntityTameableDragon.MOVE_SPEED_AIR).applyModifier(MODIFIER);
+        dragon.getAttributeMap().getAttributeInstance(EntityTameableDragon.MOVEMENT_SPEED_AIR).applyModifier(MODIFIER);
     }
 
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-        dragon.getAttributeMap().getAttributeInstance(EntityTameableDragon.MOVE_SPEED_AIR).removeModifier(MODIFIER);
+        dragon.getAttributeMap().getAttributeInstance(EntityTameableDragon.MOVEMENT_SPEED_AIR).removeModifier(MODIFIER);
     }
 
     @Override

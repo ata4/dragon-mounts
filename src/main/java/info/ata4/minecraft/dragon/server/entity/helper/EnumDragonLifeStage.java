@@ -10,7 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.util.math.Interpolation;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Enum for dragon life stages. Used as aliases for the age value of dragons.

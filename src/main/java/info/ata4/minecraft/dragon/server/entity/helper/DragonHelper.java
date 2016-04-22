@@ -10,10 +10,10 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import net.minecraft.entity.DataWatcher;
 import net.minecraft.nbt.NBTTagCompound;
 
 import java.util.Random;
+import net.minecraft.network.datasync.EntityDataManager;
 
 /**
  *
@@ -22,12 +22,12 @@ import java.util.Random;
 public abstract class DragonHelper {
 
     protected final EntityTameableDragon dragon;
-    protected final DataWatcher dataWatcher;
+    protected final EntityDataManager dataWatcher;
     protected final Random rand;
 
     public DragonHelper(EntityTameableDragon dragon) {
         this.dragon = dragon;
-        this.dataWatcher = dragon.getDataWatcher();
+        this.dataWatcher = dragon.getDataManager();
         this.rand = dragon.getRNG();
     }
     

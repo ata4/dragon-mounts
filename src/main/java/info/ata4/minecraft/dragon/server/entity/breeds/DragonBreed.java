@@ -9,17 +9,19 @@
  */
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
-import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.DragonMountsSoundEvents;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureAttribute;
-import net.minecraft.util.DamageSource;
-import net.minecraft.world.biome.BiomeGenBase;
-
-import java.util.HashSet;
-import java.util.Set;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.world.biome.BiomeGenBase;
 
 /**
  * Base class for dragon breeds.
@@ -31,9 +33,10 @@ public abstract class DragonBreed {
     private final EnumDragonBreed type;
     private final String skin;
     private final int color;
-    private final Set<String> immunities = new HashSet<String>();
-    private final Set<Block> breedBlocks = new HashSet<Block>();
-    private final Set<BiomeGenBase> biomes = new HashSet<BiomeGenBase>();
+    private final Set<String> immunities = new HashSet<>();
+    private final Set<Block> breedBlocks = new HashSet<>();
+    private final Set<BiomeGenBase> biomes = new HashSet<>();
+    protected final Random rand = new Random();
     
     DragonBreed(EnumDragonBreed type, String skin, int color) {
         this.type = type;
@@ -76,7 +79,7 @@ public abstract class DragonBreed {
         return (color & 0xFF) / 255f;
     }
     
-    protected void addImmunity(DamageSource dmg) {
+    protected final void addImmunity(DamageSource dmg) {
         immunities.add(dmg.damageType);
     }
     
@@ -88,7 +91,7 @@ public abstract class DragonBreed {
         return immunities.contains(dmg.damageType);
     }
     
-    public void addHabitatBlock(Block block) {
+    protected final void addHabitatBlock(Block block) {
         breedBlocks.add(block);
     }
     
@@ -96,7 +99,7 @@ public abstract class DragonBreed {
         return breedBlocks.contains(block);
     }
     
-    public void addHabitatBiome(BiomeGenBase biome) {
+    protected final void addHabitatBiome(BiomeGenBase biome) {
         biomes.add(biome);
     }
     
@@ -124,34 +127,50 @@ public abstract class DragonBreed {
     
     public abstract void onDeath(EntityTameableDragon dragon);
     
-    public String getLivingSound(EntityTameableDragon dragon) {
-        if (dragon.getRNG().nextInt(3) == 0) {
-            return "mob.enderdragon.growl";
+    public SoundEvent getLivingSound() {
+        if (rand.nextInt(3) == 0) {
+            return SoundEvents.entity_enderdragon_growl;
         } else {
-            return DragonMounts.AID + ":mob.enderdragon.breathe";
+            return DragonMountsSoundEvents.entity_dragon_mount_breathe;
         }
     }
     
-    public String getHurtSound(EntityTameableDragon dragon) {
-        return "mob.enderdragon.hit";
+    public SoundEvent getHurtSound() {
+        return SoundEvents.entity_enderdragon_hurt;
     }
     
-    public String getDeathSound(EntityTameableDragon dragon) {
-        return DragonMounts.AID + ":mob.enderdragon.death";
+    public SoundEvent getDeathSound() {
+        return DragonMountsSoundEvents.entity_dragon_mount_death;
     }
     
-    public float getSoundPitch(EntityTameableDragon dragon, String sound) {
+    public SoundEvent getWingsSound() {
+        return SoundEvents.entity_enderdragon_flap;
+    }
+    
+    public SoundEvent getStepSound() {
+        return DragonMountsSoundEvents.entity_dragon_mount_step;
+    }
+    
+    public SoundEvent getEatSound() {
+        return SoundEvents.entity_generic_eat;
+    }
+    
+    public SoundEvent getAttackSound() {
+        return SoundEvents.entity_generic_eat;
+    }
+
+    public float getSoundPitch(SoundEvent sound) {
         // lower pitch for default breathing sounds
-        if (sound.endsWith("mob.enderdragon.breathe")) {
+        if (sound == DragonMountsSoundEvents.entity_dragon_mount_breathe) {
             return 0.5f;
         }
         
         return 1;
     }
-    
-    public float getSoundVolume(EntityTameableDragon dragon, String sound) {
+
+    public float getSoundVolume(SoundEvent sound) {
         // lower volume for default breathing sounds
-        if (sound.endsWith("mob.enderdragon.breathe")) {
+        if (sound == DragonMountsSoundEvents.entity_dragon_mount_breathe) {
             return 0.5f;
         }
         

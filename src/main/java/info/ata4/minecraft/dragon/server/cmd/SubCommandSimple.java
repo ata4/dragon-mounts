@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
 
 /**
  *
@@ -37,13 +38,13 @@ public class SubCommandSimple extends SubCommand {
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (processor.isPresent()) {
-            processor.get().processCommand(sender, args);
+            processor.get().execute(server, sender, args);
         }
         
         if (consumer.isPresent()) {
-            parent.applyModifier(sender, args, consumer.get());
+            parent.applyModifier(server, sender, args, consumer.get());
         }
     }
     

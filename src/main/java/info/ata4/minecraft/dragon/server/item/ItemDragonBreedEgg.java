@@ -13,7 +13,7 @@ import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 
 /**
  *
@@ -35,7 +35,7 @@ public class ItemDragonBreedEgg extends ItemBlock {
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
         EnumDragonBreed type = EnumDragonBreed.META_MAPPING.inverse().get(stack.getMetadata());
-        String breedName = StatCollector.translateToLocal("entity.DragonMounts.DragonMount." + type.getName() + ".name");
-        return StatCollector.translateToLocalFormatted("item.dragonEgg.name", breedName);
+        String breedName = I18n.translateToLocal("entity.DragonMounts.DragonMount." + type.getName() + ".name");
+        return I18n.translateToLocalFormatted("item.dragonEgg.name", breedName);
     }
 }

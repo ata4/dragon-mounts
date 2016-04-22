@@ -12,8 +12,7 @@ package info.ata4.minecraft.dragon.server.entity.ai;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.math.MathX;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
-
+import net.minecraft.util.math.Vec3d;
 import java.util.BitSet;
 
 /**
@@ -62,7 +61,7 @@ public class EntityAIDragonRide extends EntityAIDragonBase {
                 
         // control direction with movement keys
         if (rider.moveStrafing != 0 || rider.moveForward != 0) {
-            Vec3 wp = rider.getLookVec();
+            Vec3d wp = rider.getLookVec();
             
             if (rider.moveForward < 0) {
                 wp = wp.rotateYaw(MathX.PI_F);

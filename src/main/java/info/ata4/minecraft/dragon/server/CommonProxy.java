@@ -17,18 +17,13 @@ import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
 import info.ata4.minecraft.dragon.server.item.ItemDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
 import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.ServerCommandManager;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.WeightedRandomChestContent;
-import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -67,8 +62,8 @@ public class CommonProxy {
     public void onPostInit(FMLPostInitializationEvent event) {
     }
     
-    public void onServerStarted(FMLServerStartedEvent evt) {
-        MinecraftServer server = MinecraftServer.getServer();
+    public void onServerStarting(FMLServerStartingEvent evt) {
+        MinecraftServer server = evt.getServer();
         ServerCommandManager cmdman = (ServerCommandManager) server.getCommandManager(); 
         cmdman.registerCommand(new CommandDragon());
     }

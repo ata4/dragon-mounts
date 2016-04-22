@@ -11,8 +11,8 @@ package info.ata4.minecraft.dragon.server.entity.ai.air;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Dragon AI for instant landing, if left unmounted in air.
@@ -53,7 +53,7 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
         }
         
         // make sure the block below is solid
-        return world.getBlockState(landingPos.down()).getBlock().getMaterial().isSolid();
+        return world.getBlockState(landingPos.down()).getMaterial().isSolid();
     }
 
     @Override

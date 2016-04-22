@@ -12,7 +12,8 @@ package info.ata4.minecraft.dragon.server.cmd;
 import java.util.List;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 
 /**
  *
@@ -27,9 +28,9 @@ public abstract class SubCommand implements ICommandProcessor {
     }
     
     @Override
-    public abstract void processCommand(ICommandSender sender, String[] args) throws CommandException;
+    public abstract void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException;
     
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
         return null;
     }
 }

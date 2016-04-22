@@ -17,9 +17,10 @@ import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
@@ -32,12 +33,13 @@ public class DragonEggBlockHandler {
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent evt) {
         // only handle right clicks on blocks
-        if (evt.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-            return;
-        }
+        // TODO: port for 1.9
+//        if (evt.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
+//            return;
+//        }
         
-        BlockPos pos = evt.pos;
-        World world = evt.entity.worldObj;
+        BlockPos pos = evt.getPos();
+        World world = evt.getWorld();
         IBlockState state = world.getBlockState(pos);
         Block block = world.getBlockState(pos).getBlock();
         
@@ -47,17 +49,16 @@ public class DragonEggBlockHandler {
         }
         
         // deny action
-        evt.useBlock = PlayerInteractEvent.Result.DENY;
-        evt.useItem = PlayerInteractEvent.Result.DENY;
+        evt.setResult(Event.Result.DENY);
         
         // clear dragon egg block
         world.setBlockToAir(pos);
 
         // create dragon egg entity on server
-        if (!evt.world.isRemote) { // this was inverted, i.e. evt.world.isRemote, but it should surely be this way
+        if (!world.isRemote) { // this was inverted, i.e. evt.world.isRemote, but it should surely be this way
             EntityTameableDragon dragon = new EntityTameableDragon(world);
             dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-            dragon.getReproductionHelper().setBreederName(evt.entityPlayer.getName());
+            dragon.getReproductionHelper().setBreeder(evt.getEntityPlayer());
             dragon.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
             
             // set breed type (custom dragon egg only, otherwise use default breed)

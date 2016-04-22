@@ -11,6 +11,7 @@ package info.ata4.minecraft.dragon.server.network;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import io.netty.channel.ChannelHandler.Sharable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -52,20 +53,16 @@ public class DragonControlMessageHandler implements IMessageHandler<DragonContro
         //      this.theProfiler.startSection("jobs");
         //  In this case, the task is to call messageHandlerOnServer.processMessage(message, sendingPlayer)
         final WorldServer playerWorldServer = sendingPlayer.getServerForPlayer();
-        playerWorldServer.addScheduledTask(new Runnable() {
-            public void run() {
-                processMessage(message, sendingPlayer);
-            }
-        });
+        playerWorldServer.addScheduledTask(() -> processMessage(message, sendingPlayer));
 
         return null;
     }
 
     // This message is called from the Server thread.
-    void processMessage(DragonControlMessage message, EntityPlayerMP sendingPlayer)
-    {
-        if (sendingPlayer.ridingEntity instanceof EntityTameableDragon) {
-            EntityTameableDragon dragon = (EntityTameableDragon)sendingPlayer.ridingEntity;
+    void processMessage(DragonControlMessage message, EntityPlayerMP sendingPlayer) {
+        Entity ridingEntity = sendingPlayer.getRidingEntity();
+        if (ridingEntity instanceof EntityTameableDragon) {
+            EntityTameableDragon dragon = (EntityTameableDragon) ridingEntity;
             dragon.setControlFlags(message.getFlags());
         }
     }

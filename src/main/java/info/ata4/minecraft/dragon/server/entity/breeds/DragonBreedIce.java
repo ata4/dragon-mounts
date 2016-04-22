@@ -12,11 +12,11 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 
 /**
  *
@@ -36,10 +36,10 @@ public class DragonBreedIce extends DragonBreed {
         addHabitatBlock(Blocks.snow_layer);
         addHabitatBlock(Blocks.ice);
         
-        addHabitatBiome(BiomeGenBase.frozenOcean);
-        addHabitatBiome(BiomeGenBase.frozenRiver);
-        addHabitatBiome(BiomeGenBase.iceMountains);
-        addHabitatBiome(BiomeGenBase.icePlains);
+        addHabitatBiome(Biomes.frozenOcean);
+        addHabitatBiome(Biomes.frozenRiver);
+        addHabitatBiome(Biomes.iceMountains);
+        addHabitatBiome(Biomes.icePlains);
     }
 
     @Override
@@ -53,11 +53,11 @@ public class DragonBreedIce extends DragonBreed {
                 }
                 
                 double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
-          double by = dragon.posY + 0.5;
+                double by = dragon.posY + 0.5;
                 double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
                 BlockPos blockPos = new BlockPos(bx, by, bz);
                 // from EntitySnowman.onLivingUpdate, with slight tweaks
-                if (world.getBlockState(blockPos).getBlock().getMaterial() == Material.air
+                if (world.getBlockState(blockPos).getMaterial() == Material.air
                         && world.getBiomeGenForCoords(blockPos).getFloatTemperature(blockPos) <= 0.8F
                         && FOOTPRINT.canPlaceBlockAt(world, blockPos)) {
                     world.setBlockState(blockPos, FOOTPRINT.getDefaultState());

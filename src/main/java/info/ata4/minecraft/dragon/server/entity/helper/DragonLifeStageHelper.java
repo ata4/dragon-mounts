@@ -14,13 +14,16 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage.*;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import net.minecraft.block.Block;
-import net.minecraft.entity.SharedMonsterAttributes;
+import static net.minecraft.entity.SharedMonsterAttributes.ATTACK_DAMAGE;
+import static net.minecraft.entity.SharedMonsterAttributes.MAX_HEALTH;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.EnumParticleTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,15 +49,15 @@ public class DragonLifeStageHelper extends DragonHelper {
     // the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
     // the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
     // when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
-    private final int dataIndexTicksSinceCreation;
+    private final DataParameter<Integer> dataParam;
     private int ticksSinceCreationServer;
     private final ClientServerSynchronisedTickCount ticksSinceCreationClient;
 
-    public DragonLifeStageHelper(EntityTameableDragon dragon, int dataWatcherIndex) {
+    public DragonLifeStageHelper(EntityTameableDragon dragon, DataParameter<Integer> dataParam) {
         super(dragon);
         
-        dataIndexTicksSinceCreation = dataWatcherIndex;
-        dataWatcher.addObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+        this.dataParam = dataParam;
+        dataWatcher.register(dataParam, ticksSinceCreationServer);
         
         if (dragon.isClient()) {
             ticksSinceCreationClient = new ClientServerSynchronisedTickCount(TICKS_SINCE_CREATION_UPDATE_INTERVAL);
@@ -66,8 +69,8 @@ public class DragonLifeStageHelper extends DragonHelper {
     
     @Override
     public void applyEntityAttributes() {
-        applyScaleModifier(SharedMonsterAttributes.maxHealth);
-        applyScaleModifier(SharedMonsterAttributes.attackDamage);
+        applyScaleModifier(MAX_HEALTH);
+        applyScaleModifier(ATTACK_DAMAGE);
     }
     
     private void applyScaleModifier(IAttribute attribute) {
@@ -131,7 +134,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         int ticksRead = nbt.getInteger(NBT_TICKS_SINCE_CREATION);
         ticksRead = EnumDragonLifeStage.clampTickCount(ticksRead);
         ticksSinceCreationServer = ticksRead;
-        dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+        dataWatcher.set(dataParam, ticksSinceCreationServer);
     }
     
     /**
@@ -156,7 +159,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 
         float volume = 1;
         float pitch = 0.5f + (0.5f - rand.nextFloat()) * 0.1f;
-        dragon.worldObj.playSoundAtEntity(dragon, "mob.endermen.portal", volume, pitch);
+        dragon.playSound(SoundEvents.entity_endermen_teleport, volume, pitch);
         
         if (dragon.isSaddled()) {
             dragon.dropItem(Items.saddle, 1);
@@ -177,7 +180,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         L.trace("setLifeStage({})", lifeStage);
         if (dragon.isServer()) {
             ticksSinceCreationServer = lifeStage.startTicks();
-            dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+            dataWatcher.set(dataParam, ticksSinceCreationServer);
         } else {
             L.error("setLifeStage called on Client");
         }
@@ -194,7 +197,7 @@ public class DragonLifeStageHelper extends DragonHelper {
             // play particle and sound effects when the dragon hatches
             if (prevLifeStage != null && prevLifeStage == EGG && lifeStage == HATCHLING) {
                 playEggCrackEffect();
-                dragon.playSound("mob.zombie.woodbreak", 1, 1);
+                dragon.playSound(SoundEvents.entity_zombie_break_door_wood, 1, 1);
             }
         } else {
             // update AI
@@ -215,12 +218,11 @@ public class DragonLifeStageHelper extends DragonHelper {
             if (!isAdult()) {
                 ticksSinceCreationServer++;
                 if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
-                    dataWatcher.updateObject(dataIndexTicksSinceCreation, ticksSinceCreationServer);
+                    dataWatcher.set(dataParam, ticksSinceCreationServer);
                 }
             }
         } else {
-            ticksSinceCreationClient.updateFromServer(dataWatcher.getWatchableObjectInt(
-                    dataIndexTicksSinceCreation));
+            ticksSinceCreationClient.updateFromServer(dataWatcher.get(dataParam));
             if (!isAdult()) {
                 ticksSinceCreationClient.tick();
             }

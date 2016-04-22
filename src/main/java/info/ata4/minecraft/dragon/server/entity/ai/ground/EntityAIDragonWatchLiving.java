@@ -9,11 +9,11 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
-import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  *

@@ -10,9 +10,9 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
-import net.minecraft.world.biome.BiomeGenBase;
 
 /**
  *
@@ -32,8 +32,8 @@ public class DragonBreedFire extends DragonBreed {
         addHabitatBlock(Blocks.fire);
         addHabitatBlock(Blocks.lit_furnace);
         
-        addHabitatBiome(BiomeGenBase.desert);
-        addHabitatBiome(BiomeGenBase.desertHills);
+        addHabitatBiome(Biomes.desert);
+        addHabitatBiome(Biomes.desertHills);
     }
 
     @Override

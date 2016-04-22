@@ -18,7 +18,8 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.util.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.EnumUtils;
 
 /**
@@ -30,14 +31,15 @@ public class SubCommandEnumSetter<E extends Enum<E>> extends SubCommand {
     private final Class<E> enumClass;
     private final BiConsumer<EntityTameableDragon, E> enumConsumer;
     
-    public SubCommandEnumSetter(CommandDragon parent, Class<E> enumClass, BiConsumer<EntityTameableDragon, E> enumConsumer) {
+    public SubCommandEnumSetter(CommandDragon parent, Class<E> enumClass,
+            BiConsumer<EntityTameableDragon, E> enumConsumer) {
         super(parent);
         this.enumClass = enumClass;
         this.enumConsumer = enumConsumer;
     }
     
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) {
             throw new WrongUsageException(parent.getCommandUsage(sender));
         }
@@ -49,11 +51,11 @@ public class SubCommandEnumSetter<E extends Enum<E>> extends SubCommand {
             throw new SyntaxErrorException("commands.generic.syntax");
         }
 
-        parent.applyModifier(sender, args, dragon -> enumConsumer.accept(dragon, enumValue));
+        parent.applyModifier(server, sender, args, dragon -> enumConsumer.accept(dragon, enumValue));
     }
     
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
         return CommandBase.getListOfStringsMatchingLastWord(args,
             EnumUtils.getEnumList(enumClass).stream()
                 .map(e -> e.name().toLowerCase())

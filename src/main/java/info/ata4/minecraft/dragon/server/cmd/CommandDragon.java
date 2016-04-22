@@ -23,8 +23,8 @@ import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,10 +49,10 @@ public class CommandDragon extends CommandBase {
         subCommands.put("stage", new SubCommandEnumSetter(this,
             EnumDragonLifeStage.class, lifeStageConsumer));
         
-        subCommands.put("tame", new SubCommandSimple(this, (sender, args) -> {
+        subCommands.put("tame", new SubCommandSimple(this, (server, sender, args) -> {
             if (sender instanceof EntityPlayerMP) {
                 EntityPlayerMP player = (EntityPlayerMP) sender;
-                applyModifier(sender, args, dragon -> dragon.tamedFor(player, true));
+                applyModifier(server, sender, args, dragon -> dragon.tamedFor(player, true));
             } else {
                 // console can't tame dragons
                 throw new CommandException("commands.dragon.canttame");
@@ -76,13 +76,14 @@ public class CommandDragon extends CommandBase {
     }
     
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletionOptions(MinecraftServer server,
+            ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
             return getListOfStringsMatchingLastWord(args, subCommands.keySet());
         } else if (args.length == 2) {
             String cmd = args[0];
             if (subCommands.containsKey(cmd)) {
-                return subCommands.get(cmd).addTabCompletionOptions(sender, args, pos);
+                return subCommands.get(cmd).getTabCompletionOptions(server, sender, args, pos);
             }
         }
         
@@ -98,7 +99,7 @@ public class CommandDragon extends CommandBase {
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 1 || args[0].isEmpty()) {
             throw new WrongUsageException(getCommandUsage(sender));
         }
@@ -109,10 +110,11 @@ public class CommandDragon extends CommandBase {
             throw new WrongUsageException(getCommandUsage(sender));
         }
         
-        subCommands.get(cmd).processCommand(sender, args);
+        subCommands.get(cmd).execute(server, sender, args);
     }
     
-    void applyModifier(ICommandSender sender, String[] args, Consumer<EntityTameableDragon> modifier) throws CommandException {
+    void applyModifier(MinecraftServer server, ICommandSender sender, String[] args,
+            Consumer<EntityTameableDragon> modifier) throws CommandException {
         boolean global = args[args.length - 1].equalsIgnoreCase("global");
         
         if (!global && sender instanceof EntityPlayerMP) {
@@ -138,7 +140,6 @@ public class CommandDragon extends CommandBase {
             modifier.accept(closestDragon.get());
         } else {
             // scan all entities on all dimensions
-            MinecraftServer server = MinecraftServer.getServer();
             for (WorldServer worldServer : server.worldServers) {
                 List<Entity> entities = worldServer.loadedEntityList;
 
