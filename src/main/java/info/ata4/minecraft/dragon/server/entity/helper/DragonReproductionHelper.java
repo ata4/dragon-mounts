@@ -54,7 +54,10 @@ public class DragonReproductionHelper extends DragonHelper  {
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
-        nbt.setUniqueId(NBT_BREEDER, getBreederID().orNull());
+        Optional<UUID> breederID = getBreederID();
+        if (breederID.isPresent()) {
+            nbt.setUniqueId(NBT_BREEDER, breederID.get());
+        }
         nbt.setInteger(NBT_REPRO_COUNT, getReproCount());
     }
 
