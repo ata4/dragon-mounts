@@ -15,16 +15,14 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
+import info.ata4.minecraft.dragon.util.reflection.PrivateAccessor;
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Collection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.EntityAITasks;
-import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathEntity;
@@ -38,7 +36,6 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.lwjgl.input.Keyboard;
@@ -47,7 +44,7 @@ import org.lwjgl.input.Keyboard;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class GuiDragonDebug extends Gui implements PrivateFields {
+public class GuiDragonDebug extends Gui implements PrivateAccessor {
     
     private static final int WHITE = 0xFFFFFF;
     private static final int GREY = 0xAAAAAA;
@@ -336,8 +333,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.println("Flying: " + dragonClient.isFlying());
         text.println("Altitude: " + dfLong.format(dragonClient.getAltitude()));
     }
-    
-    
+  
     private void renderAITasks() {
         if (dragonServer == null) {
             return;
@@ -348,63 +344,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.setColor(YELLOW);
         text.println("AI tasks");
         text.setColor(WHITE);
-        
-//        renderAITasks(dragonServer.tasks, "Tasks");
-//        renderAITasks(dragonServer.targetTasks, "Target Tasks");
     }
-    
-//    private void renderAITasks(EntityAITasks tasks, String label) {
-//        text.setColor(GREY);
-//        text.println(label + ":");
-//        text.setColor(WHITE);
-//
-//        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(
-//                EntityAITasks.class, tasks, ENTITYAITASKS_EXECUTINGTASKENTRIES);
-//        
-//        // create copy to avoid ConcurrentModificationException
-//        currentTasks = new ArrayList<>(currentTasks);
-//        
-//        if (currentTasks.isEmpty()) {
-//            text.println("---");
-//            return;
-//        }
-//        
-//        currentTasks.forEach(entry -> {
-//            String actionName = entry.action.getClass().getSimpleName();
-//            int priority = entry.priority;
-//            text.printf("%d - %s\n", priority, actionName);
-//        });
-//    }
-    
-//    private void renderWatchedObjects() {
-//        EntityTameableDragon dragon = getSelectedDragon();
-//        if (dragon == null) {
-//            return;
-//        }
-//        
-//        text.setOrigin(text.getX() + 140, 8);
-//        
-//        text.setColor(YELLOW);
-//        text.println("Watched objects");
-//        text.setColor(WHITE);
-//        
-//        Map<Integer, WatchableObject> watchedObjects;
-//        
-//        try {
-//            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class,
-//                    dragon.getDataWatcher(), DATAWATCHER_WATCHEDOBJECTS);
-//        } catch (Exception ex) {
-//            return;
-//        }
-//        
-//        Iterator<Map.Entry<Integer, WatchableObject>> it = watchedObjects.entrySet().iterator();
-//        while (it.hasNext()) {
-//            Map.Entry<Integer, WatchableObject> pairs = it.next();
-//            Object object = pairs.getValue().getObject();
-//            Integer index = pairs.getKey();
-//            text.printf("%d = %s:%s\n", index, object.getClass().getSimpleName(), object);
-//        }
-//    }
     
     private void renderProbe() {
         if (probe == null) {

@@ -15,7 +15,6 @@ import info.ata4.minecraft.dragon.server.entity.ai.path.PathNavigateFlying;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
-import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +34,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -101,9 +99,6 @@ public class EntityTameableDragon extends EntityTameable {
     
     // client-only delegates
     private final DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
-    
-    // server-only flags
-    private BitSet controlFlags;
     
     public EntityTameableDragon(World world) {
         super(world);
@@ -769,14 +764,6 @@ public class EntityTameableDragon extends EntityTameable {
         player.rotationYaw = rotationYaw;
         player.rotationPitch = rotationPitch;
         player.startRiding(this);
-    }
-    
-    public void setControlFlags(BitSet flags) {
-        controlFlags = flags;
-    }
-    
-    public BitSet getControlFlags() {
-        return controlFlags;
     }
     
 //    @Override
