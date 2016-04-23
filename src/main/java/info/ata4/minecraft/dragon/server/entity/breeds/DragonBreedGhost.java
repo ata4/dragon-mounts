@@ -10,21 +10,21 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.EntityAIRestrictSun;
-import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonBreedGhost extends DragonBreed {
+    
+    private final Map<EntityTameableDragon, EntityAIRestrictSun> appliedTasks = new HashMap<>();
 
     DragonBreedGhost(EnumDragonBreed type) {
         super(type, "undead", 0xbebebe);
@@ -36,22 +36,16 @@ public class DragonBreedGhost extends DragonBreed {
     
     @Override
     public void onEnable(EntityTameableDragon dragon) {
-        dragon.tasks.addTask(2, new EntityAIRestrictSun(dragon));
+        EntityAIRestrictSun restrictSun = new EntityAIRestrictSun(dragon);
+        dragon.tasks.addTask(2, restrictSun);
+        appliedTasks.put(dragon, restrictSun);
     }
     
     @Override
     public void onDisable(EntityTameableDragon dragon) {
-        List<EntityAITaskEntry> taskEntries = (List<EntityAITaskEntry>) dragon.tasks.taskEntries;
-        Iterator<EntityAITaskEntry> iterator = taskEntries.iterator();
-
-        while (iterator.hasNext()) {
-            EntityAITaskEntry taskEntry = iterator.next();
-            
-            if (taskEntry.action instanceof EntityAIRestrictSun) {
-                taskEntry.action.resetTask();
-                iterator.remove();
-                break;
-            }
+        if (appliedTasks.containsKey(dragon)) {
+            dragon.tasks.removeTask(appliedTasks.get(dragon));
+            appliedTasks.remove(dragon);
         }
     }
     
