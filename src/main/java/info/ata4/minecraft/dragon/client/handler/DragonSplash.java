@@ -10,13 +10,11 @@
 package info.ata4.minecraft.dragon.client.handler;
 
 import info.ata4.minecraft.dragon.DragonMounts;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,13 +22,14 @@ import org.apache.logging.log4j.Logger;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Random;
+import info.ata4.minecraft.dragon.util.reflection.PrivateAccessor;
 
 /**
  * Replaces the splash text with a random custom one sometimes.
  * 
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class DragonSplash implements PrivateFields {
+public class DragonSplash implements PrivateAccessor {
     
     private static final Logger L = LogManager.getLogger();
     private static final ResourceLocation RESOURCE_SPLASHES = new ResourceLocation(DragonMounts.AID, "splashes.txt");
@@ -57,27 +56,17 @@ public class DragonSplash implements PrivateFields {
         if (evt.gui instanceof GuiMainMenu) {
             try {
                 GuiMainMenu menu = (GuiMainMenu) evt.gui;
-                String splash = getSplashText(menu);
+                String splash = mainMenuGetSplashText(menu);
                 if (splash.equals("Kind of dragon free!")) {
                     splash = "Not really dragon free!";
-                    setSplashText(menu, splash);
+                    mainMenuSetSplashText(menu, splash);
                 } else if (splashLines != null && !splashLines.isEmpty() && rand.nextInt(10) == 0) {
                     splash = splashLines.get(rand.nextInt(splashLines.size()));
-                    setSplashText(menu, splash);
+                    mainMenuSetSplashText(menu, splash);
                 }
             } catch (Throwable t) {
                 L.warn("Can't override splash", t);
             }
         }
-    }
-    
-    private String getSplashText(GuiMainMenu menu) {
-        return ReflectionHelper.getPrivateValue(GuiMainMenu.class, menu,
-                GUIMAINMENU_SPLASHTEXT);
-    }
-    
-    private void setSplashText(GuiMainMenu menu, String splash) {
-        ReflectionHelper.setPrivateValue(GuiMainMenu.class, menu, splash,
-                GUIMAINMENU_SPLASHTEXT);
     }
 }

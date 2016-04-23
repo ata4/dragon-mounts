@@ -15,12 +15,10 @@ import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.DataWatcher.WatchableObject;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAITasks;
@@ -37,19 +35,19 @@ import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.lwjgl.input.Keyboard;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import info.ata4.minecraft.dragon.util.reflection.PrivateAccessor;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class GuiDragonDebug extends Gui implements PrivateFields {
+public class GuiDragonDebug extends Gui implements PrivateAccessor {
     
     private static final int WHITE = 0xFFFFFF;
     private static final int GREY = 0xAAAAAA;
@@ -357,8 +355,7 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.println(label + ":");
         text.setColor(WHITE);
 
-        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(
-                EntityAITasks.class, tasks, ENTITYAITASKS_EXECUTINGTASKENTRIES);
+        List<EntityAITaskEntry> currentTasks = tasksGetExecutingTaskEntries(tasks);
         
         // create copy to avoid ConcurrentModificationException
         currentTasks = new ArrayList<>(currentTasks);
@@ -386,23 +383,16 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.setColor(YELLOW);
         text.println("Watched objects");
         text.setColor(WHITE);
+
+        Map<Integer, WatchableObject> watchedObjects = dataWatcherGetWatchedObjects(dragon.getDataWatcher());
         
-        Map<Integer, WatchableObject> watchedObjects;
+        // create copy to avoid ConcurrentModificationException
+        watchedObjects = new HashMap<>(watchedObjects);
         
-        try {
-            watchedObjects = ReflectionHelper.getPrivateValue(DataWatcher.class,
-                    dragon.getDataWatcher(), DATAWATCHER_WATCHEDOBJECTS);
-        } catch (Exception ex) {
-            return;
-        }
-        
-        Iterator<Map.Entry<Integer, WatchableObject>> it = watchedObjects.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<Integer, WatchableObject> pairs = it.next();
-            Object object = pairs.getValue().getObject();
-            Integer index = pairs.getKey();
+        watchedObjects.forEach((index, watchedObject) -> {
+            Object object = watchedObject.getObject();
             text.printf("%d = %s:%s\n", index, object.getClass().getSimpleName(), object);
-        }
+        });
     }
     
     private void renderProbe() {

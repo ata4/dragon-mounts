@@ -11,18 +11,18 @@ package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.math.MathX;
-import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import info.ata4.minecraft.dragon.util.reflection.PrivateAccessor;
 
 /**
  * Abstract "AI" for player-controlled movements.
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIDragonRide extends EntityAIDragonBase implements PrivateFields {
+public class EntityAIDragonRide extends EntityAIDragonBase implements PrivateAccessor {
 
     protected EntityPlayer rider;
 
@@ -67,9 +67,7 @@ public class EntityAIDragonRide extends EntityAIDragonBase implements PrivateFie
         
         // lift off with a jump
         if (!dragon.isFlying()) {
-            boolean isJumping = ReflectionHelper.getPrivateValue(
-                EntityLivingBase.class, rider, ENTITYLIVINGBASE_ISJUMPING);
-            if (isJumping) {
+            if (entityIsJumping(rider)) {
                 dragon.liftOff();
             }
         }
