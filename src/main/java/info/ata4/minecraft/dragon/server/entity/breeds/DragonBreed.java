@@ -31,9 +31,9 @@ public abstract class DragonBreed {
     private final EnumDragonBreed type;
     private final String skin;
     private final int color;
-    private final Set<String> immunities = new HashSet<String>();
-    private final Set<Block> breedBlocks = new HashSet<Block>();
-    private final Set<BiomeGenBase> biomes = new HashSet<BiomeGenBase>();
+    private final Set<String> immunities = new HashSet<>();
+    private final Set<Block> breedBlocks = new HashSet<>();
+    private final Set<BiomeGenBase> biomes = new HashSet<>();
     
     DragonBreed(EnumDragonBreed type, String skin, int color) {
         this.type = type;
@@ -76,7 +76,7 @@ public abstract class DragonBreed {
         return (color & 0xFF) / 255f;
     }
     
-    protected void addImmunity(DamageSource dmg) {
+    protected final void addImmunity(DamageSource dmg) {
         immunities.add(dmg.damageType);
     }
     
@@ -88,7 +88,7 @@ public abstract class DragonBreed {
         return immunities.contains(dmg.damageType);
     }
     
-    public void addHabitatBlock(Block block) {
+    protected final void addHabitatBlock(Block block) {
         breedBlocks.add(block);
     }
     
@@ -96,7 +96,7 @@ public abstract class DragonBreed {
         return breedBlocks.contains(block);
     }
     
-    public void addHabitatBiome(BiomeGenBase biome) {
+    protected final void addHabitatBiome(BiomeGenBase biome) {
         biomes.add(biome);
     }
     
