@@ -749,14 +749,13 @@ public class EntityTameableDragon extends EntityTameable {
         return getBreedHelper().getBreedType().getBreed();
     }
 
-    @Deprecated
     public EntityPlayer getRidingPlayer() {
-        java.util.Optional<EntityPlayer> player = getPassengers().stream()
-            .filter(entity -> entity instanceof EntityPlayer)
-            .map(entity -> (EntityPlayer) entity)
-            .findAny();
-        
-        return player.orElse(null);
+        Entity entity = getControllingPassenger();
+        if (entity instanceof EntityPlayer) {
+            return (EntityPlayer) entity;
+        } else {
+            return null;
+        }
     }
     
     public void setRidingPlayer(EntityPlayer player) {
