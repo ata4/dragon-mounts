@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -141,17 +142,15 @@ public class CommandDragon extends CommandBase {
         } else {
             // scan all entities on all dimensions
             for (WorldServer worldServer : server.worldServers) {
-                List<Entity> entities = worldServer.loadedEntityList;
-
-                // note: don't use for-each here: ConcurrentModificationException!
-                for (int i = 0; i < entities.size(); i++) {
-                    Entity entity = entities.get(i);
-                    if (!(entity instanceof EntityTameableDragon)) {
-                        continue;
-                    }
-
-                    modifier.accept((EntityTameableDragon) entity);
-                }
+                // need a copy of all dragon entities before applying modifier,
+                // since it could delete from the server entity list during iteration
+                List<EntityTameableDragon> dragons = worldServer.loadedEntityList
+                    .stream()
+                    .filter(entity -> entity instanceof EntityTameableDragon)
+                    .map(entity -> (EntityTameableDragon) entity)
+                    .collect(Collectors.toList());
+                
+                dragons.forEach(modifier);
             }
         }
     }
