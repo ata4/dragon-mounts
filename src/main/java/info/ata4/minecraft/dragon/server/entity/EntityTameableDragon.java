@@ -17,6 +17,7 @@ import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
 import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.block.Block;
@@ -744,6 +745,16 @@ public class EntityTameableDragon extends EntityTameable {
     
     public DragonBreed getBreed() {
         return getBreedHelper().getBreedType().getBreed();
+    }
+    
+    /**
+     * For vehicles, the first passenger is generally considered the controller and "drives" the vehicle. For example,
+     * Pigs, Horses, and Boats are generally "steered" by the controlling passenger.
+     */
+    @Override
+    public Entity getControllingPassenger() {
+        List<Entity> list = getPassengers();
+        return list.isEmpty() ? null : list.get(0);
     }
 
     public EntityPlayer getRidingPlayer() {
