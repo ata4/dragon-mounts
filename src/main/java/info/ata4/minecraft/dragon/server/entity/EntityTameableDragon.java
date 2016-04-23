@@ -84,9 +84,6 @@ public class EntityTameableDragon extends EntityTameable {
     // client-only delegates
     private final DragonBodyHelper bodyHelper = new DragonBodyHelper(this);
     
-    // server-only flags
-    private BitSet controlFlags;
-    
     public EntityTameableDragon(World world) {
         super(world);
         
@@ -759,14 +756,6 @@ public class EntityTameableDragon extends EntityTameable {
         player.rotationYaw = rotationYaw;
         player.rotationPitch = rotationPitch;
         player.mountEntity(this);
-    }
-    
-    public void setControlFlags(BitSet flags) {
-        controlFlags = flags;
-    }
-    
-    public BitSet getControlFlags() {
-        return controlFlags;
     }
     
     @Override

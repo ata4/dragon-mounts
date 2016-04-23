@@ -11,36 +11,24 @@ package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.util.math.MathX;
+import info.ata4.minecraft.dragon.util.reflection.PrivateFields;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.Vec3;
-
-import java.util.BitSet;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
  * Abstract "AI" for player-controlled movements.
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class EntityAIDragonRide extends EntityAIDragonBase {
+public class EntityAIDragonRide extends EntityAIDragonBase implements PrivateFields {
 
     protected EntityPlayer rider;
 
     public EntityAIDragonRide(EntityTameableDragon dragon) {
         super(dragon);
         setMutexBits(0xffffffff);
-    }
-    
-    protected boolean isFlyUp() {
-        return getControlFlag(0);
-    }
-    
-    protected boolean isFlyDown() {
-        return getControlFlag(1);
-    }
-    
-    private boolean getControlFlag(int index) {
-        BitSet controlFlags = dragon.getControlFlags();
-        return controlFlags == null ? false : controlFlags.get(index);
     }
     
     @Override
@@ -77,16 +65,13 @@ public class EntityAIDragonRide extends EntityAIDragonBase {
             z += wp.zCoord * 10;
         }
         
-        // control height with custom keys
-        if (isFlyUp()) {
-            // lift off when pressing the fly-up key
-            if (!dragon.isFlying()) {
+        // lift off with a jump
+        if (!dragon.isFlying()) {
+            boolean isJumping = ReflectionHelper.getPrivateValue(
+                EntityLivingBase.class, rider, ENTITYLIVINGBASE_ISJUMPING);
+            if (isJumping) {
                 dragon.liftOff();
-            } else {
-                y += 4;
             }
-        } else if (isFlyDown()) {
-            y -= 4;
         }
 
         dragon.getMoveHelper().setMoveTo(x, y, z, 1);

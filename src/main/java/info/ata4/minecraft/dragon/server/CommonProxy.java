@@ -15,9 +15,6 @@ import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
 import info.ata4.minecraft.dragon.server.item.ItemDragonBreedEgg;
-import info.ata4.minecraft.dragon.server.network.DragonControlMessage;
-import info.ata4.minecraft.dragon.server.network.DragonControlMessageHandler;
-import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -30,11 +27,8 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppedEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  *
@@ -42,16 +36,10 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class CommonProxy {
     
-    private SimpleNetworkWrapper network;  
-    private final byte DCM_DISCRIMINATOR_ID = 35;  // arbitrary non-zero ID (non-zero makes troubleshooting easier)
     private final int ENTITY_TRACKING_RANGE = 80;
     private final int ENTITY_UPDATE_FREQ = 3;
     private final int ENTITY_ID = 0;
     private final boolean ENTITY_SEND_VELO_UPDATES = true;
-
-    public SimpleNetworkWrapper getNetwork() {
-        return network;
-    }
     
     public void onPreInit(FMLPreInitializationEvent event) {
         GameRegistry.registerBlock(BlockDragonBreedEgg.INSTANCE, ItemDragonBreedEgg.class, "dragon_egg");
@@ -59,7 +47,6 @@ public class CommonProxy {
     
     public void onInit(FMLInitializationEvent evt) {
         registerEntities();
-        registerNetworkProtocol();
 
         if (DragonMounts.instance.getConfig().isEggsInChests()) {
             registerChestItems();
@@ -105,11 +92,5 @@ public class CommonProxy {
         chestGenHooksDesertChest.addItem(new WeightedRandomChestContent(new ItemStack(Blocks.dragon_egg), 1, 1, 10));
         // chance == iron ingot (10/76, ca. 13%, in 2-5 slots -> 39% at least 1 egg, 0.46 eggs per chest, 1.8 eggs per temple):
         // desert temples are so rare, it should be rewarded
-    }
-    
-    private void registerNetworkProtocol() {
-        network = NetworkRegistry.INSTANCE.newSimpleChannel("DragonControls");
-        network.registerMessage(DragonControlMessageHandler.class,
-                DragonControlMessage.class, DCM_DISCRIMINATOR_ID, Side.SERVER);
     }
 }
