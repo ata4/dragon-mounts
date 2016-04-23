@@ -18,8 +18,9 @@ import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchIdle;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchLiving;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -28,6 +29,7 @@ import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.EntityAITempt;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -75,10 +77,8 @@ public class DragonBrain extends DragonHelper {
     }
     
     public void clearTasks(EntityAITasks tasks) {
-        while (!tasks.taskEntries.isEmpty()) {
-            EntityAIBase entityAIBase = tasks.taskEntries.iterator().next().action;
-            tasks.removeTask(entityAIBase);
-        }
+        List<EntityAITaskEntry> taskEntries = new ArrayList<>(tasks.taskEntries);
+        taskEntries.forEach(entry -> tasks.removeTask(entry.action));
     }
     
     public void updateAITasks() {
