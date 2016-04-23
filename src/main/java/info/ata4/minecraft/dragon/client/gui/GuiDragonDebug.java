@@ -349,32 +349,32 @@ public class GuiDragonDebug extends Gui implements PrivateFields {
         text.println("AI tasks");
         text.setColor(WHITE);
         
-        renderAITasks(dragonServer.tasks, "Tasks");
-        renderAITasks(dragonServer.targetTasks, "Target Tasks");
+//        renderAITasks(dragonServer.tasks, "Tasks");
+//        renderAITasks(dragonServer.targetTasks, "Target Tasks");
     }
     
-    private void renderAITasks(EntityAITasks tasks, String label) {
-        text.setColor(GREY);
-        text.println(label + ":");
-        text.setColor(WHITE);
-
-        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(
-                EntityAITasks.class, tasks, ENTITYAITASKS_EXECUTINGTASKENTRIES);
-        
-        // create copy to avoid ConcurrentModificationException
-        currentTasks = new ArrayList<>(currentTasks);
-        
-        if (currentTasks.isEmpty()) {
-            text.println("---");
-            return;
-        }
-        
-        currentTasks.forEach(entry -> {
-            String actionName = entry.action.getClass().getSimpleName();
-            int priority = entry.priority;
-            text.printf("%d - %s\n", priority, actionName);
-        });
-    }
+//    private void renderAITasks(EntityAITasks tasks, String label) {
+//        text.setColor(GREY);
+//        text.println(label + ":");
+//        text.setColor(WHITE);
+//
+//        List<EntityAITaskEntry> currentTasks = ReflectionHelper.getPrivateValue(
+//                EntityAITasks.class, tasks, ENTITYAITASKS_EXECUTINGTASKENTRIES);
+//        
+//        // create copy to avoid ConcurrentModificationException
+//        currentTasks = new ArrayList<>(currentTasks);
+//        
+//        if (currentTasks.isEmpty()) {
+//            text.println("---");
+//            return;
+//        }
+//        
+//        currentTasks.forEach(entry -> {
+//            String actionName = entry.action.getClass().getSimpleName();
+//            int priority = entry.priority;
+//            text.printf("%d - %s\n", priority, actionName);
+//        });
+//    }
     
 //    private void renderWatchedObjects() {
 //        EntityTameableDragon dragon = getSelectedDragon();
