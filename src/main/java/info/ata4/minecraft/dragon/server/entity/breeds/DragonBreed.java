@@ -160,21 +160,11 @@ public abstract class DragonBreed {
     }
 
     public float getSoundPitch(SoundEvent sound) {
-        // lower pitch for default breathing sounds
-        if (sound == DragonMountsSoundEvents.entity_dragon_mount_breathe) {
-            return 0.5f;
-        }
-        
         return 1;
     }
 
     public float getSoundVolume(SoundEvent sound) {
-        // lower volume for default breathing sounds
-        if (sound == DragonMountsSoundEvents.entity_dragon_mount_breathe) {
-            return 0.5f;
-        }
-        
-        return 1.0f;
+        return 1;
     }
     
     @Override
