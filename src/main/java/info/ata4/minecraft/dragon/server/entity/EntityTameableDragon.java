@@ -601,52 +601,29 @@ public class EntityTameableDragon extends EntityTameable {
         }
     }
     
-    @Override
-    public boolean attackEntityAsMob(Entity victim) {
-        // code copied from EntityMob::attackEntityAsMob
-        float damage = (float) getEntityAttribute(ATTACK_DAMAGE).getAttributeValue();
-        int knockback = 0;
-
-        if (victim instanceof EntityLivingBase) {
-            damage += EnchantmentHelper.getModifierForCreature(getHeldItemMainhand(),
-                    ((EntityLivingBase)victim).getCreatureAttribute());
-            knockback += EnchantmentHelper.getKnockbackModifier(this);
-        }
-
-        boolean attacked = victim.attackEntityFrom(DamageSource.causeMobDamage(this), damage);
+    public boolean attackEntityAsMob(Entity entityIn) {
+        boolean attacked = entityIn.attackEntityFrom(
+            DamageSource.causeMobDamage(this),
+            (float) getEntityAttribute(ATTACK_DAMAGE).getAttributeValue()
+        );
 
         if (attacked) {
-            if (knockback > 0) {
-                double vx = -Math.sin(Math.toRadians(rotationYaw)) * knockback * 0.5;
-                double vy = 0.1;
-                double vz = Math.cos(Math.toRadians(rotationYaw)) * knockback * 0.5;
-                victim.addVelocity(vx, vy, vz);
-
-                motionX *= 0.6;
-                motionZ *= 0.6;
-            }
-
-            int fireAspect = EnchantmentHelper.getFireAspectModifier(this);
-
-            if (fireAspect > 0) {
-                victim.setFire(fireAspect * 4);
-            }
-
-            applyEnchantments(this, victim);
-
-            setLastAttacker(victim);
-
-            // play eating sound
-            playSound(getSoundManager().getAttackSound(), 1, 0.7f);
-
-            if (worldObj instanceof WorldServer) {
-                ((WorldServer) worldObj).getEntityTracker().sendToAllTrackingEntity(
-                        this, new SPacketAnimation(this, 0));
-            }
-
+            applyEnchantments(this, entityIn);
         }
-
+        
         return attacked;
+    }
+    
+    @Override
+    public void swingArm(EnumHand hand) {
+        // play eating sound
+        playSound(getSoundManager().getAttackSound(), 1, 0.7f);
+
+        // play attack animation
+        if (worldObj instanceof WorldServer) {
+            ((WorldServer) worldObj).getEntityTracker().sendToAllTrackingEntity(
+                    this, new SPacketAnimation(this, 0));
+        }
     }
     
     /**
