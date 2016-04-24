@@ -15,15 +15,15 @@
   },
   "mob.enderdragon.step": {
     "sounds": [
-      "mob/enderdragon/step1",
-      "mob/enderdragon/step2",
-      "mob/enderdragon/step3",
-      "mob/enderdragon/step4"
+      "dragonmounts:mob/enderdragon/step1",
+      "dragonmounts:mob/enderdragon/step2",
+      "dragonmounts:mob/enderdragon/step3",
+      "dragonmounts:mob/enderdragon/step4"
     ]
   },
   "mob.enderdragon.death": {
     "sounds": [
-      "mob/enderdragon/death"
+      "dragonmounts:mob/enderdragon/death"
     ]
   }
 }
