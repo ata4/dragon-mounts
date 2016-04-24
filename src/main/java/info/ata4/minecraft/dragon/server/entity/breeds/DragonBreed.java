@@ -141,21 +141,11 @@ public abstract class DragonBreed {
     }
     
     public float getSoundPitch(EntityTameableDragon dragon, String sound) {
-        // lower pitch for default breathing sounds
-        if (sound.endsWith("mob.enderdragon.breathe")) {
-            return 0.5f;
-        }
-        
         return 1;
     }
     
     public float getSoundVolume(EntityTameableDragon dragon, String sound) {
-        // lower volume for default breathing sounds
-        if (sound.endsWith("mob.enderdragon.breathe")) {
-            return 0.5f;
-        }
-        
-        return 1.0f;
+        return 1;
     }
     
     @Override

@@ -1,13 +1,19 @@
 {
   "mob.enderdragon.breathe": {
-    "category": "neutral",
     "sounds": [
-      "mob/enderdragon/breathe1",
-      "mob/enderdragon/breathe2"
+      {
+        "name": "minecraft:mob/cow/say2",
+        "volume": 0.5,
+        "pitch": 0.5
+      },
+      {
+        "name": "minecraft:mob/cow/say4",
+        "volume": 0.5,
+        "pitch": 0.5
+      }
     ]
   },
   "mob.enderdragon.step": {
-    "category": "neutral",
     "sounds": [
       "mob/enderdragon/step1",
       "mob/enderdragon/step2",
@@ -16,7 +22,6 @@
     ]
   },
   "mob.enderdragon.death": {
-    "category": "neutral",
     "sounds": [
       "mob/enderdragon/death"
     ]
