@@ -756,6 +756,13 @@ public class EntityTameableDragon extends EntityTameable {
         List<Entity> list = getPassengers();
         return list.isEmpty() ? null : list.get(0);
     }
+    
+    @Override
+    public boolean canPassengerSteer() {
+        // must always return false or the vanilla movement code interferes
+        // with DragonMoveHelper
+        return false;
+    }
 
     public EntityPlayer getRidingPlayer() {
         Entity entity = getControllingPassenger();
