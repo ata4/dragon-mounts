@@ -30,7 +30,7 @@ public class DragonInteractEat extends DragonInteract {
         // eat only if hurt
         if (dragon.isServer() && dragon.getHealthRelative() < 1) {
             ItemFood food = (ItemFood) ItemUtils.consumeEquipped(player,
-                    dragon.getBreed().getAcceptedFood());
+                    dragon.getBreed().getFoodItems());
 
             // heal only if the food was actually consumed
             if (food != null) {

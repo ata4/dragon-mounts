@@ -459,8 +459,7 @@ public class EntityTameableDragon extends EntityTameable {
      */
     @Override
     public boolean isBreedingItem(ItemStack item) {
-        // breeding items are handled in interact(), this is just for EntityAnimal.interact()
-        return false;
+        return getBreed().getBreedingItem() == item.getItem();
     }
     
     /**
@@ -809,11 +808,32 @@ public class EntityTameableDragon extends EntityTameable {
         onGround = onGroundTmp;
     }
     
+    /**
+     * The age value may be negative or positive or zero. If it's negative, it get's incremented on each tick, if it's
+     * positive, it get's decremented each tick. Don't confuse this with EntityLiving.getAge. With a negative value the
+     * Entity is considered a child.
+     */
+    @Override
+    public int getGrowingAge() {
+        // adapter for vanilla code to enable breeding interaction
+        return isAdult() ? 0 : -1;
+    }
+    
+    /**
+     * The age value may be negative or positive or zero. If it's negative, it get's incremented on each tick, if it's
+     * positive, it get's decremented each tick. With a negative value the Entity is considered a child.
+     */
+    @Override
+    public void setGrowingAge(int age) {
+        // managed by DragonLifeStageHelper, so this is a no-op
+    }
+    
+    /**
+     * Sets the scale for an ageable entity according to the boolean parameter, which says if it's a child.
+     */
     @Override
     public void setScaleForAge(boolean p_98054_1_) {
-        // SetGrowingAge calls this to switch between half and full scale based
-        // on isChild(), but the scale is managed in DragonLifeStageHelper, so
-        // this is no-op here
+        // managed by DragonLifeStageHelper, so this is a no-op
     }
     
     /**
