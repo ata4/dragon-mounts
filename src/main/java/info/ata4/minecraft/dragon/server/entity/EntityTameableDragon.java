@@ -14,7 +14,8 @@ import info.ata4.minecraft.dragon.server.entity.ai.path.PathNavigateFlying;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
-import info.ata4.minecraft.dragon.server.util.ItemUtils;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -25,7 +26,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.S0BPacketAnimation;
@@ -35,10 +35,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Here be dragons.
@@ -98,6 +94,7 @@ public class EntityTameableDragon extends EntityTameable {
         addHelper(new DragonLifeStageHelper(this, INDEX_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, INDEX_BREEDER, INDEX_REPRO_COUNT));
         addHelper(new DragonSoundManager(this));
+        addHelper(new DragonInteractHelper(this));
         
         if (isClient()) {
             addHelper(new DragonParticleHelper(this));
@@ -430,68 +427,12 @@ public class EntityTameableDragon extends EntityTameable {
             return false;
         }
         
-        if (isTamed() || isChild()) {
-            // heal dragon with food
-            ItemFood food = null;
-            
-            // eat only if hurt
-            if (getHealthRelative() < 1) {
-                food = (ItemFood) ItemUtils.consumeEquipped(player,
-                        getBreed().getAcceptedFood());
-            }
-            
-            // heal only if the food was actually consumed
-            if (food != null) {
-                heal(food.getHealAmount(playerItem));
-                playSound(getSoundManager().getEatSound(), 0.7f, 1);
-                return true;
-            }
-            
-            if (!isOwner(player)) {
-                if (isServer()) {
-                    // that's not your dragon!
-                    player.addChatMessage(new ChatComponentTranslation("dragon.owned"));
-                }
-            } else if (!isChild() && riddenByEntity == null) {
-                if (!isSaddled() && ItemUtils.consumeEquipped(player, Items.saddle)) {
-                    if (isServer()) {
-                        // put on a saddle
-                        setSaddled(true);
-                    }
-                } else if (ItemUtils.hasEquipped(player, Items.bone)) {
-                    if (isServer()) {
-                        // toggle sitting state with the bone item
-                        aiSit.setSitting(!isSitting());
-                        isJumping = false;
-                        navigator.clearPathEntity();  // replacement for setPathToEntity(null);
-                    }
-                } else if (getReproductionHelper().canReproduce() &&
-                        ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
-                    // activate love mode with favorite food if it hasn't reproduced yet
-                    if (isClient()) {
-                        getParticleHelper().spawnBodyParticles(EnumParticleTypes.HEART);
-                    }
-
-                    setInLove(player);
-                } else if (isSaddled() && !ItemUtils.hasEquippedUsable(player)) {
-                    if (isServer()) {
-                        // mount dragon when saddled and not already mounted
-                        setRidingPlayer(player);
-                    }
-                }
-            }
-        } else {
-            if (isServer()) {
-                if (ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
-                    // tame dragon with favorite food and a random chance
-                    tamedFor(player, rand.nextInt(3) == 0);
-                }
-            }
-            
+        // inherited interaction
+        if (super.interact(player)) {
             return true;
         }
         
-        return false;
+        return getInteractHelper().interact(player, playerItem);
     }
     
     public void tamedFor(EntityPlayer player, boolean successful) {
@@ -507,6 +448,10 @@ public class EntityTameableDragon extends EntityTameable {
             worldObj.setEntityState(this, (byte) 6);
         }
     }
+    
+    public boolean isTamedFor(EntityPlayer player) {
+        return isTamed() && isOwner(player);
+    }    
     
     /**
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
@@ -711,6 +656,10 @@ public class EntityTameableDragon extends EntityTameable {
     
     public DragonBrain getBrain() {
         return getHelper(DragonBrain.class);
+    }
+    
+    public DragonInteractHelper getInteractHelper() {
+        return getHelper(DragonInteractHelper.class);
     }
     
     public boolean getBooleanData(int index) {
