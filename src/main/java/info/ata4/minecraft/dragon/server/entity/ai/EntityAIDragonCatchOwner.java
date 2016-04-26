@@ -11,6 +11,10 @@ package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemElytra;
+import net.minecraft.item.ItemStack;
 
 /**
  *
@@ -45,6 +49,13 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
         
         // don't catch if already being ridden
         if (dragon.isPassenger(owner)) {
+            return false;
+        }
+        
+        // don't catch if owner has a working Elytra equipped
+        // note: isBroken() is misleading, it actually checks if the items is usable
+        ItemStack itemStack = owner.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+        if (itemStack.getItem() == Items.elytra && ItemElytra.isBroken(itemStack)) {
             return false;
         }
         
