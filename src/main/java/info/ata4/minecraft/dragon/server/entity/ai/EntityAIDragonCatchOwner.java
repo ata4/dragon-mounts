@@ -25,12 +25,7 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
     }
 
     @Override
-    public boolean shouldExecute() {
-        // don't catch if already being ridden
-        if (!dragon.isPassenger(owner)) {
-            return false;
-        }
-        
+    public boolean shouldExecute() {        
         // don't catch if leashed
         if (dragon.getLeashed()) {
             return false;
@@ -43,14 +38,19 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
             return false;
         }
         
+        // no point in catching players in creative mode
+        if (owner.capabilities.isCreativeMode) {
+            return false;
+        }
+        
+        // don't catch if already being ridden
+        if (dragon.isPassenger(owner)) {
+            return false;
+        }
+        
         // don't catch if owner is too far away
         double followRange = getFollowRange();
         if (dragon.getDistanceToEntity(owner) > followRange) {
-            return false;
-        }
-
-        // no point in catching players in creative mode
-        if (owner.capabilities.isCreativeMode) {
             return false;
         }
                 
