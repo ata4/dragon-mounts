@@ -111,11 +111,11 @@ public abstract class DragonBreed {
         return false;
     }
     
-    public Item[] getAcceptedFood() {
-        return new Item[] { getFavoriteFood(), Items.porkchop, Items.beef, Items.chicken };
+    public Item[] getFoodItems() {
+        return new Item[] { Items.porkchop, Items.beef, Items.chicken };
     }
     
-    public Item getFavoriteFood() {
+    public Item getBreedingItem() {
         return Items.fish;
     }
     

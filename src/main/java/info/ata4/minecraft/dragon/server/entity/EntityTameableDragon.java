@@ -15,17 +15,14 @@ import info.ata4.minecraft.dragon.server.entity.ai.path.PathNavigateFlying;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
-import info.ata4.minecraft.dragon.server.util.ItemUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.block.Block;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import static net.minecraft.entity.SharedMonsterAttributes.*;
 import net.minecraft.entity.ai.EntityAISit;
@@ -35,7 +32,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -45,10 +41,8 @@ import net.minecraft.network.play.server.SPacketAnimation;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -119,6 +113,7 @@ public class EntityTameableDragon extends EntityTameable {
         addHelper(new DragonLifeStageHelper(this, DATA_TICKS_SINCE_CREATION));
         addHelper(new DragonReproductionHelper(this, DATA_BREEDER, DATA_REPRO_COUNT));
         addHelper(new DragonSoundManager(this));
+        addHelper(new DragonInteractHelper(this));
         
         if (isClient()) {
             addHelper(new DragonParticleHelper(this));
@@ -443,68 +438,12 @@ public class EntityTameableDragon extends EntityTameable {
             return false;
         }
         
-        if (isTamed() || isChild()) {
-            // heal dragon with food
-            ItemFood food = null;
-            
-            // eat only if hurt
-            if (getHealthRelative() < 1) {
-                food = (ItemFood) ItemUtils.consumeEquipped(player,
-                        getBreed().getAcceptedFood());
-            }
-            
-            // heal only if the food was actually consumed
-            if (food != null) {
-                heal(food.getHealAmount(item));
-                playSound(getSoundManager().getEatSound(), 0.7f, 1);
-                return true;
-            }
-            
-            if (!isOwner(player)) {
-                if (isServer()) {
-                    // that's not your dragon!
-                    player.addChatMessage(new TextComponentTranslation("dragon.owned"));
-                }
-            } else if (!isChild() && !isFlying()) {
-                if (!isSaddled() && ItemUtils.consumeEquipped(player, Items.saddle)) {
-                    if (isServer()) {
-                        // put on a saddle
-                        setSaddled(true);
-                    }
-                } else if (ItemUtils.hasEquipped(player, Items.bone)) {
-                    if (isServer()) {
-                        // toggle sitting state with the bone item
-                        aiSit.setSitting(!isSitting());
-                        isJumping = false;
-                        navigator.clearPathEntity();  // replacement for setPathToEntity(null);
-                    }
-                } else if (getReproductionHelper().canReproduce() &&
-                        ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
-                    // activate love mode with favorite food if it hasn't reproduced yet
-                    if (isClient()) {
-                        getParticleHelper().spawnBodyParticles(EnumParticleTypes.HEART);
-                    }
-
-                    setInLove(player);
-                } else if (isSaddled() && !ItemUtils.hasEquippedUsable(player)) {
-                    if (isServer()) {
-                        // mount dragon when saddled and not already mounted
-                        setRidingPlayer(player);
-                    }
-                }
-            }
-        } else {
-            if (isServer()) {
-                if (ItemUtils.consumeEquipped(player, getBreed().getFavoriteFood())) {
-                    // tame dragon with favorite food and a random chance
-                    tamedFor(player, rand.nextInt(3) == 0);
-                }
-            }
-            
+        // inherited interaction
+        if (super.processInteract(player, hand, item)) {
             return true;
         }
         
-        return false;
+        return getInteractHelper().interact(player, item);
     }
     
     public void tamedFor(EntityPlayer player, boolean successful) {       
@@ -521,14 +460,17 @@ public class EntityTameableDragon extends EntityTameable {
         }
     }
     
+    public boolean isTamedFor(EntityPlayer player) {
+        return isTamed() && isOwner(player);
+    }    
+    
     /**
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
     @Override
     public boolean isBreedingItem(ItemStack item) {
-        // breeding items are handled in interact(), this is just for EntityAnimal.interact()
-        return false;
+        return getBreed().getBreedingItem() == item.getItem();
     }
     
     /**
@@ -702,6 +644,10 @@ public class EntityTameableDragon extends EntityTameable {
         return getHelper(DragonBrain.class);
     }
     
+    public DragonInteractHelper getInteractHelper() {
+        return getHelper(DragonInteractHelper.class);
+    }
+    
     /**
      * Returns the breed for this dragon.
      * 
@@ -855,11 +801,32 @@ public class EntityTameableDragon extends EntityTameable {
         onGround = onGroundTmp;
     }
     
+    /**
+     * The age value may be negative or positive or zero. If it's negative, it get's incremented on each tick, if it's
+     * positive, it get's decremented each tick. Don't confuse this with EntityLiving.getAge. With a negative value the
+     * Entity is considered a child.
+     */
+    @Override
+    public int getGrowingAge() {
+        // adapter for vanilla code to enable breeding interaction
+        return isAdult() ? 0 : -1;
+    }
+    
+    /**
+     * The age value may be negative or positive or zero. If it's negative, it get's incremented on each tick, if it's
+     * positive, it get's decremented each tick. With a negative value the Entity is considered a child.
+     */
+    @Override
+    public void setGrowingAge(int age) {
+        // managed by DragonLifeStageHelper, so this is a no-op
+    }
+    
+    /**
+     * Sets the scale for an ageable entity according to the boolean parameter, which says if it's a child.
+     */
     @Override
     public void setScaleForAge(boolean p_98054_1_) {
-        // SetGrowingAge calls this to switch between half and full scale based
-        // on isChild(), but the scale is managed in DragonLifeStageHelper, so
-        // this is no-op here
+        // managed by DragonLifeStageHelper, so this is a no-op
     }
     
     /**
