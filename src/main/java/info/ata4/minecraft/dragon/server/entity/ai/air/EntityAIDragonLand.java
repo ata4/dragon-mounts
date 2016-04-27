@@ -58,7 +58,7 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
 
     @Override
     public boolean shouldExecute() {
-        return dragon.isFlying() && dragon.isTamed() && dragon.getRidingPlayer() == null && findLandingBlock();
+        return dragon.isFlying() && dragon.getRidingPlayer() == null && findLandingBlock();
     }
     
     @Override
