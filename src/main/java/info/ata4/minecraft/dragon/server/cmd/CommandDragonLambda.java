@@ -19,21 +19,26 @@ import net.minecraft.command.ICommandSender;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class SubCommandSimple extends SubCommand {
+public class CommandDragonLambda extends CommandBaseDragon {
     
     private final Optional<Consumer<EntityTameableDragon>> consumer;
     private final Optional<ICommandProcessor> processor;
 
-    public SubCommandSimple(CommandDragon parent, Consumer<EntityTameableDragon> consumer) {
-        super(parent);
+    public CommandDragonLambda(String name, Consumer<EntityTameableDragon> consumer) {
+        super(name);
         this.consumer = Optional.of(consumer);
         this.processor = Optional.empty();
     }
     
-    public SubCommandSimple(CommandDragon parent, ICommandProcessor processor) {
-        super(parent);
+    public CommandDragonLambda(String name, ICommandProcessor processor) {
+        super(name);
         this.consumer = Optional.empty();
         this.processor = Optional.of(processor);
+    }
+
+    @Override
+    public String getCommandUsage(ICommandSender sender) {
+        return "";
     }
 
     @Override
@@ -43,7 +48,7 @@ public class SubCommandSimple extends SubCommand {
         }
         
         if (consumer.isPresent()) {
-            parent.applyModifier(sender, args, consumer.get());
+            applyModifier(sender, consumer.get());
         }
     }
     

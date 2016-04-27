@@ -10,38 +10,28 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.client.gui.GuiDragonDebug;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
+import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class SubCommandDebug extends SubCommand {
+public class CommandDragonDebug extends CommandBaseNested implements IDragonModifier {
     
-    private final Map<String, SubCommand> subCommands = new LinkedHashMap<>();
-
-    public SubCommandDebug(CommandDragon parent) {
-        super(parent);
-        
-        subCommands.put("toItem", new SubCommandSimple(parent, dragon -> {
+    public CommandDragonDebug() {
+        addCommand(new CommandDragonLambda("toItem", dragon -> {
             dragon.getLifeStageHelper().transformToEgg();
         }));
         
-        subCommands.put("dumpNBT", new SubCommandSimple(parent, dragon -> {
+        addCommand(new CommandDragonLambda("dumpNBT", dragon -> {
             File dumpFile = new File(Minecraft.getMinecraft().mcDataDir,
                     String.format("dragon_%08x.nbt", dragon.getEntityId()));
 
@@ -53,20 +43,40 @@ public class SubCommandDebug extends SubCommand {
             }
         }));
         
-        subCommands.put("toggleOverlay", new SubCommandSimple(parent, (sender, args) -> {
+        addCommand(new CommandDragonLambda("toggleOverlay", (sender, args) -> {
             GuiDragonDebug.enabled = !GuiDragonDebug.enabled;
         }));
         
-        subCommands.put("testAge", new SubCommandSimple(parent, dragon -> {
+        addCommand(new CommandDragonLambda("testBreeds", dragon -> {
+            new Thread(() -> {
+                try {
+                    for (EnumDragonBreed breed : EnumDragonBreed.values()) {
+                        dragon.setBreedType(breed);
+                        Thread.sleep(1000);
+                    }
+                } catch (InterruptedException ex) {
+                }
+            }).start();
+        }));
+        
+        addCommand(new CommandDragonLambda("testStages", dragon -> {
+            new Thread(() -> {
+                try {
+                    for (EnumDragonLifeStage stage : EnumDragonLifeStage.values()) {
+                        dragon.getLifeStageHelper().setLifeStage(stage);
+                        Thread.sleep(1000);
+                    }
+                } catch (InterruptedException ex) {
+                }
+            }).start();
+        }));
+        
+        addCommand(new CommandDragonLambda("testAge", dragon -> {
             dragon.getLifeStageHelper().setTicksSinceCreation(18000);
         }));
         
-        subCommands.put("kill", new SubCommandSimple(parent, dragon -> {
-            dragon.setHealth(0);
-        }));
-        
-        subCommands.put("tameSaddleAndMount", new SubCommandSimple(parent, (sender, args) -> {
-            parent.applyModifier(sender, args, dragon -> {
+        addCommand(new CommandDragonLambda("testMount", (sender, args) -> {
+            applyModifier(sender, dragon -> {
                 if (!(sender instanceof EntityPlayerMP)) {
                     return;
                 }
@@ -78,22 +88,14 @@ public class SubCommandDebug extends SubCommand {
                 player.mountEntity(dragon);
             });
         }));
+        
+        addCommand(new CommandDragonLambda("kill", dragon -> {
+            dragon.setHealth(0);
+        }));
     }
 
     @Override
-    public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        String cmd = args[1];
-        
-        if (!subCommands.containsKey(cmd)) {
-            throw new WrongUsageException(parent.getCommandUsage(sender));
-        }
-        
-        subCommands.get(cmd).processCommand(sender, args);
+    public String getCommandName() {
+        return "debug";
     }
-
-    @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
-        return CommandBase.getListOfStringsMatchingLastWord(args, subCommands.keySet());
-    }
-    
 }
