@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonCatchOwner;
 import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonRide;
+import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonFollowOwner;
 import info.ata4.minecraft.dragon.server.entity.ai.air.EntityAIDragonLand;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonHunt;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
@@ -103,7 +104,8 @@ public class DragonBrain extends DragonHelper {
         
         tasks.addTask(0, new EntityAIDragonCatchOwner(dragon)); // mutex all
         tasks.addTask(1, new EntityAIDragonRide(dragon)); // mutex all
-        tasks.addTask(2, new EntityAIMoveTowardsRestriction(dragon, 1)); // mutex 1
+        tasks.addTask(2, new EntityAIDragonFollowOwner(dragon)); // mutex all
+        tasks.addTask(3, new EntityAIMoveTowardsRestriction(dragon, 1)); // mutex 1
         
         if (dragon.isFlying()) {
             tasks.addTask(3, new EntityAIDragonLand(dragon, 1)); // mutex 1
