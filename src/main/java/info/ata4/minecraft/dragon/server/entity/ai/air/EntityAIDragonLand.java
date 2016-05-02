@@ -21,8 +21,6 @@ import net.minecraft.util.math.MathHelper;
  */
 public class EntityAIDragonLand extends EntityAIDragonBase {
     
-    private final int ALTITUDE_THRESH = 4;
-    
     private final double speed;
     private BlockPos landingPos;
 
@@ -36,21 +34,14 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
         // get current entity position
         landingPos = dragon.getPosition();
         
-        // check altitude
-        double altitude = dragon.getAltitude();
-        if (altitude < ALTITUDE_THRESH) {
-            // near ground, simply pick the block below
-            landingPos = landingPos.down(MathHelper.floor_double(altitude));
-        } else {
-            // add some variance
-            int followRange = MathHelper.floor_double(getFollowRange());
-            int ox = followRange - random.nextInt(followRange) * 2;
-            int oz = followRange - random.nextInt(followRange) * 2;
-            landingPos = landingPos.add(ox, 0, oz);
+        // add some variance
+        int followRange = MathHelper.floor_double(getFollowRange());
+        int ox = followRange - random.nextInt(followRange) * 2;
+        int oz = followRange - random.nextInt(followRange) * 2;
+        landingPos = landingPos.add(ox, 0, oz);
 
-            // get ground block
-            landingPos = world.getHeight(landingPos);
-        }
+        // get ground block
+        landingPos = world.getHeight(landingPos);
         
         // make sure the block below is solid
         return world.getBlockState(landingPos.down()).getMaterial().isSolid();
@@ -58,12 +49,12 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
 
     @Override
     public boolean shouldExecute() {
-        return dragon.isFlying() && dragon.isTamed() && dragon.getRidingPlayer() == null && findLandingBlock();
+        return dragon.isFlying() && dragon.getRidingPlayer() == null && findLandingBlock();
     }
     
     @Override
     public boolean continueExecuting() {
-        return shouldExecute() && !dragon.getNavigator().noPath();
+        return dragon.isFlying() && dragon.getRidingPlayer() == null && !dragon.getNavigator().noPath();
     }
 
     @Override
@@ -71,7 +62,7 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
         // try to fly to ground block position
         if (!tryMoveToBlockPos(landingPos, speed)) {
             // probably too high, so simply descend vertically
-            tryMoveToBlockPos(dragon.getPosition().down(ALTITUDE_THRESH), speed);
+            tryMoveToBlockPos(dragon.getPosition().down(4), speed);
         }
     }
 }

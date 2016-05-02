@@ -21,45 +21,52 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public class SubCommandEnumSetter<E extends Enum<E>> extends SubCommand {
+public class CommandDragonEnumSetter<E extends Enum<E>> extends CommandBaseDragon {
     
     private final Class<E> enumClass;
     private final BiConsumer<EntityTameableDragon, E> enumConsumer;
     
-    public SubCommandEnumSetter(CommandDragon parent, Class<E> enumClass,
-            BiConsumer<EntityTameableDragon, E> enumConsumer) {
-        super(parent);
+    public CommandDragonEnumSetter(String name, Class<E> enumClass, BiConsumer<EntityTameableDragon, E> enumConsumer) {
+        super(name);
         this.enumClass = enumClass;
         this.enumConsumer = enumConsumer;
     }
     
+    private List<String> getEnumNames() {
+        return EnumUtils.getEnumList(enumClass).stream()
+            .map(e -> e.name().toLowerCase())
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getCommandUsage(ICommandSender sender) {
+        return String.format("%s <%s>", getCommandName(), StringUtils.join(getEnumNames(), '|'));
+    }
+    
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        if (args.length < 2) {
-            throw new WrongUsageException(parent.getCommandUsage(sender));
+        if (args.length < 1) {
+            throw new WrongUsageException(getCommandUsage(sender));
         }
 
-        String enumName = args[1].toUpperCase();
+        String enumName = args[0].toUpperCase();
         E enumValue = EnumUtils.getEnum(enumClass, enumName);
         if (enumValue == null) {
             // default constructor uses "snytax"...
             throw new SyntaxErrorException("commands.generic.syntax");
         }
 
-        parent.applyModifier(server, sender, args, dragon -> enumConsumer.accept(dragon, enumValue));
+        applyModifier(server, sender, dragon -> enumConsumer.accept(dragon, enumValue));
     }
     
     @Override
     public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
-        return CommandBase.getListOfStringsMatchingLastWord(args,
-            EnumUtils.getEnumList(enumClass).stream()
-                .map(e -> e.name().toLowerCase())
-                .collect(Collectors.toList())
-        );
+        return CommandBase.getListOfStringsMatchingLastWord(args, getEnumNames());
     }
 }
