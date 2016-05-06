@@ -20,8 +20,8 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public class DragonBreedWater extends DragonBreed {
 
-    DragonBreedWater(EnumDragonBreed type) {
-        super(type, "sylphid", 0x4f69a8);
+    DragonBreedWater() {
+        super(EnumDragonBreed.WATER, "sylphid", 0x4f69a8);
         
         addImmunity(DamageSource.drown);
         

@@ -29,8 +29,8 @@ public class DragonBreedForest extends DragonBreed {
     private static final Block FOOTPRINT = Blocks.grass;
     private static final float FOOTPRINT_CHANCE = 0.2f;
     
-    DragonBreedForest(EnumDragonBreed type) {
-        super(type, "forest", 0x2d6e00);
+    DragonBreedForest() {
+        super(EnumDragonBreed.FOREST, "forest", 0x2d6e00);
         
         addHabitatBlock(Blocks.log);
         addHabitatBlock(Blocks.log2);

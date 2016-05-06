@@ -20,8 +20,8 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public class DragonBreedNether extends DragonBreed {
 
-    DragonBreedNether(EnumDragonBreed type) {
-        super(type, "nether", 0x793838);
+    DragonBreedNether() {
+        super(EnumDragonBreed.NETHER, "nether", 0x793838);
         
         addImmunity(DamageSource.inFire);
         addImmunity(DamageSource.onFire);
