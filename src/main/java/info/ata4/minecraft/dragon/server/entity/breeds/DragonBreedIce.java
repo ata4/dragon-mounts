@@ -27,8 +27,8 @@ public class DragonBreedIce extends DragonBreed {
     private static final Block FOOTPRINT = Blocks.snow_layer;
     private static final float FOOTPRINT_CHANCE = 0.2f;
 
-    DragonBreedIce(EnumDragonBreed type) {
-        super(type, "ice", 0x6fc3ff);
+    DragonBreedIce() {
+        super(EnumDragonBreed.ICE, "ice", 0x6fc3ff);
         
         addImmunity(DamageSource.magic);
         

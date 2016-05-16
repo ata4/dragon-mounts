@@ -11,9 +11,9 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.util.IStringSerializable;
 
@@ -23,14 +23,14 @@ import net.minecraft.util.IStringSerializable;
  */
 public enum EnumDragonBreed implements IStringSerializable {
     
-    AIR(0, DragonBreedAir.class),
-    END(1, DragonBreedEnd.class),
-    FIRE(2, DragonBreedFire.class),
-    FOREST(3, DragonBreedForest.class),
-    GHOST(4, DragonBreedGhost.class),
-    ICE(5, DragonBreedIce.class),
-    NETHER(6, DragonBreedNether.class),
-    WATER(7, DragonBreedWater.class);
+    AIR(0, DragonBreedAir::new),
+    END(1, DragonBreedEnd::new),
+    FIRE(2, DragonBreedFire::new),
+    FOREST(3, DragonBreedForest::new),
+    GHOST(4, DragonBreedGhost::new),
+    ICE(5, DragonBreedIce::new),
+    NETHER(6, DragonBreedNether::new),
+    WATER(7, DragonBreedWater::new);
     
     public static final EnumDragonBreed DEFAULT = END;
     
@@ -47,15 +47,8 @@ public enum EnumDragonBreed implements IStringSerializable {
     // constant after adding more breeds in unexpected orders
     private final int meta;
     
-    private EnumDragonBreed(int meta, Class<? extends DragonBreed> factory) {
-        try {
-            breed = factory.getDeclaredConstructor(EnumDragonBreed.class).newInstance(this);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalArgumentException ex) {
-            throw new RuntimeException("Incompatible breed factory " + factory, ex);
-        } catch (SecurityException | IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
-        
+    private EnumDragonBreed(int meta, Supplier<DragonBreed> factory) {
+        this.breed = factory.get();
         this.meta = meta;
     }
     
@@ -71,5 +64,4 @@ public enum EnumDragonBreed implements IStringSerializable {
     public String getName() {
         return name().toLowerCase();
     }
-    
 }

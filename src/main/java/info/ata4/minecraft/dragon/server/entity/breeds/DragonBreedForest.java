@@ -12,7 +12,10 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockTallGrass;
+import net.minecraft.block.BlockDirt.DirtType;
+import net.minecraft.block.BlockFlower;
+import net.minecraft.block.BlockFlower.EnumFlowerType;
+import net.minecraft.block.BlockMushroom;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
@@ -25,12 +28,12 @@ import net.minecraft.world.biome.BiomeGenBase;
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonBreedForest extends DragonBreed {
+	
+    //private static final Block FOOTPRINT = Blocks.grass;
+    private static final float FOOTPRINT_CHANCE = 0.05f;
     
-    private static final Block FOOTPRINT = Blocks.grass;
-    private static final float FOOTPRINT_CHANCE = 0.2f;
-    
-    DragonBreedForest(EnumDragonBreed type) {
-        super(type, "forest", 0x2d6e00);
+    DragonBreedForest() {
+        super(EnumDragonBreed.FOREST, "forest", 0x2d6e00);
         
         addHabitatBlock(Blocks.log);
         addHabitatBlock(Blocks.log2);
@@ -54,44 +57,50 @@ public class DragonBreedForest extends DragonBreed {
         if (dragon.isAdult() && !dragon.isFlying()) {
             World world = dragon.worldObj;
             for (int i = 0; i < 4; i++) {
-                if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
-                    continue;
-                }
 
+                if(world.rand.nextFloat() < FOOTPRINT_CHANCE) {
                 int bx = MathHelper.floor_double(dragon.posX + (i % 2 * 2 - 1) * 0.25);
                 int by = MathHelper.floor_double(dragon.posY) - 1;
                 int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
                 BlockPos blockPosUnderFoot = new BlockPos(bx, by, bz);
                 BlockPos blockPosOnSurface = blockPosUnderFoot.up();
-                IBlockState blockUnderFoot = world.getBlockState(blockPosUnderFoot);
-                IBlockState blockOneUp = world.getBlockState(blockPosOnSurface);
+                IBlockState blockStateUnderFoot = world.getBlockState(blockPosUnderFoot);
+                //IBlockState blockStateOnSurface = world.getBlockState(blockPosOnSurface);
 
-                final int GRASS_LIGHT_THRESHOLD = 4;
+                if(world.isAirBlock(blockPosOnSurface)) {
+                	
+                	Block blockUnderFoot = blockStateUnderFoot.getBlock();
+                	//Block blockOnSurface = blockStateOnSurface.getBlock();
+                	
+                    if(blockUnderFoot == Blocks.grass) {
 
-                if (blockUnderFoot.getBlock() == Blocks.dirt
-                        && blockUnderFoot.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT
-                        && world.getLightFromNeighbors(blockPosOnSurface) >= GRASS_LIGHT_THRESHOLD
-                        && blockOneUp.getBlock().getLightOpacity(world, blockPosOnSurface) <= 2) {
-
-                    world.setBlockState(blockPosUnderFoot, FOOTPRINT.getDefaultState());
-                }
-
-                if (blockUnderFoot.getBlock() == Blocks.grass
-                        && Blocks.tallgrass.canPlaceBlockAt(world, blockPosOnSurface)) {
-                    world.setBlockState(blockPosOnSurface,
-                            Blocks.tallgrass.getDefaultState()
-                            .withProperty(BlockTallGrass.TYPE, BlockTallGrass.EnumType.GRASS));
+                    	EnumFlowerType flower = world.getBiomeGenForCoords(blockPosOnSurface)
+                    			.pickRandomFlower(world.rand, blockPosOnSurface);
+                    	BlockFlower blockFlower = flower.getBlockType().getBlock();
+                    	IBlockState blockState = blockFlower.getDefaultState()
+                    			.withProperty(blockFlower.getTypeProperty(), flower);
+                    	if(blockFlower.canBlockStay(world, blockPosOnSurface, blockState)) {
+                    		world.setBlockState(blockPosOnSurface, blockState);
+                    	}
+                    } else if(blockUnderFoot == Blocks.dirt) {
+                    	
+                    	DirtType dirtType = blockStateUnderFoot.getValue(BlockDirt.VARIANT);
+                    	if(dirtType == DirtType.PODZOL) {
+                    		BlockMushroom mushroom = (BlockMushroom) (world.rand.nextBoolean()
+                    				? Blocks.red_mushroom
+                    				: Blocks.brown_mushroom);
+                    		if(mushroom.canBlockStay(world,
+                    				blockPosOnSurface, mushroom.getDefaultState())) {
+                    			world.setBlockState(blockPosOnSurface, mushroom.getDefaultState());
+                    			}
+                    		}
+                    	}
+                	}
                 }
             }
         }
     }
-
-//                if (world.getBlock(bx, by, bz) == Blocks.dirt
-//                        && world.canBlockSeeTheSky(bx, by, bz)
-//                        && FOOTPRINT.canPlaceBlockAt(world, bx, by, bz)) {
-//                    world.setBlock(bx, by, bz, FOOTPRINT);
-//                }
-
+        
     @Override
     public void onEnable(EntityTameableDragon dragon) {
     }
