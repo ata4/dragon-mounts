@@ -21,7 +21,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 public class DragonBreedEnd extends DragonBreed {
 
     DragonBreedEnd() {
-        super(EnumDragonBreed.END, "ender", 0xab39be);
+        super("ender", 0xab39be);
         
         addImmunity(DamageSource.magic);
         

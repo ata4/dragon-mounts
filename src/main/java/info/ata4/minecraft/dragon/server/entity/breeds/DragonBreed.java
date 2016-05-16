@@ -28,15 +28,13 @@ import net.minecraft.item.Item;
  */
 public abstract class DragonBreed {
     
-    private final EnumDragonBreed type;
     private final String skin;
     private final int color;
     private final Set<String> immunities = new HashSet<>();
     private final Set<Block> breedBlocks = new HashSet<>();
     private final Set<BiomeGenBase> biomes = new HashSet<>();
     
-    DragonBreed(EnumDragonBreed type, String skin, int color) {
-        this.type = type;
+    DragonBreed(String skin, int color) {
         this.skin = skin;
         this.color = color;
         
@@ -46,10 +44,6 @@ public abstract class DragonBreed {
         
         // assume that cactus needles don't do much damage to animals with horned scales
         addImmunity(DamageSource.cactus);
-    }
-    
-    public String getName() {
-        return type.getName();
     }
 
     public String getSkin() {
@@ -146,10 +140,5 @@ public abstract class DragonBreed {
     
     public float getSoundVolume(EntityTameableDragon dragon, String sound) {
         return 1;
-    }
-    
-    @Override
-    public String toString() {
-        return getName();
     }
 }

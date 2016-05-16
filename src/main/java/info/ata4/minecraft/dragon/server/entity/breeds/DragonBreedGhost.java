@@ -27,7 +27,7 @@ public class DragonBreedGhost extends DragonBreed {
     private final Map<EntityTameableDragon, EntityAIRestrictSun> appliedTasks = new HashMap<>();
 
     DragonBreedGhost() {
-        super(EnumDragonBreed.GHOST, "undead", 0xbebebe);
+        super("undead", 0xbebebe);
         
         addImmunity(DamageSource.wither);
         

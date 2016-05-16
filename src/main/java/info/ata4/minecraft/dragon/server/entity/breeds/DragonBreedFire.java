@@ -21,7 +21,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 public class DragonBreedFire extends DragonBreed {
 
     DragonBreedFire() {
-        super(EnumDragonBreed.FIRE, "fire", 0x960b0f);
+        super("fire", 0x960b0f);
         
         addImmunity(DamageSource.inFire);
         addImmunity(DamageSource.onFire);

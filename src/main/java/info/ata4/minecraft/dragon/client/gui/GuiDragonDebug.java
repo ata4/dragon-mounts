@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.client.gui;
 import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
+import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonBreedHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonLifeStageHelper;
 import info.ata4.minecraft.dragon.server.entity.helper.DragonReproductionHelper;
@@ -211,9 +212,9 @@ public class GuiDragonDebug extends Gui implements PrivateAccessor {
         
         // breed
         text.print("Breed: ");
-        DragonBreed breed = dragon.getBreed();
-        text.setColor(breed.getColor());
-        text.println(breed.getName());
+        EnumDragonBreed breedType = dragon.getBreedType();
+        text.setColor(breedType.getBreed().getColor());
+        text.println(breedType.getName());
         text.setColor(WHITE);
         
         // life stage

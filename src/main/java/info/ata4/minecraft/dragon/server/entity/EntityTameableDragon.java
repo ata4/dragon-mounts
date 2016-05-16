@@ -327,7 +327,7 @@ public class EntityTameableDragon extends EntityTameable {
         
         // return default breed name otherwise
         String entName = EntityList.getEntityString(this);
-        String breedName = getBreed().getName().toLowerCase();
+        String breedName = getBreedType().getName().toLowerCase();
         return StatCollector.translateToLocal("entity." + entName + "." + breedName + ".name");
     }
     
@@ -688,7 +688,7 @@ public class EntityTameableDragon extends EntityTameable {
     }
     
     public DragonBreed getBreed() {
-        return getBreedHelper().getBreedType().getBreed();
+        return getBreedType().getBreed();
     }
 
     public EntityPlayer getRidingPlayer() {
