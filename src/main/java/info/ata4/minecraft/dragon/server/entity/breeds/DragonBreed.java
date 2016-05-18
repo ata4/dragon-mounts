@@ -30,7 +30,6 @@ import net.minecraft.world.biome.BiomeGenBase;
  */
 public abstract class DragonBreed {
     
-    private final EnumDragonBreed type;
     private final String skin;
     private final int color;
     private final Set<String> immunities = new HashSet<>();
@@ -38,8 +37,7 @@ public abstract class DragonBreed {
     private final Set<BiomeGenBase> biomes = new HashSet<>();
     protected final Random rand = new Random();
     
-    DragonBreed(EnumDragonBreed type, String skin, int color) {
-        this.type = type;
+    DragonBreed(String skin, int color) {
         this.skin = skin;
         this.color = color;
         
@@ -49,10 +47,6 @@ public abstract class DragonBreed {
         
         // assume that cactus needles don't do much damage to animals with horned scales
         addImmunity(DamageSource.cactus);
-    }
-    
-    public String getName() {
-        return type.getName();
     }
 
     public String getSkin() {
@@ -165,10 +159,5 @@ public abstract class DragonBreed {
 
     public float getSoundVolume(SoundEvent sound) {
         return 1;
-    }
-    
-    @Override
-    public String toString() {
-        return getName();
     }
 }
