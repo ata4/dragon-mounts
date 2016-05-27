@@ -21,11 +21,13 @@ public class DragonMountsConfig {
     
     // config properties
     private boolean eggsInChests = false;
+    private boolean disableBlockOverride = false;
     private boolean debug = false;
     
     public DragonMountsConfig(Configuration config) {
         eggsInChests = config.getBoolean("eggsInChests", "server", eggsInChests, "Spawns dragon eggs in generated chests when enabled");
         debug = config.getBoolean("debug", "client", debug, "Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.");
+        disableBlockOverride = config.getBoolean("disableBlockOverride", "client", debug, "Disables right-click override on the vanilla dragon egg block. May help to fix issues with other mods.");
         
         if (config.hasChanged()) {
             config.save();
@@ -44,5 +46,9 @@ public class DragonMountsConfig {
 
     public boolean isDebug() {
         return debug;
+    }
+
+    public boolean isDisableBlockOverride() {
+        return disableBlockOverride;
     }
 }

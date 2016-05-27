@@ -10,6 +10,7 @@
 
 package info.ata4.minecraft.dragon.server.handler;
 
+import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
@@ -40,6 +41,12 @@ public class DragonEggBlockHandler {
         World world = evt.entity.worldObj;
         IBlockState state = world.getBlockState(pos);
         Block block = world.getBlockState(pos).getBlock();
+        
+        // don't interact with vanilla egg blocks if configured
+        if (DragonMounts.instance.getConfig().isDisableBlockOverride() &&
+                block == Blocks.dragon_egg) {
+            return;
+        }
         
         // ignore non-egg blocks
         if (block != Blocks.dragon_egg && block != BlockDragonBreedEgg.INSTANCE) {
