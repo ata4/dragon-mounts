@@ -47,6 +47,9 @@ public abstract class DragonBreed {
         
         // assume that cactus needles don't do much damage to animals with horned scales
         addImmunity(DamageSource.cactus);
+        
+        // ignore damage from vanilla ender dragon
+        addImmunity(DamageSource.dragonBreath);
     }
 
     public String getSkin() {

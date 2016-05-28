@@ -27,6 +27,8 @@ public class DragonBreedEnd extends DragonBreed {
         
         addHabitatBlock(Blocks.end_stone);
         addHabitatBlock(Blocks.obsidian);
+        addHabitatBlock(Blocks.end_bricks);
+        
         addHabitatBiome(Biomes.sky);
     }
 
