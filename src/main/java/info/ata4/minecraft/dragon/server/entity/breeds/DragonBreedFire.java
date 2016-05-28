@@ -27,13 +27,13 @@ public class DragonBreedFire extends DragonBreed {
         addImmunity(DamageSource.onFire);
         addImmunity(DamageSource.lava);
         
-        addHabitatBlock(Blocks.lava);
-        addHabitatBlock(Blocks.flowing_lava);
-        addHabitatBlock(Blocks.fire);
-        addHabitatBlock(Blocks.lit_furnace);
+        addHabitatBlock(Blocks.LAVA);
+        addHabitatBlock(Blocks.FLOWING_LAVA);
+        addHabitatBlock(Blocks.FIRE);
+        addHabitatBlock(Blocks.LIT_FURNACE);
         
-        addHabitatBiome(Biomes.desert);
-        addHabitatBiome(Biomes.desertHills);
+        addHabitatBiome(Biomes.DESERT);
+        addHabitatBiome(Biomes.DESERT_HILLS);
     }
 
     @Override

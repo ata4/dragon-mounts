@@ -25,11 +25,11 @@ public class DragonBreedEnd extends DragonBreed {
         
         addImmunity(DamageSource.magic);
         
-        addHabitatBlock(Blocks.end_stone);
-        addHabitatBlock(Blocks.obsidian);
-        addHabitatBlock(Blocks.end_bricks);
+        addHabitatBlock(Blocks.END_STONE);
+        addHabitatBlock(Blocks.OBSIDIAN);
+        addHabitatBlock(Blocks.END_BRICKS);
         
-        addHabitatBiome(Biomes.sky);
+        addHabitatBiome(Biomes.SKY);
     }
 
     @Override

@@ -43,7 +43,7 @@ public class DragonSoundManager extends DragonHelper {
      */
     public SoundEvent getHurtSound() {
         if (dragon.isEgg()) {
-            return SoundEvents.entity_zombie_attack_door_wood;
+            return SoundEvents.ENTITY_ZOMBIE_ATTACK_DOOR_WOOD;
         } else {
             return dragon.getBreed().getHurtSound();
         }
@@ -54,7 +54,7 @@ public class DragonSoundManager extends DragonHelper {
      */
     public SoundEvent getDeathSound() {
         if (dragon.isEgg()) {
-            return SoundEvents.entity_zombie_break_door_wood;
+            return SoundEvents.ENTITY_ZOMBIE_BREAK_DOOR_WOOD;
         } else {
             return dragon.getBreed().getDeathSound();
         }
@@ -120,10 +120,10 @@ public class DragonSoundManager extends DragonHelper {
         
         // override sound type if the top block is snowy
         SoundType soundType;
-        if (dragon.worldObj.getBlockState(entityPos.up()).getBlock() == Blocks.snow_layer) {
-            soundType = Blocks.snow_layer.getStepSound();
+        if (dragon.worldObj.getBlockState(entityPos.up()).getBlock() == Blocks.SNOW_LAYER) {
+            soundType = Blocks.SNOW_LAYER.getSoundType();
         } else {
-            soundType = block.getStepSound();
+            soundType = block.getSoundType();
         }
         
         // play stomping for bigger dragons

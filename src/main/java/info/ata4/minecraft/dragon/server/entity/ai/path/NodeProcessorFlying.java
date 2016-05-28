@@ -29,22 +29,20 @@ public class NodeProcessorFlying extends SwimNodeProcessor {
      * Returns PathPoint for given coordinates
      */
     @Override
-    //public PathPoint getPathPointToCoords(Entity entityIn, double x, double y, double target) {
-    public PathPoint func_186325_a(double x, double y, double target) {
+    public PathPoint getPathPointToCoords(double x, double y, double target) {
         return openPoint(
-            MathHelper.floor_double(x - (field_186326_b.width / 2.0)),
+            MathHelper.floor_double(x - (entity.width / 2.0)),
             MathHelper.floor_double(y + 0.5),
-            MathHelper.floor_double(target - (field_186326_b.width / 2.0))
+            MathHelper.floor_double(target - (entity.width / 2.0))
         );
     }
 
     @Override
-    //public int findPathOptions(PathPoint[] pathOptions, Entity entityIn, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
-    public int func_186320_a(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
+    public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
         int i = 0;
         
         for (EnumFacing facing : EnumFacing.values()) {
-            PathPoint point = getSafePoint(field_186326_b,
+            PathPoint point = getSafePoint(entity,
                 currentPoint.xCoord + facing.getFrontOffsetX(),
                 currentPoint.yCoord + facing.getFrontOffsetY(),
                 currentPoint.zCoord + facing.getFrontOffsetZ()
@@ -72,7 +70,7 @@ public class NodeProcessorFlying extends SwimNodeProcessor {
             for (int iy = 0; iy < entitySizeY; ++iy) {
                 for (int iz = 0; iz < entitySizeZ; ++iz) {
                     IBlockState blockState = blockaccess.getBlockState(pos.add(ix, iy, iz));
-                    if (blockState.getMaterial() != Material.air) {
+                    if (blockState.getMaterial() != Material.AIR) {
                         return null;
                     }
                 }

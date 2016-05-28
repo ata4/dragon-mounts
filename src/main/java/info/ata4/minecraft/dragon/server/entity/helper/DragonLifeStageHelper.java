@@ -86,7 +86,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      * Generates some egg shell particles and a breaking sound.
      */
     public void playEggCrackEffect() {
-        dragon.worldObj.playAuxSFX(2001, dragon.getPosition(),
+        dragon.worldObj.playEvent(2001, dragon.getPosition(),
                 Block.getIdFromBlock(BlockDragonBreedEgg.INSTANCE));
     }
     
@@ -159,10 +159,10 @@ public class DragonLifeStageHelper extends DragonHelper {
 
         float volume = 1;
         float pitch = 0.5f + (0.5f - rand.nextFloat()) * 0.1f;
-        dragon.playSound(SoundEvents.entity_endermen_teleport, volume, pitch);
+        dragon.playSound(SoundEvents.ENTITY_ENDERMEN_TELEPORT, volume, pitch);
         
         if (dragon.isSaddled()) {
-            dragon.dropItem(Items.saddle, 1);
+            dragon.dropItem(Items.SADDLE, 1);
         }
         
         dragon.entityDropItem(new ItemStack(BlockDragonBreedEgg.INSTANCE),
@@ -197,7 +197,7 @@ public class DragonLifeStageHelper extends DragonHelper {
             // play particle and sound effects when the dragon hatches
             if (prevLifeStage != null && prevLifeStage == EGG && lifeStage == HATCHLING) {
                 playEggCrackEffect();
-                dragon.playSound(SoundEvents.entity_zombie_break_door_wood, 1, 1);
+                dragon.playSound(SoundEvents.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 1, 1);
             }
         } else {
             // update AI

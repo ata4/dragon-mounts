@@ -141,8 +141,8 @@ public class EntityTameableDragon extends EntityTameable {
     protected void entityInit() {
         super.entityInit();
         
-        dataWatcher.register(DATA_FLYING, false);
-        dataWatcher.register(DATA_SADDLED, false);
+        dataManager.register(DATA_FLYING, false);
+        dataManager.register(DATA_SADDLED, false);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns true if the dragon is saddled.
      */
     public boolean isSaddled() {
-        return dataWatcher.get(DATA_SADDLED);
+        return dataManager.get(DATA_SADDLED);
     }
 
     /**
@@ -171,7 +171,7 @@ public class EntityTameableDragon extends EntityTameable {
      */
     public void setSaddled(boolean saddled) {
         L.trace("setSaddled({})", saddled);
-        dataWatcher.set(DATA_SADDLED, saddled);
+        dataManager.set(DATA_SADDLED, saddled);
     }
     
     public boolean canFly() {
@@ -183,7 +183,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns true if the entity is flying.
      */
     public boolean isFlying() {
-        return dataWatcher.get(DATA_FLYING);
+        return dataManager.get(DATA_FLYING);
     }
     
     /**
@@ -191,7 +191,7 @@ public class EntityTameableDragon extends EntityTameable {
      */
     public void setFlying(boolean flying) {
         L.trace("setFlying({})", flying);
-        dataWatcher.set(DATA_FLYING, flying);
+        dataManager.set(DATA_FLYING, flying);
     }
     
     /**
@@ -539,7 +539,7 @@ public class EntityTameableDragon extends EntityTameable {
         
         // drop saddle if equipped
         if (isSaddled()) {
-            dropItem(Items.saddle, 1);
+            dropItem(Items.SADDLE, 1);
         }
     }
     

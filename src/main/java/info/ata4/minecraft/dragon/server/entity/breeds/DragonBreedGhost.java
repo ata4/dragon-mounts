@@ -33,7 +33,7 @@ public class DragonBreedGhost extends DragonBreed {
         
         addImmunity(DamageSource.wither);
         
-        addHabitatBlock(Blocks.web);
+        addHabitatBlock(Blocks.WEB);
     }
     
     @Override
@@ -91,7 +91,7 @@ public class DragonBreedGhost extends DragonBreed {
 
     @Override
     public SoundEvent getLivingSound() {
-        return SoundEvents.entity_skeleton_ambient;
+        return SoundEvents.ENTITY_SKELETON_AMBIENT;
     }
     
     @Override

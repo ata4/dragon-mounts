@@ -35,20 +35,20 @@ public class DragonBreedForest extends DragonBreed {
     DragonBreedForest() {
         super("forest", 0x2d6e00);
         
-        addHabitatBlock(Blocks.log);
-        addHabitatBlock(Blocks.log2);
-        addHabitatBlock(Blocks.leaves);
-        addHabitatBlock(Blocks.leaves2);
-        addHabitatBlock(Blocks.yellow_flower);
-        addHabitatBlock(Blocks.red_flower);
-        addHabitatBlock(Blocks.mossy_cobblestone);
-        addHabitatBlock(Blocks.vine);
-        addHabitatBlock(Blocks.sapling);
+        addHabitatBlock(Blocks.LOG);
+        addHabitatBlock(Blocks.LOG2);
+        addHabitatBlock(Blocks.LEAVES);
+        addHabitatBlock(Blocks.LEAVES2);
+        addHabitatBlock(Blocks.YELLOW_FLOWER);
+        addHabitatBlock(Blocks.RED_FLOWER);
+        addHabitatBlock(Blocks.MOSSY_COBBLESTONE);
+        addHabitatBlock(Blocks.VINE);
+        addHabitatBlock(Blocks.SAPLING);
         
-        addHabitatBiome(Biomes.forest);
-        addHabitatBiome(Biomes.forestHills);
-        addHabitatBiome(Biomes.jungle);
-        addHabitatBiome(Biomes.jungleHills);
+        addHabitatBiome(Biomes.FOREST);
+        addHabitatBiome(Biomes.FOREST_HILLS);
+        addHabitatBiome(Biomes.JUNGLE);
+        addHabitatBiome(Biomes.JUNGLE_HILLS);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class DragonBreedForest extends DragonBreed {
                 	Block blockUnderFoot = blockStateUnderFoot.getBlock();
                 	//Block blockOnSurface = blockStateOnSurface.getBlock();
                 	
-                    if(blockUnderFoot == Blocks.grass) {
+                    if(blockUnderFoot == Blocks.GRASS) {
 
                     	EnumFlowerType flower = world.getBiomeGenForCoords(blockPosOnSurface)
                     			.pickRandomFlower(world.rand, blockPosOnSurface);
@@ -82,13 +82,13 @@ public class DragonBreedForest extends DragonBreed {
                     	if(blockFlower.canBlockStay(world, blockPosOnSurface, blockState)) {
                     		world.setBlockState(blockPosOnSurface, blockState);
                     	}
-                    } else if(blockUnderFoot == Blocks.dirt) {
+                    } else if(blockUnderFoot == Blocks.DIRT) {
                     	
                     	DirtType dirtType = blockStateUnderFoot.getValue(BlockDirt.VARIANT);
                     	if(dirtType == DirtType.PODZOL) {
                     		BlockMushroom mushroom = (BlockMushroom) (world.rand.nextBoolean()
-                    				? Blocks.red_mushroom
-                    				: Blocks.brown_mushroom);
+                    				? Blocks.RED_MUSHROOM
+                    				: Blocks.BROWN_MUSHROOM);
                     		if(mushroom.canBlockStay(world,
                     				blockPosOnSurface, mushroom.getDefaultState())) {
                     			world.setBlockState(blockPosOnSurface, mushroom.getDefaultState());

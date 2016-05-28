@@ -27,16 +27,16 @@ public class DragonBreedNether extends DragonBreed {
         addImmunity(DamageSource.onFire);
         addImmunity(DamageSource.lava);
         
-        addHabitatBlock(Blocks.netherrack);
-        addHabitatBlock(Blocks.soul_sand);
-        addHabitatBlock(Blocks.nether_brick);
-        addHabitatBlock(Blocks.nether_brick_fence);
-        addHabitatBlock(Blocks.nether_brick_stairs);
-        addHabitatBlock(Blocks.nether_wart);
-        addHabitatBlock(Blocks.glowstone);
-        addHabitatBlock(Blocks.quartz_ore);
+        addHabitatBlock(Blocks.NETHERRACK);
+        addHabitatBlock(Blocks.SOUL_SAND);
+        addHabitatBlock(Blocks.NETHER_BRICK);
+        addHabitatBlock(Blocks.NETHER_BRICK_FENCE);
+        addHabitatBlock(Blocks.NETHER_BRICK_STAIRS);
+        addHabitatBlock(Blocks.NETHER_WART);
+        addHabitatBlock(Blocks.GLOWSTONE);
+        addHabitatBlock(Blocks.QUARTZ_ORE);
         
-        addHabitatBiome(Biomes.hell);
+        addHabitatBiome(Biomes.HELL);
     }
 
     @Override

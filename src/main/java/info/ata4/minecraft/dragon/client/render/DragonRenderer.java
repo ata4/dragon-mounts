@@ -149,7 +149,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         GlStateManager.rotate(rotZ, 0, 0, 1);
         GlStateManager.disableLighting();
         
-        bindTexture(TextureMap.locationBlocksTexture);
+        bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         // prepare egg rendering
         Tessellator tessellator = Tessellator.getInstance();

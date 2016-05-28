@@ -34,10 +34,10 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
         setUnlocalizedName("dragonEgg");
         setHardness(3);
         setResistance(15);
-        setStepSound(SoundType.WOOD);
+        setSoundType(SoundType.WOOD);
         setLightLevel(0.125f);
         setDefaultState(blockState.getBaseState().withProperty(BREED, EnumDragonBreed.DEFAULT));
-        setCreativeTab(CreativeTabs.tabMisc);
+        setCreativeTab(CreativeTabs.MISC);
     }
 
     @Override

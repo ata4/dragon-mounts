@@ -24,7 +24,7 @@ import net.minecraft.world.World;
  */
 public class DragonBreedIce extends DragonBreed {
     
-    private static final Block FOOTPRINT = Blocks.snow_layer;
+    private static final Block FOOTPRINT = Blocks.SNOW_LAYER;
     private static final float FOOTPRINT_CHANCE = 0.2f;
 
     DragonBreedIce() {
@@ -32,14 +32,14 @@ public class DragonBreedIce extends DragonBreed {
         
         addImmunity(DamageSource.magic);
         
-        addHabitatBlock(Blocks.snow);
-        addHabitatBlock(Blocks.snow_layer);
-        addHabitatBlock(Blocks.ice);
+        addHabitatBlock(Blocks.SNOW);
+        addHabitatBlock(Blocks.SNOW_LAYER);
+        addHabitatBlock(Blocks.ICE);
         
-        addHabitatBiome(Biomes.frozenOcean);
-        addHabitatBiome(Biomes.frozenRiver);
-        addHabitatBiome(Biomes.iceMountains);
-        addHabitatBiome(Biomes.icePlains);
+        addHabitatBiome(Biomes.FROZEN_OCEAN);
+        addHabitatBiome(Biomes.FROZEN_RIVER);
+        addHabitatBiome(Biomes.ICE_MOUNTAINS);
+        addHabitatBiome(Biomes.ICE_PLAINS);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class DragonBreedIce extends DragonBreed {
                 double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
                 BlockPos blockPos = new BlockPos(bx, by, bz);
                 // from EntitySnowman.onLivingUpdate, with slight tweaks
-                if (world.getBlockState(blockPos).getMaterial() == Material.air
+                if (world.getBlockState(blockPos).getMaterial() == Material.AIR
                         && world.getBiomeGenForCoords(blockPos).getFloatTemperature(blockPos) <= 0.8F
                         && FOOTPRINT.canPlaceBlockAt(world, blockPos)) {
                     world.setBlockState(blockPos, FOOTPRINT.getDefaultState());

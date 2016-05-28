@@ -23,7 +23,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -178,7 +178,7 @@ public class DragonBreedHelper extends DragonHelper {
                 });
 
                 // check biome
-                BiomeGenBase biome = dragon.worldObj.getBiomeGenForCoords(eggPos);
+                Biome biome = dragon.worldObj.getBiomeGenForCoords(eggPos);
 
                 breedPoints.keySet().forEach(breed -> {
                     // check for biomes

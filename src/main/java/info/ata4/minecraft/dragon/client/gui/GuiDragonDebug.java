@@ -26,7 +26,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
@@ -314,7 +314,7 @@ public class GuiDragonDebug extends Gui implements PrivateAccessor {
         text.println("Break doors: " + (pathNavigateGround == null ? "N/A" : pathNavigateGround.getEnterDoors()));
         text.println("No path: " + nav.noPath());
 
-        PathEntity path = nav.getPath();
+        Path path = nav.getPath();
         
         if (path != null) {
             text.println("Length: " + path.getCurrentPathLength());

@@ -46,12 +46,12 @@ public class DragonEggBlockHandler {
         
         // don't interact with vanilla egg blocks if configured
         if (DragonMounts.instance.getConfig().isDisableBlockOverride() &&
-                block == Blocks.dragon_egg) {
+                block == Blocks.DRAGON_EGG) {
             return;
         }
         
         // ignore non-egg blocks
-        if (block != Blocks.dragon_egg && block != BlockDragonBreedEgg.INSTANCE) {
+        if (block != Blocks.DRAGON_EGG && block != BlockDragonBreedEgg.INSTANCE) {
             return;
         }
         

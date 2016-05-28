@@ -42,7 +42,7 @@ public class ClientProxy extends CommonProxy {
         
         // register item renderer for dragon egg block variants
         ResourceLocation eggModelItemLoc = new ResourceLocation(DragonMounts.AID, "dragon_egg");
-        Item itemBlockDragonEgg = Item.itemRegistry.getObject(eggModelItemLoc);
+        Item itemBlockDragonEgg = Item.REGISTRY.getObject(eggModelItemLoc);
         EnumDragonBreed.META_MAPPING.forEach((breed, meta) -> {
             ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.AID + ":dragon_egg", "breed=" + breed.getName());
             ModelLoader.setCustomModelResourceLocation(itemBlockDragonEgg, meta, eggModelLoc);

@@ -28,7 +28,7 @@ public class DragonInteractSaddle extends DragonInteract {
     @Override
     public boolean interact(EntityPlayer player, ItemStack item) {
         if (dragon.isServer() && dragon.isTamedFor(player) && !dragon.isSaddled() &&
-                ItemUtils.consumeEquipped(player, Items.saddle)) {
+                ItemUtils.consumeEquipped(player, Items.SADDLE)) {
             dragon.setSaddled(true);
             return true;
         }

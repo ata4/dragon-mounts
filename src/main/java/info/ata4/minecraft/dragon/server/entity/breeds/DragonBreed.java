@@ -21,7 +21,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 /**
  * Base class for dragon breeds.
@@ -34,7 +34,7 @@ public abstract class DragonBreed {
     private final int color;
     private final Set<String> immunities = new HashSet<>();
     private final Set<Block> breedBlocks = new HashSet<>();
-    private final Set<BiomeGenBase> biomes = new HashSet<>();
+    private final Set<Biome> biomes = new HashSet<>();
     protected final Random rand = new Random();
     
     DragonBreed(String skin, int color) {
@@ -96,11 +96,11 @@ public abstract class DragonBreed {
         return breedBlocks.contains(block);
     }
     
-    protected final void addHabitatBiome(BiomeGenBase biome) {
+    protected final void addHabitatBiome(Biome biome) {
         biomes.add(biome);
     }
     
-    public boolean isHabitatBiome(BiomeGenBase biome) {
+    public boolean isHabitatBiome(Biome biome) {
         return biomes.contains(biome);
     }
     
@@ -109,11 +109,11 @@ public abstract class DragonBreed {
     }
     
     public Item[] getFoodItems() {
-        return new Item[] { Items.porkchop, Items.beef, Items.chicken };
+        return new Item[] { Items.PORKCHOP, Items.BEEF, Items.CHICKEN };
     }
     
     public Item getBreedingItem() {
-        return Items.fish;
+        return Items.FISH;
     }
     
     public abstract void onEnable(EntityTameableDragon dragon);
@@ -126,34 +126,34 @@ public abstract class DragonBreed {
     
     public SoundEvent getLivingSound() {
         if (rand.nextInt(3) == 0) {
-            return SoundEvents.entity_enderdragon_growl;
+            return SoundEvents.ENTITY_ENDERDRAGON_GROWL;
         } else {
-            return DragonMountsSoundEvents.entity_dragon_mount_breathe;
+            return DragonMountsSoundEvents.ENTITY_DRAGON_MOUNT_BREATHE;
         }
     }
     
     public SoundEvent getHurtSound() {
-        return SoundEvents.entity_enderdragon_hurt;
+        return SoundEvents.ENTITY_ENDERDRAGON_HURT;
     }
     
     public SoundEvent getDeathSound() {
-        return DragonMountsSoundEvents.entity_dragon_mount_death;
+        return DragonMountsSoundEvents.ENTITY_DRAGON_MOUNT_DEATH;
     }
     
     public SoundEvent getWingsSound() {
-        return SoundEvents.entity_enderdragon_flap;
+        return SoundEvents.ENTITY_ENDERDRAGON_FLAP;
     }
     
     public SoundEvent getStepSound() {
-        return DragonMountsSoundEvents.entity_dragon_mount_step;
+        return DragonMountsSoundEvents.ENTITY_DRAGON_MOUNT_STEP;
     }
     
     public SoundEvent getEatSound() {
-        return SoundEvents.entity_generic_eat;
+        return SoundEvents.ENTITY_GENERIC_EAT;
     }
     
     public SoundEvent getAttackSound() {
-        return SoundEvents.entity_generic_eat;
+        return SoundEvents.ENTITY_GENERIC_EAT;
     }
 
     public float getSoundPitch(SoundEvent sound) {
