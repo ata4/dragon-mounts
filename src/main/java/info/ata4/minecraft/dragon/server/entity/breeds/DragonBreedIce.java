@@ -11,7 +11,6 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
@@ -24,9 +23,6 @@ import net.minecraft.world.World;
  */
 public class DragonBreedIce extends DragonBreed {
     
-    private static final Block FOOTPRINT = Blocks.snow_layer;
-    private static final float FOOTPRINT_CHANCE = 0.2f;
-
     DragonBreedIce() {
         super("ice", 0x6fc3ff);
         
@@ -41,29 +37,27 @@ public class DragonBreedIce extends DragonBreed {
         addHabitatBiome(Biomes.iceMountains);
         addHabitatBiome(Biomes.icePlains);
     }
-
+    
     @Override
-    public void onUpdate(EntityTameableDragon dragon) {
-        // place some snow footprints where the dragon walks
-        if (dragon.isAdult() && !dragon.isFlying()) {
-            World world = dragon.worldObj;
-            for (int i = 0; i < 4; i++) {
-                if (world.rand.nextFloat() < FOOTPRINT_CHANCE) {
-                    continue;
-                }
-                
-                double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
-                double by = dragon.posY + 0.5;
-                double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
-                BlockPos blockPos = new BlockPos(bx, by, bz);
-                // from EntitySnowman.onLivingUpdate, with slight tweaks
-                if (world.getBlockState(blockPos).getMaterial() == Material.air
-                        && world.getBiomeGenForCoords(blockPos).getFloatTemperature(blockPos) <= 0.8F
-                        && FOOTPRINT.canPlaceBlockAt(world, blockPos)) {
-                    world.setBlockState(blockPos, FOOTPRINT.getDefaultState());
-                }
-            }
+    public float getFootprintChance() {
+        return 0.2f;
+    }
+    
+    @Override
+    public void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
+        // place snow layer blocks, but only if the biome is cold enough
+        World world = dragon.worldObj;
+        
+        if (world.getBiomeGenForCoords(blockPos).getFloatTemperature(blockPos) > 0.8f) {
+            return;
         }
+        
+        Block footprint = Blocks.snow_layer;
+        if (!footprint.canPlaceBlockAt(world, blockPos)) {
+            return;
+        }
+        
+        world.setBlockState(blockPos, footprint.getDefaultState());
     }
 
     @Override

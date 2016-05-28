@@ -50,10 +50,6 @@ public class DragonBreedNether extends DragonBreed {
     }
 
     @Override
-    public void onUpdate(EntityTameableDragon dragon) {
-    }
-
-    @Override
     public void onDeath(EntityTameableDragon dragon) {
     }
 }
