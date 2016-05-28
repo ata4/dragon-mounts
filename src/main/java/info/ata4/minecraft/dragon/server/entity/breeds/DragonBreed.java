@@ -21,6 +21,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
 /**
@@ -116,11 +118,42 @@ public abstract class DragonBreed {
         return Items.FISH;
     }
     
+    public void onUpdate(EntityTameableDragon dragon) {
+        // footprint loop, from EntitySnowman.onLivingUpdate with slight tweaks
+        float footprintChance = getFootprintChance();
+        if (footprintChance > 0 && dragon.isAdult() && !dragon.isFlying()) {
+            World world = dragon.worldObj;
+            for (int i = 0; i < 4; i++) {
+                if (world.rand.nextFloat() < footprintChance) {
+                    continue;
+                }
+                
+                // get footprint position
+                double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
+                double by = dragon.posY + 0.5;
+                double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
+                BlockPos pos = new BlockPos(bx, by, bz);
+                
+                // footprints can only be placed on empty space
+                if (world.isAirBlock(pos)) {
+                    continue;
+                }
+
+                placeFootprintBlock(dragon, pos);
+            }
+        }
+    }
+    
+    public void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
+    }
+    
+    public float getFootprintChance() {
+        return 0;
+    }
+    
     public abstract void onEnable(EntityTameableDragon dragon);
     
     public abstract void onDisable(EntityTameableDragon dragon);
-    
-    public abstract void onUpdate(EntityTameableDragon dragon);
     
     public abstract void onDeath(EntityTameableDragon dragon);
     
