@@ -39,12 +39,12 @@ public class DragonBreedIce extends DragonBreed {
     }
     
     @Override
-    public float getFootprintChance() {
-        return 0.2f;
+    protected float getFootprintChance() {
+        return 0.1f;
     }
     
     @Override
-    public void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
+    protected void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
         // place snow layer blocks, but only if the biome is cold enough
         World world = dragon.worldObj;
         

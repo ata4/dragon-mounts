@@ -50,7 +50,7 @@ public class DragonBreedForest extends DragonBreed {
     }
     
     @Override
-    public void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
+    protected void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
         World world = dragon.worldObj;
         
         // grow mushrooms and plants
@@ -109,7 +109,7 @@ public class DragonBreedForest extends DragonBreed {
     }
     
     @Override
-    public float getFootprintChance() {
+    protected float getFootprintChance() {
         return 0.05f;
     }
 

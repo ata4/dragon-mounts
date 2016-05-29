@@ -120,35 +120,53 @@ public abstract class DragonBreed {
     }
     
     public void onUpdate(EntityTameableDragon dragon) {
-        // footprint loop, from EntitySnowman.onLivingUpdate with slight tweaks
+        placeFootprintBlocks(dragon);
+    }
+    
+    protected void placeFootprintBlocks(EntityTameableDragon dragon) {
+        // only apply on server
+        if (!dragon.isServer()) {
+            return;
+        }
+        
+        // only apply on adult dragons that don't fly
+        if (!dragon.isAdult() || dragon.isFlying()) {
+            return;
+        }
+        
+        // only apply if footprints are enabled
         float footprintChance = getFootprintChance();
-        if (footprintChance > 0 && dragon.isAdult() && !dragon.isFlying()) {
-            World world = dragon.worldObj;
-            for (int i = 0; i < 4; i++) {
-                if (world.rand.nextFloat() < footprintChance) {
-                    continue;
-                }
-                
-                // get footprint position
-                double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
-                double by = dragon.posY + 0.5;
-                double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
-                BlockPos pos = new BlockPos(bx, by, bz);
-                
-                // footprints can only be placed on empty space
-                if (world.isAirBlock(pos)) {
-                    continue;
-                }
-
-                placeFootprintBlock(dragon, pos);
+        if (footprintChance == 0) {
+            return;
+        }
+        
+        // footprint loop, from EntitySnowman.onLivingUpdate with slight tweaks
+        World world = dragon.worldObj;
+        for (int i = 0; i < 4; i++) {
+            // place only if randomly selected
+            if (world.rand.nextFloat() > footprintChance) {
+                continue;
             }
+
+            // get footprint position
+            double bx = dragon.posX + (i % 2 * 2 - 1) * 0.25;
+            double by = dragon.posY + 0.5;
+            double bz = dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25;
+            BlockPos pos = new BlockPos(bx, by, bz);
+
+            // footprints can only be placed on empty space
+            if (world.isAirBlock(pos)) {
+                continue;
+            }
+
+            placeFootprintBlock(dragon, pos);
         }
     }
     
-    public void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
+    protected void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
     }
     
-    public float getFootprintChance() {
+    protected float getFootprintChance() {
         return 0;
     }
     
