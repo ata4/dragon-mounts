@@ -46,7 +46,7 @@ minecraft {
     mappings = "stable_20"
 }
 
-version =  "${getGitTag()}-${minecraft.version}"
+version = getGitTag()
 group = "info.ata4.minecraft.dragon"
 archivesBaseName = "DragonMounts"
 
