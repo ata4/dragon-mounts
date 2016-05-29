@@ -49,10 +49,6 @@ public class DragonBreedAir extends DragonBreed {
     }
 
     @Override
-    public void onUpdate(EntityTameableDragon dragon) {
-    }
-
-    @Override
     public void onDeath(EntityTameableDragon dragon) {
     }
 }

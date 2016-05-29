@@ -11,16 +11,15 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockDirt.DirtType;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockFlower.EnumFlowerType;
-import net.minecraft.block.BlockMushroom;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 /**
@@ -29,8 +28,7 @@ import net.minecraft.world.World;
  */
 public class DragonBreedForest extends DragonBreed {
 	
-    //private static final Block FOOTPRINT = Blocks.grass;
-    private static final float FOOTPRINT_CHANCE = 0.05f;
+    private static final int GRASS_LIGHT_THRESHOLD = 4;
     
     DragonBreedForest() {
         super("forest", 0x2d6e00);
@@ -50,57 +48,71 @@ public class DragonBreedForest extends DragonBreed {
         addHabitatBiome(Biomes.jungle);
         addHabitatBiome(Biomes.jungleHills);
     }
-
+    
     @Override
-    public void onUpdate(EntityTameableDragon dragon) {
-        // grow grass on dirt blocks as footprints
-        if (dragon.isAdult() && !dragon.isFlying()) {
-            World world = dragon.worldObj;
-            for (int i = 0; i < 4; i++) {
-
-                if(world.rand.nextFloat() < FOOTPRINT_CHANCE) {
-                int bx = MathHelper.floor_double(dragon.posX + (i % 2 * 2 - 1) * 0.25);
-                int by = MathHelper.floor_double(dragon.posY) - 1;
-                int bz = MathHelper.floor_double(dragon.posZ + (i / 2 % 2 * 2 - 1) * 0.25);
-                BlockPos blockPosUnderFoot = new BlockPos(bx, by, bz);
-                BlockPos blockPosOnSurface = blockPosUnderFoot.up();
-                IBlockState blockStateUnderFoot = world.getBlockState(blockPosUnderFoot);
-                //IBlockState blockStateOnSurface = world.getBlockState(blockPosOnSurface);
-
-                if(world.isAirBlock(blockPosOnSurface)) {
-                	
-                	Block blockUnderFoot = blockStateUnderFoot.getBlock();
-                	//Block blockOnSurface = blockStateOnSurface.getBlock();
-                	
-                    if(blockUnderFoot == Blocks.grass) {
-
-                    	EnumFlowerType flower = world.getBiomeGenForCoords(blockPosOnSurface)
-                    			.pickRandomFlower(world.rand, blockPosOnSurface);
-                    	BlockFlower blockFlower = flower.getBlockType().getBlock();
-                    	IBlockState blockState = blockFlower.getDefaultState()
-                    			.withProperty(blockFlower.getTypeProperty(), flower);
-                    	if(blockFlower.canBlockStay(world, blockPosOnSurface, blockState)) {
-                    		world.setBlockState(blockPosOnSurface, blockState);
-                    	}
-                    } else if(blockUnderFoot == Blocks.dirt) {
-                    	
-                    	DirtType dirtType = blockStateUnderFoot.getValue(BlockDirt.VARIANT);
-                    	if(dirtType == DirtType.PODZOL) {
-                    		BlockMushroom mushroom = (BlockMushroom) (world.rand.nextBoolean()
-                    				? Blocks.red_mushroom
-                    				: Blocks.brown_mushroom);
-                    		if(mushroom.canBlockStay(world,
-                    				blockPosOnSurface, mushroom.getDefaultState())) {
-                    			world.setBlockState(blockPosOnSurface, mushroom.getDefaultState());
-                    			}
-                    		}
-                    	}
-                	}
-                }
+    public void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
+        World world = dragon.worldObj;
+        
+        // grow mushrooms and plants
+        BlockPos blockPosGround = blockPos.down();
+        BlockPos blockPosSurface = blockPos;
+        
+        IBlockState blockStateUnderFoot = world.getBlockState(blockPosGround);
+        Block blockUnderFoot = blockStateUnderFoot.getBlock();
+        
+        boolean plantFlower = false;
+        boolean plantMushroom = false;
+        
+        if (blockUnderFoot == Blocks.grass) {
+            // plant flowers on grass
+            plantFlower = true;
+        } else if (blockUnderFoot == Blocks.dirt) {
+            DirtType dirtType = blockStateUnderFoot.getValue(BlockDirt.VARIANT);
+            if (dirtType != DirtType.DIRT) {
+                // plant mushrooms on special dirt types
+                plantMushroom = true;
+            } else if (world.getLightFromNeighbors(blockPosSurface) >= GRASS_LIGHT_THRESHOLD) {
+                // turn normal dirt green if there's enough light
+                world.setBlockState(blockPosGround, Blocks.grass.getDefaultState());
+                // also add flowers randomly
+                plantFlower = world.rand.nextBoolean();
             }
+        } else if (blockUnderFoot == Blocks.mycelium) {
+            // always plant mushrooms on mycelium
+            plantMushroom = true;
+        }
+        
+        // pick plant
+        BlockBush blockPlant = null;
+        IBlockState statePlant = null;
+        
+        if (plantFlower) {
+            EnumFlowerType flower = world.getBiomeGenForCoords(blockPosSurface)
+                    .pickRandomFlower(world.rand, blockPosSurface);
+            BlockFlower blockFlower = flower.getBlockType().getBlock();
+            
+            blockPlant = blockFlower;
+            statePlant = blockFlower.getDefaultState()
+                    .withProperty(blockFlower.getTypeProperty(), flower);
+        }
+        
+        if (plantMushroom) {
+            blockPlant = (world.rand.nextBoolean() ?
+                    Blocks.red_mushroom : Blocks.brown_mushroom);
+            statePlant = blockPlant.getDefaultState();
+        }
+        
+        // place plant if defined        
+        if (blockPlant != null && blockPlant.canBlockStay(world, blockPosSurface, statePlant)) {
+            world.setBlockState(blockPosSurface, statePlant);
         }
     }
-        
+    
+    @Override
+    public float getFootprintChance() {
+        return 0.05f;
+    }
+
     @Override
     public void onEnable(EntityTameableDragon dragon) {
     }
