@@ -55,7 +55,7 @@ public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
         // don't catch if owner has a working Elytra equipped
         // note: isBroken() is misleading, it actually checks if the items is usable
         ItemStack itemStack = owner.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-        if (itemStack.getItem() == Items.elytra && ItemElytra.isBroken(itemStack)) {
+        if (itemStack != null && itemStack.getItem() == Items.elytra && ItemElytra.isBroken(itemStack)) {
             return false;
         }
         
