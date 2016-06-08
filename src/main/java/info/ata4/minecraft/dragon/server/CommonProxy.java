@@ -38,7 +38,8 @@ public class CommonProxy {
     private final boolean ENTITY_SEND_VELO_UPDATES = true;
     
     public void onPreInit(FMLPreInitializationEvent event) {
-        GameRegistry.registerBlock(BlockDragonBreedEgg.INSTANCE, ItemDragonBreedEgg.class, "dragon_egg");
+        GameRegistry.register(BlockDragonBreedEgg.INSTANCE.setRegistryName("dragon_egg"));
+        GameRegistry.register(ItemDragonBreedEgg.INSTANCE.setRegistryName("dragon_egg"));
     }
     
     public void onInit(FMLInitializationEvent evt) {
