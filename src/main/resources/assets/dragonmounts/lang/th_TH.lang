@@ -1,0 +1,55 @@
+entity.DragonMounts.DragonMount.air.name=มังกรสวรรค์
+entity.DragonMounts.DragonMount.end.name=มังกรเอนเดอร์
+entity.DragonMounts.DragonMount.fire.name=มังกรไฟ
+entity.DragonMounts.DragonMount.ghost.name=มังกรผี
+entity.DragonMounts.DragonMount.ice.name=มังกรน้ำแข็ง
+entity.DragonMounts.DragonMount.name=มังกรเอนเดอร์
+entity.DragonMounts.DragonMount.nether.name=มังกรนรก
+entity.DragonMounts.DragonMount.water.name=มังกรน้ำ
+entity.DragonMounts.DragonMount.forest.name=มังกรป่าไม้
+
+commands.dragon.nodragons=ไม่มีมังกรอยู่รอบๆ
+commands.dragon.canttame=คุณฝึกมังกรไม่ได้
+
+item.dragonEgg.name=ไข่  %s
+
+dragon.lifeStage.egg=ไข่
+dragon.lifeStage.hatchling=ฝักตัว
+dragon.lifeStage.juvenile=วัยเด็ก
+dragon.lifeStage.adult=โตเด็มวัย
+dragon.owned=มังกรนี้ไม่ได้ทำตามคำสั่งของคุณ
+dragon.mountNotice=กด %s และ %s เพื่อบินขึ้น และลง
+
+key.categories.dragonmount=ควบคุมมังกร
+key.dragon.flyUp=บินขึ้น
+key.dragon.flyDown=บินลง
+
+attribute.name.generic.movementSpeedAir=ความเร็ว (Air)
+
+gui.config.maintitle=ตั้งค่า DragonMounts
+
+gui.config.category.options=ตัวเลือก
+gui.config.category.options.tooltip=ตัวเลือก
+
+gui.config.category.debug=ตั้งค่า Debug
+gui.config.category.debug.tooltip=ตั้งค่า Debug
+
+gui.config.options.eggs_in_chest=ไข่ในหีบ
+gui.config.options.eggs_in_chest.tooltip=เสกไข่มังกรในหีบที่สร้าง
+
+gui.config.options.orb_target_auto_lock=ล็อคเป้าหมายอัตโนมัติ
+gui.config.options.orb_target_auto_lock.tooltip=คลิกที่มังกรเพื่อล็อคเป้าหมาย
+
+gui.config.options.orb_highlight_target=ไฮไลท์เป้าหมาย
+gui.config.options.orb_highlight_target.tooltip=มังกรจะแสดงไฮไลท์
+
+gui.config.options.orb_holder_immune=พลังคุ้มกันของผู้ครองลูกแก้ว
+gui.config.options.orb_holder_immune.tooltip=ผู้ที่ครอบครองแก้วจะไม่ได้รับผลจาก dragon breath
+
+gui.config.debug.dragon_entity_id=EntityID
+gui.config.debug.dragon_entity_id.tooltip=Overrides the entity ID for dragons to fix problems with manual IDs from other mods.  -1 = auto.
+
+gui.config.debug.debug=Debug Mode
+gui.config.debug.debug.tooltip=Debug mode. Unless you're a developer or are told to activate it, you don't want to set this to true.
+
+
