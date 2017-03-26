@@ -178,7 +178,7 @@ public class DragonBreedHelper extends DragonHelper {
                 });
 
                 // check biome
-                Biome biome = dragon.worldObj.getBiome(eggPos);
+                Biome biome = dragon.worldObj.getBiomeGenForCoords(eggPos);
 
                 breedPoints.keySet().forEach(breed -> {
                     // check for biomes

@@ -87,7 +87,7 @@ public class DragonBreedForest extends DragonBreed {
         IBlockState statePlant = null;
         
         if (plantFlower) {
-            EnumFlowerType flower = world.getBiome(blockPosSurface)
+            EnumFlowerType flower = world.getBiomeGenForCoords(blockPosSurface)
                     .pickRandomFlower(world.rand, blockPosSurface);
             BlockFlower blockFlower = flower.getBlockType().getBlock();
             
