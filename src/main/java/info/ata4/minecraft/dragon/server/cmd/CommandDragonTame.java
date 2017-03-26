@@ -22,13 +22,13 @@ import net.minecraft.server.MinecraftServer;
 public class CommandDragonTame extends CommandBase implements IDragonModifier {
     
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "tame";
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return String.format("%s [username]", getCommandName());
+    public String getUsage(ICommandSender sender) {
+        return String.format("%s [username]", getName());
     }
 
     @Override

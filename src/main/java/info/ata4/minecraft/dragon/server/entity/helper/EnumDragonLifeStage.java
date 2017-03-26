@@ -51,7 +51,7 @@ public enum EnumDragonLifeStage {
     }
 
     public static int clampTickCount(int ticksSinceCreation) {
-        return MathHelper.clamp_int(ticksSinceCreation, 0, VALUES.length * TICKS_PER_STAGE);
+        return MathHelper.clamp(ticksSinceCreation, 0, VALUES.length * TICKS_PER_STAGE);
     }
     
     public final float scale;

@@ -45,14 +45,14 @@ public class CommandDragonEnumSetter<E extends Enum<E>> extends CommandBaseDrago
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return String.format("%s <%s>", getCommandName(), StringUtils.join(getEnumNames(), '|'));
+    public String getUsage(ICommandSender sender) {
+        return String.format("%s <%s>", getName(), StringUtils.join(getEnumNames(), '|'));
     }
     
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 1) {
-            throw new WrongUsageException(getCommandUsage(sender));
+            throw new WrongUsageException(getUsage(sender));
         }
 
         String enumName = args[0].toUpperCase();
@@ -66,7 +66,7 @@ public class CommandDragonEnumSetter<E extends Enum<E>> extends CommandBaseDrago
     }
     
     @Override
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
         return CommandBase.getListOfStringsMatchingLastWord(args, getEnumNames());
     }
 }

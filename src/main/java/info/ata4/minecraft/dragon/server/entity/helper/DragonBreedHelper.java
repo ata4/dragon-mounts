@@ -131,9 +131,9 @@ public class DragonBreedHelper extends DragonHelper {
         newBreed.onEnable(dragon);
         
         // check for fire immunity and disable fire particles
-        dragon.setImmuneToFire(newBreed.isImmuneToDamage(DamageSource.inFire)
-                || newBreed.isImmuneToDamage(DamageSource.onFire)
-                || newBreed.isImmuneToDamage(DamageSource.lava));
+        dragon.setImmuneToFire(newBreed.isImmuneToDamage(DamageSource.IN_FIRE)
+                || newBreed.isImmuneToDamage(DamageSource.ON_FIRE)
+                || newBreed.isImmuneToDamage(DamageSource.LAVA));
         
         // update breed name
         dataWatcher.set(dataParam, newType.getName());
@@ -157,7 +157,7 @@ public class DragonBreedHelper extends DragonHelper {
                     double py = dragon.posY + (rand.nextDouble() - 0.5);
                     double pz = dragon.posZ + (rand.nextDouble() - 0.5);
                     DragonBreed current = currentType.getBreed();
-                    dragon.worldObj.spawnParticle(EnumParticleTypes.REDSTONE, px, py + 1, pz,
+                    dragon.world.spawnParticle(EnumParticleTypes.REDSTONE, px, py + 1, pz,
                             current.getColorR(), current.getColorG(), current.getColorB());
                 }
             }
@@ -171,14 +171,14 @@ public class DragonBreedHelper extends DragonHelper {
                 BlockPos eggPosTo = eggPos.add(-BLOCK_RANGE, -BLOCK_RANGE, -BLOCK_RANGE);
                 
                 BlockPos.getAllInBoxMutable(eggPosFrom, eggPosTo).forEach(blockPos -> {
-                    Block block = dragon.worldObj.getBlockState(blockPos).getBlock();
+                    Block block = dragon.world.getBlockState(blockPos).getBlock();
                     breedPoints.entrySet().stream()
                         .filter(breed -> (breed.getKey().getBreed().isHabitatBlock(block)))
                         .forEach(breed -> breed.getValue().addAndGet(POINTS_BLOCK));
                 });
 
                 // check biome
-                Biome biome = dragon.worldObj.getBiomeGenForCoords(eggPos);
+                Biome biome = dragon.world.getBiome(eggPos);
 
                 breedPoints.keySet().forEach(breed -> {
                     // check for biomes

@@ -74,7 +74,7 @@ public class DragonEggBlockHandler {
                 dragon.getBreedHelper().setBreedType(breed);
             }
             
-            world.spawnEntityInWorld(dragon);
+            world.spawnEntity(dragon);
         }
     }
 }

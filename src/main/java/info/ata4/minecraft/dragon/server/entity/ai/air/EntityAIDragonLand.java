@@ -35,7 +35,7 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
         landingPos = dragon.getPosition();
         
         // add some variance
-        int followRange = MathHelper.floor_double(getFollowRange());
+        int followRange = MathHelper.floor(getFollowRange());
         int ox = followRange - random.nextInt(followRange) * 2;
         int oz = followRange - random.nextInt(followRange) * 2;
         landingPos = landingPos.add(ox, 0, oz);

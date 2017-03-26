@@ -51,7 +51,7 @@ public class DragonBreedForest extends DragonBreed {
     
     @Override
     protected void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
-        World world = dragon.worldObj;
+        World world = dragon.world;
         
         // grow mushrooms and plants
         BlockPos blockPosGround = blockPos.down();
@@ -87,7 +87,7 @@ public class DragonBreedForest extends DragonBreed {
         IBlockState statePlant = null;
         
         if (plantFlower) {
-            EnumFlowerType flower = world.getBiomeGenForCoords(blockPosSurface)
+            EnumFlowerType flower = world.getBiome(blockPosSurface)
                     .pickRandomFlower(world.rand, blockPosSurface);
             BlockFlower blockFlower = flower.getBlockType().getBlock();
             

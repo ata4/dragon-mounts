@@ -10,6 +10,7 @@
 package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import net.minecraft.entity.MoverType;
 import static net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.util.math.Vec3d;
@@ -71,6 +72,6 @@ public class DragonMoveHelper extends EntityMoveHelper {
         }
         
         // apply movement
-        dragon.moveEntity(dragon.motionX, dragon.motionY, dragon.motionZ);
+        dragon.move(MoverType.SELF, dragon.motionX, dragon.motionY, dragon.motionZ);
     }
 }

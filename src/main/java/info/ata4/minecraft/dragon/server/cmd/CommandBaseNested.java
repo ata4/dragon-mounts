@@ -31,20 +31,20 @@ public abstract class CommandBaseNested extends CommandBase {
     private final Map<String, CommandBase> commands = new LinkedHashMap<>();
     
     protected final void addCommand(CommandBase cmd) {
-        commands.put(cmd.getCommandName().toLowerCase(), cmd);
+        commands.put(cmd.getName().toLowerCase(), cmd);
     }
     
     protected List<String> getCommandNames() {
-        return commands.values().stream().map(cmd -> cmd.getCommandName()).collect(Collectors.toList());
+        return commands.values().stream().map(cmd -> cmd.getName()).collect(Collectors.toList());
     }
     
     @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return String.format("%s <%s>", getCommandName(), StringUtils.join(getCommandNames(), '|'));
+    public String getUsage(ICommandSender sender) {
+        return String.format("%s <%s>", getName(), StringUtils.join(getCommandNames(), '|'));
     }
     
     @Override
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 0 || args[0].isEmpty()) {
             return getCommandNames();
         }
@@ -59,18 +59,18 @@ public abstract class CommandBaseNested extends CommandBase {
         }
         
         String[] argsSub = Arrays.copyOfRange(args, 1, args.length);
-        return commands.get(cmd).getTabCompletionOptions(server, sender, argsSub, pos);
+        return commands.get(cmd).getTabCompletions(server, sender, argsSub, pos);
     }
     
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length == 0 || args[0].isEmpty()) {
-            throw new WrongUsageException(getCommandUsage(sender));
+            throw new WrongUsageException(getUsage(sender));
         }
         
         String cmd = args[0].toLowerCase();
         if (!commands.containsKey(cmd)) {
-            throw new WrongUsageException(getCommandUsage(sender));
+            throw new WrongUsageException(getUsage(sender));
         }
         
         String[] argsSub = Arrays.copyOfRange(args, 1, args.length);

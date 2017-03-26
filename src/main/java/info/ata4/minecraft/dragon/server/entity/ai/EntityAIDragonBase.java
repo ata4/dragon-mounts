@@ -28,7 +28,7 @@ public abstract class EntityAIDragonBase extends EntityAIBase {
 
     public EntityAIDragonBase(EntityTameableDragon dragon) {
         this.dragon = dragon;
-        this.world = dragon.worldObj;
+        this.world = dragon.world;
         this.random = dragon.getRNG();
     }
     

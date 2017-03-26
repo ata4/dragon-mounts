@@ -198,7 +198,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns the distance to the ground while the entity is flying.
      */
     public double getAltitude() {
-        BlockPos groundPos = worldObj.getHeight(getPosition());
+        BlockPos groundPos = world.getHeight(getPosition());
         return posY - groundPos.getY();
     }
     
@@ -280,9 +280,9 @@ public class EntityTameableDragon extends EntityTameable {
                 
                 // update pathfinding method
                 if (flying) {
-                    navigator = new PathNavigateFlying(this, worldObj);
+                    navigator = new PathNavigateFlying(this, world);
                 } else {
-                    navigator = new PathNavigateGround(this, worldObj);
+                    navigator = new PathNavigateGround(this, world);
                 }
                 
                 // tasks need to be updated after switching modes
@@ -432,18 +432,18 @@ public class EntityTameableDragon extends EntityTameable {
      * Called when a player interacts with a mob. e.g. gets milk from a cow, gets into the saddle on a pig.
      */
     @Override
-    public boolean processInteract(EntityPlayer player, EnumHand hand, ItemStack item) {
+    public boolean processInteract(EntityPlayer player, EnumHand hand) {
         // don't interact with eggs!
         if (isEgg()) {
             return false;
         }
         
         // inherited interaction
-        if (super.processInteract(player, hand, item)) {
+        if (super.processInteract(player, hand)) {
             return true;
         }
         
-        return getInteractHelper().interact(player, item);
+        return getInteractHelper().interact(player, player.getHeldItem(hand));
     }
     
     public void tamedFor(EntityPlayer player, boolean successful) {       
@@ -453,10 +453,10 @@ public class EntityTameableDragon extends EntityTameable {
             setAttackTarget(null);
             setOwnerId(player.getUniqueID());
             playTameEffect(true);
-            worldObj.setEntityState(this, (byte) 7);
+            world.setEntityState(this, (byte) 7);
         } else {
             playTameEffect(false);
-            worldObj.setEntityState(this, (byte) 6);
+            world.setEntityState(this, (byte) 6);
         }
     }
     
@@ -562,8 +562,8 @@ public class EntityTameableDragon extends EntityTameable {
         playSound(getSoundManager().getAttackSound(), 1, 0.7f);
 
         // play attack animation
-        if (worldObj instanceof WorldServer) {
-            ((WorldServer) worldObj).getEntityTracker().sendToAllTrackingEntity(
+        if (world instanceof WorldServer) {
+            ((WorldServer) world).getEntityTracker().sendToTracking(
                     this, new SPacketAnimation(this, 0));
         }
     }
@@ -588,7 +588,7 @@ public class EntityTameableDragon extends EntityTameable {
      */
     @Override
     public boolean canRenderOnFire() {
-        return super.canRenderOnFire() && !getBreed().isImmuneToDamage(DamageSource.inFire);
+        return super.canRenderOnFire() && !getBreed().isImmuneToDamage(DamageSource.IN_FIRE);
     }
     
     /**
@@ -867,7 +867,7 @@ public class EntityTameableDragon extends EntityTameable {
      * @return true if the entity runs on a client or false if it runs on a server
      */
     public final boolean isClient() {
-        return worldObj.isRemote;
+        return world.isRemote;
     }
     
     /**
@@ -876,6 +876,6 @@ public class EntityTameableDragon extends EntityTameable {
      * @return true if the entity runs on a server or false if it runs on a client
      */
     public final boolean isServer() {
-        return !worldObj.isRemote;
+        return !world.isRemote;
     }
 }

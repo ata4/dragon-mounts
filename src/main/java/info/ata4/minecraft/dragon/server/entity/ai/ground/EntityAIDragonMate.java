@@ -114,7 +114,7 @@ public class EntityAIDragonMate extends EntityAIDragonBase {
             dragonBaby.setLocationAndAngles(dragon.posX, dragon.posY, dragon.posZ, 0, 0);
             dragonBaby.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
             
-            world.spawnEntityInWorld(dragonBaby);
+            world.spawnEntity(dragonBaby);
 
             // TODO: particles for the clients?
         }

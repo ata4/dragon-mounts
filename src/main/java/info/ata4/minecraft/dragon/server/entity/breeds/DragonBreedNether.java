@@ -23,9 +23,9 @@ public class DragonBreedNether extends DragonBreed {
     DragonBreedNether() {
         super("nether", 0x793838);
         
-        addImmunity(DamageSource.inFire);
-        addImmunity(DamageSource.onFire);
-        addImmunity(DamageSource.lava);
+        addImmunity(DamageSource.IN_FIRE);
+        addImmunity(DamageSource.ON_FIRE);
+        addImmunity(DamageSource.LAVA);
         
         addHabitatBlock(Blocks.NETHERRACK);
         addHabitatBlock(Blocks.SOUL_SAND);

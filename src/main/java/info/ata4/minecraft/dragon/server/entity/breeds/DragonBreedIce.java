@@ -26,7 +26,7 @@ public class DragonBreedIce extends DragonBreed {
     DragonBreedIce() {
         super("ice", 0x6fc3ff);
         
-        addImmunity(DamageSource.magic);
+        addImmunity(DamageSource.MAGIC);
         
         addHabitatBlock(Blocks.SNOW);
         addHabitatBlock(Blocks.SNOW_LAYER);
@@ -46,9 +46,9 @@ public class DragonBreedIce extends DragonBreed {
     @Override
     protected void placeFootprintBlock(EntityTameableDragon dragon, BlockPos blockPos) {
         // place snow layer blocks, but only if the biome is cold enough
-        World world = dragon.worldObj;
+        World world = dragon.world;
         
-        if (world.getBiomeGenForCoords(blockPos).getFloatTemperature(blockPos) > 0.8f) {
+        if (world.getBiome(blockPos).getFloatTemperature(blockPos) > 0.8f) {
             return;
         }
         

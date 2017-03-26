@@ -86,7 +86,7 @@ public class DragonLifeStageHelper extends DragonHelper {
      * Generates some egg shell particles and a breaking sound.
      */
     public void playEggCrackEffect() {
-        dragon.worldObj.playEvent(2001, dragon.getPosition(),
+        dragon.world.playEvent(2001, dragon.getPosition(),
                 Block.getIdFromBlock(BlockDragonBreedEgg.INSTANCE));
     }
     
@@ -280,7 +280,7 @@ public class DragonLifeStageHelper extends DragonHelper {
         double ox = (rand.nextDouble() - 0.5) * 2;
         double oy = (rand.nextDouble() - 0.5) * 2;
         double oz = (rand.nextDouble() - 0.5) * 2;
-        dragon.worldObj.spawnParticle(EnumParticleTypes.PORTAL, px, py, pz, ox, oy, oz);
+        dragon.world.spawnParticle(EnumParticleTypes.PORTAL, px, py, pz, ox, oy, oz);
     }
 
     private void updateScale() {

@@ -95,7 +95,7 @@ public class CommandDragonDebug extends CommandBaseNested implements IDragonModi
     }
 
     @Override
-    public String getCommandName() {
+    public String getName() {
         return "debug";
     }
 }

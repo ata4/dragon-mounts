@@ -170,7 +170,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
         IBakedModel bakedModel = brd.getModelForState(iblockstate);
         
         // render egg
-        brd.getBlockModelRenderer().renderModel(dragon.worldObj, bakedModel,
+        brd.getBlockModelRenderer().renderModel(dragon.world, bakedModel,
                 iblockstate, blockpos, vb, false);
         vb.setTranslation(0, 0, 0);
         
@@ -186,7 +186,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     protected void rotateCorpse(EntityTameableDragon dragon, float par2, float par3, float par4) {
         GlStateManager.rotate(180 - par3, 0, 1, 0);
     }
-
+    
     /**
      * Allows the render to do any OpenGL state modifications necessary before
      * the model is rendered. Args: entityLiving, partialTickTime

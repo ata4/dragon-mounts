@@ -120,7 +120,7 @@ public class DragonSoundManager extends DragonHelper {
         
         // override sound type if the top block is snowy
         SoundType soundType;
-        if (dragon.worldObj.getBlockState(entityPos.up()).getBlock() == Blocks.SNOW_LAYER) {
+        if (dragon.world.getBlockState(entityPos.up()).getBlock() == Blocks.SNOW_LAYER) {
             soundType = Blocks.SNOW_LAYER.getSoundType();
         } else {
             soundType = block.getSoundType();
@@ -146,10 +146,10 @@ public class DragonSoundManager extends DragonHelper {
         pitch *= getPitch(sound);
 
         if (local) {
-            dragon.worldObj.playSound(dragon.posX, dragon.posY, dragon.posZ,
+            dragon.world.playSound(dragon.posX, dragon.posY, dragon.posZ,
                     sound, dragon.getSoundCategory(), volume, pitch, false);
         } else {
-            dragon.worldObj.playSound(null, dragon.posX, dragon.posY, dragon.posZ,
+            dragon.world.playSound(null, dragon.posX, dragon.posY, dragon.posZ,
                     sound, dragon.getSoundCategory(), volume, pitch);
         }
     }

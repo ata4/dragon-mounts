@@ -56,7 +56,7 @@ public class DragonParticleHelper extends DragonHelper {
         double y = dragon.posY + (rand.nextDouble() - 0.5) * dragon.height * s;
         double z = dragon.posZ + (rand.nextDouble() - 0.5) * dragon.width * s;
 
-        dragon.worldObj.spawnParticle(type, x, y, z, ox, oy, oz);
+        dragon.world.spawnParticle(type, x, y, z, ox, oy, oz);
     }
     
     public void spawnBodyParticles(EnumParticleTypes type, int baseAmount) {

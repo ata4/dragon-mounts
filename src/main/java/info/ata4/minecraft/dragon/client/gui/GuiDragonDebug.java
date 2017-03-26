@@ -110,8 +110,8 @@ public class GuiDragonDebug extends Gui implements PrivateAccessor {
     
     private void getClientDragon() {
         // always return currently ridden dragon first
-        if (mc.thePlayer.getRidingEntity() instanceof EntityTameableDragon) {
-            dragonClient = (EntityTameableDragon) mc.thePlayer.getRidingEntity();
+        if (mc.player.getRidingEntity() instanceof EntityTameableDragon) {
+            dragonClient = (EntityTameableDragon) mc.player.getRidingEntity();
             return;
         }
         
@@ -149,7 +149,7 @@ public class GuiDragonDebug extends Gui implements PrivateAccessor {
         
         MinecraftServer mcs = mc.getIntegratedServer();
         
-        for (WorldServer ws : mcs.worldServers) {
+        for (WorldServer ws : mcs.worlds) {
             Entity ent = ws.getEntityByID(dragonClient.getEntityId());
             if (ent != null && ent instanceof EntityTameableDragon) {
                 dragonServer = (EntityTameableDragon) ent;
@@ -271,7 +271,7 @@ public class GuiDragonDebug extends Gui implements PrivateAccessor {
         Collection<IAttributeInstance> attribs = dragon.getAttributeMap().getAllAttributes();
         
         attribs.forEach(attrib -> {
-            String attribName = I18n.translateToLocal("attribute.name." + attrib.getAttribute().getAttributeUnlocalizedName());
+            String attribName = attrib.getAttribute().getName();
             String attribValue = dfShort.format(attrib.getAttributeValue());
             String attribBase = dfShort.format(attrib.getBaseValue());
             text.println(attribName + " = " + attribValue + " (" + attribBase + ")");

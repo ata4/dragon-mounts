@@ -51,11 +51,11 @@ public class ItemUtils {
             if (item == equippedItem) {
                 // don't reduce stack in creative mode
                 if (!player.capabilities.isCreativeMode) {
-                    itemStack.stackSize--;
+                    itemStack.shrink(1);
                 }
 
                 // required because the stack isn't reduced in onItemRightClick()
-                if (itemStack.stackSize <= 0) {
+                if (itemStack.isEmpty()) {
                     player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                 }
 

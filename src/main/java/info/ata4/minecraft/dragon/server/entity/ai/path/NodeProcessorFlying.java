@@ -31,9 +31,9 @@ public class NodeProcessorFlying extends SwimNodeProcessor {
     @Override
     public PathPoint getPathPointToCoords(double x, double y, double target) {
         return openPoint(
-            MathHelper.floor_double(x - (entity.width / 2.0)),
-            MathHelper.floor_double(y + 0.5),
-            MathHelper.floor_double(target - (entity.width / 2.0))
+            MathHelper.floor(x - (entity.width / 2.0)),
+            MathHelper.floor(y + 0.5),
+            MathHelper.floor(target - (entity.width / 2.0))
         );
     }
 
@@ -62,9 +62,9 @@ public class NodeProcessorFlying extends SwimNodeProcessor {
     private PathPoint getSafePoint(Entity entityIn, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
         
-        entitySizeX = MathHelper.floor_float(entityIn.width + 1);
-        entitySizeY = MathHelper.floor_float(entityIn.height + 1);
-        entitySizeZ = MathHelper.floor_float(entityIn.width + 1);
+        entitySizeX = MathHelper.floor(entityIn.width + 1);
+        entitySizeY = MathHelper.floor(entityIn.height + 1);
+        entitySizeZ = MathHelper.floor(entityIn.width + 1);
 
         for (int ix = 0; ix < entitySizeX; ++ix) {
             for (int iy = 0; iy < entitySizeY; ++iy) {

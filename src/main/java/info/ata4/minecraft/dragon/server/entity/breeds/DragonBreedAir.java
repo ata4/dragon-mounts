@@ -27,7 +27,7 @@ public class DragonBreedAir extends DragonBreed {
     DragonBreedAir() {
         super("aether", 0x1dc4f3);
         
-        addImmunity(DamageSource.magic);
+        addImmunity(DamageSource.MAGIC);
         
         addHabitatBiome(Biomes.EXTREME_HILLS);
     }
@@ -35,7 +35,7 @@ public class DragonBreedAir extends DragonBreed {
     @Override
     public boolean isHabitatEnvironment(EntityTameableDragon dragon) {
         // true if located pretty high (> 2/3 of the maximum world height)
-        return dragon.posY > dragon.worldObj.getHeight() * 0.66;
+        return dragon.posY > dragon.world.getHeight() * 0.66;
     }
 
     @Override
