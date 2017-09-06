@@ -17,7 +17,12 @@ import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -38,8 +43,8 @@ public class DragonEggBlockHandler {
 //        if (evt.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
 //            return;
 //        }
-        
-        BlockPos pos = evt.getPos();
+
+    	BlockPos pos = evt.getPos();
         World world = evt.getWorld();
         IBlockState state = world.getBlockState(pos);
         Block block = world.getBlockState(pos).getBlock();
@@ -54,6 +59,15 @@ public class DragonEggBlockHandler {
         if (block != Blocks.DRAGON_EGG && block != BlockDragonBreedEgg.INSTANCE) {
             return;
         }
+        
+        EntityPlayer player = evt.getEntityPlayer();
+        if( player == null )
+        	return;
+        ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
+        if( heldItem == null )
+        	return;
+        if( heldItem.getItem() != Items.FLINT_AND_STEEL )
+        	return;
         
         // deny action
         evt.setResult(Event.Result.DENY);
