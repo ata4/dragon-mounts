@@ -1,6 +1,6 @@
 [
 {
-  "modid" : "DragonMounts",
+  "modid" : "dragonmounts",
   "name" : "Dragon Mounts",
   "description": "A mod that allows you to breed dragon eggs and foster them to ridable dragons.",
   "version": "${version}",

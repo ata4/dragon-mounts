@@ -183,7 +183,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
     }
 
     @Override
-    protected void rotateCorpse(EntityTameableDragon dragon, float par2, float par3, float par4) {
+    protected void applyRotations(EntityTameableDragon dragon, float par2, float par3, float par4) {
         GlStateManager.rotate(180 - par3, 0, 1, 0);
     }
     
