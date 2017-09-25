@@ -46,17 +46,32 @@ public class EntityAIDragonRide extends EntityAIDragonBase implements PrivateAcc
         double y = dragon.posY;
         double z = dragon.posZ;
                 
+        boolean isMovingUpwards = entityIsJumping(rider);
+        boolean isMovingDownwards = rider.isSneaking();
+        
         // control direction with movement keys
-        if (rider.moveStrafing != 0 || rider.moveForward != 0) {
-            Vec3d wp = rider.getLookVec();
+        if (rider.moveStrafing != 0 || rider.moveForward != 0 || isMovingUpwards || isMovingDownwards ) {
+            Vec3d front = rider.getLookVec();
             
-            if (rider.moveForward < 0) {
-                wp = wp.rotateYaw(MathX.PI_F);
-            } else if (rider.moveStrafing > 0) {
-                wp = wp.rotateYaw(MathX.PI_F * 0.5f);
-            } else if (rider.moveStrafing < 0) {
-                wp = wp.rotateYaw(MathX.PI_F * -0.5f);
+            Vec3d wp = Vec3d.ZERO;
+            
+            if (rider.moveForward > 0 ) {
+            	wp = front;
             }
+            else if (rider.moveForward < 0) {
+                wp = wp.add(front.rotateYaw(MathX.PI_F));
+            }
+            if (rider.moveStrafing > 0) {
+                wp = wp.add(front.rotateYaw(MathX.PI_F * 0.5f));
+            }
+            else if (rider.moveStrafing < 0) {
+                wp = wp.add(front.rotateYaw(MathX.PI_F * -0.5f));
+            }
+            if( isMovingUpwards )
+            	wp = wp.addVector(0, 1, 0);
+            if( isMovingDownwards )
+            	wp = wp.addVector(0, -1, 0);
+            wp = wp.normalize();
             
             x += wp.xCoord * 10;
             y += wp.yCoord * 10;
@@ -65,7 +80,7 @@ public class EntityAIDragonRide extends EntityAIDragonBase implements PrivateAcc
         
         // lift off with a jump
         if (!dragon.isFlying()) {
-            if (entityIsJumping(rider)) {
+            if (isMovingUpwards) {
                 dragon.liftOff();
             }
         }

@@ -14,6 +14,7 @@ import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
+import info.ata4.minecraft.dragon.server.handler.DragonMountsMountHandler;
 import info.ata4.minecraft.dragon.server.item.ItemDragonBreedEgg;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
@@ -47,6 +48,7 @@ public class CommonProxy {
         registerEntities();
 
         MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
+        MinecraftForge.EVENT_BUS.register(new DragonMountsMountHandler());
     }
 
     public void onPostInit(FMLPostInitializationEvent event) {
