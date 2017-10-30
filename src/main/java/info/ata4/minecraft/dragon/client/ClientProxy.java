@@ -44,6 +44,7 @@ public class ClientProxy extends CommonProxy {
 		Item itemBlockDragonEgg = Item.REGISTRY.getObject(eggModelItemLoc);
 		EnumDragonBreed.META_MAPPING.forEach((breed, meta) -> {
 			ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.AID + ":dragon_egg", "breed=" + breed.getName());
+			assert itemBlockDragonEgg != null;
 			ModelLoader.setCustomModelResourceLocation(itemBlockDragonEgg, meta, eggModelLoc);
 		});
 	}
