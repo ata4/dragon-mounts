@@ -14,6 +14,8 @@ import info.ata4.minecraft.dragon.client.model.DragonModelMode;
 import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -29,7 +31,7 @@ public class LayerRendererDragonGlowAnim extends LayerRendererDragon {
 	@Override
 	public void doRenderLayer(EntityTameableDragon dragon, float moveTime,
 	                          float moveSpeed, float partialTicks, float ticksExisted, float lookYaw,
-	                          float lookPitch, float scale,) {
+	                          float lookPitch, float scale) {
 		boolean invisible = dragon.isInvisible();
 		GlStateManager.depthMask(!invisible);
 
@@ -60,7 +62,6 @@ public class LayerRendererDragonGlowAnim extends LayerRendererDragon {
 		model.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
 		GlStateManager.enableAlpha();
 
-		enableLighting(dragon.getBrightnessForRender(partialTicks));
 
 		GlStateManager.matrixMode(GL_TEXTURE);
 		GlStateManager.loadIdentity();
