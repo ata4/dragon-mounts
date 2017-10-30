@@ -112,6 +112,7 @@ public class DragonBrain extends DragonHelper {
 							EntitySheep.class,
 							EntityPig.class,
 							EntityChicken.class,
+							EntityCow.class,
 							EntityRabbit.class
 					)
 			)); // mutex 1
