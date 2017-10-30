@@ -12,19 +12,18 @@ package info.ata4.minecraft.dragon.server.cmd;
 import net.minecraft.command.CommandBase;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
-public abstract class CommandBaseDragon extends CommandBase implements IDragonModifier  {
-    
-    private final String name;
+public abstract class CommandBaseDragon extends CommandBase implements IDragonModifier {
 
-    public CommandBaseDragon(String name) {
-        this.name = name;
-    }
-    
-    @Override
-    public String getName() {
-        return name;
-    }
+	private final String name;
+
+	public CommandBaseDragon(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
 }

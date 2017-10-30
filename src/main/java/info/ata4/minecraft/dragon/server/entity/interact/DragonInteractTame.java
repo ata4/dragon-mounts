@@ -15,23 +15,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonInteractTame extends DragonInteract {
 
-    public DragonInteractTame(EntityTameableDragon dragon) {
-        super(dragon);
-    }
+	public DragonInteractTame(EntityTameableDragon dragon) {
+		super(dragon);
+	}
 
-    @Override
-    public boolean interact(EntityPlayer player, ItemStack item) {
-        if (dragon.isServer() && !dragon.isTamed() && !dragon.isChild() &&
-                ItemUtils.consumeEquipped(player, dragon.getBreed().getBreedingItem())) {
-            dragon.tamedFor(player, dragon.getRNG().nextInt(5) == 0);
-            return true;
-        }
+	@Override
+	public boolean interact(EntityPlayer player, ItemStack item) {
+		if (dragon.isServer() && !dragon.isTamed() && !dragon.isChild() &&
+				ItemUtils.consumeEquipped(player, dragon.getBreed().getBreedingItem())) {
+			dragon.tamedFor(player, dragon.getRNG().nextInt(5) == 0);
+			return true;
+		}
 
-        return false;
-    }    
+		return false;
+	}
 }

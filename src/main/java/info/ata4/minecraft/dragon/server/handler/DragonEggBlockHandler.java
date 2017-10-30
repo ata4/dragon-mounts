@@ -30,64 +30,64 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Non-invasive dragon egg block override handler.
- * 
+ *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonEggBlockHandler {
 
-    @SubscribeEvent
-    public void onPlayerInteract(PlayerInteractEvent evt) {
-        // only handle right clicks on blocks
-        // TODO: port for 1.9
+	@SubscribeEvent
+	public void onPlayerInteract(PlayerInteractEvent evt) {
+		// only handle right clicks on blocks
+		// TODO: port for 1.9
 //        if (evt.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
 //            return;
 //        }
 
-    	BlockPos pos = evt.getPos();
-        World world = evt.getWorld();
-        IBlockState state = world.getBlockState(pos);
-        Block block = world.getBlockState(pos).getBlock();
-        
-        // don't interact with vanilla egg blocks if configured
-        if (DragonMounts.instance.getConfig().isDisableBlockOverride() &&
-                block == Blocks.DRAGON_EGG) {
-            return;
-        }
-        
-        // ignore non-egg blocks
-        if (block != Blocks.DRAGON_EGG && block != BlockDragonBreedEgg.INSTANCE) {
-            return;
-        }
-        
-        EntityPlayer player = evt.getEntityPlayer();
-        if( player == null )
-        	return;
-        ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-        if( heldItem == null )
-        	return;
-        if( heldItem.getItem() != Items.FLINT_AND_STEEL )
-        	return;
-        
-        // deny action
-        evt.setResult(Event.Result.DENY);
-        
-        // clear dragon egg block
-        world.setBlockToAir(pos);
+		BlockPos pos = evt.getPos();
+		World world = evt.getWorld();
+		IBlockState state = world.getBlockState(pos);
+		Block block = world.getBlockState(pos).getBlock();
 
-        // create dragon egg entity on server
-        if (!world.isRemote) { // this was inverted, i.e. evt.world.isRemote, but it should surely be this way
-            EntityTameableDragon dragon = new EntityTameableDragon(world);
-            dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-            dragon.getReproductionHelper().setBreeder(evt.getEntityPlayer());
-            dragon.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
-            
-            // set breed type (custom dragon egg only, otherwise use default breed)
-            if (block == BlockDragonBreedEgg.INSTANCE) {
-                EnumDragonBreed breed = state.getValue(BlockDragonBreedEgg.BREED);
-                dragon.getBreedHelper().setBreedType(breed);
-            }
-            
-            world.spawnEntity(dragon);
-        }
-    }
+		// don't interact with vanilla egg blocks if configured
+		if (DragonMounts.instance.getConfig().isDisableBlockOverride() &&
+				block == Blocks.DRAGON_EGG) {
+			return;
+		}
+
+		// ignore non-egg blocks
+		if (block != Blocks.DRAGON_EGG && block != BlockDragonBreedEgg.INSTANCE) {
+			return;
+		}
+
+		EntityPlayer player = evt.getEntityPlayer();
+		if (player == null)
+			return;
+		ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
+		if (heldItem == null)
+			return;
+		if (heldItem.getItem() != Items.FLINT_AND_STEEL)
+			return;
+
+		// deny action
+		evt.setResult(Event.Result.DENY);
+
+		// clear dragon egg block
+		world.setBlockToAir(pos);
+
+		// create dragon egg entity on server
+		if (!world.isRemote) { // this was inverted, i.e. evt.world.isRemote, but it should surely be this way
+			EntityTameableDragon dragon = new EntityTameableDragon(world);
+			dragon.setPosition(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+			dragon.getReproductionHelper().setBreeder(evt.getEntityPlayer());
+			dragon.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
+
+			// set breed type (custom dragon egg only, otherwise use default breed)
+			if (block == BlockDragonBreedEgg.INSTANCE) {
+				EnumDragonBreed breed = state.getValue(BlockDragonBreedEgg.BREED);
+				dragon.getBreedHelper().setBreedType(breed);
+			}
+
+			world.spawnEntity(dragon);
+		}
+	}
 }

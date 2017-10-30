@@ -15,25 +15,25 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
  * Interface used to touch Minecraft's private members ( ͡° ͜ʖ ͡°).
- * 
+ *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public interface PrivateAccessor {
-    
-    static final String[] GUIMAINMENU_SPLASHTEXT = new String[] {"splashText", "field_73975_c"};
-    
-    default boolean entityIsJumping(EntityLivingBase entity) {
-        return ReflectionHelper.getPrivateValue(EntityLivingBase.class, entity,
-                new String[] {"isJumping", "field_70703_bu"});
-    }
-    
-    default String mainMenuGetSplashText(GuiMainMenu menu) {
-        return ReflectionHelper.getPrivateValue(GuiMainMenu.class, menu,
-                GUIMAINMENU_SPLASHTEXT);
-    }
-    
-    default void mainMenuSetSplashText(GuiMainMenu menu, String splash) {
-        ReflectionHelper.setPrivateValue(GuiMainMenu.class, menu, splash,
-                GUIMAINMENU_SPLASHTEXT);
-    }
+
+	static final String[] GUIMAINMENU_SPLASHTEXT = new String[]{"splashText", "field_73975_c"};
+
+	default boolean entityIsJumping(EntityLivingBase entity) {
+		return ReflectionHelper.getPrivateValue(EntityLivingBase.class, entity,
+				new String[]{"isJumping", "field_70703_bu"});
+	}
+
+	default String mainMenuGetSplashText(GuiMainMenu menu) {
+		return ReflectionHelper.getPrivateValue(GuiMainMenu.class, menu,
+				GUIMAINMENU_SPLASHTEXT);
+	}
+
+	default void mainMenuSetSplashText(GuiMainMenu menu, String splash) {
+		ReflectionHelper.setPrivateValue(GuiMainMenu.class, menu, splash,
+				GUIMAINMENU_SPLASHTEXT);
+	}
 }

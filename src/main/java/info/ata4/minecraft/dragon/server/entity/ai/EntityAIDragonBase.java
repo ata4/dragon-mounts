@@ -19,27 +19,26 @@ import java.util.Random;
 import static net.minecraft.entity.SharedMonsterAttributes.FOLLOW_RANGE;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public abstract class EntityAIDragonBase extends EntityAIBase {
-    
-    protected final EntityTameableDragon dragon;
-    protected final World world;
-    protected final Random random;
 
-    public EntityAIDragonBase(EntityTameableDragon dragon) {
-        this.dragon = dragon;
-        this.world = dragon.world;
-        this.random = dragon.getRNG();
-    }
-    
-    protected boolean tryMoveToBlockPos(BlockPos pos, double speed) {
-        return dragon.getNavigator().tryMoveToXYZ(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, speed);
-    }
-    
-    protected double getFollowRange() {
-        return dragon.getAttributeMap().getAttributeInstance(FOLLOW_RANGE)
-            .getAttributeValue();
-    }
+	protected final EntityTameableDragon dragon;
+	protected final World world;
+	protected final Random random;
+
+	public EntityAIDragonBase(EntityTameableDragon dragon) {
+		this.dragon = dragon;
+		this.world = dragon.world;
+		this.random = dragon.getRNG();
+	}
+
+	protected boolean tryMoveToBlockPos(BlockPos pos, double speed) {
+		return dragon.getNavigator().tryMoveToXYZ(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, speed);
+	}
+
+	protected double getFollowRange() {
+		return dragon.getAttributeMap().getAttributeInstance(FOLLOW_RANGE)
+				.getAttributeValue();
+	}
 }

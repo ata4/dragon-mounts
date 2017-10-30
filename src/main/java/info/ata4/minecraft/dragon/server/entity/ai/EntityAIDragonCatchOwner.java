@@ -17,74 +17,73 @@ import net.minecraft.item.ItemElytra;
 import net.minecraft.item.ItemStack;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class EntityAIDragonCatchOwner extends EntityAIDragonBase {
-    
-    protected EntityPlayer owner;
-    
-    public EntityAIDragonCatchOwner(EntityTameableDragon dragon) {
-        super(dragon);
-    }
 
-    @Override
-    public boolean shouldExecute() {        
-        // don't catch if leashed
-        if (dragon.getLeashed()) {
-            return false;
-        }
-        
-        owner = (EntityPlayer) dragon.getOwner();
-        
-        // don't catch if ownerless 
-        if (owner == null) {
-            return false;
-        }
-        
-        // no point in catching players in creative mode
-        if (owner.capabilities.isCreativeMode) {
-            return false;
-        }
-        
-        // don't catch if already being ridden
-        if (dragon.isPassenger(owner)) {
-            return false;
-        }
-        
-        // don't catch if owner has a working Elytra equipped
-        // note: isUsable() is misleading, it actually checks if the items is usable
-        ItemStack itemStack = owner.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-        if (itemStack != null && itemStack.getItem() == Items.ELYTRA && ItemElytra.isUsable(itemStack)) {
-            return false;
-        }
-        
-        // don't catch if owner is too far away
-        double followRange = getFollowRange();
-        if (dragon.getDistance(owner) > followRange) {
-            return false;
-        }
-                
-        return owner.fallDistance > 4;
-    }
+	protected EntityPlayer owner;
 
-    @Override
-    public boolean shouldContinueExecuting() {
-        return shouldExecute() && !dragon.getNavigator().noPath();
-    }
-    
-    @Override
-    public void updateTask() {
-        // catch owner in flight if possible
-        if (!dragon.isFlying()) {
-            dragon.liftOff();
-        }
-        
-        // mount owner if close enough, otherwise move to owner
-        if (dragon.getDistance(owner) < dragon.width) {
-            owner.startRiding(dragon);
-        } else {
-            dragon.getNavigator().tryMoveToEntityLiving(owner, 1);
-        }
-    }
+	public EntityAIDragonCatchOwner(EntityTameableDragon dragon) {
+		super(dragon);
+	}
+
+	@Override
+	public boolean shouldExecute() {
+		// don't catch if leashed
+		if (dragon.getLeashed()) {
+			return false;
+		}
+
+		owner = (EntityPlayer) dragon.getOwner();
+
+		// don't catch if ownerless
+		if (owner == null) {
+			return false;
+		}
+
+		// no point in catching players in creative mode
+		if (owner.capabilities.isCreativeMode) {
+			return false;
+		}
+
+		// don't catch if already being ridden
+		if (dragon.isPassenger(owner)) {
+			return false;
+		}
+
+		// don't catch if owner has a working Elytra equipped
+		// note: isUsable() is misleading, it actually checks if the items is usable
+		ItemStack itemStack = owner.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+		if (itemStack != null && itemStack.getItem() == Items.ELYTRA && ItemElytra.isUsable(itemStack)) {
+			return false;
+		}
+
+		// don't catch if owner is too far away
+		double followRange = getFollowRange();
+		if (dragon.getDistance(owner) > followRange) {
+			return false;
+		}
+
+		return owner.fallDistance > 4;
+	}
+
+	@Override
+	public boolean shouldContinueExecuting() {
+		return shouldExecute() && !dragon.getNavigator().noPath();
+	}
+
+	@Override
+	public void updateTask() {
+		// catch owner in flight if possible
+		if (!dragon.isFlying()) {
+			dragon.liftOff();
+		}
+
+		// mount owner if close enough, otherwise move to owner
+		if (dragon.getDistance(owner) < dragon.width) {
+			owner.startRiding(dragon);
+		} else {
+			dragon.getNavigator().tryMoveToEntityLiving(owner, 1);
+		}
+	}
 }

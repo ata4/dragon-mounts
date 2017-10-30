@@ -15,33 +15,32 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonBreedEnd extends DragonBreed {
 
-    DragonBreedEnd() {
-        super("ender", 0xab39be);
-        
-        addImmunity(DamageSource.MAGIC);
-        
-        addHabitatBlock(Blocks.END_STONE);
-        addHabitatBlock(Blocks.OBSIDIAN);
-        addHabitatBlock(Blocks.END_BRICKS);
-        
-        addHabitatBiome(Biomes.SKY);
-    }
+	DragonBreedEnd() {
+		super("ender", 0xab39be);
 
-    @Override
-    public void onEnable(EntityTameableDragon dragon) {
-    }
+		addImmunity(DamageSource.MAGIC);
 
-    @Override
-    public void onDisable(EntityTameableDragon dragon) {
-    }
+		addHabitatBlock(Blocks.END_STONE);
+		addHabitatBlock(Blocks.OBSIDIAN);
+		addHabitatBlock(Blocks.END_BRICKS);
 
-    @Override
-    public void onDeath(EntityTameableDragon dragon) {
-    }
+		addHabitatBiome(Biomes.SKY);
+	}
+
+	@Override
+	public void onEnable(EntityTameableDragon dragon) {
+	}
+
+	@Override
+	public void onDisable(EntityTameableDragon dragon) {
+	}
+
+	@Override
+	public void onDeath(EntityTameableDragon dragon) {
+	}
 
 }

@@ -18,27 +18,26 @@ import net.minecraft.util.ResourceLocation;
 import java.util.List;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public interface DragonBreedRenderer {
 
-    public ResourceLocation getBodyTexture();
+	public ResourceLocation getBodyTexture();
 
-    public ResourceLocation getDissolveTexture();
+	public ResourceLocation getDissolveTexture();
 
-    public ResourceLocation getEggTexture();
+	public ResourceLocation getEggTexture();
 
-    public ResourceLocation getGlowTexture();
-    
-    public ResourceLocation getGlowAnimTexture();
+	public ResourceLocation getGlowTexture();
 
-    public List<LayerRenderer<EntityTameableDragon>> getLayers();
+	public ResourceLocation getGlowAnimTexture();
 
-    public DragonModel getModel();
+	public List<LayerRenderer<EntityTameableDragon>> getLayers();
 
-    public DragonRenderer getRenderer();
+	public DragonModel getModel();
 
-    public ResourceLocation getSaddleTexture();
-    
+	public DragonRenderer getRenderer();
+
+	public ResourceLocation getSaddleTexture();
+
 }

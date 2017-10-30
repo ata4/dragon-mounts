@@ -20,63 +20,63 @@ import net.minecraft.util.math.MathHelper;
 
 /**
  * Based on SwimNodeProcessor but for air blocks.
- * 
+ *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class NodeProcessorFlying extends SwimNodeProcessor {
 
-    /**
-     * Returns PathPoint for given coordinates
-     */
-    @Override
-    public PathPoint getPathPointToCoords(double x, double y, double target) {
-        return openPoint(
-            MathHelper.floor(x - (entity.width / 2.0)),
-            MathHelper.floor(y + 0.5),
-            MathHelper.floor(target - (entity.width / 2.0))
-        );
-    }
+	/**
+	 * Returns PathPoint for given coordinates
+	 */
+	@Override
+	public PathPoint getPathPointToCoords(double x, double y, double target) {
+		return openPoint(
+				MathHelper.floor(x - (entity.width / 2.0)),
+				MathHelper.floor(y + 0.5),
+				MathHelper.floor(target - (entity.width / 2.0))
+		);
+	}
 
-    @Override
-    public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
-        int i = 0;
-        
-        for (EnumFacing facing : EnumFacing.values()) {
-            PathPoint point = getSafePoint(entity,
-                currentPoint.x + facing.getFrontOffsetX(),
-                currentPoint.y + facing.getFrontOffsetY(),
-                currentPoint.z + facing.getFrontOffsetZ()
-            );
+	@Override
+	public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance) {
+		int i = 0;
 
-            if (point != null && !point.visited && point.distanceTo(targetPoint) < maxDistance) {
-                pathOptions[i++] = point;
-            }
-        }
+		for (EnumFacing facing : EnumFacing.values()) {
+			PathPoint point = getSafePoint(entity,
+					currentPoint.x + facing.getFrontOffsetX(),
+					currentPoint.y + facing.getFrontOffsetY(),
+					currentPoint.z + facing.getFrontOffsetZ()
+			);
 
-        return i;
-    }
+			if (point != null && !point.visited && point.distanceTo(targetPoint) < maxDistance) {
+				pathOptions[i++] = point;
+			}
+		}
 
-    /**
-     * Returns a point that the entity can safely move to
-     */
-    private PathPoint getSafePoint(Entity entityIn, int x, int y, int z) {
-        BlockPos pos = new BlockPos(x, y, z);
-        
-        entitySizeX = MathHelper.floor(entityIn.width + 1);
-        entitySizeY = MathHelper.floor(entityIn.height + 1);
-        entitySizeZ = MathHelper.floor(entityIn.width + 1);
+		return i;
+	}
 
-        for (int ix = 0; ix < entitySizeX; ++ix) {
-            for (int iy = 0; iy < entitySizeY; ++iy) {
-                for (int iz = 0; iz < entitySizeZ; ++iz) {
-                    IBlockState blockState = blockaccess.getBlockState(pos.add(ix, iy, iz));
-                    if (blockState.getMaterial() != Material.AIR) {
-                        return null;
-                    }
-                }
-            }
-        }
+	/**
+	 * Returns a point that the entity can safely move to
+	 */
+	private PathPoint getSafePoint(Entity entityIn, int x, int y, int z) {
+		BlockPos pos = new BlockPos(x, y, z);
 
-        return openPoint(x, y, z);
-    }
+		entitySizeX = MathHelper.floor(entityIn.width + 1);
+		entitySizeY = MathHelper.floor(entityIn.height + 1);
+		entitySizeZ = MathHelper.floor(entityIn.width + 1);
+
+		for (int ix = 0; ix < entitySizeX; ++ix) {
+			for (int iy = 0; iy < entitySizeY; ++iy) {
+				for (int iz = 0; iz < entitySizeZ; ++iz) {
+					IBlockState blockState = blockaccess.getBlockState(pos.add(ix, iy, iz));
+					if (blockState.getMaterial() != Material.AIR) {
+						return null;
+					}
+				}
+			}
+		}
+
+		return openPoint(x, y, z);
+	}
 }

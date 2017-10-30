@@ -25,48 +25,47 @@ import java.util.stream.Collectors;
 import static net.minecraft.command.CommandBase.getCommandSenderAsPlayer;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public interface IDragonModifier {
-    
-    static final double MODIFIER_RANGE = 64;
-    
-    default void applyModifier(MinecraftServer server, ICommandSender sender, Consumer<EntityTameableDragon> modifier) throws CommandException {
-        if (sender instanceof EntityPlayerMP) {
-            EntityPlayerMP player = getCommandSenderAsPlayer(sender);
-            
-            AxisAlignedBB aabb = player.getEntityBoundingBox()
-                .expand(MODIFIER_RANGE, MODIFIER_RANGE, MODIFIER_RANGE);
-            
-            List<EntityTameableDragon> dragons = player.world
-                .getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
 
-            // get closest dragon
-            Optional<EntityTameableDragon> closestDragon = dragons.stream()
-                .max((dragon1, dragon2) -> Float.compare(
-                    dragon1.getDistance(player),
-                    dragon2.getDistance(player))
-                );
+	static final double MODIFIER_RANGE = 64;
 
-            if (!closestDragon.isPresent()) {
-                throw new CommandException("commands.dragon.nodragons");
-            }
-            
-            modifier.accept(closestDragon.get());
-        } else {
-            // scan all entities on all dimensions
-            for (WorldServer worldServer : server.worlds) {
-                // need a copy of all dragon entities before applying modifier,
-                // since it could delete from the server entity list during iteration
-                List<EntityTameableDragon> dragons = worldServer.loadedEntityList
-                    .stream()
-                    .filter(entity -> entity instanceof EntityTameableDragon)
-                    .map(entity -> (EntityTameableDragon) entity)
-                    .collect(Collectors.toList());
-                
-                dragons.forEach(modifier);
-            }
-        }
-    }
+	default void applyModifier(MinecraftServer server, ICommandSender sender, Consumer<EntityTameableDragon> modifier) throws CommandException {
+		if (sender instanceof EntityPlayerMP) {
+			EntityPlayerMP player = getCommandSenderAsPlayer(sender);
+
+			AxisAlignedBB aabb = player.getEntityBoundingBox()
+					.expand(MODIFIER_RANGE, MODIFIER_RANGE, MODIFIER_RANGE);
+
+			List<EntityTameableDragon> dragons = player.world
+					.getEntitiesWithinAABB(EntityTameableDragon.class, aabb);
+
+			// get closest dragon
+			Optional<EntityTameableDragon> closestDragon = dragons.stream()
+					.max((dragon1, dragon2) -> Float.compare(
+							dragon1.getDistance(player),
+							dragon2.getDistance(player))
+					);
+
+			if (!closestDragon.isPresent()) {
+				throw new CommandException("commands.dragon.nodragons");
+			}
+
+			modifier.accept(closestDragon.get());
+		} else {
+			// scan all entities on all dimensions
+			for (WorldServer worldServer : server.worlds) {
+				// need a copy of all dragon entities before applying modifier,
+				// since it could delete from the server entity list during iteration
+				List<EntityTameableDragon> dragons = worldServer.loadedEntityList
+						.stream()
+						.filter(entity -> entity instanceof EntityTameableDragon)
+						.map(entity -> (EntityTameableDragon) entity)
+						.collect(Collectors.toList());
+
+				dragons.forEach(modifier);
+			}
+		}
+	}
 }

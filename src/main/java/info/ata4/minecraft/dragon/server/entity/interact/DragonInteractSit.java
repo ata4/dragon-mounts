@@ -16,25 +16,24 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonInteractSit extends DragonInteract {
 
-    public DragonInteractSit(EntityTameableDragon dragon) {
-        super(dragon);
-    }
+	public DragonInteractSit(EntityTameableDragon dragon) {
+		super(dragon);
+	}
 
-    @Override
-    public boolean interact(EntityPlayer player, ItemStack item) {
-        if (dragon.isServer() && dragon.isTamedFor(player) &&
-                ItemUtils.hasEquipped(player, Items.BONE)) {
-            dragon.getAISit().setSitting(!dragon.isSitting());
-            dragon.getNavigator().clearPath();
-            return true;
-        }
-        
-        return false;
-    }
-    
+	@Override
+	public boolean interact(EntityPlayer player, ItemStack item) {
+		if (dragon.isServer() && dragon.isTamedFor(player) &&
+				ItemUtils.hasEquipped(player, Items.BONE)) {
+			dragon.getAISit().setSitting(!dragon.isSitting());
+			dragon.getNavigator().clearPath();
+			return true;
+		}
+
+		return false;
+	}
+
 }

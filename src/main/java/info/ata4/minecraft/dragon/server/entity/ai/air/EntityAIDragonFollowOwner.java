@@ -14,41 +14,40 @@ import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class EntityAIDragonFollowOwner extends EntityAIDragonBase {
-    
-    protected EntityPlayer owner;
 
-    public EntityAIDragonFollowOwner(EntityTameableDragon dragon) {
-        super(dragon);
-    }
+	protected EntityPlayer owner;
 
-    @Override
-    public boolean shouldExecute() {
-        if (!dragon.isFlying()) {
-            return false;
-        }
-        
-        owner = (EntityPlayer) dragon.getOwner();
-        
-        // don't follow if ownerless 
-        if (owner == null) {
-            return false;
-        }
-        
-        // don't follow if already being ridden
-        if (dragon.isPassenger(owner)) {
-            return false;
-        }
-        
-        // follow only if the ower is using an Elytra
-        return owner.isElytraFlying();
-    }
-    
-    @Override
-    public void updateTask() {
-        dragon.getNavigator().tryMoveToEntityLiving(owner, 1);
-    }
+	public EntityAIDragonFollowOwner(EntityTameableDragon dragon) {
+		super(dragon);
+	}
+
+	@Override
+	public boolean shouldExecute() {
+		if (!dragon.isFlying()) {
+			return false;
+		}
+
+		owner = (EntityPlayer) dragon.getOwner();
+
+		// don't follow if ownerless
+		if (owner == null) {
+			return false;
+		}
+
+		// don't follow if already being ridden
+		if (dragon.isPassenger(owner)) {
+			return false;
+		}
+
+		// follow only if the ower is using an Elytra
+		return owner.isElytraFlying();
+	}
+
+	@Override
+	public void updateTask() {
+		dragon.getNavigator().tryMoveToEntityLiving(owner, 1);
+	}
 }
