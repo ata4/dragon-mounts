@@ -30,6 +30,7 @@ version.properties
 /.project
 /.settings/
 /eclipse/
+/minecraft/
 /debug/
 /.metadata/
 /config/
