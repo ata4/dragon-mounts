@@ -19,15 +19,20 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  */
 @GameRegistry.ObjectHolder(DragonMounts.ID)
 public class DragonMountsSoundEvents {
-    
-    public static final SoundEvent ENTITY_DRAGON_MOUNT_STEP = registerSound("mob.enderdragon.step");
-    public static final SoundEvent ENTITY_DRAGON_MOUNT_BREATHE = registerSound("mob.enderdragon.breathe");
-    public static final SoundEvent ENTITY_DRAGON_MOUNT_DEATH = registerSound("mob.enderdragon.death");
 
-    private static SoundEvent registerSound(String soundName) {
-        ResourceLocation soundID = new ResourceLocation(DragonMounts.AID, soundName);
-        return GameRegistry.register(new SoundEvent(soundID).setRegistryName(soundID));
+    private static SoundEvent createSoundEvent(final String soundName) {
+        final ResourceLocation soundID = new ResourceLocation(DragonMounts.ID, soundName);
+        return new SoundEvent(soundID).setRegistryName(soundID);
     }
+
+    @GameRegistry.ObjectHolder("mob.enderdragon.step")
+    public static final SoundEvent ENTITY_DRAGON_MOUNT_STEP = createSoundEvent("mob.enderdragon.step");
+
+    @GameRegistry.ObjectHolder("mob.enderdragon.breathe")
+    public static final SoundEvent ENTITY_DRAGON_MOUNT_BREATHE = createSoundEvent("mob.enderdragon.breathe");
+
+    @GameRegistry.ObjectHolder("mob.enderdragon.death")
+    public static final SoundEvent ENTITY_DRAGON_MOUNT_DEATH = createSoundEvent("mob.enderdragon.death");
 
     private DragonMountsSoundEvents() {
     }

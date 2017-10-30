@@ -15,7 +15,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -84,7 +84,7 @@ public class ModelPart extends ModelRenderer {
     }
     
     private void compileDisplayList(float scale) {
-        VertexBuffer vb = Tessellator.getInstance().getBuffer();
+        BufferBuilder vb = Tessellator.getInstance().getBuffer();
         displayList = GLAllocation.generateDisplayLists(1);
         glNewList(displayList, GL_COMPILE);
         cubeList.forEach(cube -> cube.render(vb, scale));
