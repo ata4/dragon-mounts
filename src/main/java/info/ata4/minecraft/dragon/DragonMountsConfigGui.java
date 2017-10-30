@@ -26,10 +26,7 @@ public class DragonMountsConfigGui extends GuiConfig {
 	public DragonMountsConfigGui(GuiScreen parentScreen) {
 		super(
 				parentScreen,
-				Arrays.asList(
-						new ConfigElement(CONFIG.getCategory("server")),
-						new ConfigElement(CONFIG.getCategory("client"))
-				),
+				Arrays.asList(new ConfigElement(CONFIG.getCategory("server")), new ConfigElement(CONFIG.getCategory("client"))),
 				DragonMounts.ID,
 				false,
 				false,
