@@ -62,6 +62,8 @@ public class LayerRendererDragonGlowAnim extends LayerRendererDragon {
 		model.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
 		GlStateManager.enableAlpha();
 
+		//enableLighting(dragon.getBrightnessForRender(partialTicks));
+
 
 		GlStateManager.matrixMode(GL_TEXTURE);
 		GlStateManager.loadIdentity();
