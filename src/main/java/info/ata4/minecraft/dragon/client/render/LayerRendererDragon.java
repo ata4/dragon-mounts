@@ -25,8 +25,7 @@ public abstract class LayerRendererDragon implements LayerRenderer<EntityTameabl
 	protected final DefaultDragonBreedRenderer breedRenderer;
 	protected final DragonModel model;
 
-	public LayerRendererDragon(DragonRenderer renderer,
-	                           DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+	public LayerRendererDragon(DragonRenderer renderer, DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
 		this.renderer = renderer;
 		this.breedRenderer = breedRenderer;
 		this.model = model;

@@ -11,8 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
  */
 public class LayerRendererDragonSaddle extends LayerRendererDragon {
 
-	public LayerRendererDragonSaddle(DragonRenderer renderer,
-	                                 DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+	public LayerRendererDragonSaddle(DragonRenderer renderer, DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
 		super(renderer, breedRenderer, model);
 	}
 

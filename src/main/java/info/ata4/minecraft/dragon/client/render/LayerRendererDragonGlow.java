@@ -13,8 +13,7 @@ import static org.lwjgl.opengl.GL11.GL_ONE;
  */
 public class LayerRendererDragonGlow extends LayerRendererDragon {
 
-	public LayerRendererDragonGlow(DragonRenderer renderer,
-	                               DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+	public LayerRendererDragonGlow(DragonRenderer renderer, DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
 		super(renderer, breedRenderer, model);
 	}
 
