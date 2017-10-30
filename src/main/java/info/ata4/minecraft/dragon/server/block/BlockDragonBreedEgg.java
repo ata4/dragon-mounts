@@ -9,7 +9,6 @@
  */
 package info.ata4.minecraft.dragon.server.block;
 
-import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.SoundType;
@@ -20,7 +19,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * @author Nico Bergemann <barracuda415 at yahoo.de>
@@ -30,7 +28,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 	public static final PropertyEnum<EnumDragonBreed> BREED = PropertyEnum.create("breed", EnumDragonBreed.class);
 	public static final BlockDragonBreedEgg INSTANCE = new BlockDragonBreedEgg();
 
-	public BlockDragonBreedEgg() {
+	private BlockDragonBreedEgg() {
 		setUnlocalizedName("dragonEgg");
 		setHardness(3);
 		setResistance(15);
@@ -38,7 +36,6 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		setLightLevel(0.125f);
 		setDefaultState(blockState.getBaseState().withProperty(BREED, EnumDragonBreed.DEFAULT));
 		setCreativeTab(CreativeTabs.MISC);
-		setRegistryName(DragonMounts.ID, "dragon_egg");
 	}
 
 	@Override
