@@ -112,7 +112,7 @@ public abstract class DragonBreed {
 	}
 
 	public Item[] getFoodItems() {
-		return new Item[]{Items.PORKCHOP, Items.BEEF, Items.CHICKEN};
+		return new Item[]{Items.PORKCHOP, Items.BEEF, Items.CHICKEN, Items.RABBIT, Items.MUTTON};
 	}
 
 	public Item getBreedingItem() {
