@@ -16,9 +16,7 @@ public class LayerRendererDragonSaddle extends LayerRendererDragon {
 	}
 
 	@Override
-	public void doRenderLayer(EntityTameableDragon dragon, float moveTime,
-	                          float moveSpeed, float partialTicks, float ticksExisted, float lookYaw,
-	                          float lookPitch, float scale) {
+	public void doRenderLayer(EntityTameableDragon dragon, float moveTime, float moveSpeed, float partialTicks, float ticksExisted, float lookYaw, float lookPitch, float scale) {
 		if (!dragon.isSaddled()) {
 			return;
 		}

@@ -43,6 +43,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		return new BlockStateContainer(this, new IProperty[]{BREED});
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return getDefaultState().withProperty(BREED,

@@ -18,9 +18,7 @@ public class LayerRendererDragonGlow extends LayerRendererDragon {
 	}
 
 	@Override
-	public void doRenderLayer(EntityTameableDragon dragon, float moveTime,
-	                          float moveSpeed, float partialTicks, float ticksExisted, float lookYaw,
-	                          float lookPitch, float scale) {
+	public void doRenderLayer(EntityTameableDragon dragon, float moveTime, float moveSpeed, float partialTicks, float ticksExisted, float lookYaw, float lookPitch, float scale) {
 		renderer.bindTexture(breedRenderer.getGlowTexture());
 
 		GlStateManager.pushAttrib();

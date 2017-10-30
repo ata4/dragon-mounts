@@ -33,6 +33,7 @@ public class ItemDragonBreedEgg extends ItemBlock {
 		return metadata;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
 		EnumDragonBreed type = EnumDragonBreed.META_MAPPING.inverse().get(stack.getMetadata());

@@ -111,6 +111,7 @@ public class DragonSoundManager extends DragonHelper {
 	/**
 	 * Plays step sound at given x, y, z for the entity
 	 */
+	@SuppressWarnings("deprecation")
 	public void playStepSound(BlockPos entityPos, Block block) {
 		// no sounds for eggs or underwater action
 		if (dragon.isEgg() || dragon.isInWater()) {

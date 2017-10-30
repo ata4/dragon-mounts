@@ -334,6 +334,7 @@ public class EntityTameableDragon extends EntityTameable {
 		super.setDead();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public String getName() {
 		// return custom name if set
