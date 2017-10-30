@@ -28,7 +28,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 	public static final PropertyEnum<EnumDragonBreed> BREED = PropertyEnum.create("breed", EnumDragonBreed.class);
 	public static final BlockDragonBreedEgg INSTANCE = new BlockDragonBreedEgg();
 
-	private BlockDragonBreedEgg() {
+	public BlockDragonBreedEgg() {
 		setUnlocalizedName("dragonEgg");
 		setHardness(3);
 		setResistance(15);
