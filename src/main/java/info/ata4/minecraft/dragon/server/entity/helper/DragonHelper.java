@@ -11,9 +11,9 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.EntityDataManager;
 
 import java.util.Random;
-import net.minecraft.network.datasync.EntityDataManager;
 
 /**
  *

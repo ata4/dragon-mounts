@@ -11,9 +11,10 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.MoverType;
-import static net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED;
 import net.minecraft.entity.ai.EntityMoveHelper;
 import net.minecraft.util.math.Vec3d;
+
+import static net.minecraft.entity.SharedMonsterAttributes.MOVEMENT_SPEED;
 
 /**
  *
@@ -52,9 +53,9 @@ public class DragonMoveHelper extends EntityMoveHelper {
             double flySpeed = dragon.getEntityAttribute(EntityTameableDragon.MOVEMENT_SPEED_AIR).getAttributeValue();
 
             // update velocity to approach target
-            dragon.motionX = dir.xCoord * flySpeed;
-            dragon.motionY = dir.yCoord * flySpeed;
-            dragon.motionZ = dir.zCoord * flySpeed;
+            dragon.motionX = dir.x * flySpeed;
+            dragon.motionY = dir.y * flySpeed;
+            dragon.motionZ = dir.z * flySpeed;
         } else {
             // just slow down and hover at current location
             dragon.motionX *= 0.8;
@@ -66,7 +67,7 @@ public class DragonMoveHelper extends EntityMoveHelper {
         
         // face entity towards target
         if (dist > 2.5E-7) {
-            float newYaw = (float) Math.toDegrees(Math.PI * 2 - Math.atan2(dir.xCoord, dir.zCoord));
+            float newYaw = (float) Math.toDegrees(Math.PI * 2 - Math.atan2(dir.x, dir.z));
             dragon.rotationYaw = limitAngle(dragon.rotationYaw, newYaw, YAW_SPEED);
             entity.setAIMoveSpeed((float)(speed * entity.getEntityAttribute(MOVEMENT_SPEED).getAttributeValue()));
         }

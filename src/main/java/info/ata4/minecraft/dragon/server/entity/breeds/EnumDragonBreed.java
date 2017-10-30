@@ -11,11 +11,12 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
+import net.minecraft.util.IStringSerializable;
+
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import net.minecraft.util.IStringSerializable;
 
 /**
  *

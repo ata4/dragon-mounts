@@ -9,11 +9,12 @@
  */
 package info.ata4.minecraft.dragon;
 
-import java.util.Arrays;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.GuiConfig;
+
+import java.util.Arrays;
 
 /**
  *

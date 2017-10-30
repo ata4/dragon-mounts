@@ -9,8 +9,9 @@
  */
 package info.ata4.minecraft.dragon.server.entity.helper;
 
-import java.util.UUID;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+
+import java.util.UUID;
 
 /**
  *

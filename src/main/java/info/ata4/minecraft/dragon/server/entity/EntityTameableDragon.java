@@ -15,16 +15,11 @@ import info.ata4.minecraft.dragon.server.entity.ai.path.PathNavigateFlying;
 import info.ata4.minecraft.dragon.server.entity.breeds.DragonBreed;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureAttribute;
-import static net.minecraft.entity.SharedMonsterAttributes.*;
 import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -48,6 +43,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static net.minecraft.entity.SharedMonsterAttributes.*;
 
 /**
  * Here be dragons.
@@ -294,12 +296,12 @@ public class EntityTameableDragon extends EntityTameable {
     }
     
     @Override
-    public void moveEntityWithHeading(float strafe, float forward) {
+    public void travel(float strafe, float vertical, float forward) {
         // disable method while flying, the movement is done entirely by
         // moveEntity() and this one just makes the dragon to fall slowly when
         // hovering
         if (!isFlying()) {
-            super.moveEntityWithHeading(strafe, forward);
+            super.travel(strafe, vertical, forward);
         }
     }
     
@@ -361,7 +363,7 @@ public class EntityTameableDragon extends EntityTameable {
      * Returns the sound this mob makes when it is hurt.
      */
     @Override
-    protected SoundEvent getHurtSound() {
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return getSoundManager().getHurtSound();
     }
     
@@ -449,7 +451,7 @@ public class EntityTameableDragon extends EntityTameable {
     public void tamedFor(EntityPlayer player, boolean successful) {       
         if (successful) {
             setTamed(true);
-            navigator.clearPathEntity();  // replacement for setPathToEntity(null);
+            navigator.clearPath();  // replacement for setPathToEntity(null);
             setAttackTarget(null);
             setOwnerId(player.getUniqueID());
             playTameEffect(true);
@@ -715,9 +717,9 @@ public class EntityTameableDragon extends EntityTameable {
 //            // dragon's rotation to fix that
 //            Vec3 pos = new Vec3(0, 0, 0.8 * getScale());
 //            pos = pos.rotateYaw((float) Math.toRadians(-renderYawOffset)); // oops
-//            px += pos.xCoord;
-//            py += pos.yCoord;
-//            pz += pos.zCoord;
+//            px += pos.x;
+//            py += pos.y;
+//            pz += pos.z;
 //                    
 //            riddenByEntity.setPosition(px, py, pz);
 //            
@@ -732,7 +734,7 @@ public class EntityTameableDragon extends EntityTameable {
 //    }
     
     public boolean isInvulnerableTo(DamageSource src) {
-        Entity srcEnt = src.getEntity();
+        Entity srcEnt = src.getTrueSource();
         if (srcEnt != null) {
             // ignore own damage
             if (srcEnt == this) {

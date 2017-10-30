@@ -30,7 +30,7 @@ public class DragonInteractSit extends DragonInteract {
         if (dragon.isServer() && dragon.isTamedFor(player) &&
                 ItemUtils.hasEquipped(player, Items.BONE)) {
             dragon.getAISit().setSitting(!dragon.isSitting());
-            dragon.getNavigator().clearPathEntity();
+            dragon.getNavigator().clearPath();
             return true;
         }
         

@@ -10,11 +10,12 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.Optional;
-import java.util.function.Consumer;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  *

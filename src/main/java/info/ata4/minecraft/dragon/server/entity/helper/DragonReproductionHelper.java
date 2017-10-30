@@ -11,7 +11,6 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 import com.google.common.base.Optional;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.UUID;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +18,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.UUID;
 
 /**
  *

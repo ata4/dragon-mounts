@@ -11,11 +11,8 @@ package info.ata4.minecraft.dragon.server.entity.helper;
 
 import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage.*;
 import info.ata4.minecraft.dragon.server.util.ClientServerSynchronisedTickCount;
 import net.minecraft.block.Block;
-import static net.minecraft.entity.SharedMonsterAttributes.ATTACK_DAMAGE;
-import static net.minecraft.entity.SharedMonsterAttributes.MAX_HEALTH;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -27,6 +24,10 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.EnumParticleTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage.*;
+import static net.minecraft.entity.SharedMonsterAttributes.ATTACK_DAMAGE;
+import static net.minecraft.entity.SharedMonsterAttributes.MAX_HEALTH;
 
 /**
  *

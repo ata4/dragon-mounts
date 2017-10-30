@@ -48,7 +48,7 @@ public class DragonBreedIce extends DragonBreed {
         // place snow layer blocks, but only if the biome is cold enough
         World world = dragon.world;
         
-        if (world.getBiome(blockPos).getFloatTemperature(blockPos) > 0.8f) {
+        if (world.getBiome(blockPos).getTemperature(blockPos) > 0.8f) {
             return;
         }
         

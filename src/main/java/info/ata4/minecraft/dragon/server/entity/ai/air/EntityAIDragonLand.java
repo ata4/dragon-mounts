@@ -53,7 +53,7 @@ public class EntityAIDragonLand extends EntityAIDragonBase {
     }
     
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         return dragon.isFlying() && dragon.getRidingPlayer() == null && !dragon.getNavigator().noPath();
     }
 

@@ -13,8 +13,9 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
+import net.minecraft.command.ICommandSender;
+
 import java.util.function.BiConsumer;
-import net.minecraft.command.*;
 
 /**
  *

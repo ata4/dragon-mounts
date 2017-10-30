@@ -11,9 +11,6 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.DragonMountsSoundEvents;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.init.Items;
@@ -24,6 +21,10 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Base class for dragon breeds.

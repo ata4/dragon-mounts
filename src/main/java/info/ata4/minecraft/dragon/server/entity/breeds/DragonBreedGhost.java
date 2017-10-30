@@ -10,8 +10,6 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.EntityAIRestrictSun;
 import net.minecraft.init.Blocks;
@@ -19,6 +17,9 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *

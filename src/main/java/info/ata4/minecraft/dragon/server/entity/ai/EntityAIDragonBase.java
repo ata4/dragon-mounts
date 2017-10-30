@@ -10,11 +10,13 @@
 package info.ata4.minecraft.dragon.server.entity.ai;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.Random;
-import static net.minecraft.entity.SharedMonsterAttributes.FOLLOW_RANGE;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.Random;
+
+import static net.minecraft.entity.SharedMonsterAttributes.FOLLOW_RANGE;
 
 /**
  *

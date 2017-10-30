@@ -10,7 +10,6 @@
 package info.ata4.minecraft.dragon.server.block;
 
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
-import java.util.List;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.IProperty;
@@ -59,8 +58,8 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
     }
     
     @Override
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list) {
-        EnumDragonBreed.META_MAPPING.values().forEach(index -> list.add(new ItemStack(itemIn, 1, index)));
+    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+        EnumDragonBreed.META_MAPPING.values().forEach(index -> items.add(new ItemStack(this, 1, 0)));
     }
 
     @Override

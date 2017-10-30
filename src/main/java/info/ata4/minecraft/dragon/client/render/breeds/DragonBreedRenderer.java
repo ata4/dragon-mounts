@@ -12,9 +12,10 @@ package info.ata4.minecraft.dragon.client.render.breeds;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.List;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.List;
 
 /**
  *

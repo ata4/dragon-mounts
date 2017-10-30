@@ -19,27 +19,14 @@ import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonMate;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchIdle;
 import info.ata4.minecraft.dragon.server.entity.ai.ground.EntityAIDragonWatchLiving;
 import info.ata4.minecraft.dragon.server.util.EntityClassPredicate;
-import java.util.ArrayList;
-import java.util.List;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.ai.EntityAIFollowParent;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAIOwnerHurtByTarget;
-import net.minecraft.entity.ai.EntityAIOwnerHurtTarget;
-import net.minecraft.entity.ai.EntityAIPanic;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
-import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.passive.*;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -92,7 +79,7 @@ public class DragonBrain extends DragonHelper {
         }
         
         // clear current navigation target
-        dragon.getNavigator().clearPathEntity();
+        dragon.getNavigator().clearPath();
         
         // clear existing tasks
         clearTasks();

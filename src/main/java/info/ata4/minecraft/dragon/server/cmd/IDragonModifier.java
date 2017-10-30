@@ -10,17 +10,19 @@
 package info.ata4.minecraft.dragon.server.cmd;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import static net.minecraft.command.CommandBase.getCommandSenderAsPlayer;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.WorldServer;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static net.minecraft.command.CommandBase.getCommandSenderAsPlayer;
 
 /**
  *
@@ -43,8 +45,8 @@ public interface IDragonModifier {
             // get closest dragon
             Optional<EntityTameableDragon> closestDragon = dragons.stream()
                 .max((dragon1, dragon2) -> Float.compare(
-                    dragon1.getDistanceToEntity(player),
-                    dragon2.getDistanceToEntity(player))
+                    dragon1.getDistance(player),
+                    dragon2.getDistance(player))
                 );
 
             if (!closestDragon.isPresent()) {

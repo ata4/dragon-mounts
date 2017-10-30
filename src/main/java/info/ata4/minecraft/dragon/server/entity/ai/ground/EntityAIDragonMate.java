@@ -9,8 +9,8 @@
  */
 package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
-import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
+import info.ata4.minecraft.dragon.server.entity.ai.EntityAIDragonBase;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class EntityAIDragonMate extends EntityAIDragonBase {
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         return dragonMate.isEntityAlive() && dragonMate.isInLove() && spawnBabyDelay < 60;
     }
 

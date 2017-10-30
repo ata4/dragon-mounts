@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
+@GameRegistry.ObjectHolder(DragonMounts.ID)
 public class DragonMountsSoundEvents {
     
     public static final SoundEvent ENTITY_DRAGON_MOUNT_STEP = registerSound("mob.enderdragon.step");

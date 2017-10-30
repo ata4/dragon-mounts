@@ -14,6 +14,7 @@ import info.ata4.minecraft.dragon.client.model.DragonModelMode;
 import info.ata4.minecraft.dragon.client.render.breeds.DefaultDragonBreedRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.client.renderer.GlStateManager;
+
 import static org.lwjgl.opengl.GL11.*;
 
 /**

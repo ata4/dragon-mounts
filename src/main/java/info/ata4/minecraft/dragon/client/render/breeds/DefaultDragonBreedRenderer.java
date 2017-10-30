@@ -13,15 +13,15 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.client.render.LayerRendererDragonGlow;
-import info.ata4.minecraft.dragon.client.render.LayerRendererDragonGlowAnim;
 import info.ata4.minecraft.dragon.client.render.LayerRendererDragonSaddle;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.util.ResourceLocation;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
-import net.minecraft.util.ResourceLocation;
 
 /**
  *
