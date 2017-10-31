@@ -36,14 +36,13 @@ public class ClientProxy extends CommonProxy {
 		super.onPreInit(event);
 
 		// register dragon entity renderer
-		RenderingRegistry.registerEntityRenderingHandler(
-				EntityTameableDragon.class, DragonRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, DragonRenderer::new);
 
 		// register item renderer for dragon egg block variants
-		ResourceLocation eggModelItemLoc = new ResourceLocation(DragonMounts.AID, "dragon_egg");
+		ResourceLocation eggModelItemLoc = new ResourceLocation(DragonMounts.ID, "dragon_egg");
 		Item itemBlockDragonEgg = Item.REGISTRY.getObject(eggModelItemLoc);
 		EnumDragonBreed.META_MAPPING.forEach((breed, meta) -> {
-			ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.AID + ":dragon_egg", "breed=" + breed.getName());
+			ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.ID + "dragon_egg", "breed=" + breed.getName());
 			if (itemBlockDragonEgg != null) {
 				ModelLoader.setCustomModelResourceLocation(itemBlockDragonEgg, meta, eggModelLoc);
 			}
