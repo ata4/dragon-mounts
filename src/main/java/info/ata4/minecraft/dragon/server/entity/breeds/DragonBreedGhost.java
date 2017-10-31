@@ -34,6 +34,7 @@ public class DragonBreedGhost extends DragonBreed {
 		addImmunity(DamageSource.WITHER);
 
 		addHabitatBlock(Blocks.WEB);
+		addHabitatBlock(Blocks.BONE_BLOCK);
 	}
 
 	@Override
