@@ -68,4 +68,10 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 	public int damageDropped(IBlockState state) {
 		return getMetaFromState(state);
 	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
 }
