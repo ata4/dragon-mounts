@@ -37,7 +37,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		setSoundType(SoundType.WOOD);
 		setLightLevel(0.125f);
 		setDefaultState(blockState.getBaseState().withProperty(BREED, EnumDragonBreed.DEFAULT));
-		setCreativeTab(CreativeTabs.MISC);
+		setCreativeTab(CreativeTabs.TRANSPORTATION);
 		setRegistryName(DragonMounts.ID, "dragon_egg");
 	}
 
