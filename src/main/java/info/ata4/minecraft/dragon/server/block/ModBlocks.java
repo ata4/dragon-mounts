@@ -10,6 +10,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ModBlocks {
 
 	@GameRegistry.ObjectHolder(DragonMounts.ID + ":dragon_egg")
-	public static Block dragon_egg = new BlockDragonBreedEgg();
+	public static Block blockDragonBreedEgg = new BlockDragonBreedEgg();
 
 }

@@ -19,7 +19,7 @@ public class DragonMountsConfig {
 	private final Configuration config;
 
 	// config properties
-	private boolean disableBlockOverride = false;
+	private boolean disableBlockOverride = true;
 	private boolean debug = false;
 
 	public DragonMountsConfig(Configuration config) {

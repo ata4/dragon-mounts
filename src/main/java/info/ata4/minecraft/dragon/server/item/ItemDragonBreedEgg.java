@@ -28,7 +28,7 @@ public class ItemDragonBreedEgg extends ItemBlock {
 		super(BlockDragonBreedEgg.INSTANCE);
 		setMaxDamage(0);
 		setHasSubtypes(true);
-		setRegistryName(DragonMounts.ID, "dragon_egg");
+		setRegistryName(DragonMounts.ID, "itemDragonBreedEgg");
 		setCreativeTab(CreativeTabs.TRANSPORTATION);
 	}
 

@@ -30,7 +30,7 @@ public class LayerRendererDragonGlow extends LayerRendererDragon {
 		model.setMode(DragonModelMode.FULL);
 		model.render(dragon, moveTime, moveSpeed, ticksExisted, lookYaw, lookPitch, scale);
 
-		//enableLighting(dragon.getBrightnessForRender(partialTicks));
+		enableLighting(dragon.getBrightnessForRender());
 
 		GlStateManager.disableBlend();
 		GlStateManager.popAttrib();

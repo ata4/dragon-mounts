@@ -12,6 +12,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ModItems {
 
 	@GameRegistry.ObjectHolder(DragonMounts.ID + ":dragon_egg")
-	public static Item dragon_egg = new ItemDragonBreedEgg();
+	public static Item itemDragonBreedEgg = new ItemDragonBreedEgg();
 
 }

@@ -38,7 +38,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		setLightLevel(0.125f);
 		setDefaultState(blockState.getBaseState().withProperty(BREED, EnumDragonBreed.DEFAULT));
 		setCreativeTab(CreativeTabs.TRANSPORTATION);
-		setRegistryName(DragonMounts.ID, "dragon_egg");
+		setRegistryName(DragonMounts.ID, "blockDragonBreedEgg");
 	}
 
 	@Override
