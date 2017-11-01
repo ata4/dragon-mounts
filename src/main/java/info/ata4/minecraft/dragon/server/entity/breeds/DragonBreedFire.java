@@ -25,14 +25,30 @@ public class DragonBreedFire extends DragonBreed {
 		addImmunity(DamageSource.IN_FIRE);
 		addImmunity(DamageSource.ON_FIRE);
 		addImmunity(DamageSource.LAVA);
+		addImmunity(DamageSource.HOT_FLOOR);
 
 		addHabitatBlock(Blocks.LAVA);
 		addHabitatBlock(Blocks.FLOWING_LAVA);
 		addHabitatBlock(Blocks.FIRE);
 		addHabitatBlock(Blocks.LIT_FURNACE);
+		addHabitatBlock(Blocks.RED_SANDSTONE);
+		addHabitatBlock(Blocks.RED_SANDSTONE_STAIRS);
+		addHabitatBlock(Blocks.SANDSTONE);
+		addHabitatBlock(Blocks.SANDSTONE_STAIRS);
 
 		addHabitatBiome(Biomes.DESERT);
 		addHabitatBiome(Biomes.DESERT_HILLS);
+		addHabitatBiome(Biomes.MESA);
+		addHabitatBiome(Biomes.MESA_CLEAR_ROCK);
+		addHabitatBiome(Biomes.MESA_ROCK);
+		addHabitatBiome(Biomes.MUTATED_MESA);
+		addHabitatBiome(Biomes.MUTATED_MESA_ROCK);
+		addHabitatBiome(Biomes.MUTATED_MESA_CLEAR_ROCK);
+		addHabitatBiome(Biomes.SAVANNA);
+		addHabitatBiome(Biomes.SAVANNA_PLATEAU);
+		addHabitatBiome(Biomes.MUTATED_SAVANNA);
+		addHabitatBiome(Biomes.MUTATED_SAVANNA_ROCK);
+		addHabitatBiome(Biomes.MUTATED_DESERT);
 	}
 
 	@Override

@@ -25,6 +25,7 @@ public class DragonBreedNether extends DragonBreed {
 		addImmunity(DamageSource.IN_FIRE);
 		addImmunity(DamageSource.ON_FIRE);
 		addImmunity(DamageSource.LAVA);
+		addImmunity(DamageSource.HOT_FLOOR);
 
 		addHabitatBlock(Blocks.NETHERRACK);
 		addHabitatBlock(Blocks.SOUL_SAND);
@@ -34,6 +35,7 @@ public class DragonBreedNether extends DragonBreed {
 		addHabitatBlock(Blocks.NETHER_WART);
 		addHabitatBlock(Blocks.GLOWSTONE);
 		addHabitatBlock(Blocks.QUARTZ_ORE);
+		addHabitatBlock(Blocks.RED_NETHER_BRICK);
 
 		addHabitatBiome(Biomes.HELL);
 	}

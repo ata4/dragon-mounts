@@ -44,8 +44,19 @@ public class DragonBreedForest extends DragonBreed {
 
 		addHabitatBiome(Biomes.FOREST);
 		addHabitatBiome(Biomes.FOREST_HILLS);
+		addHabitatBiome(Biomes.BIRCH_FOREST);
+		addHabitatBiome(Biomes.MUTATED_BIRCH_FOREST);
+		addHabitatBiome(Biomes.MUTATED_FOREST);
+		addHabitatBiome(Biomes.MUTATED_ROOFED_FOREST);
+		addHabitatBiome(Biomes.ROOFED_FOREST);
+		addHabitatBiome(Biomes.BIRCH_FOREST_HILLS);
+		addHabitatBiome(Biomes.MUTATED_BIRCH_FOREST);
+		addHabitatBiome(Biomes.MUTATED_BIRCH_FOREST_HILLS);
 		addHabitatBiome(Biomes.JUNGLE);
 		addHabitatBiome(Biomes.JUNGLE_HILLS);
+		addHabitatBiome(Biomes.JUNGLE_EDGE);
+		addHabitatBiome(Biomes.MUTATED_JUNGLE);
+		addHabitatBiome(Biomes.MUTATED_JUNGLE_EDGE);
 	}
 
 	@Override

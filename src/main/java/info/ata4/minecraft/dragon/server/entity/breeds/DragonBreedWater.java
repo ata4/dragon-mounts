@@ -32,6 +32,8 @@ public class DragonBreedWater extends DragonBreed {
 		addHabitatBiome(Biomes.OCEAN);
 		addHabitatBiome(Biomes.RIVER);
 		addHabitatBiome(Biomes.SWAMPLAND);
+		addHabitatBiome(Biomes.MUTATED_SWAMPLAND);
+		addHabitatBiome(Biomes.DEEP_OCEAN);
 	}
 
 	@Override

@@ -12,6 +12,7 @@ package info.ata4.minecraft.dragon.server.entity.breeds;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.Biomes;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 
 import java.util.UUID;
@@ -28,8 +29,12 @@ public class DragonBreedAir extends DragonBreed {
 		super("aether", 0x1dc4f3);
 
 		addImmunity(DamageSource.MAGIC);
+		addImmunity(DamageSource.LIGHTNING_BOLT);
 
 		addHabitatBiome(Biomes.EXTREME_HILLS);
+
+		addHabitatBlock(Blocks.EMERALD_ORE);
+		addHabitatBlock(Blocks.EMERALD_BLOCK);
 	}
 
 	@Override

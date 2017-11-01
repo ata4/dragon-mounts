@@ -23,10 +23,16 @@ public class DragonBreedEnd extends DragonBreed {
 		super("ender", 0xab39be);
 
 		addImmunity(DamageSource.MAGIC);
+		addImmunity(DamageSource.DRAGON_BREATH);
 
 		addHabitatBlock(Blocks.END_STONE);
 		addHabitatBlock(Blocks.OBSIDIAN);
 		addHabitatBlock(Blocks.END_BRICKS);
+		addHabitatBlock(Blocks.PURPUR_BLOCK);
+		addHabitatBlock(Blocks.PURPUR_DOUBLE_SLAB);
+		addHabitatBlock(Blocks.PURPUR_PILLAR);
+		addHabitatBlock(Blocks.PURPUR_SLAB);
+		addHabitatBlock(Blocks.PURPUR_STAIRS);
 
 		addHabitatBiome(Biomes.SKY);
 	}
