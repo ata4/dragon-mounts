@@ -32,6 +32,8 @@ public class DragonBreedGhost extends DragonBreed {
 		super("undead", 0xbebebe);
 
 		addImmunity(DamageSource.WITHER);
+		addImmunity(DamageSource.DROWN);
+		addImmunity(DamageSource.IN_WALL);
 
 		addHabitatBlock(Blocks.WEB);
 		addHabitatBlock(Blocks.BONE_BLOCK);

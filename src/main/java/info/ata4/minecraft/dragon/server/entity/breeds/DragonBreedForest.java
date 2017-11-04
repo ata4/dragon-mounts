@@ -19,6 +19,7 @@ import net.minecraft.block.BlockFlower.EnumFlowerType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,6 +32,9 @@ public class DragonBreedForest extends DragonBreed {
 
 	DragonBreedForest() {
 		super("forest", 0x2d6e00);
+
+		addImmunity(DamageSource.CACTUS);
+		addImmunity(DamageSource.FALLING_BLOCK);
 
 		addHabitatBlock(Blocks.LOG);
 		addHabitatBlock(Blocks.LOG2);
