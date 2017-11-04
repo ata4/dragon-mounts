@@ -34,7 +34,7 @@ public class DragonBreedForest extends DragonBreed {
 		super("forest", 0x2d6e00);
 
 		addImmunity(DamageSource.CACTUS);
-		addImmunity(DamageSource.FALLING_BLOCK);
+		addImmunity(DamageSource.IN_WALL);
 
 		addHabitatBlock(Blocks.LOG);
 		addHabitatBlock(Blocks.LOG2);
