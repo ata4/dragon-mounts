@@ -37,6 +37,7 @@ public class ItemDragonBreedEgg extends ItemBlock {
 		return metadata;
 	}
 
+	//FIXME: Give dragon eggs their textures back
 	@SuppressWarnings("deprecation")
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {

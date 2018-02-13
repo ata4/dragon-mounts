@@ -32,6 +32,8 @@ import net.minecraftforge.fml.common.event.*;
 )
 public class DragonMounts {
 
+	//FIXME: Players aren't oriented properly on a dragon's saddle, they slide off a bit
+
 	public static final String NAME = "Dragon Mounts";
 	public static final String ID = "dragonmounts";
 	public static final String AID = ID.toLowerCase();
