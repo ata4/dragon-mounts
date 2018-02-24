@@ -39,7 +39,10 @@ public class DragonMounts {
 	public static final String AID = ID.toLowerCase();
 	public static final String VERSION = "@VERSION@";
 
-	@SidedProxy(serverSide = "info.ata4.minecraft.dragon.server.CommonProxy", clientSide = "info.ata4.minecraft.dragon.client.ClientProxy")
+	@SidedProxy(
+			serverSide = "info.ata4.minecraft.dragon.server.CommonProxy",
+			clientSide = "info.ata4.minecraft.dragon.client.ClientProxy"
+	)
 
 	public static CommonProxy proxy;
 
