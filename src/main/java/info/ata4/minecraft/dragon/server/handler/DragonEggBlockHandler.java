@@ -55,18 +55,9 @@ public class DragonEggBlockHandler {
 		}
 
 		// ignore non-egg blocks
-		if (block != Blocks.DRAGON_EGG && block != BlockDragonBreedEgg.INSTANCE) {
+		if (block != Blocks.DRAGON_EGG && block != BlockDragonBreedEgg.DRAGON_BREED_EGG) {
 			return;
 		}
-
-		EntityPlayer player = evt.getEntityPlayer();
-		if (player == null)
-			return;
-		ItemStack heldItem = player.getHeldItem(EnumHand.MAIN_HAND);
-		if (heldItem == null)
-			return;
-		if (heldItem.getItem() != Items.FLINT_AND_STEEL)
-			return;
 
 		// deny action
 		evt.setResult(Event.Result.DENY);
@@ -82,7 +73,7 @@ public class DragonEggBlockHandler {
 			dragon.getLifeStageHelper().setLifeStage(EnumDragonLifeStage.EGG);
 
 			// set breed type (custom dragon egg only, otherwise use default breed)
-			if (block == BlockDragonBreedEgg.INSTANCE) {
+			if (block == BlockDragonBreedEgg.DRAGON_BREED_EGG) {
 				EnumDragonBreed breed = state.getValue(BlockDragonBreedEgg.BREED);
 				dragon.getBreedHelper().setBreedType(breed);
 			}

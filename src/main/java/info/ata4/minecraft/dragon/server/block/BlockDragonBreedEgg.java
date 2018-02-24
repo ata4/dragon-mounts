@@ -27,25 +27,24 @@ import net.minecraft.util.NonNullList;
 public class BlockDragonBreedEgg extends BlockDragonEgg {
 
 	public static final PropertyEnum<EnumDragonBreed> BREED = PropertyEnum.create("breed", EnumDragonBreed.class);
-	public static final BlockDragonBreedEgg INSTANCE = new BlockDragonBreedEgg();
+	public static BlockDragonBreedEgg DRAGON_BREED_EGG;
 
-	public BlockDragonBreedEgg() {
+	private BlockDragonBreedEgg() {
 		setUnlocalizedName("dragonEgg");
+		setRegistryName("dragon_egg");
 		setHardness(3);
 		setResistance(15);
 		setSoundType(SoundType.WOOD);
 		setLightLevel(0.125f);
-		setDefaultState(blockState.getBaseState().withProperty(BREED, EnumDragonBreed.DEFAULT));
-		setCreativeTab(CreativeTabs.TRANSPORTATION);
-		setRegistryName(DragonMounts.ID, "itemBlockDragonEgg");
+		setCreativeTab(CreativeTabs.MISC);
+
 	}
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[]{BREED});
+		return new BlockStateContainer(this, new IProperty[]{ BREED });
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		return getDefaultState().withProperty(BREED,
@@ -60,7 +59,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 
 	@Override
 	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
-		EnumDragonBreed.META_MAPPING.values().forEach(index -> items.add(new ItemStack(this, 1, 0)));
+		EnumDragonBreed.META_MAPPING.values().forEach(index -> items.add(new ItemStack(this, 1, index)));
 	}
 
 	@Override
@@ -68,9 +67,8 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		return getMetaFromState(state);
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
-	}
+	public static final BlockDragonBreedEgg[] BLOCK_EGG =  {
+			DRAGON_BREED_EGG = new BlockDragonBreedEgg()
+	};
+
 }
