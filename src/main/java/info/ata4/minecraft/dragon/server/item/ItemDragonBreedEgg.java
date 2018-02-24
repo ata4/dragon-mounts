@@ -9,10 +9,8 @@
  */
 package info.ata4.minecraft.dragon.server.item;
 
-import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -24,6 +22,9 @@ import net.minecraft.util.text.translation.I18n;
 public class ItemDragonBreedEgg extends ItemBlock {
 
 	public static ItemDragonBreedEgg DRAGON_BREED_EGG;
+	public static final Item[] ITEM_EGG = {
+			DRAGON_BREED_EGG = new ItemDragonBreedEgg()
+	};
 
 	public ItemDragonBreedEgg() {
 		super(BlockDragonBreedEgg.DRAGON_BREED_EGG);
@@ -43,8 +44,4 @@ public class ItemDragonBreedEgg extends ItemBlock {
 		String breedName = I18n.translateToLocal("entity.RealmOfTheDragons.RealmOfTheDragon." + type.getName() + ".name");
 		return I18n.translateToLocalFormatted("item.dragonEgg.name", breedName);
 	}
-
-	public static final Item[] ITEM_EGG =  {
-			DRAGON_BREED_EGG = new ItemDragonBreedEgg()
-	};
 }

@@ -13,7 +13,6 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.cmd.CommandDragon;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.handler.DragonEggBlockHandler;
-import info.ata4.minecraft.dragon.server.handler.DragonMountsMountHandler;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
@@ -31,7 +30,8 @@ public class CommonProxy {
 	private final int ENTITY_ID = 1;
 	private final boolean ENTITY_SEND_VELO_UPDATES = true;
 
-	public void onPreInit(FMLPreInitializationEvent event) {}
+	public void onPreInit(FMLPreInitializationEvent event) {
+	}
 
 
 	public void onInit(FMLInitializationEvent evt) {
@@ -49,7 +49,8 @@ public class CommonProxy {
 		cmdman.registerCommand(new CommandDragon());
 	}
 
-	public void onServerStopped(FMLServerStoppedEvent evt) {}
+	public void onServerStopped(FMLServerStoppedEvent evt) {
+	}
 
 	private void registerEntities() {
 		EntityRegistry.registerModEntity(new ResourceLocation(DragonMounts.ID, "dragon"), EntityTameableDragon.class, "DragonMount",

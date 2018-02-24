@@ -41,17 +41,15 @@ public class DragonLifeStageHelper extends DragonHelper {
 	private static final float EGG_CRACK_THRESHOLD = 0.9f;
 	private static final float EGG_WIGGLE_THRESHOLD = 0.75f;
 	private static final float EGG_WIGGLE_BASE_CHANCE = 20;
-
-	private EnumDragonLifeStage lifeStagePrev;
-	private int eggWiggleX;
-	private int eggWiggleZ;
-
 	// the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
 	// the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
 	// when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
 	private final DataParameter<Integer> dataParam;
-	private int ticksSinceCreationServer;
 	private final ClientServerSynchronisedTickCount ticksSinceCreationClient;
+	private EnumDragonLifeStage lifeStagePrev;
+	private int eggWiggleX;
+	private int eggWiggleZ;
+	private int ticksSinceCreationServer;
 
 	public DragonLifeStageHelper(EntityTameableDragon dragon, DataParameter<Integer> dataParam) {
 		super(dragon);
@@ -217,7 +215,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 		if (dragon.isServer()) {
 			if (!isAdult()) {
 				ticksSinceCreationServer++;
-				if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
+				if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0) {
 					dataWatcher.set(dataParam, ticksSinceCreationServer);
 				}
 			}
