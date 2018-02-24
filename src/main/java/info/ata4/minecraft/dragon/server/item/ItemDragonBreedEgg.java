@@ -13,7 +13,6 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.I18n;
@@ -23,13 +22,14 @@ import net.minecraft.util.text.translation.I18n;
  */
 public class ItemDragonBreedEgg extends ItemBlock {
 
-	public static ItemDragonBreedEgg DRAGON_BREED_EGG;
+	public static final ItemDragonBreedEgg INSTANCE = new ItemDragonBreedEgg();
 
 	public ItemDragonBreedEgg() {
-		super(BlockDragonBreedEgg.DRAGON_BREED_EGG);
+		super(BlockDragonBreedEgg.INSTANCE);
 		setMaxDamage(0);
-		setRegistryName("dragon_egg");
 		setHasSubtypes(true);
+		setRegistryName(DragonMounts.ID, "itemDragonBreedEgg");
+		setCreativeTab(CreativeTabs.TRANSPORTATION);
 	}
 
 	@Override
@@ -37,14 +37,12 @@ public class ItemDragonBreedEgg extends ItemBlock {
 		return metadata;
 	}
 
+	//FIXME: Give dragon eggs their textures back
+	@SuppressWarnings("deprecation")
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) {
 		EnumDragonBreed type = EnumDragonBreed.META_MAPPING.inverse().get(stack.getMetadata());
-		String breedName = I18n.translateToLocal("entity.RealmOfTheDragons.RealmOfTheDragon." + type.getName() + ".name");
+		String breedName = I18n.translateToLocal("entity.DragonMounts.DragonMount." + type.getName() + ".name");
 		return I18n.translateToLocalFormatted("item.dragonEgg.name", breedName);
 	}
-
-	public static final Item[] ITEM_EGG =  {
-			DRAGON_BREED_EGG = new ItemDragonBreedEgg()
-	};
 }
