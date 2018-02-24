@@ -9,8 +9,10 @@
  */
 package info.ata4.minecraft.dragon.server.item;
 
+import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.block.BlockDragonBreedEgg;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.translation.I18n;
@@ -22,12 +24,12 @@ public class ItemDragonBreedEgg extends ItemBlock {
 
 	public static final ItemDragonBreedEgg INSTANCE = new ItemDragonBreedEgg();
 
-	public static ItemDragonBreedEgg DRAGON_BREED_EGG;
-
 	public ItemDragonBreedEgg() {
-		super(BlockDragonBreedEgg.DRAGON_BREED_EGG);
+		super(BlockDragonBreedEgg.INSTANCE);
 		setMaxDamage(0);
 		setHasSubtypes(true);
+		setRegistryName(DragonMounts.ID, "itemDragonBreedEgg");
+		setCreativeTab(CreativeTabs.TRANSPORTATION);
 	}
 
 	@Override
