@@ -30,26 +30,36 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  */
 public class ClientProxy extends CommonProxy {
 
-		@Override
-		public void onPreInit(FMLPreInitializationEvent event) {
-			super.onPreInit(event);
 
-			// register dragon entity renderer
-			RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, DragonRenderer::new);
+	@Override
+	public void onPreInit(FMLPreInitializationEvent event) {
+		super.onPreInit(event);
 
-		}
+		// register dragon entity renderer
+		RenderingRegistry.registerEntityRenderingHandler(EntityTameableDragon.class, DragonRenderer::new);
 
-		@Override
-		public void onInit(FMLInitializationEvent evt) {
-			super.onInit(evt);
-		}
-
-		@Override
-		public void onPostInit(FMLPostInitializationEvent event) {
-			super.onPostInit(event);
-
-			if (DragonMounts.instance.getConfig().isDebug()) {
-				MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
+		// register item renderer for dragon egg block variants
+		ResourceLocation eggModelItemLoc = new ResourceLocation(DragonMounts.AID, "dragon_egg");
+		Item itemBlockDragonEgg = Item.REGISTRY.getObject(eggModelItemLoc);
+		EnumDragonBreed.META_MAPPING.forEach((breed, meta) -> {
+			ModelResourceLocation eggModelLoc = new ModelResourceLocation(DragonMounts.AID + ":dragon_egg", "breed=" + breed.getName());
+			if (itemBlockDragonEgg != null) {
+				ModelLoader.setCustomModelResourceLocation(itemBlockDragonEgg, meta, eggModelLoc);
 			}
+		});
+	}
+
+	@Override
+	public void onInit(FMLInitializationEvent evt) {
+		super.onInit(evt);
+	}
+
+	@Override
+	public void onPostInit(FMLPostInitializationEvent event) {
+		super.onPostInit(event);
+
+		if (DragonMounts.instance.getConfig().isDebug()) {
+			MinecraftForge.EVENT_BUS.register(new GuiDragonDebug());
 		}
 	}
+}
