@@ -51,12 +51,12 @@ public class DefaultDragonBreedRenderer implements DragonBreedRenderer {
 
 		// textures
 		String skin = breed.getBreed().getSkin();
-		bodyTexture = new ResourceLocation(DragonMounts.ID, DragonRenderer.TEX_BASE + skin + "/body.png");
-		glowTexture = new ResourceLocation(DragonMounts.ID, DragonRenderer.TEX_BASE + skin + "/glow.png");
-		glowAnimTexture = new ResourceLocation(DragonMounts.ID, DragonRenderer.TEX_BASE + skin + "/glow_anim.png");
-		saddleTexture = new ResourceLocation(DragonMounts.ID, DragonRenderer.TEX_BASE + skin + "/saddle.png");
-		eggTexture = new ResourceLocation(DragonMounts.ID, DragonRenderer.TEX_BASE + skin + "/egg.png");
-		dissolveTexture = new ResourceLocation(DragonMounts.ID, DragonRenderer.TEX_BASE + "dissolve.png");
+		bodyTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/body.png");
+		glowTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/glow.png");
+		glowAnimTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/glow_anim.png");
+		saddleTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/saddle.png");
+		eggTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + skin + "/egg.png");
+		dissolveTexture = new ResourceLocation(DragonMounts.AID, DragonRenderer.TEX_BASE + "dissolve.png");
 	}
 
 	@Override
