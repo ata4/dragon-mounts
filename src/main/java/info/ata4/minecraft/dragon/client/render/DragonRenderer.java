@@ -79,9 +79,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 	}
 
 	@Override
-	protected void renderLayers(EntityTameableDragon dragon, float moveTime,
-	                            float moveSpeed, float partialTicks, float ticksExisted, float lookYaw,
-	                            float lookPitch, float scale) {
+	protected void renderLayers(EntityTameableDragon dragon, float moveTime, float moveSpeed, float partialTicks, float ticksExisted, float lookYaw, float lookPitch, float scale) {
 		List<LayerRenderer<EntityTameableDragon>> layers = getBreedRenderer(dragon).getLayers();
 		layers.forEach(layer -> {
 			boolean brighnessSet = setBrightness(dragon, partialTicks,
@@ -98,8 +96,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 	 * Renders the model in RenderLiving
 	 */
 	@Override
-	protected void renderModel(EntityTameableDragon dragon, float moveTime, float moveSpeed,
-	                           float ticksExisted, float lookYaw, float lookPitch, float scale) {
+	protected void renderModel(EntityTameableDragon dragon, float moveTime, float moveSpeed, float ticksExisted, float lookYaw, float lookPitch, float scale) {
 
 		float death = dragon.getDeathTime() / (float) dragon.getMaxDeathTime();
 
@@ -155,7 +152,7 @@ public class DragonRenderer extends RenderLiving<EntityTameableDragon> {
 		BufferBuilder vb = tessellator.getBuffer();
 		vb.begin(GL_QUADS, DefaultVertexFormats.BLOCK);
 
-		Block block = BlockDragonBreedEgg.DRAGON_BREED_EGG;
+		Block block = BlockDragonBreedEgg.INSTANCE;
 		IBlockState iblockstate = block.getDefaultState().withProperty(
 				BlockDragonBreedEgg.BREED, dragon.getBreedType());
 		BlockPos blockpos = dragon.getPosition();
