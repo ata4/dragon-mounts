@@ -9,17 +9,26 @@
  */
 package info.ata4.minecraft.dragon.server.block;
 
-import info.ata4.minecraft.dragon.DragonMounts;
+import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import net.minecraft.block.BlockDragonEgg;
+import net.minecraft.block.BlockFalling;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+import java.util.Random;
 
 /**
  * @author Nico Bergemann <barracuda415 at yahoo.de>
@@ -27,17 +36,19 @@ import net.minecraft.util.NonNullList;
 public class BlockDragonBreedEgg extends BlockDragonEgg {
 
 	public static final PropertyEnum<EnumDragonBreed> BREED = PropertyEnum.create("breed", EnumDragonBreed.class);
-	public static final BlockDragonBreedEgg INSTANCE = new BlockDragonBreedEgg();
+	public static BlockDragonBreedEgg DRAGON_BREED_EGG;
+	public static final BlockDragonBreedEgg[] BLOCK_EGG = {DRAGON_BREED_EGG = new BlockDragonBreedEgg()};
+	public int meta;
+	private EntityTameableDragon dragon;
 
 	public BlockDragonBreedEgg() {
 		setUnlocalizedName("dragonEgg");
-		setHardness(3);
-		setResistance(15);
+		setHardness(0);
+		setResistance(30);
 		setSoundType(SoundType.WOOD);
 		setLightLevel(0.125f);
-		setDefaultState(blockState.getBaseState().withProperty(BREED, EnumDragonBreed.DEFAULT));
-		setCreativeTab(CreativeTabs.TRANSPORTATION);
-		setRegistryName(DragonMounts.ID, "itemBlockDragonEgg");
+		setCreativeTab(CreativeTabs.MISC);
+
 	}
 
 	@Override
@@ -45,11 +56,10 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		return new BlockStateContainer(this, new IProperty[]{BREED});
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
-		return getDefaultState().withProperty(BREED,
-				EnumDragonBreed.META_MAPPING.inverse().get(meta));
+		this.meta = meta;
+		return getDefaultState().withProperty(BREED, EnumDragonBreed.META_MAPPING.inverse().get(meta));
 	}
 
 	@Override
@@ -60,7 +70,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 
 	@Override
 	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
-		EnumDragonBreed.META_MAPPING.values().forEach(index -> items.add(new ItemStack(this, 1, 0)));
+		EnumDragonBreed.META_MAPPING.values().forEach(index -> items.add(new ItemStack(this, 1, index)));
 	}
 
 	@Override
@@ -68,9 +78,42 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 		return getMetaFromState(state);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(IBlockState state) {
-		return false;
+	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+		this.checkFall(worldIn, pos);
+	}
+
+	@Override
+	public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn) {
+		return;
+	}
+
+	/**
+	 * Called when the block is right clicked by a player.
+	 */
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+		return true;
+	}
+
+	private void checkFall(World worldIn, BlockPos pos) {
+		if (worldIn.isAirBlock(pos.down()) && BlockFalling.canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0) {
+			int i = 32;
+
+			if (!BlockFalling.fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32))) {
+				worldIn.spawnEntity(new EntityFallingBlock(worldIn, (double) ((float) pos.getX() + 0.5F), (double) pos.getY(), (double) ((float) pos.getZ() + 0.5F), this.getStateFromMeta(meta)));
+			} else {
+				worldIn.setBlockToAir(pos);
+				BlockPos blockpos;
+
+				for (blockpos = pos; worldIn.isAirBlock(blockpos) && BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0; blockpos = blockpos.down()) {
+					;
+				}
+
+				if (blockpos.getY() > 0) {
+					worldIn.setBlockState(blockpos, this.getStateFromMeta(meta), 2);
+				}
+			}
+		}
 	}
 }
