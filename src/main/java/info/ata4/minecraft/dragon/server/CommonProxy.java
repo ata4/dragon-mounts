@@ -28,20 +28,19 @@ public class CommonProxy {
 
 	private final int ENTITY_TRACKING_RANGE = 80;
 	private final int ENTITY_UPDATE_FREQ = 3;
-	private final int ENTITY_ID = 0;
+	private final int ENTITY_ID = 1;
 	private final boolean ENTITY_SEND_VELO_UPDATES = true;
 
-	public void onPreInit(FMLPreInitializationEvent event) {
-	}
+	public void onPreInit(FMLPreInitializationEvent event) {}
+
 
 	public void onInit(FMLInitializationEvent evt) {
-		registerEntities();
-
 		MinecraftForge.EVENT_BUS.register(new DragonEggBlockHandler());
-		MinecraftForge.EVENT_BUS.register(new DragonMountsMountHandler());
 	}
 
 	public void onPostInit(FMLPostInitializationEvent event) {
+		registerEntities();
+
 	}
 
 	public void onServerStarting(FMLServerStartingEvent evt) {
@@ -50,12 +49,10 @@ public class CommonProxy {
 		cmdman.registerCommand(new CommandDragon());
 	}
 
-	public void onServerStopped(FMLServerStoppedEvent evt) {
-	}
+	public void onServerStopped(FMLServerStoppedEvent evt) {}
 
 	private void registerEntities() {
-		ResourceLocation res = new ResourceLocation(DragonMounts.AID, "dragon");
-		EntityRegistry.registerModEntity(res, EntityTameableDragon.class, "DragonMount",
+		EntityRegistry.registerModEntity(new ResourceLocation(DragonMounts.ID, "dragon"), EntityTameableDragon.class, "DragonMount",
 				ENTITY_ID, DragonMounts.instance, ENTITY_TRACKING_RANGE, ENTITY_UPDATE_FREQ,
 				ENTITY_SEND_VELO_UPDATES);
 	}
