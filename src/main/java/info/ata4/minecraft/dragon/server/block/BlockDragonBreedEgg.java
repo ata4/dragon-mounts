@@ -9,6 +9,7 @@
  */
 package info.ata4.minecraft.dragon.server.block;
 
+import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import net.minecraft.block.BlockDragonEgg;
 import net.minecraft.block.SoundType;
@@ -27,9 +28,6 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 
 	public static final PropertyEnum<EnumDragonBreed> BREED = PropertyEnum.create("breed", EnumDragonBreed.class);
 	public static BlockDragonBreedEgg DRAGON_BREED_EGG;
-	public static final BlockDragonBreedEgg[] BLOCK_EGG = {
-			DRAGON_BREED_EGG = new BlockDragonBreedEgg()
-	};
 
 	private BlockDragonBreedEgg() {
 		setUnlocalizedName("dragonEgg");
@@ -44,7 +42,7 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, new IProperty[]{BREED});
+		return new BlockStateContainer(this, new IProperty[]{ BREED });
 	}
 
 	@Override
@@ -68,5 +66,9 @@ public class BlockDragonBreedEgg extends BlockDragonEgg {
 	public int damageDropped(IBlockState state) {
 		return getMetaFromState(state);
 	}
+
+	public static final BlockDragonBreedEgg[] BLOCK_EGG =  {
+			DRAGON_BREED_EGG = new BlockDragonBreedEgg()
+	};
 
 }
