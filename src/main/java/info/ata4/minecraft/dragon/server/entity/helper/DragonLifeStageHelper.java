@@ -41,17 +41,15 @@ public class DragonLifeStageHelper extends DragonHelper {
 	private static final float EGG_CRACK_THRESHOLD = 0.9f;
 	private static final float EGG_WIGGLE_THRESHOLD = 0.75f;
 	private static final float EGG_WIGGLE_BASE_CHANCE = 20;
-
-	private EnumDragonLifeStage lifeStagePrev;
-	private int eggWiggleX;
-	private int eggWiggleZ;
-
 	// the ticks since creation is used to control the dragon's life stage.  It is only updated by the server occasionally.
 	// the client keeps a cached copy of it and uses client ticks to interpolate in the gaps.
 	// when the watcher is updated from the server, the client will tick it faster or slower to resynchronise
 	private final DataParameter<Integer> dataParam;
-	private int ticksSinceCreationServer;
 	private final ClientServerSynchronisedTickCount ticksSinceCreationClient;
+	private EnumDragonLifeStage lifeStagePrev;
+	private int eggWiggleX;
+	private int eggWiggleZ;
+	private int ticksSinceCreationServer;
 
 	public DragonLifeStageHelper(EntityTameableDragon dragon, DataParameter<Integer> dataParam) {
 		super(dragon);
@@ -87,7 +85,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 	 */
 	public void playEggCrackEffect() {
 		dragon.world.playEvent(2001, dragon.getPosition(),
-				Block.getIdFromBlock(BlockDragonBreedEgg.DRAGON_BREED_EGG));
+				Block.getIdFromBlock(BlockDragonBreedEgg.INSTANCE));
 	}
 
 	public int getEggWiggleX() {
@@ -165,7 +163,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 			dragon.dropItem(Items.SADDLE, 1);
 		}
 
-		dragon.entityDropItem(new ItemStack(BlockDragonBreedEgg.DRAGON_BREED_EGG),
+		dragon.entityDropItem(new ItemStack(BlockDragonBreedEgg.INSTANCE),
 				dragon.getBreedType().getMeta());
 
 		dragon.setDead();
@@ -217,7 +215,7 @@ public class DragonLifeStageHelper extends DragonHelper {
 		if (dragon.isServer()) {
 			if (!isAdult()) {
 				ticksSinceCreationServer++;
-				if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0){
+				if (ticksSinceCreationServer % TICKS_SINCE_CREATION_UPDATE_INTERVAL == 0) {
 					dataWatcher.set(dataParam, ticksSinceCreationServer);
 				}
 			}
@@ -274,39 +272,13 @@ public class DragonLifeStageHelper extends DragonHelper {
 		}
 
 		// spawn generic particles
-		double px = dragon.posX + (rand.nextDouble() - 0.3);
-		double py = dragon.posY + (rand.nextDouble() - 0.3);
-		double pz = dragon.posZ + (rand.nextDouble() - 0.3);
-		double ox = (rand.nextDouble() - 0.3) * 2;
-		double oy = (rand.nextDouble() - 0.3) * 2;
-		double oz = (rand.nextDouble() - 0.3) * 2;
-		dragon.world.spawnParticle(this.getEggParticle(), px, py, pz, ox, oy, oz);
-
-	}
-
-	protected EnumParticleTypes getEggParticle() {
-
-		switch (dragon.getBreedType()) {
-			case END:
-				return EnumParticleTypes.PORTAL;
-			case NETHER:
-				return EnumParticleTypes.DRIP_LAVA;
-			case GHOST:
-				return EnumParticleTypes.TOWN_AURA;
-			case AIR:
-				return EnumParticleTypes.TOWN_AURA;
-			case FIRE:
-				return EnumParticleTypes.FLAME;
-			case ICE:
-				return EnumParticleTypes.SNOWBALL;
-			case FOREST:
-				return EnumParticleTypes.TOWN_AURA;
-			case WATER:
-				return EnumParticleTypes.DRIP_WATER;
-			default: // no defaults!
-				return null;
-
-		}
+		double px = dragon.posX + (rand.nextDouble() - 0.5);
+		double py = dragon.posY + (rand.nextDouble() - 0.5);
+		double pz = dragon.posZ + (rand.nextDouble() - 0.5);
+		double ox = (rand.nextDouble() - 0.5) * 2;
+		double oy = (rand.nextDouble() - 0.5) * 2;
+		double oz = (rand.nextDouble() - 0.5) * 2;
+		dragon.world.spawnParticle(EnumParticleTypes.PORTAL, px, py, pz, ox, oy, oz);
 	}
 
 	private void updateScale() {
