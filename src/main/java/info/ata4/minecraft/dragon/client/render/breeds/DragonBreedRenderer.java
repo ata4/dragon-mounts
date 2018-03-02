@@ -12,32 +12,33 @@ package info.ata4.minecraft.dragon.client.render.breeds;
 import info.ata4.minecraft.dragon.client.model.DragonModel;
 import info.ata4.minecraft.dragon.client.render.DragonRenderer;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.List;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
+
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public interface DragonBreedRenderer {
 
-    public ResourceLocation getBodyTexture();
+	public ResourceLocation getBodyTexture();
 
-    public ResourceLocation getDissolveTexture();
+	public ResourceLocation getDissolveTexture();
 
-    public ResourceLocation getEggTexture();
+	public ResourceLocation getEggTexture();
 
-    public ResourceLocation getGlowTexture();
-    
-    public ResourceLocation getGlowAnimTexture();
+	public ResourceLocation getGlowTexture();
 
-    public List<LayerRenderer<EntityTameableDragon>> getLayers();
+	public ResourceLocation getGlowAnimTexture();
 
-    public DragonModel getModel();
+	public List<LayerRenderer<EntityTameableDragon>> getLayers();
 
-    public DragonRenderer getRenderer();
+	public DragonModel getModel();
 
-    public ResourceLocation getSaddleTexture();
-    
+	public DragonRenderer getRenderer();
+
+	public ResourceLocation getSaddleTexture();
+
+
 }

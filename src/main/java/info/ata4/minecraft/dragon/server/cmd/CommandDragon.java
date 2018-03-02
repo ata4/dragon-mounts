@@ -13,46 +13,46 @@ import info.ata4.minecraft.dragon.DragonMounts;
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import info.ata4.minecraft.dragon.server.entity.breeds.EnumDragonBreed;
 import info.ata4.minecraft.dragon.server.entity.helper.EnumDragonLifeStage;
+import net.minecraft.command.ICommandSender;
+
 import java.util.function.BiConsumer;
-import net.minecraft.command.*;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class CommandDragon extends CommandBaseNested implements IDragonModifier {
-    
-    public CommandDragon() {
-        BiConsumer<EntityTameableDragon, EnumDragonBreed> breedConsumer =
-            (dragon, enumValue) -> dragon.setBreedType(enumValue);
-        addCommand(new CommandDragonEnumSetter("breed", EnumDragonBreed.class, breedConsumer));
-        
-        BiConsumer<EntityTameableDragon, EnumDragonLifeStage> lifeStageConsumer =
-            (dragon, enumValue) -> dragon.getLifeStageHelper().setLifeStage(enumValue);
-        addCommand(new CommandDragonEnumSetter("stage", EnumDragonLifeStage.class, lifeStageConsumer));
-        
-        addCommand(new CommandDragonTame());
 
-        if (DragonMounts.instance.getConfig().isDebug()) {
-            addCommand(new CommandDragonDebug());
-        }
-    }
+	public CommandDragon() {
+		BiConsumer<EntityTameableDragon, EnumDragonBreed> breedConsumer =
+				(dragon, enumValue) -> dragon.setBreedType(enumValue);
+		addCommand(new CommandDragonEnumSetter("breed", EnumDragonBreed.class, breedConsumer));
 
-    @Override
-    public String getCommandName() {
-        return "dragon";
-    }
-    
-    @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return String.format("/%s [global]", super.getCommandUsage(sender));
-    }
-    
-    /**
-     * Return the required permission level for this command.
-     */
-    @Override
-    public int getRequiredPermissionLevel() {
-        return 3;
-    }
+		BiConsumer<EntityTameableDragon, EnumDragonLifeStage> lifeStageConsumer =
+				(dragon, enumValue) -> dragon.getLifeStageHelper().setLifeStage(enumValue);
+		addCommand(new CommandDragonEnumSetter("stage", EnumDragonLifeStage.class, lifeStageConsumer));
+
+		addCommand(new CommandDragonTame());
+
+		if (DragonMounts.instance.getConfig().isDebug()) {
+			addCommand(new CommandDragonDebug());
+		}
+	}
+
+	@Override
+	public String getName() {
+		return "dragon";
+	}
+
+	@Override
+	public String getUsage(ICommandSender sender) {
+		return String.format("/%s [global]", super.getUsage(sender));
+	}
+
+	/**
+	 * Return the required permission level for this command.
+	 */
+	@Override
+	public int getRequiredPermissionLevel() {
+		return 3;
+	}
 }

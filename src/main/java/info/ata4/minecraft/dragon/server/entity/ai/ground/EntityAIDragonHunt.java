@@ -14,21 +14,20 @@ import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.EntityAITargetNonTamed;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class EntityAIDragonHunt extends EntityAITargetNonTamed {
-    
-    private final EntityTameableDragon dragon;
 
-    public EntityAIDragonHunt(EntityTameableDragon dragon, Class classTarget,
-            boolean checkSight, Predicate targetSelector) {
-        super(dragon, classTarget, checkSight, targetSelector);
-        this.dragon = dragon;
-    }
+	private final EntityTameableDragon dragon;
 
-    @Override
-    public boolean shouldExecute() {
-        return dragon.isAdult() && super.shouldExecute();
-    }
+	public EntityAIDragonHunt(EntityTameableDragon dragon, Class classTarget,
+	                          boolean checkSight, Predicate targetSelector) {
+		super(dragon, classTarget, checkSight, targetSelector);
+		this.dragon = dragon;
+	}
+
+	@Override
+	public boolean shouldExecute() {
+		return dragon.isAdult() && super.shouldExecute();
+	}
 }

@@ -15,38 +15,53 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonBreedFire extends DragonBreed {
 
-    DragonBreedFire() {
-        super("fire", 0x960b0f);
-        
-        addImmunity(DamageSource.inFire);
-        addImmunity(DamageSource.onFire);
-        addImmunity(DamageSource.lava);
-        
-        addHabitatBlock(Blocks.LAVA);
-        addHabitatBlock(Blocks.FLOWING_LAVA);
-        addHabitatBlock(Blocks.FIRE);
-        addHabitatBlock(Blocks.LIT_FURNACE);
-        
-        addHabitatBiome(Biomes.DESERT);
-        addHabitatBiome(Biomes.DESERT_HILLS);
-    }
+	DragonBreedFire() {
+		super("fire", 0x960b0f);
 
-    @Override
-    public void onEnable(EntityTameableDragon dragon) {
-        dragon.getBrain().setAvoidsWater(true);
-    }
+		addImmunity(DamageSource.IN_FIRE);
+		addImmunity(DamageSource.ON_FIRE);
+		addImmunity(DamageSource.LAVA);
+		addImmunity(DamageSource.HOT_FLOOR);
 
-    @Override
-    public void onDisable(EntityTameableDragon dragon) {
-        dragon.getBrain().setAvoidsWater(false);
-    }
+		addHabitatBlock(Blocks.LAVA);
+		addHabitatBlock(Blocks.FLOWING_LAVA);
+		addHabitatBlock(Blocks.FIRE);
+		addHabitatBlock(Blocks.LIT_FURNACE);
+		addHabitatBlock(Blocks.RED_SANDSTONE);
+		addHabitatBlock(Blocks.RED_SANDSTONE_STAIRS);
+		addHabitatBlock(Blocks.SANDSTONE);
+		addHabitatBlock(Blocks.SANDSTONE_STAIRS);
 
-    @Override
-    public void onDeath(EntityTameableDragon dragon) {
-    }
+		addHabitatBiome(Biomes.DESERT);
+		addHabitatBiome(Biomes.DESERT_HILLS);
+		addHabitatBiome(Biomes.MESA);
+		addHabitatBiome(Biomes.MESA_CLEAR_ROCK);
+		addHabitatBiome(Biomes.MESA_ROCK);
+		addHabitatBiome(Biomes.MUTATED_MESA);
+		addHabitatBiome(Biomes.MUTATED_MESA_ROCK);
+		addHabitatBiome(Biomes.MUTATED_MESA_CLEAR_ROCK);
+		addHabitatBiome(Biomes.SAVANNA);
+		addHabitatBiome(Biomes.SAVANNA_PLATEAU);
+		addHabitatBiome(Biomes.MUTATED_SAVANNA);
+		addHabitatBiome(Biomes.MUTATED_SAVANNA_ROCK);
+		addHabitatBiome(Biomes.MUTATED_DESERT);
+	}
+
+	@Override
+	public void onEnable(EntityTameableDragon dragon) {
+		dragon.getBrain().setAvoidsWater(true);
+	}
+
+	@Override
+	public void onDisable(EntityTameableDragon dragon) {
+		dragon.getBrain().setAvoidsWater(false);
+	}
+
+	@Override
+	public void onDeath(EntityTameableDragon dragon) {
+	}
 }

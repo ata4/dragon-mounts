@@ -9,34 +9,34 @@
  */
 package info.ata4.minecraft.dragon;
 
-import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
 
+import java.util.Set;
+
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonMountsConfigGuiFactory implements IModGuiFactory {
 
-    @Override
-    public void initialize(Minecraft minecraftInstance) {
-    }
+	@Override
+	public void initialize(Minecraft minecraftInstance) {
+	}
 
-    @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass() {
-        return DragonMountsConfigGui.class;
-    }
+	@Override
+	public boolean hasConfigGui() {
+		return false;
+	}
 
-    @Override
-    public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
-        return null;
-    }
+	@Override
+	public GuiScreen createConfigGui(GuiScreen parentScreen) {
+		return new DragonMountsConfigGui(parentScreen);
+	}
 
-    @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) {
-        return null;
-    }
-    
+	@Override
+	public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
+		return null;
+	}
+
 }

@@ -11,14 +11,14 @@ package info.ata4.minecraft.dragon.server.entity.ai.ground;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
 import net.minecraft.entity.ai.EntityAILookIdle;
+
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class EntityAIDragonWatchIdle extends EntityAILookIdle {
 
-    public EntityAIDragonWatchIdle(EntityTameableDragon par1EntityLiving) {
-        super(par1EntityLiving);
-        this.setMutexBits(2);
-    }
+	public EntityAIDragonWatchIdle(EntityTameableDragon par1EntityLiving) {
+		super(par1EntityLiving);
+		this.setMutexBits(2);
+	}
 }

@@ -9,32 +9,29 @@
  */
 package info.ata4.minecraft.dragon;
 
-import java.util.Arrays;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.GuiConfig;
 
+import java.util.Arrays;
+
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonMountsConfigGui extends GuiConfig {
-    
-    private static final Configuration CONFIG = DragonMounts.instance.getConfig().getParent();
-    
-    public DragonMountsConfigGui(GuiScreen parentScreen) {
-        super(
-            parentScreen,
-            Arrays.asList(
-                new ConfigElement(CONFIG.getCategory("server")),
-                new ConfigElement(CONFIG.getCategory("client"))
-            ),
-            DragonMounts.ID,
-            false,
-            false,
-            DragonMounts.NAME
-        );
-    }
-    
+
+	private static final Configuration CONFIG = DragonMounts.instance.getConfig().getParent();
+
+	public DragonMountsConfigGui(GuiScreen parentScreen) {
+		super(
+				parentScreen,
+				Arrays.asList(new ConfigElement(CONFIG.getCategory("server")), new ConfigElement(CONFIG.getCategory("client"))),
+				DragonMounts.ID,
+				false,
+				false,
+				DragonMounts.NAME
+		);
+	}
+
 }

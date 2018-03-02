@@ -14,16 +14,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public abstract class DragonInteract {
-    
-    protected final EntityTameableDragon dragon;
-    
-    public DragonInteract(EntityTameableDragon dragon) {
-        this.dragon = dragon;
-    }
-    
-    public abstract boolean interact(EntityPlayer player, ItemStack item);
+
+	protected final EntityTameableDragon dragon;
+
+	public DragonInteract(EntityTameableDragon dragon) {
+		this.dragon = dragon;
+	}
+
+	public abstract boolean interact(EntityPlayer player, ItemStack item);
 }

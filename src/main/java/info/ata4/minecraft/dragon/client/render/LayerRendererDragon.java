@@ -17,31 +17,29 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public abstract class LayerRendererDragon implements LayerRenderer<EntityTameableDragon> {
-    
-    protected final DragonRenderer renderer;
-    protected final DefaultDragonBreedRenderer breedRenderer;
-    protected final DragonModel model;
 
-    public LayerRendererDragon(DragonRenderer renderer,
-            DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
-        this.renderer = renderer;
-        this.breedRenderer = breedRenderer;
-        this.model = model;
-    }
-    
-    protected void disableLighting() {
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-        GlStateManager.disableLighting();
-    }
-    
-    protected void enableLighting(int b) {
-        int u = b % 65536;
-        int v = b / 65536;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
-        GlStateManager.enableLighting();
-    }
+	protected final DragonRenderer renderer;
+	protected final DefaultDragonBreedRenderer breedRenderer;
+	protected final DragonModel model;
+
+	public LayerRendererDragon(DragonRenderer renderer, DefaultDragonBreedRenderer breedRenderer, DragonModel model) {
+		this.renderer = renderer;
+		this.breedRenderer = breedRenderer;
+		this.model = model;
+	}
+
+	protected void disableLighting() {
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+		GlStateManager.disableLighting();
+	}
+
+	protected void enableLighting(int b) {
+		int u = b % 65536;
+		int v = b / 65536;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, u, v);
+		GlStateManager.enableLighting();
+	}
 }

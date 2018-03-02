@@ -10,8 +10,6 @@
 package info.ata4.minecraft.dragon.server.entity.breeds;
 
 import info.ata4.minecraft.dragon.server.entity.EntityTameableDragon;
-import java.util.HashMap;
-import java.util.Map;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.ai.EntityAIRestrictSun;
 import net.minecraft.init.Blocks;
@@ -20,37 +18,42 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- *
  * @author Nico Bergemann <barracuda415 at yahoo.de>
  */
 public class DragonBreedGhost extends DragonBreed {
-    
-    private final Map<EntityTameableDragon, EntityAIRestrictSun> appliedTasks = new HashMap<>();
 
-    DragonBreedGhost() {
-        super("undead", 0xbebebe);
-        
-        addImmunity(DamageSource.wither);
-        
-        addHabitatBlock(Blocks.WEB);
-    }
-    
-    @Override
-    public void onEnable(EntityTameableDragon dragon) {
-        EntityAIRestrictSun restrictSun = new EntityAIRestrictSun(dragon);
-        dragon.tasks.addTask(2, restrictSun);
-        appliedTasks.put(dragon, restrictSun);
-    }
-    
-    @Override
-    public void onDisable(EntityTameableDragon dragon) {
-        if (appliedTasks.containsKey(dragon)) {
-            dragon.tasks.removeTask(appliedTasks.get(dragon));
-            appliedTasks.remove(dragon);
-        }
-    }
-    
+	private final Map<EntityTameableDragon, EntityAIRestrictSun> appliedTasks = new HashMap<>();
+
+	DragonBreedGhost() {
+		super("undead", 0xbebebe);
+
+		addImmunity(DamageSource.WITHER);
+		addImmunity(DamageSource.DROWN);
+		addImmunity(DamageSource.IN_WALL);
+
+		addHabitatBlock(Blocks.WEB);
+		addHabitatBlock(Blocks.BONE_BLOCK);
+	}
+
+	@Override
+	public void onEnable(EntityTameableDragon dragon) {
+		EntityAIRestrictSun restrictSun = new EntityAIRestrictSun(dragon);
+		dragon.tasks.addTask(2, restrictSun);
+		appliedTasks.put(dragon, restrictSun);
+	}
+
+	@Override
+	public void onDisable(EntityTameableDragon dragon) {
+		if (appliedTasks.containsKey(dragon)) {
+			dragon.tasks.removeTask(appliedTasks.get(dragon));
+			appliedTasks.remove(dragon);
+		}
+	}
+
 //    @Override
 //    public void onUpdate(EntityTameableDragon dragon) {
 //        // start burning when in contact with sunlight
@@ -67,49 +70,49 @@ public class DragonBreedGhost extends DragonBreed {
 //        }
 //    }
 
-    @Override
-    public boolean isHabitatEnvironment(EntityTameableDragon dragon) {
-        if (dragon.posY > dragon.worldObj.getHeight() * 0.25) {
-            // woah dude, too high!
-            return false;
-        }
+	@Override
+	public boolean isHabitatEnvironment(EntityTameableDragon dragon) {
+		if (dragon.posY > dragon.world.getHeight() * 0.25) {
+			// woah dude, too high!
+			return false;
+		}
 
-        BlockPos pos = dragon.getPosition();
-        
-        if (dragon.worldObj.canBlockSeeSky(pos)) {
-             // sun is shining!
-            return false;
-        }
-        
-        if (dragon.worldObj.getLight(pos) > 4) {
-            // too bright!
-            return false;
-        }
+		BlockPos pos = dragon.getPosition();
 
-        return true;
-    }
+		if (dragon.world.canBlockSeeSky(pos)) {
+			// sun is shining!
+			return false;
+		}
 
-    @Override
-    public SoundEvent getLivingSound() {
-        return SoundEvents.ENTITY_SKELETON_AMBIENT;
-    }
-    
-    @Override
-    public float getSoundPitch(SoundEvent sound) {
-        // bony sounds need lower pitches, these are large bones!
-        if (sound.equals(getLivingSound())) {
-            return 0.5f;
-        }
-        
-        return super.getSoundPitch(sound);
-    }
+		if (dragon.world.getLight(pos) > 4) {
+			// too bright!
+			return false;
+		}
 
-    @Override
-    public EnumCreatureAttribute getCreatureAttribute() {
-        return EnumCreatureAttribute.UNDEAD;
-    }
+		return true;
+	}
 
-    @Override
-    public void onDeath(EntityTameableDragon dragon) {
-    }
+	@Override
+	public SoundEvent getLivingSound() {
+		return SoundEvents.ENTITY_SKELETON_AMBIENT;
+	}
+
+	@Override
+	public float getSoundPitch(SoundEvent sound) {
+		// bony sounds need lower pitches, these are large bones!
+		if (sound.equals(getLivingSound())) {
+			return 0.5f;
+		}
+
+		return super.getSoundPitch(sound);
+	}
+
+	@Override
+	public EnumCreatureAttribute getCreatureAttribute() {
+		return EnumCreatureAttribute.UNDEAD;
+	}
+
+	@Override
+	public void onDeath(EntityTameableDragon dragon) {
+	}
 }

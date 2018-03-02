@@ -1,18 +1,49 @@
-
-# Created by https://www.gitignore.io/api/java,netbeans,eclipse,gradle
-
-### NetBeans ###
-nbproject/private/
-build/
-nbbuild/
-dist/
-nbdist/
-nbactions.xml
-.nb-gradle/
-.nb-gradle-properties
-
-### Eclipse ###
-
+#ant stuff
+/bin/
+/download/
+#Remove OS generated garbage
+*/.DS_Store
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+#gradle stuff
+/.gradle
+/build/
+/run*/
+/ui/
+gradle-app.setting
+#IDEA files from Gradle
+.idea/
+/*.iml
+/*.ipr
+/*.iws
+#Vim backups
+*~
+#manual version override
+version.properties
+#eclipse stuffs
+/.classpath
+/.project
+/.settings/
+/eclipse/
+/minecraft/
+/debug/
+/.metadata/
+/config/
+/logs/
+options.txt
+/saves/
+/out
+/tmp
+.iws
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+*.iml
+/classes/
 .metadata
 bin/
 tmp/
@@ -25,9 +56,6 @@ local.properties
 .loadpath
 .recommenders
 
-# Eclipse Core
-.project
-
 # External tool builders
 .externalToolBuilders/
 
@@ -39,9 +67,6 @@ local.properties
 
 # CDT-specific (C/C++ Development Tooling)
 .cproject
-
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
 
 # Java annotation processor (APT)
 .factorypath
@@ -64,38 +89,18 @@ local.properties
 # Code Recommenders
 .recommenders/
 
-
-### Java ###
-*.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-
-
-### Gradle ###
-.gradle
+# Scala IDE specific (Scala & Java development for Eclipse)
+.cache-main
+.scala_dependencies
+.worksheet
+nbproject/private/
 build/
-
-# Ignore Gradle GUI config
-gradle-app.setting
-
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Cache of project
-.gradletasknamecache
-
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
-
-# Other
-/private/
-/minecraft/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+-
+sources/Baubles-1.12-1.5.1-api.jar
+sources/Baubles-1.12-1.5.2-api.jar
+/sources/
